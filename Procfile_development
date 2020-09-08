@@ -1,0 +1,4 @@
+web: bundle exec puma -t 5:5 -p 4242 -e ${RACK_ENV:-development}
+webpacker: ./bin/webpack-dev-server # Live update webpack js
+worker_critical: bundle exec rerun --background --dir app,db,lib --pattern '{**/*.rb}' -- bundle exec sidekiq
+log: tail -f log/development.log
