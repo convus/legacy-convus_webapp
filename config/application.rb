@@ -33,7 +33,8 @@ module Convus
     # Don't require all associations by default
     config.active_record.belongs_to_required_by_default = false
 
-    # Don't generate system test files.
-    config.generators.system_tests = nil
+    config.generators do |g|
+      g.factory_bot true
+    end
   end
 end

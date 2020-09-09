@@ -18,7 +18,7 @@ ActiveRecord::Schema.define(version: 2020_09_09_025230) do
   create_table "assertion_citations", force: :cascade do |t|
     t.bigint "assertion_id"
     t.bigint "citation_id"
-    t.boolean "direct_quotation", default: false
+    t.boolean "has_direct_quotation", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["assertion_id"], name: "index_assertion_citations_on_assertion_id"
@@ -36,18 +36,19 @@ ActiveRecord::Schema.define(version: 2020_09_09_025230) do
   end
 
   create_table "citations", force: :cascade do |t|
-    t.bigint "publisher_id"
+    t.bigint "publication_id"
     t.text "title"
     t.text "slug"
-    t.text "authors"
-    t.integer "kind"
-    t.text "url"
+    t.json "authors"
     t.datetime "published_at"
+    t.integer "kind", default: 0
+    t.text "url"
+    t.text "archive_link"
     t.bigint "creator_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["creator_id"], name: "index_citations_on_creator_id"
-    t.index ["publisher_id"], name: "index_citations_on_publisher_id"
+    t.index ["publication_id"], name: "index_citations_on_publication_id"
   end
 
   create_table "publications", force: :cascade do |t|

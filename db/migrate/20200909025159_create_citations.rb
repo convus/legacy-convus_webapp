@@ -1,14 +1,16 @@
 class CreateCitations < ActiveRecord::Migration[6.0]
   def change
     create_table :citations do |t|
-      t.references :publisher
+      t.references :publication
       t.text :title
       t.text :slug
-      t.text :authors
-      t.integer :kind
+      t.json :authors
+      t.datetime :published_at
+
+      t.integer :kind, default: 0
 
       t.text :url
-      t.datetime :published_at
+      t.text :archive_link
 
       t.references :creator
 

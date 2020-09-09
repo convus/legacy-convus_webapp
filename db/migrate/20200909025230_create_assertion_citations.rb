@@ -3,7 +3,7 @@ class CreateAssertionCitations < ActiveRecord::Migration[6.0]
     create_table :assertion_citations do |t|
       t.references :assertion
       t.references :citation
-      t.boolean :direct_quotation, default: false
+      t.boolean :has_direct_quotation, default: false
 
       t.timestamps
     end
