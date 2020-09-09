@@ -1,3 +1,5 @@
+Dotenv::Railtie.load # Load dotenv variables
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -33,6 +35,7 @@ Rails.application.configure do
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.default_url_options = {host: "localhost", port: 4242}
 
   config.action_mailer.perform_caching = false
 

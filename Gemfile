@@ -10,6 +10,10 @@ gem "pg", ">= 0.18", "< 2.0"
 # Use Puma as the app server
 gem "puma", "~> 4.1"
 
+gem "devise" # Authentication
+gem "omniauth", "~> 1.6.1" # sign on with other services
+gem "omniauth-github", github: "omniauth/omniauth-github", branch: "master"
+
 # Frontend things
 # Use SCSS for stylesheets
 gem "sass-rails", ">= 6"
@@ -42,6 +46,7 @@ group :production do
 end
 
 group :development, :test do
+  gem 'dotenv-rails' # Environmental variables
   gem "rspec"
   gem "rspec-rails"
   gem "standard" # Ruby linter

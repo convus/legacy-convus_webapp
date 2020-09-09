@@ -49,8 +49,8 @@ RSpec.configure do |config|
   config.use_transactional_fixtures = true
 
   # # Enable logging in
-  # config.include Devise::Test::IntegrationHelpers, type: :request
-  # config.include Devise::Test::ControllerHelpers, type: :controller
+  config.include Devise::Test::IntegrationHelpers, type: :request
+  config.include Devise::Test::ControllerHelpers, type: :controller
   # # Add our request spec things
   config.include RequestSpecHelpers, type: :request
 
