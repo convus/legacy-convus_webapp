@@ -26,9 +26,8 @@ ActiveRecord::Schema.define(version: 2020_09_09_025230) do
   end
 
   create_table "assertions", force: :cascade do |t|
-    t.text "body"
+    t.text "title"
     t.text "slug"
-    t.json "previous_slugs"
     t.bigint "creator_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

@@ -1,4 +1,5 @@
 class Citation < ApplicationRecord
+  include Sluggable
   KIND_ENUM = {
     article: 0,
     closed_access_peer_reviewed: 1,
@@ -13,6 +14,8 @@ class Citation < ApplicationRecord
 
   has_many :assertion_citations
   has_many :assertions, through: :assertion_citations
+
+  validates_presence_of :creator_id, :url
 
   enum kind: KIND_ENUM
 
@@ -37,11 +40,19 @@ class Citation < ApplicationRecord
   end
 
   def authors_str
-    (authors || []).join(", ")
+    (authors || []).join("; ")
+  end
+
+  def publication_name
+    publication&.title
+  end
+
+  def publication_name=(val)
+    self.publication = Publication.friendly_find(val) || Publication.create(title: val)
   end
 
   def authors_str=(val)
-    self.authors = val.split(/,|\n/)
+    self.authors = val.split(/\n/).map(&:strip).reject(&:blank?)
   end
 
   def peer_reviewed?
@@ -61,6 +72,7 @@ class Citation < ApplicationRecord
   end
 
   def set_calculated_attributes
+    self.slug = Slugifyer.slugify(title)
     self.kind ||= calculated_kind(assignable_kind)
     if FETCH_WAYBACK_URL && url_is_direct_link_to_full_text
       self.wayback_machine_url ||= WaybackMachineIntegration.fetch_current_url(url)

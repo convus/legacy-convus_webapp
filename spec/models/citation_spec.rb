@@ -1,6 +1,39 @@
 require "rails_helper"
 
 RSpec.describe Citation, type: :model do
+  it_behaves_like "sluggable"
+
+  describe "factory" do
+    let(:citation) { FactoryBot.create(:citation) }
+    it "is valid" do
+      expect(citation.errors.full_messages).to be_blank
+      expect(citation.id).to be_present
+    end
+  end
+
+  describe "publication_name" do
+    let(:citation) { Citation.new }
+    it "assigns" do
+      expect {
+        citation.publication_name = "New York Times"
+      }.to change(Publication, :count).by 1
+      expect(citation.publication_name).to eq "New York Times"
+      expect {
+        citation.publication_name = "new york  times"
+      }.to_not change(Publication, :count)
+    end
+    context "matching publication" do
+      let!(:publication) { FactoryBot.create(:publication, title: "Nature") }
+      it "assigns, doesn't create" do
+        expect {
+          citation.publication_name = "nature "
+        }.to_not change(Publication, :count)
+        expect(citation.publication_name).to eq "Nature"
+        expect(citation.publication).to eq publication
+      end
+    end
+  end
+
   describe "assignable_kind" do
     let(:citation) { Citation.new(assignable_kind: assign_kind) }
     let(:assign_kind) { "" }
@@ -55,6 +88,21 @@ RSpec.describe Citation, type: :model do
           expect(citation.kind).to eq "open_access_peer_reviewed"
           expect(citation.kind_score).to eq 20
         end
+      end
+    end
+  end
+
+  describe "authors_str" do
+    let(:citation) { Citation.new(authors_str: "george stanley") }
+    it "does one" do
+      expect(citation.authors).to eq(["george stanley"])
+      expect(citation.authors_str).to eq "george stanley"
+    end
+    context "with multiple" do
+      let(:citation) { Citation.new(authors_str: "Stanley, George\n  Frank, Bobby")}
+      it "splits by new line, sorts" do
+        expect(citation.authors).to eq(["Stanley, George", "Frank, Bobby"])
+        expect(citation.authors_str).to eq "Stanley, George; Frank, Bobby"
       end
     end
   end
