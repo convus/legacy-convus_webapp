@@ -1,0 +1,2 @@
+class AssertionCitation < ApplicationRecord
+end
