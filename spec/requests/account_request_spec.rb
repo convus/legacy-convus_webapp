@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe "/account", type: :request do
-  let(:base_url) { "/account"}
+  let(:base_url) { "/account" }
 
   it "redirects" do
     get base_url

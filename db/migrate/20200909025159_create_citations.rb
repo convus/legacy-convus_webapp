@@ -7,10 +7,11 @@ class CreateCitations < ActiveRecord::Migration[6.0]
       t.json :authors
       t.datetime :published_at
 
-      t.integer :kind, default: 0
+      t.integer :kind
 
       t.text :url
-      t.text :archive_link
+      t.boolean :url_is_direct_link_to_full_text, default: false
+      t.text :wayback_machine_url
 
       t.references :creator
 

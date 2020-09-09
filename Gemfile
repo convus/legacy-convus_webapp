@@ -46,7 +46,7 @@ group :production do
 end
 
 group :development, :test do
-  gem 'dotenv-rails' # Environmental variables
+  gem "dotenv-rails" # Environmental variables
   gem "rspec"
   gem "rspec-rails"
   gem "standard" # Ruby linter

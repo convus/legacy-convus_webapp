@@ -41,9 +41,10 @@ ActiveRecord::Schema.define(version: 2020_09_09_025230) do
     t.text "slug"
     t.json "authors"
     t.datetime "published_at"
-    t.integer "kind", default: 0
+    t.integer "kind"
     t.text "url"
-    t.text "archive_link"
+    t.boolean "url_is_direct_link_to_full_text", default: false
+    t.text "wayback_machine_url"
     t.bigint "creator_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -54,7 +55,8 @@ ActiveRecord::Schema.define(version: 2020_09_09_025230) do
   create_table "publications", force: :cascade do |t|
     t.text "title"
     t.text "slug"
-    t.boolean "has_issued_retractions", default: false
+    t.boolean "has_published_retractions", default: false
+    t.boolean "has_peer_reviewed_articles", default: false
     t.text "home_url"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

@@ -1,7 +1,7 @@
 class Publication < ApplicationRecord
-  scope :issued_retractions, -> { where(has_issued_retractions: true) }
+  scope :published_retractions, -> { where(has_published_retractions: true) }
 
-  def issued_retractions?
-    has_issued_retractions
+  def published_retractions?
+    has_published_retractions
   end
 end
