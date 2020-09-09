@@ -46,6 +46,7 @@ group :production do
 end
 
 group :development, :test do
+  gem 'dotenv-rails' # Environmental variables
   gem "rspec"
   gem "rspec-rails"
   gem "standard" # Ruby linter
@@ -54,7 +55,6 @@ group :development, :test do
 end
 
 group :development do
-  gem "dotenv" # Environmental variables, for local things
   gem "foreman" # Process runner
   gem "rerun" # Restart server when files change
   # Access an interactive console on exception pages or by calling 'console' anywhere in the code.

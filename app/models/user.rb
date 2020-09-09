@@ -20,8 +20,8 @@ class User < ApplicationRecord
   def set_calculated_attributes
     self.role ||= "normal_user"
     if github_auth.present?
-      self.username = github_auth.dig("username")
-      self.email = github_auth.dig("username")
+      self.username = github_auth.dig("info", "nickname")
+      self.email = github_auth.dig("info", "email")
     end
   end
 end

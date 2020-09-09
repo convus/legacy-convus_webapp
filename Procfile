@@ -1,3 +1,2 @@
-# Running puma with 4,16 threads and 3 workers
-web: bundle exec puma -e $RACK_ENV -b unix:///tmp/web_server.sock --pidfile /tmp/web_server.pid -d
+web: bundle exec puma -t 5:5 -p ${PORT:-3000} -e ${RACK_ENV:-development}
 hard_worker: bundle exec sidekiq
