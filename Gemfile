@@ -83,4 +83,5 @@ gem "fast_blank" # high performance replacement String#blank? a method that is c
 gem "flamegraph", require: false
 gem "stackprof", require: false # Required by flamegraph
 gem "rack-mini-profiler", require: false # If you can't see it you can't make it better
+gem "memory_profiler"
 gem "bootsnap", ">= 1.1.0", require: false # Reduces boot times through caching; required in config/boot.rb

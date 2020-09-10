@@ -1,1 +1,11 @@
 New assertion
+
+= form_for @assertion, url: assertion_path, method: "POST", html: { class: "form mt-4 mb-4" } do |f|
+  .form-group
+    = f.label :title, "Assertion text"
+    = f.text_area :title, class: "form-control"
+  .form-group
+    = f.label :kind, "Kind of transit card"
+    = f.select :kind, TransitCard::KIND_ENUM.keys.map { |k| ["#{TransitCard.kind_information[k][:area]} - #{TransitCard.kind_information[k][:titleize]} card", k] }, {}, { class: "form-control" }
+
+  = submit_tag "Submit for review", class: "btn btn-primary", style: "margin-left: .5rem;"
