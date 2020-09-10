@@ -19,6 +19,8 @@ class Citation < ApplicationRecord
 
   enum kind: KIND_ENUM
 
+  before_validation :set_calculated_attributes
+
   attr_accessor :assignable_kind
 
   def self.kinds
@@ -53,6 +55,14 @@ class Citation < ApplicationRecord
 
   def authors_str=(val)
     self.authors = val.split(/\n/).map(&:strip).reject(&:blank?)
+  end
+
+  def published_at_str
+    published_at&.to_s
+  end
+
+  def published_at_str=(val)
+    self.published_at = TimeParser.parse(val)&.beginning_of_day
   end
 
   def peer_reviewed?

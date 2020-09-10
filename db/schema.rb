@@ -29,6 +29,7 @@ ActiveRecord::Schema.define(version: 2020_09_09_025230) do
     t.text "title"
     t.text "slug"
     t.bigint "creator_id"
+    t.boolean "has_direct_quotation", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["creator_id"], name: "index_assertions_on_creator_id"

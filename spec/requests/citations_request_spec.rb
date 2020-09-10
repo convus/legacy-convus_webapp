@@ -41,12 +41,14 @@ RSpec.describe "/citations", type: :request do
           title: "Some cool new title",
           publication_name: "Some journal somewhere",
           assignable_kind: "peer_reviewed",
+          url_is_direct_link_to_full_text: true,
           authors_str: "\nZack\n George\n",
-          published_at: "2020-1-22",
+          published_at_str: "2020-1-22",
           url: "https://something.com"
         }
       end
       it "creates" do
+        expect(Citation.count).to eq 0
         expect {
           post base_url, params: {citation: valid_citation_params}
         }.to change(Citation, :count).by 1
@@ -62,6 +64,8 @@ RSpec.describe "/citations", type: :request do
         expect(citation.authors).to eq(["Zack", "George"])
         expect(citation.published_at).to be_within(5).of Time.at(1579680000)
         expect(citation.creator).to eq current_user
+        expect(citation.url_is_direct_link_to_full_text).to be_truthy
+        expect(citation.kind).to eq "open_access_peer_reviewed"
       end
       context "invalid params" do
         # Real lazy ;)

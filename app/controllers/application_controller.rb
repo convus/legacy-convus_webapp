@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+  before_action :enable_rack_profiler
+
   def append_info_to_payload(payload)
     super
     payload[:ip] = forwarded_ip_address

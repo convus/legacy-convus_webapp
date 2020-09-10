@@ -4,6 +4,7 @@ class CreateAssertions < ActiveRecord::Migration[6.0]
       t.text :title
       t.text :slug
       t.references :creator
+      t.boolean :has_direct_quotation, default: false
 
       t.timestamps
     end

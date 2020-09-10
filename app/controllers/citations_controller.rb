@@ -23,12 +23,8 @@ class CitationsController < ApplicationController
   private
 
   def permitted_params
-    params.require(:citation).permit(:title, :authors_str, :publication_name, :assignable_kind, :url)
-      .merge(creator: current_user, published_at: calculated_published_at)
-  end
-
-  def calculated_published_at
-    time = TimeParser.parse(params.dig(:citation, :published_at))
-    time.blank? ? time : time.beginning_of_day
+    params.require(:citation).permit(:title, :authors_str, :publication_name, :assignable_kind,
+                                     :url, :url_is_direct_link_to_full_text, :published_at_str)
+      .merge(creator: current_user)
   end
 end
