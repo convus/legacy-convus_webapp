@@ -10,30 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_11_171318) do
+ActiveRecord::Schema.define(version: 2020_09_11_234653) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "assertion_citations", force: :cascade do |t|
-    t.bigint "assertion_id"
-    t.bigint "citation_id"
-    t.boolean "has_direct_quotation", default: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["assertion_id"], name: "index_assertion_citations_on_assertion_id"
-    t.index ["citation_id"], name: "index_assertion_citations_on_citation_id"
-  end
-
-  create_table "assertions", force: :cascade do |t|
-    t.text "title"
-    t.text "slug"
-    t.bigint "creator_id"
-    t.boolean "has_direct_quotation", default: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["creator_id"], name: "index_assertions_on_creator_id"
-  end
 
   create_table "citations", force: :cascade do |t|
     t.bigint "publication_id"
@@ -50,6 +30,26 @@ ActiveRecord::Schema.define(version: 2020_09_11_171318) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["creator_id"], name: "index_citations_on_creator_id"
     t.index ["publication_id"], name: "index_citations_on_publication_id"
+  end
+
+  create_table "hypotheses", force: :cascade do |t|
+    t.text "title"
+    t.text "slug"
+    t.bigint "creator_id"
+    t.boolean "has_direct_quotation", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["creator_id"], name: "index_hypotheses_on_creator_id"
+  end
+
+  create_table "hypothesis_citations", force: :cascade do |t|
+    t.bigint "hypothesis_id"
+    t.bigint "citation_id"
+    t.boolean "has_direct_quotation", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["citation_id"], name: "index_hypothesis_citations_on_citation_id"
+    t.index ["hypothesis_id"], name: "index_hypothesis_citations_on_hypothesis_id"
   end
 
   create_table "publications", force: :cascade do |t|
