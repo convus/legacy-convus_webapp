@@ -1,5 +1,6 @@
 class Citation < ApplicationRecord
-  include Sluggable
+  include FriendlyFindable
+
   KIND_ENUM = {
     article: 0,
     closed_access_peer_reviewed: 1,
@@ -49,7 +50,9 @@ class Citation < ApplicationRecord
     publication&.title
   end
 
+  # Previously used publication name, but we're probably not going to use it anymore
   def publication_name=(val)
+    return unless val.present?
     self.publication = Publication.friendly_find(val) || Publication.create(title: val)
   end
 
@@ -85,6 +88,7 @@ class Citation < ApplicationRecord
     self.creator_id ||= assertions.first&.creator_id
     self.slug = Slugifyer.slugify(title)
     self.kind ||= calculated_kind(assignable_kind)
+    self.publication ||= Publication.create_for_url(url)
     if FETCH_WAYBACK_URL && url_is_direct_link_to_full_text
       self.wayback_machine_url ||= WaybackMachineIntegration.fetch_current_url(url)
     end

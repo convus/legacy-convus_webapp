@@ -30,13 +30,22 @@ RSpec.describe Slugifyer do
       expect(subject.slugify("As Soon As Possible Party (ASAPP) ")).to eq("as-soon-as-possible-party-asapp")
     end
     it "returns without periods" do
-      expect(subject.slugify("Washington D.C.")).to eq("washington-dc")
+      expect(subject.slugify("Washington D.C.")).to eq("washington-d-c-")
     end
     it "returns without slashes" do
       expect(subject.slugify("Willowbrooks / Rosa Parks Station")).to eq("willowbrooks-rosa-parks-station")
     end
     it "returns nil if given nil" do
       expect(subject.slugify(nil)).to be_nil
+    end
+    context "urls" do
+      it "handles basic URL" do
+        expect(subject.slugify("https://bikeindex.org/bikes/323232")).to eq("bikeindex-org-bikes-323232")
+      end
+      it "handles more complicated" do
+        target = "scholar-google-com-scholar-hl-en-as-sdt-0-5-q-22lithium-ion-22-high-temperature-degradation"
+        expect(subject.slugify("https://scholar.google.com/scholar?hl=en&as_sdt=0,5&q=%22lithium+ion%22+high+temperature+degradation")).to eq target
+      end
     end
   end
 end

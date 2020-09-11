@@ -40,7 +40,6 @@ RSpec.describe "/assertions", type: :request do
       let(:valid_citation_params) do
         {
           title: "This citation is very important",
-          publication_name: "A friends blog",
           assignable_kind: "article",
           url_is_direct_link_to_full_text: "0",
           authors_str: "\nZack\n George\n",
@@ -103,11 +102,20 @@ RSpec.describe "/assertions", type: :request do
           expect(assertion.citations.pluck(:id)).to eq([citation.id])
 
           expect(citation.publication).to be_present
-          expect(citation.publication_name).to eq valid_citation_params[:publication_name]
+          expect(citation.publication_name).to eq "example.com"
           expect(citation.authors).to eq(["Zack", "George"])
           expect(citation.published_at).to be_within(5).of Time.at(660124800)
           expect(citation.url_is_direct_link_to_full_text).to be_falsey
           expect(citation.creator).to eq current_user
+        end
+
+        context "citation already exists" do
+          it "does not create a new citation" do
+          end
+        end
+        context "citation with matching title but different publisher exists" do
+          it "creates a new citation" do
+          end
         end
       end
     end

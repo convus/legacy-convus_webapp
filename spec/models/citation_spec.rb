@@ -1,8 +1,6 @@
 require "rails_helper"
 
 RSpec.describe Citation, type: :model do
-  it_behaves_like "sluggable"
-
   describe "factory" do
     let(:citation) { FactoryBot.create(:citation) }
     it "is valid" do
@@ -11,27 +9,15 @@ RSpec.describe Citation, type: :model do
     end
   end
 
-  describe "publication_name" do
-    let(:citation) { Citation.new }
-    it "assigns" do
-      expect {
-        citation.publication_name = "New York Times"
-      }.to change(Publication, :count).by 1
-      expect(citation.publication_name).to eq "New York Times"
-      expect {
-        citation.publication_name = "new york  times"
-      }.to_not change(Publication, :count)
+  describe "slugging" do
+    it "slugs from the URL"
+    context "Title and URL" do
+      it "slugs from publication domain & title"
     end
-    context "matching publication" do
-      let!(:publication) { FactoryBot.create(:publication, title: "Nature") }
-      it "assigns, doesn't create" do
-        expect {
-          citation.publication_name = "nature "
-        }.to_not change(Publication, :count)
-        expect(citation.publication_name).to eq "Nature"
-        expect(citation.publication).to eq publication
-      end
-    end
+  end
+
+  describe "assigning publication" do
+    it "creates a publication from the URL"
   end
 
   describe "assignable_kind" do
