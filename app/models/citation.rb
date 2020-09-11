@@ -3,7 +3,7 @@ class Citation < ApplicationRecord
   KIND_ENUM = {
     article: 0,
     closed_access_peer_reviewed: 1,
-    article_by_publisher_with_retractions: 2,
+    article_by_publication_with_retractions: 2,
     quote_from_involved_party: 3,
     open_access_peer_reviewed: 4
   }.freeze
@@ -31,7 +31,7 @@ class Citation < ApplicationRecord
     {
       article: {score: 1, humanized: "Article"},
       closed_access_peer_reviewed: {score: 2, humanized: "Non-public access research (anything than can not be accessed directly via a URL)"},
-      article_by_publisher_with_retractions: {score: 3, humanized: "Article from a publisher which has issued retractions"},
+      article_by_publication_with_retractions: {score: 3, humanized: "Article from a publisher which has issued retractions"},
       quote_from_involved_party: {score: 10, humanized: "Online accessible quote from applicable person (e.g. personal website, tweet, or video)"},
       open_access_peer_reviewed: {score: 20, humanized: "Peer reviewed open access study"}
     }.freeze
@@ -95,7 +95,7 @@ class Citation < ApplicationRecord
   def calculated_kind(kind_val = nil)
     kind_val = "article" unless self.class.assignable_kinds.include?(kind_val)
     if kind_val == "article"
-      publication&.published_retractions? ? "article_by_publisher_with_retractions" : "article"
+      publication&.published_retractions? ? "article_by_publication_with_retractions" : "article"
     elsif kind_val == "peer_reviewed"
       url_is_direct_link_to_full_text ? "open_access_peer_reviewed" : "closed_access_peer_reviewed"
     else

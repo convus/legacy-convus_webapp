@@ -55,17 +55,17 @@ RSpec.describe Citation, type: :model do
         expect(citation.kind).to eq "article"
       end
     end
-    context "article_by_publisher_with_retractions" do
+    context "article_by_publication_with_retractions" do
       let(:publication) { Publication.new(has_published_retractions: true) }
       let(:citation) { Citation.new(assignable_kind: "", publication: publication) }
-      it "sets article_by_publisher_with_retractions" do
-        expect(citation.kind).to eq "article_by_publisher_with_retractions"
+      it "sets article_by_publication_with_retractions" do
+        expect(citation.kind).to eq "article_by_publication_with_retractions"
         expect(citation.kind_score).to eq 3
       end
-      context "assigning article_by_publisher_with_retractions" do
-        let(:assign_kind) { "article_by_publisher_with_retractions" }
-        it "returns article_by_publisher_with_retractions" do
-          expect(citation.kind).to eq "article_by_publisher_with_retractions"
+      context "assigning article_by_publication_with_retractions" do
+        let(:assign_kind) { "article_by_publication_with_retractions" }
+        it "returns article_by_publication_with_retractions" do
+          expect(citation.kind).to eq "article_by_publication_with_retractions"
         end
       end
     end
