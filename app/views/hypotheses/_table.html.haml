@@ -1,23 +1,23 @@
-- assertions ||= @assertions
+- hypotheses ||= @hypotheses
 
 .full-screen-table
   %table.table.table-striped.table-sm.table-bordered
     %thead
       %th
-        Assertion
+        Hypothesis
       %th
         Created
       %th
         Citation
     %tbody
-      - assertions.each do |assertion|
+      - hypotheses.each do |hypothesis|
         %tr
           %td
-            = assertion.title
+            = hypothesis.title
           %td
             %span.convertTime
-              = l assertion.created_at, format: :convert_time
+              = l hypothesis.created_at, format: :convert_time
           %td
-            - citation = assertion.citations.first
+            - citation = hypothesis.citations.first
             - if citation.present?
               = link_to citation.title, citation.url

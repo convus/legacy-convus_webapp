@@ -1,25 +1,25 @@
-class AssertionsController < ApplicationController
+class HypothesesController < ApplicationController
   before_action :redirect_to_signup_unless_user_present!, except: [:index]
 
   def index
-    @assertions = Assertion.reorder(created_at: :desc)
+    @hypotheses = Hypothesis.reorder(created_at: :desc)
   end
 
   def new
-    @assertion ||= Assertion.new
+    @hypothesis ||= Hypothesis.new
   end
 
   def create
-    @assertion = Assertion.new(permitted_params)
+    @hypothesis = Hypothesis.new(permitted_params)
     if permitted_citation_params.present?
       citation = Citation.find_or_create_by_params(permitted_citation_params.merge(creator: current_user))
-      @assertion.citations << citation
+      @hypothesis.citations << citation
     end
-    if @assertion.save
-      flash[:success] = "Assertion created!"
-      redirect_to assertions_path
+    if @hypothesis.save
+      flash[:success] = "Hypothesis created!"
+      redirect_to hypotheses_path
     else
-      @assertion.errors.full_messages
+      @hypothesis.errors.full_messages
       render :new
     end
   end
@@ -27,11 +27,11 @@ class AssertionsController < ApplicationController
   private
 
   def permitted_params
-    params.require(:assertion).permit(:title, :has_direct_quotation).merge(creator: current_user)
+    params.require(:hypothesis).permit(:title, :has_direct_quotation).merge(creator: current_user)
   end
 
   def permitted_citation_params
-    params.require(:assertion).permit(citations_attributes: permitted_citation_attrs)
+    params.require(:hypothesis).permit(citations_attributes: permitted_citation_attrs)
       .dig(:citations_attributes)
   end
 

@@ -13,10 +13,10 @@
       %nav.main-nav
         %ul
           %li
-            = link_to "Assertions", assertions_path
+            = link_to "Hypotheses", hypotheses_path
           - if current_user.present?
             %li
-              = link_to "Add assertion", new_assertion_path
+              = link_to "Add hypothesis", new_hypothesis_path
           %li
             - if current_user.present?
               %small.less-strong
