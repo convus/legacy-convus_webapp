@@ -16,7 +16,7 @@ class AssertionsController < ApplicationController
     end
     if @assertion.save
       flash[:success] = "Assertion created!"
-      redirect_back(fallback_location: assertions_path)
+      redirect_to assertions_path
     else
       @assertion.errors.full_messages
       render :new

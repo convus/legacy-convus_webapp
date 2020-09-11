@@ -26,6 +26,11 @@ $max-main-width: 800px;
   }
 }
 
+.flash-alert-container {
+  width: 100%;
+  max-width: $max-main-width;
+}
+
 // UTILS
 //
 // Handy helper classes

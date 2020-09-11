@@ -1,0 +1,11 @@
+- if flash.present?
+  .flash-alert-container
+    - flash.each do |type, message|
+      - next unless message.present?
+      .alert{ class: "alert-#{type}" }
+        -# when bootstrap added, add close
+        -# %button.close{ 'data-dismiss' => 'alert' } ×
+        = message
+        - if flash[:link]
+          %br
+          link: #{link_to flash[:link], flash[:link]}
