@@ -5,13 +5,19 @@
   box-sizing: border-box;
 }
 
-.alert.alert-danger {
+.alert {
   display: block;
   margin: 1rem 0;
   padding: 1rem;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-  background: #f8d7da;
+  &.alert-success {
+    border: 1px solid #2ecc71;
+    color: #2ecc71;
+  }
+  &.alert-danger {
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    background: #f8d7da;
+  }
 }
 
 h1,
@@ -39,6 +45,10 @@ h3 {
   input[type="text"] {
     width: 100%;
     padding: 0.3rem;
+  }
+
+  .btn {
+    padding: 0.5rem;
   }
 }
 

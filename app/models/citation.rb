@@ -1,5 +1,6 @@
 class Citation < ApplicationRecord
-  include Sluggable
+  include FriendlyFindable
+
   KIND_ENUM = {
     article: 0,
     closed_access_peer_reviewed: 1,
@@ -41,16 +42,27 @@ class Citation < ApplicationRecord
     %w[article peer_reviewed quote_from_involved_party]
   end
 
+  def self.friendly_find(str)
+    super || friendly_find_fallback(str)
+  end
+
+  def self.friendly_find_fallback(str)
+    matched = where("lower(url) ILIKE ?", str.to_s.downcase.strip).first
+    return matched if matched.present?
+    slugged = Slugifyer.slugify(str)
+    where("slug ILIKE ?", "#{slugged}%").first || where("slug ILIKE ?", "%#{slugged}%").first
+  end
+
+  def self.find_or_create_by_params(attrs)
+    friendly_find(attrs[:url]) || create(attrs)
+  end
+
   def authors_str
     (authors || []).join("; ")
   end
 
   def publication_name
     publication&.title
-  end
-
-  def publication_name=(val)
-    self.publication = Publication.friendly_find(val) || Publication.create(title: val)
   end
 
   def authors_str=(val)
@@ -83,7 +95,9 @@ class Citation < ApplicationRecord
 
   def set_calculated_attributes
     self.creator_id ||= assertions.first&.creator_id
-    self.slug = Slugifyer.slugify(title)
+    self.publication ||= Publication.create_for_url(url)
+    self.title ||= title_from_url(url)
+    self.slug = Slugifyer.slugify([publication_name, title].compact.join("-"))
     self.kind ||= calculated_kind(assignable_kind)
     if FETCH_WAYBACK_URL && url_is_direct_link_to_full_text
       self.wayback_machine_url ||= WaybackMachineIntegration.fetch_current_url(url)
@@ -101,5 +115,12 @@ class Citation < ApplicationRecord
     else
       kind_val
     end
+  end
+
+  def title_from_url(str)
+    return nil unless str.present?
+    base_domain = Publication.base_domains_for_url(str).first
+    return str unless base_domain.present?
+    str.split(base_domain).last&.gsub(/\A\//, "")&.gsub(/\/\z/, "")
   end
 end

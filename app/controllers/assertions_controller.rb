@@ -12,11 +12,12 @@ class AssertionsController < ApplicationController
   def create
     @assertion = Assertion.new(permitted_params)
     if permitted_citation_params.present?
-      @assertion.citations.build(permitted_citation_params.merge(creator: current_user))
+      citation = Citation.find_or_create_by_params(permitted_citation_params.merge(creator: current_user))
+      @assertion.citations << citation
     end
     if @assertion.save
       flash[:success] = "Assertion created!"
-      redirect_back(fallback_location: assertions_path)
+      redirect_to assertions_path
     else
       @assertion.errors.full_messages
       render :new
@@ -35,6 +36,6 @@ class AssertionsController < ApplicationController
   end
 
   def permitted_citation_attrs
-    %w[title authors_str publication_name assignable_kind url url_is_direct_link_to_full_text published_at_str]
+    %w[title authors_str assignable_kind url url_is_direct_link_to_full_text published_at_str]
   end
 end

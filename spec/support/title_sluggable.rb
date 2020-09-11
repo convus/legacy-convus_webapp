@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.shared_examples "sluggable" do
+RSpec.shared_examples "TitleSluggable" do
   let(:model_sym) { subject.class.name.underscore.to_sym }
   let(:instance) { FactoryBot.create model_sym }
 

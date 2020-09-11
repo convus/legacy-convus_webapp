@@ -1,5 +1,5 @@
 class Assertion < ApplicationRecord
-  include Sluggable
+  include TitleSluggable
 
   belongs_to :creator, class_name: "User"
 

@@ -7,23 +7,18 @@
       = render partial: "/shared/errors", locals: { name: "Assertion", obj: @assertion }
     .form-group
       = f.label :title, "Assertion text"
-      = f.text_area :title, class: "form-control"
+      = f.text_area :title,  required: true, class: "form-control"
     .form-group
       %label.form-check-label
         = f.check_box :has_direct_quotation, class: "form-check-input"
         Direct quotation
 
-    %h3 Assertion citation
-    = f.fields_for :citations_attributes do |nested_form|
-      .form-group
-        = nested_form.label :title, "Citation title"
-        = nested_form.text_field :title, class: "form-control"
+    %h3 Citation
+
+    = f.fields_for :citations_attributes, @assertion.citations.first do |nested_form|
       .form-group
         = nested_form.label :url, "URL"
-        = nested_form.text_field :url, class: "form-control"
-      .form-group
-        = nested_form.label :publication_name, "Publication"
-        = nested_form.text_field :publication_name, class: "form-control"
+        = nested_form.text_field :url, required: true, class: "form-control"
       .form-group
         = nested_form.label :assignable_kind, "Source kind"
         = nested_form.select :assignable_kind, Citation.assignable_kinds.map { |k| [k.humanize.to_s, k] }, {}, { class: "form-control" }
@@ -32,10 +27,19 @@
           = nested_form.check_box :url_is_direct_link_to_full_text, class: "form-check-input"
           URL is a direct link to the full text of the article
       .form-group
+        = nested_form.label :title do
+          -# TODO: Make this update and change based on the
+          %span#citationKind
+            Citation
+          title
+        = nested_form.text_field :title, placeholder: "optional", class: "form-control"
+      .form-group
         = nested_form.label :authors do
           Authors
           %em.less-strong new line delineated
         = nested_form.text_area :authors, placeholder: "optional", class: "form-control"
+
+      -# TODO: show this if useful
       -#.form-group
       -#  = nested_form.label :published_at
       -#    Published date
@@ -44,4 +48,4 @@
       -#  = nested_form.text_area :published_at, placeholder: "optional", class: "form-control"
 
     .form-group
-      = submit_tag "Submit for review", class: "btn btn-primary", style: "margin-left: .5rem;"
+      = submit_tag "Submit for review", class: "btn btn-primary"

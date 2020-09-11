@@ -1,10 +1,5 @@
-module Sluggable
+module FriendlyFindable
   extend ActiveSupport::Concern
-  included do
-    before_validation :set_slug
-    validates :title, presence: true, uniqueness: true, if: :requires_title?
-    validates :slug, uniqueness: true, if: :requires_title?
-  end
 
   module ClassMethods
     def friendly_find_id(str = nil)
@@ -28,19 +23,5 @@ module Sluggable
     def integer_slug?(str = nil)
       str.is_a?(Integer) || str.to_s.strip.match(/\A\d*\z/).present?
     end
-  end
-
-  def set_slug
-    self.slug = Slugifyer.slugify(title)
-  end
-
-  # To make requiring title overrideable
-  def requires_title?
-    true
-  end
-
-  # Because we generally want this
-  def to_param
-    slug
   end
 end

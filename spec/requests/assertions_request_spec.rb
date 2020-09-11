@@ -40,12 +40,11 @@ RSpec.describe "/assertions", type: :request do
       let(:valid_citation_params) do
         {
           title: "This citation is very important",
-          publication_name: "A friends blog",
           assignable_kind: "article",
           url_is_direct_link_to_full_text: "0",
           authors_str: "\nZack\n George\n",
           published_at_str: "1990-12-2",
-          url: "https://example.com"
+          url: "https://example.com/something-of-interest"
         }
       end
       it "creates" do
@@ -103,11 +102,68 @@ RSpec.describe "/assertions", type: :request do
           expect(assertion.citations.pluck(:id)).to eq([citation.id])
 
           expect(citation.publication).to be_present
-          expect(citation.publication_name).to eq valid_citation_params[:publication_name]
+          expect(citation.publication_name).to eq "example.com"
           expect(citation.authors).to eq(["Zack", "George"])
           expect(citation.published_at).to be_within(5).of Time.at(660124800)
           expect(citation.url_is_direct_link_to_full_text).to be_falsey
           expect(citation.creator).to eq current_user
+        end
+
+        context "citation already exists" do
+          let!(:citation) { Citation.create(url: valid_citation_params[:url], creator: FactoryBot.create(:user)) }
+          it "does not create a new citation" do
+            expect(Assertion.count).to eq 0
+            expect(Citation.count).to eq 1
+            expect(citation.title).to eq "something-of-interest"
+            expect {
+              post base_url, params: {assertion: assertion_with_citation_params}
+            }.to change(Assertion, :count).by 1
+            expect(response).to redirect_to assertions_path
+            expect(flash[:success]).to be_present
+
+            assertion = Assertion.last
+            expect(assertion.title).to eq assertion_with_citation_params[:title]
+            expect(assertion.creator).to eq current_user
+            expect(assertion.citations.count).to eq 1
+            expect(assertion.has_direct_quotation).to be_truthy
+            expect(assertion.direct_quotation?).to be_truthy
+            expect(assertion.citations.pluck(:id)).to eq([citation.id])
+            # Even though passed new information, it doesn't update the existing citation
+            citation.reload
+            expect(citation.title).to eq "something-of-interest"
+          end
+        end
+        context "citation with matching title but different publisher exists" do
+          let!(:citation) { Citation.create(title: valid_citation_params[:title], url: "https://www.foxnews.com/politics/trump-bahrain-israel-mideast-deal-peace", creator: FactoryBot.create(:user)) }
+          it "creates a new citation" do
+            expect(Assertion.count).to eq 0
+            expect(Citation.count).to eq 1
+            expect {
+              post base_url, params: {assertion: assertion_with_citation_params}
+            }.to change(Assertion, :count).by 1
+            expect(response).to redirect_to assertions_path
+            expect(flash[:success]).to be_present
+
+            assertion = Assertion.last
+            expect(assertion.title).to eq assertion_with_citation_params[:title]
+            expect(assertion.creator).to eq current_user
+            expect(assertion.citations.count).to eq 1
+            expect(assertion.has_direct_quotation).to be_truthy
+            expect(assertion.direct_quotation?).to be_truthy
+
+            expect(Citation.count).to eq 2
+            citation = Citation.last
+            expect(citation.title).to eq valid_citation_params[:title]
+            expect(citation.url).to eq valid_citation_params[:url]
+            expect(assertion.citations.pluck(:id)).to eq([citation.id])
+
+            expect(citation.publication).to be_present
+            expect(citation.publication_name).to eq "example.com"
+            expect(citation.authors).to eq(["Zack", "George"])
+            expect(citation.published_at).to be_within(5).of Time.at(660124800)
+            expect(citation.url_is_direct_link_to_full_text).to be_falsey
+            expect(citation.creator).to eq current_user
+          end
         end
       end
     end
