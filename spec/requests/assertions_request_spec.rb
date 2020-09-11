@@ -77,9 +77,7 @@ RSpec.describe "/assertions", type: :request do
           {
             title: "party time is now",
             has_direct_quotation: "1",
-            citations_attributes: {
-              Time.current.to_i.to_s => valid_citation_params
-            }
+            citations_attributes: valid_citation_params
           }
         end
         it "creates with citation" do

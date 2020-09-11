@@ -82,6 +82,7 @@ class Citation < ApplicationRecord
   end
 
   def set_calculated_attributes
+    self.creator_id ||= assertions.first&.creator_id
     self.slug = Slugifyer.slugify(title)
     self.kind ||= calculated_kind(assignable_kind)
     if FETCH_WAYBACK_URL && url_is_direct_link_to_full_text

@@ -11,8 +11,8 @@ class AssertionsController < ApplicationController
 
   def create
     @assertion = Assertion.new(permitted_params)
-    permitted_citation_params.each do |citation_attrs|
-      @assertion.citations.build(citation_attrs.merge(creator: current_user))
+    if permitted_citation_params.present?
+      @assertion.citations.build(permitted_citation_params.merge(creator: current_user))
     end
     if @assertion.save
       flash[:success] = "Assertion created!"
@@ -30,9 +30,8 @@ class AssertionsController < ApplicationController
   end
 
   def permitted_citation_params
-    citation_params = params.dig(:assertion, :citations_attributes)&.values
-    return {} unless citation_params.present?
-    citation_params.map { |c| c.slice(*permitted_citation_attrs) }
+    params.require(:assertion).permit(citations_attributes: permitted_citation_attrs)
+      .dig(:citations_attributes)
   end
 
   def permitted_citation_attrs

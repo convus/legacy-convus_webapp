@@ -35,6 +35,7 @@ RSpec.describe "/citations", type: :request do
       end
     end
 
+    # THIS ISN'T ACTUALLY USED. It can be deleted
     describe "create" do
       let(:valid_citation_params) do
         {
