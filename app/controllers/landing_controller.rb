@@ -2,5 +2,6 @@
 
 class LandingController < ApplicationController
   def index
+    @assertions = Assertion.reorder(created_at: :desc)
   end
 end

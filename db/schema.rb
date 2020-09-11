@@ -10,10 +10,57 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_09_002813) do
+ActiveRecord::Schema.define(version: 2020_09_09_025230) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "assertion_citations", force: :cascade do |t|
+    t.bigint "assertion_id"
+    t.bigint "citation_id"
+    t.boolean "has_direct_quotation", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["assertion_id"], name: "index_assertion_citations_on_assertion_id"
+    t.index ["citation_id"], name: "index_assertion_citations_on_citation_id"
+  end
+
+  create_table "assertions", force: :cascade do |t|
+    t.text "title"
+    t.text "slug"
+    t.bigint "creator_id"
+    t.boolean "has_direct_quotation", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["creator_id"], name: "index_assertions_on_creator_id"
+  end
+
+  create_table "citations", force: :cascade do |t|
+    t.bigint "publication_id"
+    t.text "title"
+    t.text "slug"
+    t.json "authors"
+    t.datetime "published_at"
+    t.integer "kind"
+    t.text "url"
+    t.boolean "url_is_direct_link_to_full_text", default: false
+    t.text "wayback_machine_url"
+    t.bigint "creator_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["creator_id"], name: "index_citations_on_creator_id"
+    t.index ["publication_id"], name: "index_citations_on_publication_id"
+  end
+
+  create_table "publications", force: :cascade do |t|
+    t.text "title"
+    t.text "slug"
+    t.boolean "has_published_retractions", default: false
+    t.boolean "has_peer_reviewed_articles", default: false
+    t.text "home_url"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email"

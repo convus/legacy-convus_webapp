@@ -1,0 +1,68 @@
+/*
+ *= require_self
+*/
+
+$max-main-width: 800px;
+
+.wrapper {
+  padding: 1rem 2rem 2rem;
+  margin: 0 auto;
+  position: relative;
+}
+
+.main-nav {
+  display: block;
+  margin: 0 auto 1rem 0;
+  width: 100%;
+  position: relative;
+  ul {
+    display: block;
+    list-style-type: none;
+    text-align: right;
+  }
+  li {
+    display: inline-block;
+    padding: 0 0.25rem;
+  }
+}
+
+// UTILS
+//
+// Handy helper classes
+.less-strong {
+  opacity: 0.65;
+}
+
+.gray-link {
+  a,
+  & {
+    // color: $gray-600 !important;
+    opacity: 0.65;
+    text-decoration: underline;
+  }
+  &:hover,
+  &:active,
+  &.active {
+    opacity: 0.9;
+  }
+}
+
+.em {
+  font-style: italic;
+}
+
+.convertedTime {
+  white-space: nowrap;
+}
+
+.text-underline {
+  text-decoration: underline;
+}
+
+.uuid-display {
+  white-space: nowrap;
+}
+
+// Things that bootstrap will replace
+
+@import "minimalism/base_styles"; // Will be replaced by bootstrap

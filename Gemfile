@@ -46,10 +46,11 @@ group :production do
 end
 
 group :development, :test do
-  gem 'dotenv-rails' # Environmental variables
+  gem "dotenv-rails" # Environmental variables
   gem "rspec"
   gem "rspec-rails"
   gem "standard" # Ruby linter
+  gem "factory_bot_rails"
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   # gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
 end
@@ -66,7 +67,6 @@ group :development do
 end
 
 group :test do
-  gem "factory_bot_rails"
   gem "rails-controller-testing"
   gem "guard", require: false
   gem "guard-rspec", require: false
@@ -83,4 +83,5 @@ gem "fast_blank" # high performance replacement String#blank? a method that is c
 gem "flamegraph", require: false
 gem "stackprof", require: false # Required by flamegraph
 gem "rack-mini-profiler", require: false # If you can't see it you can't make it better
+gem "memory_profiler"
 gem "bootsnap", ">= 1.1.0", require: false # Reduces boot times through caching; required in config/boot.rb

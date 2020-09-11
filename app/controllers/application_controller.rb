@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+  before_action :enable_rack_profiler
+
   def append_info_to_payload(payload)
     super
     payload[:ip] = forwarded_ip_address
@@ -29,7 +31,7 @@ class ApplicationController < ActionController::Base
 
   def user_root_path
     return github_link unless current_user.present?
-    account_path
+    root_url
   end
 
   def redirect_to_signup_unless_user_present!
