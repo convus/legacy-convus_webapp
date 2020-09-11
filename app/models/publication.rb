@@ -17,9 +17,10 @@ class Publication < ApplicationRecord
     str = "http://#{str}" unless str.match?(/\Ahttp/i) # uri parse doesn't work without protocol
     uri = URI.parse(str)
     base_domain = uri.host&.downcase
-    # unless the base_domain has "." and some characters, assume it's not a domain
+    # Unless the base_domain has "." and some characters, assume it's not a domain
     return [] unless base_domain.present? && base_domain.match?(/\..+/)
-    base_domain.match?(/\Awww/) ? [base_domain, base_domain.gsub(/\Awww\./, "")] : [base_domain]
+    # If the domain starts with www. add both that and the bare domain
+    base_domain.match?(/\Awww\./) ? [base_domain, base_domain.gsub(/\Awww\./, "")] : [base_domain]
   rescue URI::InvalidURIError
     return []
   end

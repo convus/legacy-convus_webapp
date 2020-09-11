@@ -68,6 +68,5 @@ $max-main-width: 800px;
   white-space: nowrap;
 }
 
-// Things that bootstrap will replace
-
+// TODO: when/if bootstrap added - probably remove below
 @import "minimalism/base_styles"; // Will be replaced by bootstrap

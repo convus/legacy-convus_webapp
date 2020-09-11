@@ -63,5 +63,11 @@ RSpec.describe Publication, type: :model do
         expect(publication.base_domains).to eq(["blog.example.com"])
       end
     end
+    context "starts with www" do
+      it "does not split" do
+        publication.add_base_domain("wwwwrestling.com")
+        expect(publication.base_domains).to eq(["wwwwrestling.com"])
+      end
+    end
   end
 end
