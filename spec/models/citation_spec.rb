@@ -10,14 +10,35 @@ RSpec.describe Citation, type: :model do
   end
 
   describe "slugging" do
-    it "slugs from the URL"
-    context "Title and URL" do
-      it "slugs from publication domain & title"
+    let(:url) { "https://www.nationalreview.com/2020/09/joe-bidens-money-misadventures/" }
+    let(:citation) { FactoryBot.create(:citation, url: url, title: nil) }
+    it "slugs from the URL" do
+      expect(citation.title).to eq "2020/09/joe-bidens-money-misadventures"
+      expect(citation.publication_id).to be_present
+      expect(citation.publication.title).to eq "nationalreview.com"
+      expect(citation.slug).to eq("nationalreview-com-2020-09-joe-bidens-money-misadventures")
     end
-  end
-
-  describe "assigning publication" do
-    it "creates a publication from the URL"
+    context "URL is not a url" do
+      let(:url) { "This isn't a URL" }
+      let(:citation) { FactoryBot.create(:citation, url: url, title: nil) }
+      it "doesn't explode" do
+        expect(citation.publication_id).to be_blank
+        expect(citation.title).to eq url
+        expect(citation.slug).to eq("this-isn-t-a-url")
+      end
+    end
+    context "Title and URL" do
+      let!(:publication) { FactoryBot.create(:publication, title: "National Review", home_url: "https://www.nationalreview.com") }
+      let(:citation) { FactoryBot.create(:citation, url: url, title: "Joe Biden’s Money Misadventures") }
+      it "slugs from publication domain & title" do
+        expect(citation.title).to eq "Joe Biden’s Money Misadventures"
+        expect(citation.publication_id).to eq publication.id
+        expect(citation.publication.title).to eq "National Review"
+        expect(citation.slug).to eq("national-review-joe-biden-s-money-misadventures")
+        expect(Citation.friendly_find("Joe Biden’s Money Misadventures")).to eq citation
+        expect(Citation.friendly_find(url)).to eq citation
+      end
+    end
   end
 
   describe "assignable_kind" do

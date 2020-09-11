@@ -20,6 +20,13 @@ RSpec.describe Publication, type: :model do
         expect(publication.title).to eq "blog.bigagnes.com"
       end
     end
+    context "not a url" do
+      it "doesn't create a publication" do
+        expect {
+          Publication.create_for_url("asdf9adfasdfasdf")
+        }.to_not change(Publication, :count)
+      end
+    end
   end
 
   describe "friendly_find and base_domains" do
@@ -32,7 +39,9 @@ RSpec.describe Publication, type: :model do
       expect(Publication.friendly_find("http://www.nytimes.com")).to eq publication
       publication.add_base_domain("https://wirecutter.com")
       publication.save
+      publication.reload
       expect(Publication.friendly_find("wirecutter.com")).to eq publication
+      expect(publication.base_domains).to eq(["nytimes.com", "wirecutter.com", "www.nytimes.com"])
     end
   end
 

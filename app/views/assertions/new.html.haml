@@ -15,10 +15,10 @@
 
     %h3 Citation
 
-    = f.fields_for :citations_attributes do |nested_form|
+    = f.fields_for :citations_attributes, @assertion.citations.first do |nested_form|
       .form-group
         = nested_form.label :url, "URL"
-        = nested_form.text_field :url,  required: true, class: "form-control"
+        = nested_form.text_field :url, required: true, class: "form-control"
       .form-group
         = nested_form.label :assignable_kind, "Source kind"
         = nested_form.select :assignable_kind, Citation.assignable_kinds.map { |k| [k.humanize.to_s, k] }, {}, { class: "form-control" }

@@ -16,9 +16,12 @@ class Publication < ApplicationRecord
   def self.base_domains_for_url(str)
     str = "http://#{str}" unless str.match?(/\Ahttp/i) # uri parse doesn't work without protocol
     uri = URI.parse(str)
-    base_domains = [uri.host.downcase]
-    base_domains += [base_domains.first.gsub(/\Awww\./, "")] if base_domains.first.match?(/\Awww/)
-    base_domains
+    base_domain = uri.host&.downcase
+    # unless the base_domain has "." and some characters, assume it's not a domain
+    return [] unless base_domain.present? && base_domain.match?(/\..+/)
+    base_domain.match?(/\Awww/) ? [base_domain, base_domain.gsub(/\Awww\./, "")] : [base_domain]
+  rescue URI::InvalidURIError
+    return []
   end
 
   def self.create_for_url(str)
@@ -26,6 +29,7 @@ class Publication < ApplicationRecord
     matching = friendly_find(str)
     return matching if matching.present?
     base_domains = base_domains_for_url(str)
+    return nil unless base_domains.any?
     home_url = str.split(base_domains.first).first + base_domains.first # Use .first because it will get with www.
     home_url = "http://#{home_url}" unless home_url.match?(/\Ahttp/i) # We need a protocol for home_url
     create(title: base_domains.last, home_url: home_url)

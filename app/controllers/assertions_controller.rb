@@ -12,7 +12,8 @@ class AssertionsController < ApplicationController
   def create
     @assertion = Assertion.new(permitted_params)
     if permitted_citation_params.present?
-      @assertion.citations.build(permitted_citation_params.merge(creator: current_user))
+      citation = Citation.find_or_create_by_params(permitted_citation_params.merge(creator: current_user))
+      @assertion.citations << citation
     end
     if @assertion.save
       flash[:success] = "Assertion created!"
