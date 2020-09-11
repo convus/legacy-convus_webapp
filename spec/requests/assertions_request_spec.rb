@@ -36,7 +36,7 @@ RSpec.describe "/assertions", type: :request do
     end
 
     describe "create" do
-      let(:valid_assertion_params) { { title: "This seems like the truth" } }
+      let(:valid_assertion_params) { {title: "This seems like the truth"} }
       let(:valid_citation_params) do
         {
           title: "This citation is very important",

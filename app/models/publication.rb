@@ -20,9 +20,9 @@ class Publication < ApplicationRecord
     # Unless the base_domain has "." and some characters, assume it's not a domain
     return [] unless base_domain.present? && base_domain.match?(/\..+/)
     # If the domain starts with www. add both that and the bare domain
-    base_domain.match?(/\Awww\./) ? [base_domain, base_domain.gsub(/\Awww\./, "")] : [base_domain]
+    base_domain.start_with?(/www\./) ? [base_domain, base_domain.delete_prefix("www.")] : [base_domain]
   rescue URI::InvalidURIError
-    return []
+    []
   end
 
   def self.create_for_url(str)
@@ -32,7 +32,7 @@ class Publication < ApplicationRecord
     base_domains = base_domains_for_url(str)
     return nil unless base_domains.any?
     home_url = str.split(base_domains.first).first + base_domains.first # Use .first because it will get with www.
-    home_url = "http://#{home_url}" unless home_url.match?(/\Ahttp/i) # We need a protocol for home_url
+    home_url = "http://#{home_url}" unless home_url.start_with?(/http/i) # We need a protocol for home_url
     create(title: base_domains.last, home_url: home_url)
   end
 

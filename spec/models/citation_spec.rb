@@ -106,7 +106,7 @@ RSpec.describe Citation, type: :model do
       expect(citation.authors_str).to eq "george stanley"
     end
     context "with multiple" do
-      let(:citation) { Citation.new(authors_str: "Stanley, George\n  Frank, Bobby")}
+      let(:citation) { Citation.new(authors_str: "Stanley, George\n  Frank, Bobby") }
       it "splits by new line, sorts" do
         expect(citation.authors).to eq(["Stanley, George", "Frank, Bobby"])
         expect(citation.authors_str).to eq "Stanley, George; Frank, Bobby"
