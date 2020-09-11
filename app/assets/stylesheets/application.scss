@@ -2,10 +2,28 @@
  *= require_self
 */
 
+$max-main-width: 800px;
+
 .wrapper {
-  padding: 2rem;
+  padding: 1rem 2rem 2rem;
   margin: 0 auto;
   position: relative;
+}
+
+.main-nav {
+  display: block;
+  margin: 0 auto 1rem 0;
+  width: 100%;
+  position: relative;
+  ul {
+    display: block;
+    list-style-type: none;
+    text-align: right;
+  }
+  li {
+    display: inline-block;
+    padding: 0 0.25rem;
+  }
 }
 
 // UTILS
