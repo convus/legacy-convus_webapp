@@ -1,0 +1,2 @@
+class HypothesisTag < ApplicationRecord
+end

@@ -27,7 +27,7 @@ class HypothesesController < ApplicationController
   private
 
   def permitted_params
-    params.require(:hypothesis).permit(:title, :has_direct_quotation).merge(creator: current_user)
+    params.require(:hypothesis).permit(:title, :has_direct_quotation, :family_tag_id).merge(creator: current_user)
   end
 
   def permitted_citation_params
