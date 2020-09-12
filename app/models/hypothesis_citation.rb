@@ -1,5 +1,5 @@
-class AssertionCitation < ApplicationRecord
-  belongs_to :assertion
+class HypothesisCitation < ApplicationRecord
+  belongs_to :hypothesis
   belongs_to :citation
 
   before_create :set_calculated_attributes
@@ -11,6 +11,6 @@ class AssertionCitation < ApplicationRecord
   end
 
   def set_calculated_attributes
-    self.has_direct_quotation = assertion&.direct_quotation?
+    self.has_direct_quotation = hypothesis&.direct_quotation?
   end
 end

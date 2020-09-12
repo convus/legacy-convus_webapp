@@ -13,8 +13,8 @@ class Citation < ApplicationRecord
   belongs_to :publication
   belongs_to :creator, class_name: "User"
 
-  has_many :assertion_citations
-  has_many :assertions, through: :assertion_citations
+  has_many :hypothesis_citations
+  has_many :hypotheses, through: :hypothesis_citations
 
   validates_presence_of :creator_id, :url
 
@@ -94,7 +94,7 @@ class Citation < ApplicationRecord
   end
 
   def set_calculated_attributes
-    self.creator_id ||= assertions.first&.creator_id
+    self.creator_id ||= hypotheses.first&.creator_id
     self.publication ||= Publication.create_for_url(url)
     self.title ||= title_from_url(url)
     self.slug = Slugifyer.slugify([publication_name, title].compact.join("-"))

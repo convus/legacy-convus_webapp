@@ -10,7 +10,8 @@ class Publication < ApplicationRecord
   end
 
   def self.matching_base_domains(str)
-    where("base_domains @> ?", base_domains_for_url(str).to_json)
+    domain_to_match = base_domains_for_url(str).last # grab without the www
+    where("base_domains @> ?", [domain_to_match].to_json)
   end
 
   def self.base_domains_for_url(str)
@@ -28,11 +29,14 @@ class Publication < ApplicationRecord
   def self.create_for_url(str)
     return nil unless str.present?
     matching = friendly_find(str)
-    return matching if matching.present?
+    if matching.present?
+      matching.add_base_domain(str)
+      matching.save if matching.changed? # Add any new base domains
+      return matching
+    end
     base_domains = base_domains_for_url(str)
     return nil unless base_domains.any?
     home_url = str.split(base_domains.first).first + base_domains.first # Use .first because it will get with www.
-    home_url = "http://#{home_url}" unless home_url.start_with?(/http/i) # We need a protocol for home_url
     create(title: base_domains.last, home_url: home_url)
   end
 
@@ -46,6 +50,9 @@ class Publication < ApplicationRecord
   end
 
   def set_calculated_attributes
-    add_base_domain(home_url) if home_url.present?
+    if home_url.present?
+      self.home_url = "http://#{home_url}" unless home_url.start_with?(/http/i) # We need a protocol for home_url
+      add_base_domain(home_url)
+    end
   end
 end

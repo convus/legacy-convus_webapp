@@ -1,3 +1,6 @@
 %h1 Citations
+%p.text-right
+  = link_to "add citation", new_citation_path
+
 
 = render partial: "/citations/table", locals: { citations: @citations }

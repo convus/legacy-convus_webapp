@@ -1,0 +1,40 @@
+%h1
+  New Citation
+
+.form-wrapper
+  = form_for @citation, url: citations_path, method: "POST", html: { class: "form mt-4 mb-4" } do |f|
+    - if @citation.errors.any?
+      = render partial: "/shared/errors", locals: { name: "Citation", obj: @citation }
+    .form-group
+      = f.label :url, "URL"
+      = f.text_field :url, required: true, class: "form-control"
+    .form-group
+      = f.label :assignable_kind, "Source kind"
+      = f.select :assignable_kind, Citation.assignable_kinds.map { |k| [k.humanize.to_s, k] }, {}, { class: "form-control" }
+    .form-group
+      %label.form-check-label
+        = f.check_box :url_is_direct_link_to_full_text, class: "form-check-input"
+        URL is a direct link to the full text of the article
+    .form-group
+      = f.label :title do
+        -# TODO: Make this update and change based on the
+        %span#citationKind
+          Citation
+        title
+      = f.text_field :title, placeholder: "optional", class: "form-control"
+    .form-group
+      = f.label :authors_str do
+        Authors
+        %em.less-strong new line delineated
+      = f.text_area :authors_str, placeholder: "optional", class: "form-control"
+
+    -# TODO: show this if useful
+    -#.form-group
+    -#  = f.label :published_at
+    -#    Published date
+    -#    %small.less-strong
+    -#      optional
+    -#  = f.text_area :published_at, placeholder: "optional", class: "form-control"
+
+    .form-group
+      = submit_tag "Submit for review", class: "btn btn-primary"

@@ -1,12 +1,12 @@
 %h1
-  New assertion
+  New Hypothesis
 
 .form-wrapper
-  = form_for @assertion, url: assertions_path, method: "POST", html: { class: "form mt-4 mb-4" } do |f|
-    - if @assertion.errors.any?
-      = render partial: "/shared/errors", locals: { name: "Assertion", obj: @assertion }
+  = form_for @hypothesis, url: hypotheses_path, method: "POST", html: { class: "form mt-4 mb-4" } do |f|
+    - if @hypothesis.errors.any?
+      = render partial: "/shared/errors", locals: { name: "Hypothesis", obj: @hypothesis }
     .form-group
-      = f.label :title, "Assertion text"
+      = f.label :title, "Hypothesis text"
       = f.text_area :title,  required: true, class: "form-control"
     .form-group
       %label.form-check-label
@@ -15,8 +15,8 @@
 
     %h3 Citation
 
-    - @assertion.citations.build unless @assertion.citations.count > 0
-    - @assertion.citations.each do |citation|
+    - @hypothesis.citations.build unless @hypothesis.citations.count > 0
+    - @hypothesis.citations.each do |citation|
       = f.fields_for :citations_attributes, citation do |nested_form|
         .form-group
           = nested_form.label :url, "URL"
