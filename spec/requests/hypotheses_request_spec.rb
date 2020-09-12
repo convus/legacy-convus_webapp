@@ -11,7 +11,7 @@ RSpec.describe "/hypotheses", type: :request do
   end
 
   describe "new" do
-    it "renders" do
+    it "redirects" do
       get "#{base_url}/new"
       expect(response).to redirect_to user_github_omniauth_authorize_path
     end
