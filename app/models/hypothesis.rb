@@ -22,7 +22,7 @@ class Hypothesis < ApplicationRecord
   end
 
   def set_calculated_attributes
-    if family_tag.present? && family_tag.slug != "family-uncategorized"
+    if family_tag.present? && family_tag.slug != "uncategorized"
       hypothesis_tags.build(tag_id: family_tag_id) unless tags.map(&:title).include?(family_tag.title)
     end
   end
