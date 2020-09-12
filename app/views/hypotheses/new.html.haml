@@ -12,6 +12,9 @@
       %label.form-check-label
         = f.check_box :has_direct_quotation, class: "form-check-input"
         Direct quotation
+    .form-group
+      = f.label :family_tag_id, "Primary tag"
+      = f.select :family_tag_id, Tag.family_rank.map { |tag| [tag.title, tag.id] }, { prompt: "", required: true }, { class: "form-control" }
 
     %h3 Citation
 

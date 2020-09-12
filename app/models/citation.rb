@@ -8,6 +8,7 @@ class Citation < ApplicationRecord
     quote_from_involved_party: 3,
     open_access_peer_reviewed: 4
   }.freeze
+
   FETCH_WAYBACK_URL = false # TODO: make this actually work
 
   belongs_to :publication

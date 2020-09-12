@@ -6,6 +6,8 @@
       %th
         Hypothesis
       %th
+        Tags
+      %th
         Created
       %th
         Citation
@@ -14,6 +16,13 @@
         %tr
           %td
             = hypothesis.title
+          %td
+            = hypothesis.family_tag&.title unless hypothesis.family_tag == Tag.uncategorized
+            -# TODO: uncomment when possible to add multiple tags
+            -# %small
+            -#   = hypothesis.tags.each do |tag|
+            -#     - next if tag.id == hypothesis.family_tag_id
+            -#     = tag.title
           %td
             %span.convertTime
               = l hypothesis.created_at, format: :convert_time

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_11_234653) do
+ActiveRecord::Schema.define(version: 2020_09_12_010604) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,7 +39,10 @@ ActiveRecord::Schema.define(version: 2020_09_11_234653) do
     t.boolean "has_direct_quotation", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "refuted", default: false
+    t.bigint "family_tag_id"
     t.index ["creator_id"], name: "index_hypotheses_on_creator_id"
+    t.index ["family_tag_id"], name: "index_hypotheses_on_family_tag_id"
   end
 
   create_table "hypothesis_citations", force: :cascade do |t|
@@ -52,6 +55,15 @@ ActiveRecord::Schema.define(version: 2020_09_11_234653) do
     t.index ["hypothesis_id"], name: "index_hypothesis_citations_on_hypothesis_id"
   end
 
+  create_table "hypothesis_tags", force: :cascade do |t|
+    t.bigint "hypothesis_id"
+    t.bigint "tag_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["hypothesis_id"], name: "index_hypothesis_tags_on_hypothesis_id"
+    t.index ["tag_id"], name: "index_hypothesis_tags_on_tag_id"
+  end
+
   create_table "publications", force: :cascade do |t|
     t.text "title"
     t.text "slug"
@@ -61,6 +73,14 @@ ActiveRecord::Schema.define(version: 2020_09_11_234653) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.jsonb "base_domains"
+  end
+
+  create_table "tags", force: :cascade do |t|
+    t.text "title"
+    t.text "slug"
+    t.integer "taxonomy"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "users", force: :cascade do |t|

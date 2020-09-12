@@ -36,7 +36,8 @@ RSpec.describe "/hypotheses", type: :request do
     end
 
     describe "create" do
-      let(:valid_hypothesis_params) { {title: "This seems like the truth"} }
+      let(:tag) { FactoryBot.create(:tag) }
+      let(:valid_hypothesis_params) { {title: "This seems like the truth", family_tag_id: tag.id} }
       let(:valid_citation_params) do
         {
           title: "This citation is very important",
@@ -76,6 +77,7 @@ RSpec.describe "/hypotheses", type: :request do
           {
             title: "party time is now",
             has_direct_quotation: "1",
+            family_tag_id: tag.id,
             citations_attributes: valid_citation_params
           }
         end
