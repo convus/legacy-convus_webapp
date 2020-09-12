@@ -36,7 +36,7 @@ RSpec.describe "/citations", type: :request do
     end
 
     describe "create" do
-      let!(:publication) { FactoryBot.create(:publication, title: "Fox News", home_url: "foxnews.com")}
+      let!(:publication) { FactoryBot.create(:publication, title: "Fox News", home_url: "foxnews.com") }
       let(:valid_citation_params) do
         {
           title: "The Atlantic calls to 'end the Nobel Peace Prize' following Trump nominations",

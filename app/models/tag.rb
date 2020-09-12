@@ -12,6 +12,7 @@ class Tag < ApplicationRecord
   enum taxonomy: TAXONOMY_ENUM
 
   def self.family_uncategorized
-    friendly_find("family-uncategorized") || create(title: "Family uncategorized", taxonomy: "family_rank")
+    friendly_find("family-uncategorized") ||
+      create(title: "Family uncategorized", taxonomy: "family_rank")
   end
 end
