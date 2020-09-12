@@ -7,7 +7,7 @@ RSpec.describe Hypothesis, type: :model do
     hypothesis = FactoryBot.create(:hypothesis)
     expect(hypothesis.id).to be_present
     hypothesis.reload
-    expect(hypothesis.family_tag).to eq Tag.family_uncategorized
+    expect(hypothesis.family_tag).to eq Tag.uncategorized
     expect(hypothesis.tags.pluck(:id)).to eq([])
   end
 

@@ -14,7 +14,7 @@
         Direct quotation
     .form-group
       = f.label :family_tag_id, "Primary tag"
-      = f.select :family_tag_id, Tag.family_rank.map { |tag| [tag.title, tag.id] }, { prompt: "Choose family", required: true }, { class: "form-control" }
+      = f.select :family_tag_id, Tag.family_rank.map { |tag| [tag.title, tag.id] }, { prompt: "", required: true }, { class: "form-control" }
 
     %h3 Citation
 
