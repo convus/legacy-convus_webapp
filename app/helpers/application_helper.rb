@@ -3,6 +3,13 @@ module ApplicationHelper
     "&#x2713;".html_safe
   end
 
+  def link_emoji(link_title = nil)
+    content_tag(:span, title: link_title || "link") do
+      content_tag(:span, "🔗", class: "emoji") +
+      content_tag(:small, " link")
+    end
+  end
+
   def active_link(link_text, link_path, html_options = {})
     match_controller = html_options.delete(:match_controller)
     html_options[:class] ||= ""

@@ -1,33 +1,11 @@
-%h1
-  = @hypothesis.title
+%h1 Hypotheses
 
-.max-main-width
-  %table.table-list
-    %tbody
-      %tr
-        %td Title
-        %td= @hypothesis.title
-      %tr.small
-        %td Direct quotation?
-        %td= @hypothesis.has_direct_quotation
-      %tr
-        %td Tags
-        %td
-          %strong= @hypothesis.family_tag&.title
-          - if @citation.non_family_tags.any?
-            %ul
-              - @citation.non_family_tags.each do |tag|
-                %li
-                  = tag.title
-      %tr
-        %td Created at
-        %td
-          %span.convertTime
-            = l @hypothesis.published_at, format: :convert_time
-      %tr
-        %td Citations
-        %td= @citations.count
+%p
+  %strong
+    = number_with_delimiter(@hypotheses.total_count)
+  matching hypotheses
 
-.mt-4
+.paginate-wrapper
+  = paginate @hypotheses
 
-= render partial: "/citations/table", locals: { citations: @citations }
+= render partial: "/hypotheses/table", locals: { hypotheses: @hypotheses }

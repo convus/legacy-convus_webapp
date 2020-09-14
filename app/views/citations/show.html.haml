@@ -1,5 +1,5 @@
 %h1
-  = @citation.title
+  Viewing Citation
 
 .max-main-width
   %table.table-list
@@ -43,6 +43,6 @@
         %td Hypotheses
         %td= @hypotheses.count
 
-.mt-4
+%h2.mt-4.mb-1 Hypothesis
 
-= render partial: "/hypotheses/table", locals: { citations: @hypotheses }
+= render partial: "/hypotheses/table", locals: { citations: @hypotheses, skip_citation_id: @citation.id }

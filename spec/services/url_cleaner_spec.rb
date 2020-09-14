@@ -34,8 +34,13 @@ RSpec.describe UrlCleaner do
   end
 
   describe "pretty_url" do
-    it "returns without the protocol" do
+    it "returns without the protocol and trailing stuff" do
       expect(subject.pretty_url("https://en.wikipedia.org/wiki/John_von_Neumann/")).to eq "en.wikipedia.org/wiki/John_von_Neumann"
+      expect(subject.pretty_url("http://en.wikipedia.org/wiki/John_von_Neumann/?")).to eq "en.wikipedia.org/wiki/John_von_Neumann"
+    end
+    it "returns without UTM parameters" do
+      target = "nationalreview.com/2020/09/bring-back-the-bison/?somethingimportant=33333utm"
+      expect(subject.pretty_url(" www.nationalreview.com/2020/09/bring-back-the-bison/?utm_source=recirc-desktop&utm_medium=article&UTM_CAMPAIGN=river&somethingimportant=33333utm&utm_content=top-bar-latest&utm_term=second")).to eq target
     end
   end
 end

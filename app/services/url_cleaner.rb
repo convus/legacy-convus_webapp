@@ -18,7 +18,11 @@ class UrlCleaner
   # Might not really be doing too much, but... leaves room for doing more later - e.g. stripping query params
   def self.pretty_url(str)
     return str unless str.present?
-    str.gsub(/\Ahttps?:\/\//i, "").gsub(/\/\z/, "")
+    str.strip
+      .gsub(/&?utm_.+?(&|$)/i, "") # Remove UTM parameters
+      .gsub(/\Ahttps?:\/\//i, "") # Remove https
+      .gsub(/\Awww\./i, "") # Remove www
+      .gsub(/\/\??\z/, "") # Remove trailing slash and ?
   end
 
 

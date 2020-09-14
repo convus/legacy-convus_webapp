@@ -17,7 +17,8 @@
       - citations.each do |citation|
         %tr
           %td
-            = link_to citation.title, citation_path(citation.to_param)
+            = citation.title
+            = link_to link_emoji, citation_path(citation.to_param), class: "link-with-emoji"
           %td
             %span.convertTime
               = l citation.created_at, format: :convert_time

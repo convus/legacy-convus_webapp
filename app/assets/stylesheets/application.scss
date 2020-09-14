@@ -83,6 +83,15 @@ small,
   margin-bottom: 2rem;
 }
 
+.link-with-emoji {
+  text-decoration: none;
+  small {
+    // The non-emoji part
+    display: none;
+    text-decoration: underline;
+  }
+}
+
 @import "minimalism/base_styles"; // TODO: remove when/if bootstrap imported
 @import "minimalism/table_extensions";
 
