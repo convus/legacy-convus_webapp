@@ -87,7 +87,7 @@ Rails.application.configure do
   # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new 'app-name')
 
   # Set default url
-  config.action_mailer.default_url_options = {protocol: "https", host: "convus.org"}
+  config.action_mailer.default_url_options = {protocol: "https", host: "www.convus.org"}
 
   if ENV["RAILS_LOG_TO_STDOUT"].present?
     logger = ActiveSupport::Logger.new($stdout)

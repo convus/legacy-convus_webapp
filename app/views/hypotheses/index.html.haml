@@ -1,3 +1,11 @@
 %h1 Hypotheses
 
+%p
+  %strong
+    = number_with_delimiter(@hypotheses.total_count)
+  matching hypotheses
+
+.paginate-wrapper
+  = paginate @hypotheses
+
 = render partial: "/hypotheses/table", locals: { hypotheses: @hypotheses }

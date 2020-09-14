@@ -10,10 +10,10 @@
     = javascript_pack_tag "application", "data-turbolinks-track": "reload"
   %body
     .wrapper
-      %nav.main-nav
-        %ul
+      %nav.main-nav.navbar.primary-navbar.navbar-expand-md.navbar-light
+        %ul.navbar-nav
           %li
-            = link_to "Hypotheses", hypotheses_path
+            = active_link "Hypotheses", hypotheses_path, class: "nav-link"
           - if current_user.present?
             %li
               = link_to "add hypothesis", new_hypothesis_path
@@ -23,5 +23,7 @@
                 signed in as #{current_user.username}
             - else
               = link_to "sign in", github_link
+
       = render "/shared/flash_messages"
+
       = yield

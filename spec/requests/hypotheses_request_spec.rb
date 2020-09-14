@@ -104,7 +104,7 @@ RSpec.describe "/hypotheses", type: :request do
           expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
 
           expect(citation.publication).to be_present
-          expect(citation.publication_name).to eq "example.com"
+          expect(citation.publication_title).to eq "example.com"
           expect(citation.authors).to eq(["Zack", "George"])
           expect(citation.published_at).to be_within(5).of Time.at(660124800)
           expect(citation.url_is_direct_link_to_full_text).to be_falsey
@@ -160,7 +160,7 @@ RSpec.describe "/hypotheses", type: :request do
             expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
 
             expect(citation.publication).to be_present
-            expect(citation.publication_name).to eq "example.com"
+            expect(citation.publication_title).to eq "example.com"
             expect(citation.authors).to eq(["Zack", "George"])
             expect(citation.published_at).to be_within(5).of Time.at(660124800)
             expect(citation.url_is_direct_link_to_full_text).to be_falsey

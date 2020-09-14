@@ -26,9 +26,13 @@ $max-main-width: 800px;
   }
 }
 
-.flash-alert-container {
+.max-main-width {
   width: 100%;
   max-width: $max-main-width;
+}
+
+.flash-alert-container {
+  @extend .max-main-width;
 }
 
 // UTILS
@@ -68,5 +72,11 @@ $max-main-width: 800px;
   white-space: nowrap;
 }
 
-// TODO: when/if bootstrap added - probably remove below
-@import "minimalism/base_styles"; // Will be replaced by bootstrap
+@import "minimalism/base_styles"; // TODO: remove when/if bootstrap imported
+@import "minimalism/table_extensions";
+
+$dev-color: #9400d3;
+.only-dev-visible {
+  border: 1px solid $dev-color;
+  background: rgba($dev-color, 0.1);
+}

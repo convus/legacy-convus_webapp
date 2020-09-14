@@ -52,61 +52,7 @@ h3 {
   }
 }
 
-.table {
-  width: 100%;
-  margin-bottom: 1rem;
-  color: #212529;
-}
-
-table {
-  border-collapse: collapse;
-  text-align: left;
-}
-
-.table-bordered,
-.table-list {
-  td,
-  th {
-    border: 1px solid #dee2e6;
-  }
-}
-
-.table-list .thead-light th,
-.table .thead-light th {
-  color: #495057;
-  background-color: #e9ecef;
-  border-color: #dee2e6;
-}
-
-.table-list,
-.table {
-  td,
-  th {
-    padding: 0.75rem;
-    vertical-align: top;
-    border-top: 1px solid #dee2e6;
-  }
-}
-
-.table-list,
-.table-sm {
-  td,
-  th {
-    padding: 0.3rem;
-  }
-}
-
-.table-list tbody tr:nth-of-type(odd),
-.table-striped tbody tr:nth-of-type(odd) {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-.text-right {
-  text-align: right !important;
-}
-.text-left {
-  text-align: left !important;
-}
-.text-center {
-  text-align: center !important;
+.paginate-wrapper {
+  @extend .text-right;
+  margin-bottom: 2rem;
 }

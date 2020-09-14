@@ -1,8 +1,16 @@
 class CitationsController < ApplicationController
-  before_action :redirect_to_signup_unless_user_present!, except: [:index]
+  before_action :redirect_to_signup_unless_user_present!, except: [:index, :show]
 
   def index
-    @citations = Citation.reorder(created_at: :desc)
+    page = params[:page] || 1
+    per_page = params[:per_page] || 500
+    @citations = Citation.reorder(created_at: :desc).includes(:publications)
+      .page(page).per(per_page)
+  end
+
+  def show
+    @citation = Citation.friendly_find!(params[:id])
+    @hypothesis = @citation.hypotheses
   end
 
   def new

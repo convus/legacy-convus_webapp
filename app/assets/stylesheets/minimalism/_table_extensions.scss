@@ -1,0 +1,88 @@
+.table-list {
+  @extend .table;
+  @extend .table-striped;
+  @extend .table-bordered;
+  @extend .table-sm;
+  tr td:first-child {
+    font-size: 80%;
+    font-style: italic;
+  }
+  td img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+  }
+  tr td:last-child {
+    width: 85%; // This is effectively min-width for table cells, which means that the definition max-width is 15%
+  }
+  tr.active-row {
+    background-color: #ebf5fb !important;
+    a {
+      text-decoration: underline;
+    }
+  }
+}
+
+//
+// Below stuff is just copied from bootstrap
+// TODO: remove when/if bootstrap imported
+
+.table {
+  width: 100%;
+  margin-bottom: 1rem;
+  color: #212529;
+}
+
+table {
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table-bordered,
+.table-list {
+  td,
+  th {
+    border: 1px solid #dee2e6;
+  }
+}
+
+.table-list .thead-light th,
+.table .thead-light th {
+  color: #495057;
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+}
+
+.table-list,
+.table {
+  td,
+  th {
+    padding: 0.75rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+  }
+}
+
+.table-list,
+.table-sm {
+  td,
+  th {
+    padding: 0.3rem;
+  }
+}
+
+.table-list tbody tr:nth-of-type(odd),
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.text-right {
+  text-align: right !important;
+}
+.text-left {
+  text-align: left !important;
+}
+.text-center {
+  text-align: center !important;
+}

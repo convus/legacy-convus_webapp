@@ -3,6 +3,13 @@ require "rails_helper"
 RSpec.describe Publication, type: :model do
   it_behaves_like "TitleSluggable"
 
+  describe "factory" do
+    let(:publication) { FactoryBot.create(:publication) }
+    it "is valid" do
+      expect(publication.id).to be_present
+    end
+  end
+
   describe "create_for_url" do
     it "creates once for a base" do
       publication = Publication.create_for_url("https://www.nytimes.com/2020/09/11/us/wildfires-live-updates.html")

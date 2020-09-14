@@ -16,6 +16,8 @@
         %tr
           %td
             = hypothesis.title
+            - if current_user&.developer?
+              %code.small.only-dev-visible= hypothesis.id
           %td
             = hypothesis.family_tag&.title unless hypothesis.family_tag == Tag.uncategorized
             -# TODO: uncomment when possible to add multiple tags

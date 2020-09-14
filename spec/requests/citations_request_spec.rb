@@ -17,6 +17,15 @@ RSpec.describe "/citations", type: :request do
     end
   end
 
+  describe "show" do
+    let(:subject) { FactoryBot.create(:citation) }
+    it "renders" do
+      get "#{base_url}/#{subject.to_param}"
+      expect(response.code).to eq "200"
+      expect(response).to render_template("citations/show")
+    end
+  end
+
   context "logged in" do
     include_context :logged_in_as_user
     describe "index" do

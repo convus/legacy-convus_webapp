@@ -33,7 +33,7 @@ class Citation < ApplicationRecord
     {
       article: {score: 1, humanized: "Article"},
       closed_access_peer_reviewed: {score: 2, humanized: "Non-public access research (anything than can not be accessed directly via a URL)"},
-      article_by_publication_with_retractions: {score: 3, humanized: "Article from a publisher which has issued retractions"},
+      article_by_publication_with_retractions: {score: 3, humanized: "Article from a publisher that has issued retractions"},
       quote_from_involved_party: {score: 10, humanized: "Online accessible quote from applicable person (e.g. personal website, tweet, or video)"},
       open_access_peer_reviewed: {score: 20, humanized: "Peer reviewed open access study"}
     }.freeze
@@ -62,7 +62,7 @@ class Citation < ApplicationRecord
     (authors || []).join("; ")
   end
 
-  def publication_name
+  def publication_title
     publication&.title
   end
 
@@ -90,6 +90,10 @@ class Citation < ApplicationRecord
     kind_data[:humanized]
   end
 
+  def kind_humanized_short
+    kind_humanized&.gsub(/\([^\)]*\)/, "")
+  end
+
   def kind_score
     kind_data[:score]
   end
@@ -97,8 +101,8 @@ class Citation < ApplicationRecord
   def set_calculated_attributes
     self.creator_id ||= hypotheses.first&.creator_id
     self.publication ||= Publication.create_for_url(url)
-    self.title ||= title_from_url(url)
-    self.slug = Slugifyer.slugify([publication_name, title].compact.join("-"))
+    self.title ||= UrlHelper.without_base_domain(url)
+    self.slug = Slugifyer.slugify([publication_title, title].compact.join("-"))
     self.kind ||= calculated_kind(assignable_kind)
     if FETCH_WAYBACK_URL && url_is_direct_link_to_full_text
       self.wayback_machine_url ||= WaybackMachineIntegration.fetch_current_url(url)
@@ -116,12 +120,5 @@ class Citation < ApplicationRecord
     else
       kind_val
     end
-  end
-
-  def title_from_url(str)
-    return nil unless str.present?
-    base_domain = Publication.base_domains_for_url(str).first
-    return str unless base_domain.present?
-    str.split(base_domain).last&.gsub(/\A\//, "")&.gsub(/\/\z/, "")
   end
 end
