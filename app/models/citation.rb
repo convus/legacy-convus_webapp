@@ -58,6 +58,10 @@ class Citation < ApplicationRecord
     friendly_find(attrs[:url]) || create(attrs)
   end
 
+  def to_param
+    slug
+  end
+
   def authors_str
     (authors || []).join("; ")
   end
@@ -99,6 +103,7 @@ class Citation < ApplicationRecord
   end
 
   def set_calculated_attributes
+    self.url = UrlCleaner.without_utm(url)
     self.creator_id ||= hypotheses.first&.creator_id
     self.publication ||= Publication.create_for_url(url)
     self.title = UrlCleaner.without_base_domain(url) unless title.present?

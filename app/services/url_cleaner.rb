@@ -15,16 +15,19 @@ class UrlCleaner
     base_domains(str).last # Last in array will not have www
   end
 
-  # Might not really be doing too much, but... leaves room for doing more later - e.g. stripping query params
   def self.pretty_url(str)
+    return str unless str.present?
+    without_utm(str)
+      .gsub(/\Ahttps?:\/\//i, "") # Remove https
+      .gsub(/\Awww\./i, "") # Remove www
+  end
+
+  def self.without_utm(str)
     return str unless str.present?
     str.strip
       .gsub(/&?utm_.+?(&|$)/i, "") # Remove UTM parameters
-      .gsub(/\Ahttps?:\/\//i, "") # Remove https
-      .gsub(/\Awww\./i, "") # Remove www
       .gsub(/\/\??\z/, "") # Remove trailing slash and ?
   end
-
 
   def self.without_base_domain(str)
     return nil unless str.present?

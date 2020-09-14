@@ -43,4 +43,11 @@ RSpec.describe UrlCleaner do
       expect(subject.pretty_url(" www.nationalreview.com/2020/09/bring-back-the-bison/?utm_source=recirc-desktop&utm_medium=article&UTM_CAMPAIGN=river&somethingimportant=33333utm&utm_content=top-bar-latest&utm_term=second")).to eq target
     end
   end
+
+  describe "without_utm" do
+    it "returns without UTM parameters" do
+      target = "https://www.nationalreview.com/2020/09/bring-back-the-bison/?somethingimportant=33333utm"
+      expect(subject.without_utm("https://www.nationalreview.com/2020/09/bring-back-the-bison/?utm_source=recirc-desktop&utm_medium=article&UTM_CAMPAIGN=river&somethingimportant=33333utm&utm_content=top-bar-latest&utm_term=second")).to eq target
+    end
+  end
 end
