@@ -1,0 +1,4 @@
+production:
+  rails:
+    configuration:
+      node_version: "12.18.3"
