@@ -8,11 +8,11 @@ jobs:
       RAILS_ENV: test
       RACK_ENV: test
     docker:
-      - image: circleci/ruby:2.7.1-stretch-node
+      - image: circleci/ruby:2.7.1-buster-node
         environment:
           PGHOST: 127.0.0.1
           PGUSER: root
-      - image: circleci/postgres:12.3-alpine-postgis
+      - image: circleci/postgres:12.1-alpine
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: convus_test
