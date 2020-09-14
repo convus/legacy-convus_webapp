@@ -35,7 +35,7 @@ gem "logstash-event" # Use logstash format for logging data
 
 # API stuff
 # More recent versions of active_model_serializers have gotten slower, so use fastest version
-gem "active_model_serializers", "~> 0.8.3" # Serialize things.
+gem "active_model_serializers", "~> 0.8.3" # Serialize things
 
 # Other app stuff
 gem "kaminari" # Pagination
