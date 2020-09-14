@@ -15,7 +15,7 @@
       - hypotheses.each do |hypothesis|
         %tr
           %td
-            = hypothesis.title
+            = link_to hypothesis.title, hypothesis_path(hypothesis.to_param)
             - if current_user&.developer?
               %code.small.only-dev-visible= hypothesis.id
           %td

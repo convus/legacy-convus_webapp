@@ -1,5 +1,5 @@
 class PublicationsController < ApplicationController
-  before_action :redirect_to_signup_unless_user_present!, except: [:index, :show]
+  before_action :redirect_to_signup_unless_user_present!, except: %i[index show]
 
   def index
     page = params[:page] || 1

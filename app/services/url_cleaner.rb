@@ -1,4 +1,4 @@
-class UrlHelper
+class UrlCleaner
   def self.base_domains(str)
     str = "http://#{str}" unless str.match?(/\Ahttp/i) # uri parse doesn't work without protocol
     uri = URI.parse(str)

@@ -8,9 +8,15 @@
         %td Title
         %td= @citation.title
       %tr
+        %td ID
+        %td= @citation.id
+      %tr
         %td URL
         %td
-          = link_to UrlHelper.pretty_url(@citation.url), @citation.url
+          = link_to UrlCleaner.pretty_url(@citation.url), @citation.url
+      %tr.small
+        %td URL direct link?
+        %td= @citation.url_is_direct_link_to_full_text
       %tr
         %td Publication
         %td
@@ -19,6 +25,12 @@
       %tr
         %td Kind
         %td= @citation.kind_humanized
+      %tr
+        %td Published at
+        %td
+          - if @citation.published_at.present?
+            %span.convertTime
+              = l @citation.published_at, format: :convert_time
       %tr
         %td Authors
         %td
@@ -31,5 +43,6 @@
         %td Hypotheses
         %td= @hypotheses.count
 
+.mt-4
 
 = render partial: "/hypotheses/table", locals: { citations: @hypotheses }

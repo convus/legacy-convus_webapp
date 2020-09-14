@@ -101,7 +101,7 @@ class Citation < ApplicationRecord
   def set_calculated_attributes
     self.creator_id ||= hypotheses.first&.creator_id
     self.publication ||= Publication.create_for_url(url)
-    self.title ||= UrlHelper.without_base_domain(url)
+    self.title = UrlCleaner.without_base_domain(url) unless title.present?
     self.slug = Slugifyer.slugify([publication_title, title].compact.join("-"))
     self.kind ||= calculated_kind(assignable_kind)
     if FETCH_WAYBACK_URL && url_is_direct_link_to_full_text

@@ -13,7 +13,7 @@ class Publication < ApplicationRecord
   end
 
   def self.matching_base_domains(str)
-    where("base_domains @> ?", [UrlHelper.base_domain_without_www(str)].to_json)
+    where("base_domains @> ?", [UrlCleaner.base_domain_without_www(str)].to_json)
   end
 
   def self.create_for_url(str)
@@ -24,7 +24,7 @@ class Publication < ApplicationRecord
       matching.save if matching.changed? # Add any new base domains
       return matching
     end
-    base_domains = UrlHelper.base_domains(str)
+    base_domains = UrlCleaner.base_domains(str)
     return nil unless base_domains.any?
     home_url = str.split(base_domains.first).first + base_domains.first # Use .first because it will get with www.
     create(title: base_domains.last, home_url: home_url)
@@ -36,7 +36,7 @@ class Publication < ApplicationRecord
 
   def add_base_domain(str)
     bds = base_domains || []
-    self.base_domains = (bds + UrlHelper.base_domains(str)).uniq.sort
+    self.base_domains = (bds + UrlCleaner.base_domains(str)).uniq.sort
   end
 
   def set_calculated_attributes

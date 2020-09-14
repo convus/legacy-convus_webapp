@@ -10,6 +10,16 @@ RSpec.describe "/hypotheses", type: :request do
     expect(response).to render_template("hypotheses/index")
   end
 
+
+  describe "show" do
+    let(:subject) { FactoryBot.create(:hypothesis) }
+    it "renders" do
+      get "#{base_url}/#{subject}"
+      expect(response.code).to eq "200"
+      expect(response).to render_template("hypotheses/show")
+    end
+  end
+
   describe "new" do
     it "redirects" do
       get "#{base_url}/new"

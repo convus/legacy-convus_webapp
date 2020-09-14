@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe UrlHelper do
+RSpec.describe UrlCleaner do
   let(:subject) { described_class }
 
   describe "base_domains" do
