@@ -35,6 +35,7 @@ RSpec.describe Citation, type: :model do
         expect(citation.publication_id).to eq publication.id
         expect(citation.publication.title).to eq "National Review"
         expect(citation.slug).to eq("national-review-joe-biden-s-money-misadventures")
+        expect(citation.url).to eq "https://www.nationalreview.com/2020/09/joe-bidens-money-misadventures"
         expect(Citation.friendly_find("Joe Biden’s Money Misadventures")).to eq citation
         expect(Citation.friendly_find(url)).to eq citation
       end

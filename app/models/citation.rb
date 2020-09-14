@@ -48,6 +48,8 @@ class Citation < ApplicationRecord
   end
 
   def self.friendly_find_fallback(str)
+    matched = where(url: UrlCleaner.without_utm(str)).first
+    return matched if matched.present?
     matched = where("lower(url) ILIKE ?", str.to_s.downcase.strip).first
     return matched if matched.present?
     slugged = Slugifyer.slugify(str)
