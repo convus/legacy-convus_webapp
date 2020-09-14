@@ -1,0 +1,17 @@
+production:
+  after_symlink:
+    # Make the uploads cache folder writable
+    - command: mkdir -p $RAILS_STACK_PATH/tmp/uploads/cache
+      target: rails
+      run_on: all_servers
+      sudo: true
+  after_rails:
+    - source: /.cloud66/papertrail.sh
+      destination: /tmp/papertrail.sh
+      sudo: true
+      target: rails
+      apply_during: build_only
+    - command: bash /tmp/papertrail.sh $STACK_BASE
+      target: rails
+      sudo: true
+      apply_during: build_only
