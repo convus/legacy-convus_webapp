@@ -11,7 +11,7 @@ production:
       sudo: true
       target: rails
       apply_during: build_only
-    # - command: bash /tmp/papertrail.sh $STACK_BASE
-    #   target: rails
-    #   sudo: true
-    #   apply_during: build_only
+    - command: bash /tmp/papertrail.sh $STACK_BASE
+      target: rails
+      sudo: true
+      apply_during: build_only
