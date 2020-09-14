@@ -21,6 +21,10 @@ class Hypothesis < ApplicationRecord
     has_direct_quotation || hypothesis_citations.direct_quotation.any?
   end
 
+  def non_family_tags
+    tags.where.not(id: family_tag_id)
+  end
+
   def set_calculated_attributes
     if family_tag.present? && family_tag.slug != "uncategorized"
       hypothesis_tags.build(tag_id: family_tag_id) unless tags.map(&:title).include?(family_tag.title)

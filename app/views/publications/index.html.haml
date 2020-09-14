@@ -1,0 +1,42 @@
+%h1 Publications
+
+%p
+  %strong
+    = number_with_delimiter(@publications.total_count)
+  matching publications
+
+.paginate-wrapper
+  = paginate @publications
+
+.full-screen-table
+  %table.table.table-striped.table-sm.table-bordered
+    %thead
+      %th
+        Title
+      %th
+        Retractions?
+      %th
+        peer-reviewed?
+      %th
+        Not URL based
+      %th
+        Urls
+      %th
+        %small Citation count
+    %tbody
+      - @publications.each do |publication|
+        %tr
+          %td
+            = link_to publication.title, publication_path(publication)
+          %td
+            = check_mark if publication.has_published_retractions
+          %td
+            = check_mark if publication.has_peer_reviewed_articles
+          %td
+            = publication.home_url
+            - if current_user&.developer?
+              %small
+                = safe_join(publication.base_domains.map { |d| content_tag(:code, d, class: "only-dev-visible") }, ", ")
+          %td
+            %small= publication.citations.count
+

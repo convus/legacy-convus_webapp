@@ -9,13 +9,22 @@
         Created
       %th
         Kind
+      %td
+        Publication
+      %td
+        %small Hypothesis count
     %tbody
       - citations.each do |citation|
         %tr
           %td
             = citation.title
+            = link_to link_emoji, citation_path(citation.to_param), class: "link-with-emoji"
           %td
             %span.convertTime
               = l citation.created_at, format: :convert_time
           %td
-            = citation.kind_humanized
+            = citation.kind_humanized_short
+          %td
+            = citation.publication&.title
+          %td
+            %small= citation.hypotheses.count

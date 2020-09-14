@@ -1,4 +1,6 @@
 - hypotheses ||= @hypotheses
+- skip_citations ||= false
+- skip_citation_id ||= nil
 
 .full-screen-table
   %table.table.table-striped.table-sm.table-bordered
@@ -16,6 +18,7 @@
         %tr
           %td
             = hypothesis.title
+            = link_to link_emoji, hypothesis_path(hypothesis.to_param), class: "link-with-emoji"
           %td
             = hypothesis.family_tag&.title unless hypothesis.family_tag == Tag.uncategorized
             -# TODO: uncomment when possible to add multiple tags
@@ -27,6 +30,8 @@
             %span.convertTime
               = l hypothesis.created_at, format: :convert_time
           %td
-            - citation = hypothesis.citations.first
-            - if citation.present?
-              = link_to citation.title, citation.url
+            - citation = hypothesis.citations.each do |citation|
+              - next if citation.id == skip_citation_id
+              .d-block
+                = citation.title
+                = link_to link_emoji, citation_path(citation.to_param), class: "link-with-emoji"

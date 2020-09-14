@@ -7,7 +7,7 @@ RSpec.describe "/", type: :request do
     it "renders" do
       get "/"
       expect(response.code).to eq "200"
-      expect(response).to render_template("landing/index")
+      expect(response).to render_template("hypotheses/index")
     end
   end
 end

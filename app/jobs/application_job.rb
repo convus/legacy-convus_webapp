@@ -1,7 +1,6 @@
-class ApplicationJob < ActiveJob::Base
-  # Automatically retry jobs that encountered a deadlock
-  # retry_on ActiveRecord::Deadlocked
-
-  # Most jobs are safe to ignore if the underlying records are no longer available
-  # discard_on ActiveJob::DeserializationError
+# Using activejob is slow. Just use sidekiq
+# ActiveJob is included to make actionmailer work with delayed, and maybe other things
+# ... But all the jobs are sidekiq only
+class ApplicationJob
+  include Sidekiq::Worker
 end

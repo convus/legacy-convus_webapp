@@ -1,0 +1,36 @@
+%h1
+  = @publication.title
+
+.max-main-width
+  %table.table-list
+    %tbody
+      %tr
+        %td Title
+        %td= @publication.title
+      %tr
+        %td ID
+        %td= @publication.id
+      %tr
+        %td Retractions?
+        %td= check_mark if @publication.has_published_retractions
+      %tr
+        %td peer-reviewed?
+        %td= check_mark if @publication.has_peer_reviewed_articles
+      %tr
+        %td Urls
+        %td
+          = @publication.home_url
+          - if @publication.base_domains.present?
+            %ul
+              - @publication.base_domains.each do |d|
+                %li
+                  %code= d
+      %tr
+        %td Citations
+        %td= @citations.count
+
+.mt-4
+
+%h2 Citations
+
+= render partial: "/citations/table", locals: { citations: @citations }

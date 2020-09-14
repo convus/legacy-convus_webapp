@@ -26,9 +26,13 @@ $max-main-width: 800px;
   }
 }
 
-.flash-alert-container {
+.max-main-width {
   width: 100%;
   max-width: $max-main-width;
+}
+
+.flash-alert-container {
+  @extend .max-main-width;
 }
 
 // UTILS
@@ -52,8 +56,14 @@ $max-main-width: 800px;
   }
 }
 
+em,
 .em {
-  font-style: italic;
+  font-style: italic; // TODO: when/if bootstrap imported, use extend
+}
+
+small,
+.small {
+  font-size: 80%; // TODO: when/if bootstrap imported, use extend
 }
 
 .convertedTime {
@@ -68,5 +78,25 @@ $max-main-width: 800px;
   white-space: nowrap;
 }
 
-// TODO: when/if bootstrap added - probably remove below
-@import "minimalism/base_styles"; // Will be replaced by bootstrap
+.paginate-wrapper {
+  @extend .text-right;
+  margin-bottom: 2rem;
+}
+
+.link-with-emoji {
+  text-decoration: none;
+  small {
+    // The non-emoji part
+    display: none;
+    text-decoration: underline;
+  }
+}
+
+@import "minimalism/base_styles"; // TODO: remove when/if bootstrap imported
+@import "minimalism/table_extensions";
+
+$dev-color: #9400d3;
+.only-dev-visible {
+  border: 1px solid $dev-color;
+  background: rgba($dev-color, 0.1);
+}

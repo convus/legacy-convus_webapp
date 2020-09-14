@@ -5,10 +5,10 @@ Rails.application.routes.draw do
                                    sessions: "users/sessions",
                                    registrations: "users/registrations"}
 
-  root "landing#index"
+  root "hypotheses#index"
 
-  resources :citations
-  resources :hypotheses
+  resources :citations, :publications, :hypotheses
+
 
   authenticate :user, lambda { |u| u.developer? } do
     mount Sidekiq::Web, at: "/sidekiq"

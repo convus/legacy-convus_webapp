@@ -2,5 +2,12 @@
 %p.text-right
   = link_to "add citation", new_citation_path
 
+%p
+  %strong
+    = number_with_delimiter(@citations.total_count)
+  matching citations
+
+.paginate-wrapper
+  = paginate @citations
 
 = render partial: "/citations/table", locals: { citations: @citations }

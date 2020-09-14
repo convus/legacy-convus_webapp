@@ -10,6 +10,16 @@ RSpec.describe "/hypotheses", type: :request do
     expect(response).to render_template("hypotheses/index")
   end
 
+
+  describe "show" do
+    let(:subject) { FactoryBot.create(:hypothesis) }
+    it "renders" do
+      get "#{base_url}/#{subject.to_param}"
+      expect(response.code).to eq "200"
+      expect(response).to render_template("hypotheses/show")
+    end
+  end
+
   describe "new" do
     it "redirects" do
       get "#{base_url}/new"
@@ -104,7 +114,7 @@ RSpec.describe "/hypotheses", type: :request do
           expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
 
           expect(citation.publication).to be_present
-          expect(citation.publication_name).to eq "example.com"
+          expect(citation.publication_title).to eq "example.com"
           expect(citation.authors).to eq(["Zack", "George"])
           expect(citation.published_at).to be_within(5).of Time.at(660124800)
           expect(citation.url_is_direct_link_to_full_text).to be_falsey
@@ -160,7 +170,7 @@ RSpec.describe "/hypotheses", type: :request do
             expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
 
             expect(citation.publication).to be_present
-            expect(citation.publication_name).to eq "example.com"
+            expect(citation.publication_title).to eq "example.com"
             expect(citation.authors).to eq(["Zack", "George"])
             expect(citation.published_at).to be_within(5).of Time.at(660124800)
             expect(citation.url_is_direct_link_to_full_text).to be_falsey

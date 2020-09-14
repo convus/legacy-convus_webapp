@@ -1,6 +1,9 @@
 class Publication < ApplicationRecord
   include TitleSluggable
 
+  has_many :citations
+  has_many :hypotheses, through: :citations
+
   before_validation :set_calculated_attributes
 
   scope :published_retractions, -> { where(has_published_retractions: true) }
@@ -10,20 +13,7 @@ class Publication < ApplicationRecord
   end
 
   def self.matching_base_domains(str)
-    domain_to_match = base_domains_for_url(str).last # grab without the www
-    where("base_domains @> ?", [domain_to_match].to_json)
-  end
-
-  def self.base_domains_for_url(str)
-    str = "http://#{str}" unless str.match?(/\Ahttp/i) # uri parse doesn't work without protocol
-    uri = URI.parse(str)
-    base_domain = uri.host&.downcase
-    # Unless the base_domain has "." and some characters, assume it's not a domain
-    return [] unless base_domain.present? && base_domain.match?(/\..+/)
-    # If the domain starts with www. add both that and the bare domain
-    base_domain.start_with?(/www\./) ? [base_domain, base_domain.delete_prefix("www.")] : [base_domain]
-  rescue URI::InvalidURIError
-    []
+    where("base_domains @> ?", [UrlCleaner.base_domain_without_www(str)].to_json)
   end
 
   def self.create_for_url(str)
@@ -34,7 +24,7 @@ class Publication < ApplicationRecord
       matching.save if matching.changed? # Add any new base domains
       return matching
     end
-    base_domains = base_domains_for_url(str)
+    base_domains = UrlCleaner.base_domains(str)
     return nil unless base_domains.any?
     home_url = str.split(base_domains.first).first + base_domains.first # Use .first because it will get with www.
     create(title: base_domains.last, home_url: home_url)
@@ -46,7 +36,7 @@ class Publication < ApplicationRecord
 
   def add_base_domain(str)
     bds = base_domains || []
-    self.base_domains = (bds + self.class.base_domains_for_url(str)).uniq.sort
+    self.base_domains = (bds + UrlCleaner.base_domains(str)).uniq.sort
   end
 
   def set_calculated_attributes
