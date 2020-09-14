@@ -45,4 +45,8 @@ class Publication < ApplicationRecord
       add_base_domain(home_url)
     end
   end
+
+  def flat_file_name(root_path)
+    File.join(root_path, "publications", "#{slug}.yml")
+  end
 end
