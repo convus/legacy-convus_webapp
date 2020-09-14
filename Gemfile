@@ -3,43 +3,42 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby "2.7.1"
 
-# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
+# Basic stuff
 gem "rails", "~> 6.0.3", ">= 6.0.3.2"
 # Use postgresql as the database for Active Record
 gem "pg", ">= 0.18", "< 2.0"
 # Use Puma as the app server
 gem "puma", "~> 4.1"
 
+# Authentication stuff
 gem "devise" # Authentication
 gem "omniauth", "~> 1.6.1" # sign on with other services
 gem "omniauth-github", github: "omniauth/omniauth-github", branch: "master"
 
-# Frontend things
-# Use SCSS for stylesheets
-gem "sass-rails", ">= 6"
+# Frontend stuff
+gem "sass-rails", ">= 6" # SCSS for stylesheets
 # Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
 gem "webpacker", "~> 4.0"
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
 gem "turbolinks", "~> 5"
-# Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem "jbuilder", "~> 2.7"
 gem "hamlit" # Faster haml templates
 
-# Use Redis adapter to run Action Cable in production
-# gem 'redis', '~> 4.0'
-# Use Active Model has_secure_password
-# gem 'bcrypt', '~> 3.1.7'
+# Redis stuff
 gem "hiredis"
 gem "redis", require: ["redis", "redis/connection/hiredis"]
-gem "sidekiq"
-gem "sidekiq-failures"
+gem "sidekiq" # Background processing, uses redis, in lieu of activeJob
+gem "sidekiq-failures" # See background job failures
 
-# Make logging - more useful and ingestible
+# logging stuff - make it more useful and ingestible
 gem "lograge" # Structure log data, put it in single lines to improve the functionality
 gem "logstash-event" # Use logstash format for logging data
 
-# Use Active Storage variant
-# gem 'image_processing', '~> 1.2'
+# API stuff
+# More recent versions of active_model_serializers have gotten slower, so use fastest version
+gem "active_model_serializers", "~> 0.8.3" # Serialize things.
+
+# Other app stuff
+gem "kaminari" # Pagination
 
 group :production do
   gem "honeybadger" # Error monitoring
