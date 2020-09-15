@@ -7,18 +7,29 @@ RSpec.describe Hypothesis, type: :model do
     hypothesis = FactoryBot.create(:hypothesis)
     expect(hypothesis.id).to be_present
     hypothesis.reload
-    expect(hypothesis.family_tag).to eq Tag.uncategorized
     expect(hypothesis.tags.pluck(:id)).to eq([])
   end
 
-  describe "with non-uncategorized" do
-    let(:tag) { FactoryBot.create(:tag) }
-    let(:hypothesis) { FactoryBot.create(:hypothesis, family_tag: tag) }
-    it "adds the tag" do
-      expect(hypothesis.id).to be_present
+  describe "tags_string" do
+    let(:hypothesis) { FactoryBot.create(:hypothesis) }
+    it "assigns an array" do
+      hypothesis.tags_string = ["Space"]
+      hypothesis.save
       hypothesis.reload
-      expect(hypothesis.family_tag).to eq tag
-      expect(hypothesis.tags.pluck(:id)).to eq([tag.id])
+      expect(hypothesis.tags_string).to eq("Space")
+    end
+    context "assigning a string" do
+      let!(:tag) { FactoryBot.create(:tag, title: "SOME existing title") }
+      let(:hypothesis) { FactoryBot.create(:hypothesis, tags_string: "some  existing titlé  ,") }
+      it "assigns based on the string, adds removes" do
+        hypothesis.reload
+        expect(hypothesis.tags.pluck(:id)).to eq([tag.id])
+        hypothesis.update(tags_string: "a new tag,Something\n environmenT")
+        hypothesis.reload
+        expect(hypothesis.tags.count).to eq 3
+        expect(hypothesis.tags.pluck(:id)).to_not include(tag.id)
+        expect(hypothesis.tags_string).to eq("a new tag, environmenT, Something")
+      end
     end
   end
 end

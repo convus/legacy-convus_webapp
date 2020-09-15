@@ -13,9 +13,11 @@
         = f.check_box :has_direct_quotation, class: "form-check-input"
         Direct quotation
     .form-group
-      - @hypothesis.family_tag ||= Tag.uncategorized
-      = f.label :family_tag_id, "Primary tag"
-      = f.select :family_tag_id, Tag.family_rank.map { |tag| [tag.title, tag.id] }, { prompt: "", required: true }, { class: "form-control" }
+      = f.label :tags_string do
+        Primary topic tag(s)
+        %small.less-strong
+          Up to 3 topics, comma delineated
+      = f.text_field :tags_string, required: true, class: "form-control"
 
     %h3 Citation
 
