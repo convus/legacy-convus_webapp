@@ -42,7 +42,7 @@ unless ENV["CIRCLECI"]
       end
     end
 
-    describe "write_all_hypotheses" do
+    describe "write_approved_hypotheses" do
       let!(:citation) { FactoryBot.create(:citation, title: "Pelosi digs in as pressure builds for COVID-19 deal", publication: publication) }
       let(:hypothesis) { FactoryBot.create(:hypothesis, title: "US waiting for updated COVID-19 relief package", tags_string: "some tag", citations: [citation]) }
       let(:target_filename) { "hypotheses/us-waiting-for-updated-covid-19-relief-package.yml" }
@@ -53,7 +53,7 @@ unless ENV["CIRCLECI"]
         expect(list_of_files).to eq([])
         filename = hypothesis.flat_file_name(base_dir)
         expect(file_without_base_dir(hypothesis.flat_file_name(base_dir))).to eq target_filename
-        subject.write_all_hypotheses
+        subject.write_approved_hypotheses
         expect(list_of_files).to eq([target_filename])
       end
     end

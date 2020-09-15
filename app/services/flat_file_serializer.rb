@@ -5,13 +5,13 @@ class FlatFileSerializer
 
   class << self
     def write_all_files
-      write_all_hypotheses
+      write_approved_hypotheses
       write_all_citations
       write_all_tags
       write_all_publications
     end
 
-    def write_all_hypotheses
+    def write_approved_hypotheses
       Hypothesis.approved.find_each { |hypothesis| write_hypothesis(hypothesis) }
     end
 
