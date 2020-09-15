@@ -6,14 +6,16 @@ unless ENV["CIRCLECI"]
   RSpec.describe FlatFileSerializer do
     let(:subject) { described_class }
     let(:base_dir) { FlatFileSerializer::FILES_PATH }
-    let!(:publication) { FactoryBot.create(:publication, title: "The Hill") }
+    let(:publication) { FactoryBot.create(:publication, title: "The Hill") }
 
     def delete_existing_files
       FileUtils.rm_rf(base_dir)
     end
 
     def list_of_files
-      Dir.glob("#{base_dir}/**/*.yml").map { |f| file_without_base_dir(f) }.compact
+      Dir.glob("#{base_dir}/**/*")
+        .map { |f| file_without_base_dir(f) }
+        .select { |f| f.present? && f.match?(/\..+/) } # Only return files with file extensions (ie reject directories)
     end
 
     def file_without_base_dir(str)
@@ -24,7 +26,20 @@ unless ENV["CIRCLECI"]
     before { delete_existing_files }
 
     describe "write_all_files" do
-      it "writes the expected files"
+      let!(:citation) { FactoryBot.create(:citation, title: "some citation", publication: publication) }
+      let!(:hypothesis) { FactoryBot.create(:hypothesis, title: "hypothesis-1") }
+      let(:target_filenames) do
+        [
+          "citations/the-hill-some-citation.yml",
+          "hypotheses/hypothesis-1.yml",
+          "publications.csv",
+          "tags.csv"
+        ]
+      end
+      it "writes the expected files" do
+        subject.write_all_files
+        expect(list_of_files).to match_array(target_filenames)
+      end
     end
 
     describe "write_all_hypotheses" do
@@ -55,13 +70,25 @@ unless ENV["CIRCLECI"]
       end
     end
 
-    describe "write_all_publications" do
-      xit "writes the files" do
+    describe "write_all_tags" do
+      let!(:tag) { FactoryBot.create(:tag) }
+      it "writes the csv file" do
         expect(list_of_files).to eq([])
-        filename = publication.flat_file_name(base_dir)
-        expect(file_without_base_dir(filename)).to eq "publications/test-of-things-name.yml"
+        subject.write_all_tags
+        expect(list_of_files).to eq(["tags.csv"])
+        output = File.read(subject.tags_file)
+        expect(output.split("\n").count).to eq 2
+      end
+    end
+
+    describe "write_all_publications" do
+      it "writes the csv file" do
+        expect(publication).to be_present
+        expect(list_of_files).to eq([])
         subject.write_all_publications
-        expect(list_of_files).to eq(["/publications/test-of-things-name.yml"])
+        expect(list_of_files).to eq(["publications.csv"])
+        output = File.read(subject.publications_file)
+        expect(output.split("\n").count).to eq 2
       end
     end
   end
