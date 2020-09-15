@@ -38,7 +38,7 @@
           = nested_form.label :title do
             -# TODO: Make this update and change based on the
             %span#citationKind
-              Citation
+              Article
             title
           = nested_form.text_field :title, placeholder: "optional", class: "form-control"
         .form-group
@@ -47,13 +47,7 @@
             %em.less-strong new line delineated
           = nested_form.text_area :authors_str, placeholder: "optional", class: "form-control"
 
-        -# TODO: show this if useful
-        -#.form-group
-        -#  = nested_form.label :published_at
-        -#    Published date
-        -#    %small.less-strong
-        -#      optional
-        -#  = nested_form.text_area :published_at, placeholder: "optional", class: "form-control"
+        -# TODO: add published_date_str fields
 
     .form-group
       = submit_tag "Submit for review", class: "btn btn-primary"

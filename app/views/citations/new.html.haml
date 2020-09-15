@@ -19,7 +19,7 @@
       = f.label :title do
         -# TODO: Make this update and change based on the
         %span#citationKind
-          Citation
+          Article
         title
       = f.text_field :title, placeholder: "optional", class: "form-control"
     .form-group
@@ -27,14 +27,6 @@
         Authors
         %em.less-strong new line delineated
       = f.text_area :authors_str, placeholder: "optional", class: "form-control"
-
-    -# TODO: show this if useful
-    -#.form-group
-    -#  = f.label :published_at
-    -#    Published date
-    -#    %small.less-strong
-    -#      optional
-    -#  = f.text_area :published_at, placeholder: "optional", class: "form-control"
 
     .form-group
       = submit_tag "Submit for review", class: "btn btn-primary"

@@ -76,11 +76,12 @@ class Citation < ApplicationRecord
     self.authors = val.split(/\n/).map(&:strip).reject(&:blank?)
   end
 
-  def published_at_str
-    published_at&.to_s
+  def published_date_str
+    published_at&.to_date&.to_s
   end
 
-  def published_at_str=(val)
+  # We're rounding to date - if/when there is a need for additional specificity, handle that previously was just date
+  def published_date_str=(val)
     self.published_at = TimeParser.parse(val)&.beginning_of_day
   end
 
@@ -102,6 +103,10 @@ class Citation < ApplicationRecord
 
   def kind_score
     kind_data[:score]
+  end
+
+  def flat_file_name(root_path)
+    File.join(root_path, "citations", "#{slug}.yml")
   end
 
   def set_calculated_attributes

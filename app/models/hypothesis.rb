@@ -30,4 +30,8 @@ class Hypothesis < ApplicationRecord
     hypothesis_tags.where.not(tag_id: new_ids).destroy_all
     tags
   end
+
+  def flat_file_name(root_path)
+    File.join(root_path, "hypotheses", "#{slug}.yml")
+  end
 end

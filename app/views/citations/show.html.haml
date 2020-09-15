@@ -26,11 +26,12 @@
         %td Kind
         %td= @citation.kind_humanized
       %tr
-        %td Published at
+        %td Published date
         %td
-          - if @citation.published_at.present?
-            %span.convertTime
-              = l @citation.published_at, format: :convert_time
+          = @citation.published_date_str
+          -# See note about time specificity in citation
+          -#  %span.convertTime
+          -#    = l @citation.published_at, format: :convert_time
       %tr
         %td Authors
         %td
