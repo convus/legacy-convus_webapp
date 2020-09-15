@@ -97,7 +97,7 @@ class Citation < ApplicationRecord
   end
 
   def kind_humanized_short
-    kind_humanized&.gsub(/\([^\)]*\)/, "")
+    kind_humanized&.gsub(/\([^)]*\)/, "")
   end
 
   def kind_score

@@ -5,7 +5,7 @@ RSpec.describe Tag, type: :model do
 
   # This is definitely not wild, but... we do want to make sure
   it "destroys hypothesis tag" do
-    hypothesis = FactoryBot.create(:hypothesis, tags_string: "some tag")
+    FactoryBot.create(:hypothesis, tags_string: "some tag")
     tag = Tag.friendly_find "some tag"
     expect(HypothesisTag.count).to eq 1
     tag.destroy

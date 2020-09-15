@@ -6,7 +6,7 @@ module ApplicationHelper
   def link_emoji(link_title = nil)
     content_tag(:span, title: link_title || "link") do
       content_tag(:span, "🔗", class: "emoji") +
-      content_tag(:small, " link")
+        content_tag(:small, " link")
     end
   end
 

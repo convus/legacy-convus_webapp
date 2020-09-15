@@ -24,9 +24,9 @@ class Hypothesis < ApplicationRecord
 
   def tags_string=(val)
     new_tags = (val.is_a?(Array) ? val : val.split(/,|\n/)).reject(&:blank?)
-    new_ids = new_tags.map do |string|
+    new_ids = new_tags.map { |string|
       hypothesis_tags.build(tag_id: Tag.find_or_create_for_title(string)&.id)
-    end
+    }
     hypothesis_tags.where.not(tag_id: new_ids).destroy_all
     tags
   end

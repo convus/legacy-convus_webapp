@@ -10,7 +10,6 @@ RSpec.describe "/hypotheses", type: :request do
     expect(response).to render_template("hypotheses/index")
   end
 
-
   describe "show" do
     let(:subject) { FactoryBot.create(:hypothesis) }
     it "renders" do
