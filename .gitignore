@@ -35,5 +35,5 @@
 yarn-debug.log*
 .yarn-integrity
 
-# Ignore the actual dotenv file
-.env
+# Ignore any environment dotenv files
+.env.*
