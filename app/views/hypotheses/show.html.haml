@@ -16,10 +16,9 @@
       %tr
         %td Tags
         %td
-          %strong= @hypothesis.family_tag&.title
-          - if @hypothesis.non_family_tags.any?
+          - if @hypothesis.tags.any?
             %ul
-              - @hypothesis.non_family_tags.each do |tag|
+              - @hypothesis.tags.each do |tag|
                 %li
                   = tag.title
       %tr
