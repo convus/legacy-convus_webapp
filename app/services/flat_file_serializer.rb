@@ -1,8 +1,9 @@
+# Outputs a current version of the database
+
 class FlatFileSerializer
   FILES_PATH = File.path(ENV["FLAT_FILE_OUT_PATH"])
 
   class << self
-
     def write_all_files
       write_all_hypotheses
       write_all_citations
@@ -11,7 +12,7 @@ class FlatFileSerializer
     end
 
     def write_all_hypotheses
-      Hypothesis.find_each { |hypothesis| write_hypothesis(hypothesis) }
+      Hypothesis.approved.find_each { |hypothesis| write_hypothesis(hypothesis) }
     end
 
     def write_hypothesis(hypothesis)
