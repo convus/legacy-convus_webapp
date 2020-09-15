@@ -24,7 +24,7 @@ This explanation assumes you're familiar with developing Ruby on Rails applicati
 
 - `bin/rake db:create db:migrate db:test:prepare` to setup the database
 
-- `cp .env.example .env` and fill in the values for your [GitHub OAuth application](https://github.com/settings/applications/new) in the new `.env` file (required for authentication)
+- `cp .env .env.development` and fill in the values for your [GitHub OAuth application](https://github.com/settings/applications/new) in the new `.env.development` file (required for authentication)
 
 - `./start` start the server.
 

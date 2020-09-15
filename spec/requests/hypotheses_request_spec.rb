@@ -53,7 +53,7 @@ RSpec.describe "/hypotheses", type: :request do
           assignable_kind: "article",
           url_is_direct_link_to_full_text: "0",
           authors_str: "\nZack\n George\n",
-          published_at_str: "1990-12-2",
+          published_date_str: "1990-12-2",
           url: "https://example.com/something-of-interest"
         }
       end
@@ -116,7 +116,7 @@ RSpec.describe "/hypotheses", type: :request do
           expect(citation.publication).to be_present
           expect(citation.publication_title).to eq "example.com"
           expect(citation.authors).to eq(["Zack", "George"])
-          expect(citation.published_at).to be_within(5).of Time.at(660124800)
+          expect(citation.published_date_str).to eq "1990-12-02"
           expect(citation.url_is_direct_link_to_full_text).to be_falsey
           expect(citation.creator).to eq current_user
         end

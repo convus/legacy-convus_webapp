@@ -13,6 +13,7 @@ class Hypothesis < ApplicationRecord
   accepts_nested_attributes_for :citations
 
   scope :direct_quotation, -> { where(has_direct_quotation: true) }
+  scope :approved, -> { where.not(id: nil) } # TODO: when creating, wait for approval
 
   def direct_quotation?
     has_direct_quotation || hypothesis_citations.direct_quotation.any?
@@ -29,5 +30,9 @@ class Hypothesis < ApplicationRecord
     }
     hypothesis_tags.where.not(tag_id: new_ids).destroy_all
     tags
+  end
+
+  def flat_file_name(root_path)
+    File.join(root_path, "hypotheses", "#{slug}.yml")
   end
 end

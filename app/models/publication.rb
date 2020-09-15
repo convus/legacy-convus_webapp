@@ -7,6 +7,7 @@ class Publication < ApplicationRecord
   before_validation :set_calculated_attributes
 
   scope :published_retractions, -> { where(has_published_retractions: true) }
+  scope :alphabetical, -> { reorder("lower(title)") }
 
   def self.friendly_find(str)
     super || matching_base_domains(str).first
