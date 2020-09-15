@@ -2,32 +2,32 @@ class Hypothesis < ApplicationRecord
   include TitleSluggable
 
   belongs_to :creator, class_name: "User"
-  belongs_to :family_tag, class_name: "Tag"
 
   has_many :hypothesis_citations
   has_many :citations, through: :hypothesis_citations
   has_many :hypothesis_tags
   has_many :tags, through: :hypothesis_tags
 
-  validates_presence_of :creator_id, :family_tag
+  validates_presence_of :creator_id
 
   accepts_nested_attributes_for :citations
 
   scope :direct_quotation, -> { where(has_direct_quotation: true) }
 
-  before_validation :set_calculated_attributes
-
   def direct_quotation?
     has_direct_quotation || hypothesis_citations.direct_quotation.any?
   end
 
-  def non_family_tags
-    tags.where.not(id: family_tag_id)
+  def tags_string
+    tags.alphabetical.pluck(:title).join(", ")
   end
 
-  def set_calculated_attributes
-    if family_tag.present? && family_tag.slug != "uncategorized"
-      hypothesis_tags.build(tag_id: family_tag_id) unless tags.map(&:title).include?(family_tag.title)
-    end
+  def tags_string=(val)
+    new_tags = (val.is_a?(Array) ? val : val.split(/,|\n/)).reject(&:blank?)
+    new_ids = new_tags.map { |string|
+      hypothesis_tags.build(tag_id: Tag.find_or_create_for_title(string)&.id)
+    }
+    hypothesis_tags.where.not(tag_id: new_ids).destroy_all
+    tags
   end
 end

@@ -9,7 +9,6 @@ Rails.application.routes.draw do
 
   resources :citations, :publications, :hypotheses
 
-
   authenticate :user, lambda { |u| u.developer? } do
     mount Sidekiq::Web, at: "/sidekiq"
   end

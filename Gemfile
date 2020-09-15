@@ -45,13 +45,11 @@ group :production do
 end
 
 group :development, :test do
-  gem "dotenv-rails" # Environmental variables
-  gem "rspec"
+  gem "dotenv-rails" # Environmental variables, not used in production
+  gem "rspec" # Testing
   gem "rspec-rails"
   gem "standard" # Ruby linter
   gem "factory_bot_rails"
-  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  # gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
 end
 
 group :development do

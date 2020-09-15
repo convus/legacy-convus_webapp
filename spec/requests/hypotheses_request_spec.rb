@@ -10,7 +10,6 @@ RSpec.describe "/hypotheses", type: :request do
     expect(response).to render_template("hypotheses/index")
   end
 
-
   describe "show" do
     let(:subject) { FactoryBot.create(:hypothesis) }
     it "renders" do
@@ -46,8 +45,8 @@ RSpec.describe "/hypotheses", type: :request do
     end
 
     describe "create" do
-      let(:tag) { FactoryBot.create(:tag) }
-      let(:valid_hypothesis_params) { {title: "This seems like the truth", family_tag_id: tag.id} }
+      let(:tag) { FactoryBot.create(:tag, "Economy") }
+      let(:valid_hypothesis_params) { {title: "This seems like the truth", tags_string: "economy\n"} }
       let(:valid_citation_params) do
         {
           title: "This citation is very important",
@@ -87,7 +86,7 @@ RSpec.describe "/hypotheses", type: :request do
           {
             title: "party time is now",
             has_direct_quotation: "1",
-            family_tag_id: tag.id,
+            tags_string: "parties, Economy",
             citations_attributes: valid_citation_params
           }
         end
@@ -106,6 +105,7 @@ RSpec.describe "/hypotheses", type: :request do
           expect(hypothesis.citations.count).to eq 1
           expect(hypothesis.has_direct_quotation).to be_truthy
           expect(hypothesis.direct_quotation?).to be_truthy
+          expect(hypothesis.tags_string).to eq "Economy, parties"
 
           expect(Citation.count).to eq 1
           citation = Citation.last

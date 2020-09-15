@@ -3,16 +3,19 @@ class Tag < ApplicationRecord
 
   TAXONOMY_ENUM = {
     domain_rank: 0,
-    family_rank: 5
+    family_rank: 5,
+    niche_rank: 10
   }
 
-  has_many :hypothesis_tags
+  has_many :hypothesis_tags, dependent: :destroy
   has_many :hypotheses, through: :hypothesis_tags
 
   enum taxonomy: TAXONOMY_ENUM
 
-  def self.uncategorized
-    friendly_find("uncategorized") ||
-      create(title: "uncategorized", taxonomy: "family_rank")
+  scope :alphabetical, -> { reorder("lower(title)") }
+
+  def self.find_or_create_for_title(str)
+    return nil unless str.present?
+    friendly_find(str) || create(title: str.strip)
   end
 end

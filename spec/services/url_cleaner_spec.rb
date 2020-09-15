@@ -50,4 +50,16 @@ RSpec.describe UrlCleaner do
       expect(subject.without_utm("https://www.nationalreview.com/2020/09/bring-back-the-bison/?utm_source=recirc-desktop&utm_medium=article&UTM_CAMPAIGN=river&somethingimportant=33333utm&utm_content=top-bar-latest&utm_term=second")).to eq target
     end
   end
+
+  describe "with_http" do
+    it "returns with http" do
+      expect(subject.with_http("example.com")).to eq "http://example.com"
+    end
+    it "doesn't modify https" do
+      expect(subject.with_http("https://www.nationalreview.com/2020/09/?")).to eq "https://www.nationalreview.com/2020/09/?"
+    end
+    it "non-urls returns without http" do
+      expect(subject.with_http("whatever")).to eq "whatever"
+    end
+  end
 end
