@@ -31,8 +31,11 @@ class UrlCleaner
     end
 
     def with_http(str)
-      return str unless str.present?
-      str.start_with?(/http/i) ? str : "http://#{str}"
+      return str unless str.present? && str.match?(/\./)
+      result = str.start_with?(/http/i) ? str : "http://#{str}"
+      URI.parse(result).host && result
+    rescue URI::InvalidURIError
+      str
     end
 
     def without_base_domain(str)
