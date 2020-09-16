@@ -51,7 +51,7 @@ unless ENV["CIRCLECI"]
         expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
         expect(hypothesis.tags.count).to eq 1
         expect(list_of_files).to eq([])
-        filename = hypothesis.flat_file_name(base_dir)
+        hypothesis.flat_file_name(base_dir)
         expect(file_without_base_dir(hypothesis.flat_file_name(base_dir))).to eq target_filename
         subject.write_approved_hypotheses
         expect(list_of_files).to eq([target_filename])
@@ -63,7 +63,7 @@ unless ENV["CIRCLECI"]
       let(:target_filename) { "citations/the-hill-pelosi-digs-in-as-pressure-builds-for-covid-19-deal.yml" }
       it "writes the files" do
         expect(list_of_files).to eq([])
-        filename = citation.flat_file_name(base_dir)
+        citation.flat_file_name(base_dir)
         expect(file_without_base_dir(citation.flat_file_name(base_dir))).to eq target_filename
         subject.write_all_citations
         expect(list_of_files).to eq([target_filename])
