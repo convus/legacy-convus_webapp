@@ -14,6 +14,6 @@ class HypothesisSerializer < ApplicationSerializer
   end
 
   def citation_links
-    object.citations.pluck(:slug).map { |u| "#{BASE_URL}/citations/#{u}" }
+    object.citations.pluck(:slug).map { |u| "#{ENV["BASE_URL"]}/citations/#{u}" }
   end
 end
