@@ -10,5 +10,6 @@ class Slugifyer
       .gsub(/([^A-Za-z0-9_\-]+)/, "-").squeeze("-") # Remove any lingering double -
       .gsub(/(\s|-|\+|_)+/, "-") # Replace spaces and underscores with -
       .gsub(/-&-/, "-amp-").squeeze("-") # Remove any lingering double -
+      .gsub(/-\z/, "") # Remove trailing - ... this might cause problems down the road
   end
 end

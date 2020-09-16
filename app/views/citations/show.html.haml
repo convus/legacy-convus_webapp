@@ -16,7 +16,7 @@
       %tr
         %td URL
         %td
-          = link_to UrlCleaner.pretty_url(@citation.url), @citation.url
+          = link_to @citation.file_path, @citation.url
       %tr.small
         %td URL direct link?
         %td= @citation.url_is_direct_link_to_full_text
