@@ -105,8 +105,20 @@ class Citation < ApplicationRecord
     kind_data[:score]
   end
 
+  def file_pathnames
+    ["citations", "#{slug}.yml"]
+  end
+
+  def file_path
+    file_pathnames.join("/")
+  end
+
   def flat_file_name(root_path)
-    File.join(root_path, "citations", "#{slug}.yml")
+    File.join(root_path, *file_pathnames)
+  end
+
+  def github_html_url
+    GithubIntegration.content_html_url(file_path)
   end
 
   def set_calculated_attributes

@@ -32,7 +32,19 @@ class Hypothesis < ApplicationRecord
     tags
   end
 
+  def file_pathnames
+    ["hypotheses", "#{slug}.yml"]
+  end
+
+  def file_path
+    file_pathnames.join("/")
+  end
+
   def flat_file_name(root_path)
-    File.join(root_path, "hypotheses", "#{slug}.yml")
+    File.join(root_path, *file_pathnames)
+  end
+
+  def github_html_url
+    GithubIntegration.content_html_url(file_path)
   end
 end

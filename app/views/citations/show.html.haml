@@ -8,6 +8,9 @@
         %td Title
         %td= @citation.title
       %tr
+        %td GitHub
+        %td= link_to UrlCleaner.pretty_url(@citation.github_html_url), @citation.github_html_url
+      %tr
         %td ID
         %td= @citation.id
       %tr
