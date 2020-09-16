@@ -8,7 +8,7 @@ RSpec.describe Slugifyer do
       expect(subject.slugify("Universal Health Care ")).to eq("universal-health-care")
     end
     it "handles multiple spaces" do
-      expect(subject.slugify("something    thingggG")).to eq "something-thingggg"
+      expect(subject.slugify("something    thingggG-")).to eq "something-thingggg"
     end
     it "handles &" do
       expect(subject.slugify("Bikes &amp; Trikes")).to eq "bikes-amp-trikes"
@@ -30,7 +30,7 @@ RSpec.describe Slugifyer do
       expect(subject.slugify("As Soon As Possible Party (ASAPP) ")).to eq("as-soon-as-possible-party-asapp")
     end
     it "returns without periods" do
-      expect(subject.slugify("Washington D.C.")).to eq("washington-d-c-")
+      expect(subject.slugify("Washington D.C.")).to eq("washington-d-c")
     end
     it "returns without slashes" do
       expect(subject.slugify("Willowbrooks / Rosa Parks Station")).to eq("willowbrooks-rosa-parks-station")

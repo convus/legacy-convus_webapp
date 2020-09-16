@@ -8,6 +8,9 @@
         %td Title
         %td= @hypothesis.title
       %tr
+        %td GitHub
+        %td= link_to @hypothesis.file_path, @hypothesis.github_html_url
+      %tr
         %td ID
         %td= @hypothesis.id
       %tr.small
