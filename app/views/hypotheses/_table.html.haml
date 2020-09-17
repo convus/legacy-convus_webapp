@@ -20,7 +20,8 @@
             = hypothesis.title
             = link_to link_emoji, hypothesis_path(hypothesis.to_param), class: "link-with-emoji"
           %td
-            = hypothesis.tags_string
+            - hypothesis.tags.each do |tag|
+              %span.tag-bubble= tag.title
           %td
             %span.convertTime
               = l hypothesis.created_at, format: :convert_time
@@ -28,5 +29,8 @@
             - citation = hypothesis.citations.each do |citation|
               - next if citation.id == skip_citation_id
               .d-block
-                = citation.title
+                - if citation.title_url? # If it's a URL, truncate so it isn't too ugly
+                  = citation.title.truncate(50)
+                - else
+                  = citation.title
                 = link_to link_emoji, citation_path(citation.to_param), class: "link-with-emoji"

@@ -8,6 +8,7 @@ $max-main-width: 800px;
   padding: 1rem 2rem 2rem;
   margin: 0 auto;
   position: relative;
+  max-width: 100%;
 }
 
 .main-nav {
@@ -74,24 +75,12 @@ small,
   text-decoration: underline;
 }
 
-.uuid-display {
-  white-space: nowrap;
-}
-
 .paginate-wrapper {
   @extend .text-right;
   margin-bottom: 2rem;
 }
 
-.link-with-emoji {
-  text-decoration: none;
-  small {
-    // The non-emoji part
-    display: none;
-    text-decoration: underline;
-  }
-}
-
+@import "minimalism/actual_styles"; // Things we actually want
 @import "minimalism/base_styles"; // TODO: remove when/if bootstrap imported
 @import "minimalism/table_extensions";
 
