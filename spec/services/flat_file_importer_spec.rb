@@ -46,7 +46,7 @@ unless ENV["CIRCLECI"]
         citation_id = Citation.first.id
         Hypothesis.destroy_all
         Citation.destroy_all
-        # TODO: import publication and tag
+        # TODO: import publications and tags
         # publication_id = Publication.first.id
         # tag_id = Tag.first.id
         # Publication.destroy_all
