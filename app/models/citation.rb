@@ -17,7 +17,7 @@ class Citation < ApplicationRecord
   has_many :hypothesis_citations
   has_many :hypotheses, through: :hypothesis_citations
 
-  validates_presence_of :creator_id, :url
+  validates_presence_of :url
 
   enum kind: KIND_ENUM
 
@@ -48,10 +48,16 @@ class Citation < ApplicationRecord
   end
 
   def self.friendly_find_fallback(str)
-    matched = where(url: UrlCleaner.without_utm(str)).first
-    return matched if matched.present?
-    matched = where("lower(url) ILIKE ?", str.to_s.downcase.strip).first
-    return matched if matched.present?
+    # Only try the URL matching if it looks like a URL
+    if UrlCleaner.looks_like_url?(str)
+      matched = where(url: UrlCleaner.without_utm(str)).first
+      return matched if matched.present?
+      matched = where("lower(url) ILIKE ?", str.to_s.downcase.strip).first
+      # If the beginning of the URL is missing (eg no http) try to make that work
+      matched ||= where("lower(url) ILIKE ?", "%#{str.to_s.downcase.strip}").first
+      # TODO: remove https://www if still no match, as more fallback
+      return matched if matched.present?
+    end
     slugged = Slugifyer.slugify(str)
     where("slug ILIKE ?", "#{slugged}%").first || where("slug ILIKE ?", "%#{slugged}%").first
   end
@@ -74,6 +80,10 @@ class Citation < ApplicationRecord
 
   def authors_str=(val)
     self.authors = val.split(/\n/).map(&:strip).reject(&:blank?)
+  end
+
+  def publication_title=(val)
+    self.publication = Publication.friendly_find(val) || Publication.create(title: val)
   end
 
   def published_date_str

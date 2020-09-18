@@ -45,5 +45,9 @@ class UrlCleaner
       return str unless base_domain.present?
       str.split(base_domain).last&.gsub(/\A\//, "")&.gsub(/\/\z/, "")
     end
+
+    def looks_like_url?(str)
+      str.match?(/\//)
+    end
   end
 end
