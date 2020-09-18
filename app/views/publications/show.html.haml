@@ -19,7 +19,7 @@
       %tr
         %td Urls
         %td
-          = @publication.home_url
+          = link_to @publication.home_url, @publication.home_url
           - if @publication.base_domains.present?
             %ul
               - @publication.base_domains.each do |d|

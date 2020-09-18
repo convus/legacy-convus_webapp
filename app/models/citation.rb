@@ -121,6 +121,10 @@ class Citation < ApplicationRecord
     GithubIntegration.content_html_url(file_path)
   end
 
+  def title_url?
+    url.match?(title)
+  end
+
   def set_calculated_attributes
     self.url = UrlCleaner.with_http(UrlCleaner.without_utm(url))
     self.creator_id ||= hypotheses.first&.creator_id
