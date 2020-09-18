@@ -32,4 +32,20 @@ RSpec.describe Hypothesis, type: :model do
       end
     end
   end
+
+  describe "citation_urls" do
+    let!(:citation) { FactoryBot.create(:citation, title: "some citation", url: "https://bikeindex.org/about") }
+    let(:hypothesis) { FactoryBot.create(:hypothesis, title: "hypothesis-1") }
+    it "assigns" do
+      hypothesis.update(citation_urls: "bikeindex.org/about")
+      expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
+    end
+    context "new url" do
+      it "assigns both" do
+        hypothesis.update(citation_urls: ["https://bikeindex.org/about", "https://bikeindex.org/serials"])
+        expect(hypothesis.citations.pluck(:id)).to include(citation.id)
+        expect(hypothesis.citation_urls).to match_array(["https://bikeindex.org/about", "https://bikeindex.org/serials"])
+      end
+    end
+  end
 end

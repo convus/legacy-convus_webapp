@@ -8,8 +8,6 @@ class Hypothesis < ApplicationRecord
   has_many :hypothesis_tags
   has_many :tags, through: :hypothesis_tags
 
-  validates_presence_of :creator_id
-
   accepts_nested_attributes_for :citations
 
   scope :direct_quotation, -> { where(has_direct_quotation: true) }
@@ -26,10 +24,27 @@ class Hypothesis < ApplicationRecord
   def tags_string=(val)
     new_tags = (val.is_a?(Array) ? val : val.split(/,|\n/)).reject(&:blank?)
     new_ids = new_tags.map { |string|
-      hypothesis_tags.build(tag_id: Tag.find_or_create_for_title(string)&.id)
+      tag_id = Tag.find_or_create_for_title(string)&.id
+      hypothesis_tags.build(tag_id: tag_id)
+      tag_id
     }
     hypothesis_tags.where.not(tag_id: new_ids).destroy_all
     tags
+  end
+
+  def citation_urls
+    citations.pluck(:url)
+  end
+
+  def citation_urls=(val)
+    new_citations = (val.is_a?(Array) ? val : val.split(/,|\n/)).reject(&:blank?)
+    new_ids = new_citations.map { |string|
+      citation_id = Citation.find_or_create_by_params({url: string})&.id
+      hypothesis_citations.build(citation_id: citation_id)
+      citation_id
+    }
+    hypothesis_citations.where.not(citation_id: new_ids).destroy_all
+    citations
   end
 
   def file_pathnames

@@ -114,4 +114,28 @@ RSpec.describe Citation, type: :model do
       end
     end
   end
+
+  describe "publication_title" do
+    # TODO: make this use both the url and the title, if possible
+    let(:citation) { Citation.new }
+    it "assigns" do
+      expect {
+        citation.publication_title = "New York Times"
+      }.to change(Publication, :count).by 1
+      expect(citation.publication_title).to eq "New York Times"
+      expect {
+        citation.publication_title = "new york  times"
+      }.to_not change(Publication, :count)
+    end
+    context "matching publication" do
+      let!(:publication) { FactoryBot.create(:publication, title: "Nature") }
+      it "assigns, doesn't create" do
+        expect {
+          citation.publication_title = "nature "
+        }.to_not change(Publication, :count)
+        expect(citation.publication_title).to eq "Nature"
+        expect(citation.publication).to eq publication
+      end
+    end
+  end
 end
