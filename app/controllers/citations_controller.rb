@@ -5,7 +5,7 @@ class CitationsController < ApplicationController
   def index
     page = params[:page] || 1
     per_page = params[:per_page] || 500
-    @citations = Citation.reorder(created_at: :desc).includes(:publication)
+    @citations = Citation.approved.reorder(created_at: :desc).includes(:publication)
       .page(page).per(per_page)
   end
 

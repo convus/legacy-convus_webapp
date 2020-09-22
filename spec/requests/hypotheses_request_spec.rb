@@ -73,22 +73,25 @@ RSpec.describe "/hypotheses", type: :request do
         }
       end
       it "creates" do
-        expect(Hypothesis.count).to eq 0
-        Sidekiq::Worker.clear_all
-        expect {
-          post base_url, params: {hypothesis: valid_hypothesis_params.merge(approved_at: Time.current.to_s)}
-        }.to change(Hypothesis, :count).by 1
-        expect(CreateHypothesisPullRequestJob.jobs.count).to eq 1
-        expect(response).to redirect_to hypotheses_path
-        expect(flash[:success]).to be_present
+        VCR.use_cassette("hypotheses_controller-create_with_citation", match_requests_on: [:method]) do
+          expect(Hypothesis.count).to eq 0
+          Sidekiq::Worker.clear_all
+          Sidekiq::Testing.inline! do
+            expect {
+              post base_url, params: {hypothesis: valid_hypothesis_params.merge(approved_at: Time.current.to_s)}
+            }.to change(Hypothesis, :count).by 1
+          end
+          expect(response).to redirect_to hypotheses_path
+          expect(flash[:success]).to be_present
 
-        hypothesis = Hypothesis.last
-        expect(hypothesis.title).to eq valid_hypothesis_params[:title]
-        expect(hypothesis.creator).to eq current_user
-        expect(hypothesis.citations.count).to eq 0
-        expect(hypothesis.direct_quotation?).to be_falsey
-        expect(hypothesis.pull_request_number).to be_blank
-        expect(hypothesis.approved?).to be_falsey
+          hypothesis = Hypothesis.last
+          expect(hypothesis.title).to eq valid_hypothesis_params[:title]
+          expect(hypothesis.creator).to eq current_user
+          expect(hypothesis.citations.count).to eq 0
+          expect(hypothesis.direct_quotation?).to be_falsey
+          expect(hypothesis.pull_request_number).to be_present
+          expect(hypothesis.approved?).to be_falsey
+        end
       end
       context "invalid params" do
         # Real lazy ;)
@@ -129,7 +132,7 @@ RSpec.describe "/hypotheses", type: :request do
             expect(hypothesis.has_direct_quotation).to be_truthy
             expect(hypothesis.direct_quotation?).to be_truthy
             expect(hypothesis.tags_string).to eq "Economy, parties"
-            expect(hypothesis.pull_request_number).to be_present
+
             expect(hypothesis.approved?).to be_falsey
 
             expect(Citation.count).to eq 1
@@ -137,6 +140,8 @@ RSpec.describe "/hypotheses", type: :request do
             expect(citation.title).to eq valid_citation_params[:title]
             expect(citation.url).to eq valid_citation_params[:url]
             expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
+            expect(citation.approved?).to be_truthy
+            expect(citation.pull_request_number).to be_blank
 
             expect(citation.publication).to be_present
             expect(citation.publication_title).to eq "example.com"

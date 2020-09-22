@@ -5,19 +5,10 @@ class FlatFileSerializer
 
   class << self
     def write_all_files
-      write_approved_hypotheses
-      write_all_citations
+      Hypothesis.approved.find_each { |hypothesis| write_hypothesis(hypothesis) }
+      Citation.approved.find_each { |citation| write_citation(citation) }
       write_all_tags
       write_all_publications
-    end
-
-    def write_approved_hypotheses
-      Hypothesis.approved.find_each { |hypothesis| write_hypothesis(hypothesis) }
-    end
-
-    def hypothesis_file_content(hypothesis)
-      # Serialize to yaml - stringify keys so the keys don't start with :, to make things easier to read
-      HypothesisSerializer.new(hypothesis, root: false).as_json.deep_stringify_keys.to_yaml
     end
 
     def write_hypothesis(hypothesis)
@@ -25,17 +16,8 @@ class FlatFileSerializer
       # Create the intermidiary directories
       FileUtils.mkdir_p(dirname) unless File.directory?(dirname)
       File.open(hypothesis.flat_file_name(FILES_PATH), "w") do |f|
-        f.puts(hypothesis_file_content(hypothesis))
+        f.puts(hypothesis.flat_file_content)
       end
-    end
-
-    def write_all_citations
-      Citation.find_each { |citation| write_citation(citation) }
-    end
-
-    def citation_file_content(citation)
-      # Serialize to yaml - stringify keys so the keys don't start with :, to make things easier to read
-      CitationSerializer.new(citation, root: false).as_json.deep_stringify_keys.to_yaml
     end
 
     def write_citation(citation)
@@ -43,7 +25,7 @@ class FlatFileSerializer
       # Create the intermidiary directories
       FileUtils.mkdir_p(dirname) unless File.directory?(dirname)
       File.open(citation.flat_file_name(FILES_PATH), "w") do |f|
-        f.puts(citation_file_content(citation))
+        f.puts(citation.flat_file_content)
       end
     end
 

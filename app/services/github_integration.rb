@@ -49,10 +49,21 @@ class GithubIntegration
     branch_name = "proposed-hypothesis-#{hypothesis.id}"
     @current_branch = create_branch(branch_name)
     message = "Hypothesis: #{hypothesis.title}"
-    create_file_on_current_branch(hypothesis.file_path, FlatFileSerializer.hypothesis_file_content(hypothesis), message)
+    create_file_on_current_branch(hypothesis.file_path, hypothesis.flat_file_content, message)
     pull_request = client.create_pull_request(CONTENT_REPO, "main", current_branch_name, message)
     number = pull_request.url.split("/pulls/").last
     hypothesis.update(pull_request_number: number)
+    pull_request
+  end
+
+  def create_citation_pull_request(citation)
+    branch_name = "proposed-citation-#{citation.id}"
+    @current_branch = create_branch(branch_name)
+    message = "Citation: #{citation.title}"
+    create_file_on_current_branch(citation.file_path, citation.flat_file_content, message)
+    pull_request = client.create_pull_request(CONTENT_REPO, "main", current_branch_name, message)
+    number = pull_request.url.split("/pulls/").last
+    citation.update(pull_request_number: number)
     pull_request
   end
 end

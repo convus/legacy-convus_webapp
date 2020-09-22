@@ -26,7 +26,7 @@ unless ENV["CIRCLECI"]
     before { delete_existing_files }
 
     describe "write_all_files" do
-      let!(:citation) { FactoryBot.create(:citation, title: "some citation", publication: publication) }
+      let!(:citation) { FactoryBot.create(:citation_approved, title: "some citation", publication: publication) }
       let!(:hypothesis) { FactoryBot.create(:hypothesis_approved, title: "hypothesis-1") }
       let(:target_filenames) do
         [
@@ -43,7 +43,7 @@ unless ENV["CIRCLECI"]
     end
 
     describe "write_approved_hypotheses" do
-      let!(:citation) { FactoryBot.create(:citation, title: "Pelosi digs in as pressure builds for COVID-19 deal", publication: publication) }
+      let!(:citation) { FactoryBot.create(:citation_approved, title: "Pelosi digs in as pressure builds for COVID-19 deal", publication: publication) }
       let(:hypothesis) { FactoryBot.create(:hypothesis_approved, title: "US waiting for updated COVID-19 relief package", tags_string: "some tag", citations: [citation]) }
       let(:target_filename) { "hypotheses/us-waiting-for-updated-covid-19-relief-package.yml" }
       it "writes the files" do
@@ -53,19 +53,19 @@ unless ENV["CIRCLECI"]
         expect(list_of_files).to eq([])
         hypothesis.flat_file_name(base_dir)
         expect(file_without_base_dir(hypothesis.flat_file_name(base_dir))).to eq target_filename
-        subject.write_approved_hypotheses
+        Hypothesis.approved.find_each { |hypothesis| subject.write_hypothesis(hypothesis) }
         expect(list_of_files).to eq([target_filename])
       end
     end
 
     describe "write_all_citations" do
-      let!(:citation) { FactoryBot.create(:citation, title: "Pelosi digs in as pressure builds for COVID-19 deal", publication: publication) }
+      let!(:citation) { FactoryBot.create(:citation_approved, title: "Pelosi digs in as pressure builds for COVID-19 deal", publication: publication) }
       let(:target_filename) { "citations/the-hill/pelosi-digs-in-as-pressure-builds-for-covid-19-deal.yml" }
       it "writes the files" do
         expect(list_of_files).to eq([])
         citation.flat_file_name(base_dir)
         expect(file_without_base_dir(citation.flat_file_name(base_dir))).to eq target_filename
-        subject.write_all_citations
+        Citation.approved.find_each { |citation| subject.write_citation(citation) }
         expect(list_of_files).to eq([target_filename])
       end
     end

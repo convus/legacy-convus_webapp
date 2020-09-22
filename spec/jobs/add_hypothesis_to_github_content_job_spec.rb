@@ -1,7 +1,7 @@
 
 require "rails_helper"
 
-RSpec.describe CreateHypothesisPullRequestJob do
+RSpec.describe AddHypothesisToGithubContentJob do
   let(:subject) { described_class.new }
   let(:hypothesis) { FactoryBot.create(:hypothesis) }
   it "calls the github integration" do

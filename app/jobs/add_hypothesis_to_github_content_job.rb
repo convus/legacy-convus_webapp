@@ -1,4 +1,4 @@
-class CreateHypothesisPullRequestJob < ApplicationJob
+class AddHypothesisToGithubContentJob < ApplicationJob
   def perform(id)
     hypothesis = Hypothesis.find id
     return true if hypothesis.approved? || hypothesis.pull_request_number.present?

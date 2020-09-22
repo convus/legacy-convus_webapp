@@ -25,7 +25,7 @@ unless ENV["CIRCLECI"]
     def write_basic_files
       delete_existing_files
       publication = FactoryBot.create(:publication, title: "The Hill")
-      citation = FactoryBot.create(:citation, title: "some citation", publication: publication)
+      citation = FactoryBot.create(:citation_approved, title: "some citation", publication: publication)
       FactoryBot.create(:hypothesis_approved, title: "hypothesis-1", citation_urls: "#{citation.url},")
       FlatFileSerializer.write_all_files
     end

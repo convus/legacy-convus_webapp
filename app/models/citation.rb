@@ -23,8 +23,10 @@ class Citation < ApplicationRecord
   enum kind: KIND_ENUM
 
   before_validation :set_calculated_attributes
+  after_commit :add_to_github_content
 
   scope :by_creation, -> { reorder(:created_at) }
+  scope :approved, -> { where.not(approved_at: nil) }
 
   attr_accessor :assignable_kind
 
@@ -79,6 +81,10 @@ class Citation < ApplicationRecord
 
   def to_param
     path_slug
+  end
+
+  def approved?
+    approved_at.present?
   end
 
   def authors_str
@@ -139,8 +145,17 @@ class Citation < ApplicationRecord
     File.join(root_path, *file_pathnames)
   end
 
+  def flat_file_content
+    # Serialize to yaml - stringify keys so the keys don't start with :, to make things easier to read
+    CitationSerializer.new(self, root: false).as_json.deep_stringify_keys.to_yaml
+  end
+
   def github_html_url
-    GithubIntegration.content_html_url(file_path)
+    approved? ? GithubIntegration.content_html_url(file_path) : pull_request_url
+  end
+
+  def pull_request_url
+    GithubIntegration.pull_request_html_url(pull_request_number)
   end
 
   def title_url?
@@ -158,6 +173,11 @@ class Citation < ApplicationRecord
     if FETCH_WAYBACK_URL && url_is_direct_link_to_full_text
       self.wayback_machine_url ||= WaybackMachineIntegration.fetch_current_url(url)
     end
+  end
+
+  def add_to_github_content
+    return true if approved? || pull_request_number.present?
+    AddCitationToGithubContentJob.perform_async(id)
   end
 
   private

@@ -10,7 +10,7 @@ class Hypothesis < ApplicationRecord
 
   accepts_nested_attributes_for :citations
 
-  after_commit :create_pull_request_for_approval
+  after_commit :add_to_github_content
 
   scope :direct_quotation, -> { where(has_direct_quotation: true) }
   scope :approved, -> { where.not(approved_at: nil) }
@@ -65,6 +65,11 @@ class Hypothesis < ApplicationRecord
     File.join(root_path, *file_pathnames)
   end
 
+  def flat_file_content
+    # Serialize to yaml - stringify keys so the keys don't start with :, to make things easier to read
+    HypothesisSerializer.new(self, root: false).as_json.deep_stringify_keys.to_yaml
+  end
+
   def github_html_url
     approved? ? GithubIntegration.content_html_url(file_path) : pull_request_url
   end
@@ -73,8 +78,8 @@ class Hypothesis < ApplicationRecord
     GithubIntegration.pull_request_html_url(pull_request_number)
   end
 
-  def create_pull_request_for_approval
+  def add_to_github_content
     return true if approved? || pull_request_number.present?
-    CreateHypothesisPullRequestJob.perform_async(id)
+    AddHypothesisToGithubContentJob.perform_async(id)
   end
 end
