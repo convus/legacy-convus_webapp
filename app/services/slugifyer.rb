@@ -9,6 +9,13 @@ class Slugifyer
       .gsub(/-&-/, "-amp-") # Replace singular & with amp - since we permit & in names
       .gsub(/([^A-Za-z0-9_\-]+)/, "-").squeeze("-") # Remove any lingering double -
       .gsub(/(\s|-|\+|_)+/, "-") # Replace spaces and underscores with -
-      .gsub(/-&-/, "-amp-").squeeze("-").delete_suffix("-") # Remove lingering double and trailing - ... this might cause problems down the road
+      .gsub(/-&-/, "-amp-").squeeze("-") # Remove lingering double -
+      .delete_prefix("-").delete_suffix("-") # remove leading and trailing -
+  end
+
+  # Filenames are limited to 255 characters, so truncate the slug
+  # ... Leave space for the extension by truncating at 250
+  def self.filename_slugify(string)
+    slugify(string)&.truncate(250, omission: "")
   end
 end

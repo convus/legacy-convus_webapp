@@ -14,21 +14,27 @@ class Publication < ApplicationRecord
   end
 
   def self.matching_base_domains(str)
+    return none unless UrlCleaner.looks_like_url?(str)
     where("base_domains @> ?", [UrlCleaner.base_domain_without_www(str)].to_json)
   end
 
-  def self.create_for_url(str)
-    return nil unless str.present?
-    matching = friendly_find(str)
+  def self.find_or_create_by_params(title: nil, url: nil)
+    matching = friendly_find(title) || friendly_find(url)
     if matching.present?
-      matching.add_base_domain(str)
+      matching.add_base_domain(url) if url.present?
       matching.save if matching.changed? # Add any new base domains
       return matching
     end
-    base_domains = UrlCleaner.base_domains(str)
-    return nil unless base_domains.any?
-    home_url = str.split(base_domains.first).first + base_domains.first # Use .first because it will get with www.
-    create(title: base_domains.last, home_url: home_url)
+    publication = new(title: title)
+    if url.present?
+      base_domains = UrlCleaner.base_domains(url)
+      return nil if base_domains.none? && title.blank?
+      # Use .first for url because it will include www.
+      publication.home_url = url.split(base_domains.first).first + base_domains.first
+      publication.title ||= base_domains.last
+    end
+    publication.save
+    publication
   end
 
   def published_retractions?

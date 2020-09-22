@@ -16,7 +16,27 @@ RSpec.describe Citation, type: :model do
       expect(citation.title).to eq "2020/09/joe-bidens-money-misadventures"
       expect(citation.publication_id).to be_present
       expect(citation.publication.title).to eq "nationalreview.com"
-      expect(citation.slug).to eq("nationalreview-com-2020-09-joe-bidens-money-misadventures")
+      expect(citation.slug).to eq("2020-09-joe-bidens-money-misadventures")
+      expect(citation.file_path).to eq("citations/nationalreview-com/2020-09-joe-bidens-money-misadventures.yml")
+      expect(citation.title_url?).to be_truthy
+    end
+    context "really long URL" do
+      let(:url) { "https://www.researchgate.net//profile/Mark_Greenberg2/publication/312233343_Promoting_Healthy_Transition_to_College_through_Mindfulness_Training_with_1st_year_College_Students_Pilot_Randomized_Controlled_Trial/links/5ce8706f299bf14d95b76a58/Promoting-Healthy-Transition-to-College-through-Mindfulness-Training-with-1st-year-College-Students-Pilot-Randomized-Controlled-Trial.pdf" }
+      let(:target) { "profile-mark-greenberg2-publication-312233343-promoting-healthy-transition-to-college-through-mindfulness-training-with-1st-year-college-students-pilot-randomized-controlled-trial-links-5ce8706f299bf14d95b76a58-promoting-healthy-transition-to-college" }
+      it "slugs, limits to 250 characters" do
+        expect(citation.title).to eq "/profile/Mark_Greenberg2/publication/312233343_Promoting_Healthy_Transition_to_College_through_Mindfulness_Training_with_1st_year_College_Students_Pilot_Randomized_Controlled_Trial/links/5ce8706f299bf14d95b76a58/Promoting-Healthy-Transition-to-College-through-Mindfulness-Training-with-1st-year-College-Students-Pilot-Randomized-Controlled-Trial.pdf"
+        expect(citation.publication_id).to be_present
+        expect(citation.publication.title).to eq "researchgate.net"
+        expect(citation.title.length).to be > 255
+        expect(citation.slug).to eq target
+        expect(citation.slug.length).to be < 255 # File name length limit
+        expect(citation.title_url?).to be_truthy
+        # Test that it still finds, even with trucatedness
+        expect(Citation.find_by_slug_or_path_slug(url.gsub("https://www.", ""))).to eq citation
+        expect(Citation.friendly_find(url.gsub("https://www.", ""))).to eq citation
+        expect(Citation.friendly_find(url.gsub("https://www.researchgate.net", ""))).to eq citation
+        expect(Citation.friendly_find(target.gsub("/researchgate-net", ""))).to eq citation
+      end
     end
     context "URL is not a url" do
       let(:url) { "This isn't a URL" }
@@ -34,10 +54,33 @@ RSpec.describe Citation, type: :model do
         expect(citation.title).to eq "Joe Biden’s Money Misadventures"
         expect(citation.publication_id).to eq publication.id
         expect(citation.publication.title).to eq "National Review"
-        expect(citation.slug).to eq("national-review-joe-biden-s-money-misadventures")
+        expect(citation.slug).to eq("joe-biden-s-money-misadventures")
         expect(citation.url).to eq "https://www.nationalreview.com/2020/09/joe-bidens-money-misadventures"
         expect(Citation.friendly_find("Joe Biden’s Money Misadventures")).to eq citation
         expect(Citation.friendly_find(url)).to eq citation
+      end
+    end
+    context "collision of slugs" do
+      let!(:citation1) { FactoryBot.create(:citation, url: "https://magazine-research.com", title: "Cool research on novel things", publication_title: "Magazine") }
+      let!(:citation2) { FactoryBot.create(:citation, url: "https://website-research.com", title: "Cool research on novel! Things", publication_title: "Website", created_at: Time.current - 1.hour) }
+      let(:citation2_dupe) { FactoryBot.build(:citation, url: "https://website-research.com", title: "Cool research on novel things", publication_title: "Website") }
+      let(:target_slug) { "cool-research-on-novel-things" }
+      it "permits the citations to have the same slug" do
+        expect(citation1.slug).to eq target_slug
+        expect(citation2.slug).to eq target_slug
+        expect(citation1.file_path).to eq "citations/magazine/#{target_slug}.yml"
+        expect(citation2.file_path).to eq "citations/website/#{target_slug}.yml"
+        expect(citation1.created_at).to be > citation2.created_at
+        # It doesn't save an actual dupe
+        expect(citation2_dupe.save).to be_falsey
+        expect(citation2_dupe.errors.full_messages.join("")).to match("been taken")
+        # It finds the citations in expected ways
+        expect(Citation.friendly_find(target_slug).id).to eq citation2.id # Because it's the first created
+        expect(Citation.friendly_find("magazine/#{target_slug}")&.id).to eq citation1.id
+        expect(Citation.friendly_find("magazine/#{target_slug}.yml")&.id).to eq citation1.id
+        expect(Citation.friendly_find("website/#{target_slug}")&.id).to eq citation2.id
+        expect(Citation.friendly_find("website/#{target_slug}.yml")&.id).to eq citation2.id
+        expect(Citation.friendly_find("magazine/#{target_slug}")&.id).to eq citation1.id
       end
     end
   end
@@ -68,7 +111,7 @@ RSpec.describe Citation, type: :model do
       let(:citation) { Citation.new(assignable_kind: "", publication: publication) }
       it "sets article_by_publication_with_retractions" do
         expect(citation.kind).to eq "article_by_publication_with_retractions"
-        expect(citation.kind_score).to eq 3
+        expect(citation.kind_score).to eq 2
       end
       context "assigning article_by_publication_with_retractions" do
         let(:assign_kind) { "article_by_publication_with_retractions" }
@@ -81,14 +124,14 @@ RSpec.describe Citation, type: :model do
       let(:assign_kind) { "quote_from_involved_party" }
       it "is quote_from_involved_party" do
         expect(citation.kind).to eq "quote_from_involved_party"
-        expect(citation.kind_score).to eq 10
+        expect(citation.kind_score).to eq 5
       end
     end
     context "peer_reviewed" do
       let(:assign_kind) { "peer_reviewed" }
       it "sets closed_access" do
         expect(citation.kind).to eq "closed_access_peer_reviewed"
-        expect(citation.kind_score).to eq 2
+        expect(citation.kind_score).to eq 3
       end
       context "with url_is_direct_link_to_full_text" do
         let(:citation) { Citation.new(assignable_kind: assign_kind, url_is_direct_link_to_full_text: true) }
@@ -121,7 +164,12 @@ RSpec.describe Citation, type: :model do
     it "assigns" do
       expect {
         citation.publication_title = "New York Times"
+        citation.url = "https://www.nytimes.com/interactive/2020/09/21/us/covid-schools.html"
+        citation.set_calculated_attributes
       }.to change(Publication, :count).by 1
+      publication = citation.publication
+      expect(publication.title).to eq "New York Times"
+      expect(publication.home_url).to eq "https://www.nytimes.com"
       expect(citation.publication_title).to eq "New York Times"
       expect {
         citation.publication_title = "new york  times"

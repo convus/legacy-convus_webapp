@@ -9,7 +9,7 @@ module TitleSluggable
   end
 
   def set_slug
-    self.slug = Slugifyer.slugify(title)
+    self.slug = Slugifyer.filename_slugify(title)
   end
 
   # All title slugs want this

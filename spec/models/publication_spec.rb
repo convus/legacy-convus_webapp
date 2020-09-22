@@ -10,28 +10,46 @@ RSpec.describe Publication, type: :model do
     end
   end
 
-  describe "create_for_url" do
-    it "creates once for a base" do
-      publication = Publication.create_for_url("https://www.nytimes.com/2020/09/11/us/wildfires-live-updates.html")
-      expect(publication.home_url).to eq "https://www.nytimes.com"
-      expect(publication.title).to eq "nytimes.com"
-      expect {
-        expect(Publication.create_for_url("https://www.nytimes.com/interactive/2020/us/fires-map-tracker.html").id).to eq publication.id
-      }.to_not change(Publication, :count)
-      expect(Publication.friendly_find("https://www.nytimes.com/interactive/2020")).to eq publication
+  describe "find_or_create_by_params" do
+    it "creates for title" do
+      result = Publication.find_or_create_by_params(title: "Some Publication")
+      expect(result.title).to eq "Some Publication"
+      expect(result.id).to be_present
+      expect(Publication.find_or_create_by_params(title: "Some Publication").id).to eq result.id
     end
-    context "with subdomain" do
-      it "creates with subdomain" do
-        publication = Publication.create_for_url("blog.bigagnes.com/self-support-on-idahos-south-fork/")
-        expect(publication.home_url).to eq "http://blog.bigagnes.com"
-        expect(publication.title).to eq "blog.bigagnes.com"
+    context "url and title" do
+      it "creates with url and title" do
+        result = Publication.find_or_create_by_params(title: "another Publication", url: "https://publication.com/stuff/things/22222")
+        expect(result.title).to eq "another Publication"
+        expect(result.id).to be_present
+        expect(result.home_url).to eq "https://publication.com"
+        expect(Publication.find_or_create_by_params(title: "Another Publication").id).to eq result.id
+        expect(Publication.find_or_create_by_params(url: "https://publication.com/other/wow/32123").id).to eq result.id
       end
     end
-    context "not a url" do
-      it "doesn't create a publication" do
+    context "just url" do
+      it "creates once for a base" do
+        publication = Publication.find_or_create_by_params(url: "https://www.nytimes.com/2020/09/11/us/wildfires-live-updates.html")
+        expect(publication.home_url).to eq "https://www.nytimes.com"
+        expect(publication.title).to eq "nytimes.com"
         expect {
-          Publication.create_for_url("asdf9adfasdfasdf")
+          expect(Publication.find_or_create_by_params(url: "https://www.nytimes.com/interactive/2020/us/fires-map-tracker.html").id).to eq publication.id
         }.to_not change(Publication, :count)
+        expect(Publication.friendly_find("https://www.nytimes.com/interactive/2020")).to eq publication
+      end
+      context "with subdomain" do
+        it "creates with subdomain" do
+          publication = Publication.find_or_create_by_params(url: "blog.bigagnes.com/self-support-on-idahos-south-fork/")
+          expect(publication.home_url).to eq "http://blog.bigagnes.com"
+          expect(publication.title).to eq "blog.bigagnes.com"
+        end
+      end
+      context "not a url" do
+        it "doesn't create a publication" do
+          expect {
+            Publication.find_or_create_by_params(url: "asdf9adfasdfasdf")
+          }.to_not change(Publication, :count)
+        end
       end
     end
   end

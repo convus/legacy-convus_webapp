@@ -33,7 +33,7 @@ unless ENV["CIRCLECI"]
     describe "import_all_files" do
       let(:target_filenames) do
         [
-          "citations/the-hill-some-citation.yml",
+          "citations/the-hill/some-citation.yml",
           "hypotheses/hypothesis-1.yml",
           "publications.csv",
           "tags.csv"
@@ -53,6 +53,7 @@ unless ENV["CIRCLECI"]
         # Tag.destroy_all
         subject.import_all_files
         expect(Hypothesis.pluck(:id)).to eq([hypothesis_id])
+        expect(Citation.count).to eq 1
         expect(Citation.pluck(:id)).to eq([citation_id])
       end
     end

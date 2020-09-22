@@ -47,7 +47,9 @@ class UrlCleaner
     end
 
     def looks_like_url?(str)
-      str.match?(/\//)
+      return false if str.blank?
+      return false if str.strip.match?(/\s/)
+      str.match?(/\//) || str.match?(/\.\w+/)
     end
   end
 end

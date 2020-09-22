@@ -8,12 +8,12 @@ module FriendlyFindable
     end
 
     def friendly_find_slug(str = nil)
-      find_by_slug(Slugifyer.slugify(str))
+      find_by_slug(Slugifyer.slugify(str)) || find_by_slug(Slugifyer.filename_slugify(str))
     end
 
     def friendly_find(str = nil)
       return nil unless str.present?
-      integer_slug?(str) ? find(str) : friendly_find_slug(str)
+      integer_slug?(str) ? find_by_id(str) : friendly_find_slug(str)
     end
 
     def friendly_find!(str = nil)

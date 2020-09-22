@@ -22,7 +22,7 @@ class Hypothesis < ApplicationRecord
   end
 
   def tags_string=(val)
-    new_tags = (val.is_a?(Array) ? val : val.split(/,|\n/)).reject(&:blank?)
+    new_tags = (val.is_a?(Array) ? val : val.to_s.split(/,|\n/)).reject(&:blank?)
     new_ids = new_tags.map { |string|
       tag_id = Tag.find_or_create_for_title(string)&.id
       hypothesis_tags.build(tag_id: tag_id)
@@ -37,7 +37,7 @@ class Hypothesis < ApplicationRecord
   end
 
   def citation_urls=(val)
-    new_citations = (val.is_a?(Array) ? val : val.split(/,|\n/)).reject(&:blank?)
+    new_citations = (val.is_a?(Array) ? val : val.to_s.split(/,|\n/)).reject(&:blank?)
     new_ids = new_citations.map { |string|
       citation_id = Citation.find_or_create_by_params({url: string})&.id
       hypothesis_citations.build(citation_id: citation_id)

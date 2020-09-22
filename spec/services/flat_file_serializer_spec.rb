@@ -30,7 +30,7 @@ unless ENV["CIRCLECI"]
       let!(:hypothesis) { FactoryBot.create(:hypothesis, title: "hypothesis-1") }
       let(:target_filenames) do
         [
-          "citations/the-hill-some-citation.yml",
+          "citations/the-hill/some-citation.yml",
           "hypotheses/hypothesis-1.yml",
           "publications.csv",
           "tags.csv"
@@ -60,7 +60,7 @@ unless ENV["CIRCLECI"]
 
     describe "write_all_citations" do
       let!(:citation) { FactoryBot.create(:citation, title: "Pelosi digs in as pressure builds for COVID-19 deal", publication: publication) }
-      let(:target_filename) { "citations/the-hill-pelosi-digs-in-as-pressure-builds-for-covid-19-deal.yml" }
+      let(:target_filename) { "citations/the-hill/pelosi-digs-in-as-pressure-builds-for-covid-19-deal.yml" }
       it "writes the files" do
         expect(list_of_files).to eq([])
         citation.flat_file_name(base_dir)

@@ -1,5 +1,6 @@
 class CitationsController < ApplicationController
   before_action :redirect_to_signup_unless_user_present!, except: %i[index show]
+  before_action :set_permitted_format
 
   def index
     page = params[:page] || 1
@@ -9,7 +10,8 @@ class CitationsController < ApplicationController
   end
 
   def show
-    @citation = Citation.friendly_find!(params[:id])
+    slug = [params[:publication_id], params[:id]].reject(&:blank?).join("-")
+    @citation = Citation.friendly_find!(slug)
     @hypotheses = @citation.hypotheses
   end
 
@@ -28,6 +30,11 @@ class CitationsController < ApplicationController
   end
 
   private
+
+  # To make it possible to use the file path from a citation directly
+  def set_permitted_format
+    request.format = "html" unless request.format == "json"
+  end
 
   def permitted_citation_params
     params.require(:citation)

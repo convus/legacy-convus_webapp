@@ -18,10 +18,13 @@ class Citation < ApplicationRecord
   has_many :hypotheses, through: :hypothesis_citations
 
   validates_presence_of :url
+  validates :slug, presence: true, uniqueness: {scope: [:publication_id]}
 
   enum kind: KIND_ENUM
 
   before_validation :set_calculated_attributes
+
+  scope :by_creation, -> { reorder(:created_at) }
 
   attr_accessor :assignable_kind
 
@@ -32,9 +35,9 @@ class Citation < ApplicationRecord
   def self.kinds_data
     {
       article: {score: 1, humanized: "Article"},
-      closed_access_peer_reviewed: {score: 2, humanized: "Non-public access research (anything than can not be accessed directly via a URL)"},
-      article_by_publication_with_retractions: {score: 3, humanized: "Article from a publisher that has issued retractions"},
-      quote_from_involved_party: {score: 10, humanized: "Online accessible quote from applicable person (e.g. personal website, tweet, or video)"},
+      article_by_publication_with_retractions: {score: 2, humanized: "Article from a publisher that has issued retractions"},
+      closed_access_peer_reviewed: {score: 3, humanized: "Non-public access research (anything than can not be accessed directly via a URL)"},
+      quote_from_involved_party: {score: 5, humanized: "Online accessible quote from applicable person (e.g. personal website, tweet, or video)"},
       open_access_peer_reviewed: {score: 20, humanized: "Peer reviewed open access study"}
     }.freeze
   end
@@ -43,11 +46,17 @@ class Citation < ApplicationRecord
     %w[article peer_reviewed quote_from_involved_party]
   end
 
-  def self.friendly_find(str)
-    super || friendly_find_fallback(str)
+  def self.find_by_slug_or_path_slug(str)
+    return none unless str.present?
+    slug = Slugifyer.slugify(str.gsub(/\.yml\z/i, "")) # remove .yml extension, just in case
+    where(path_slug: slug).by_creation.first || # exact path_slug matching
+      where("path_slug ILIKE ?", "#{slug.truncate(250, omission: "")}%").by_creation.first || # filename truncation
+      where(slug: slug).by_creation.first
   end
 
-  def self.friendly_find_fallback(str)
+  def self.friendly_find_slug(str)
+    matched = find_by_slug_or_path_slug(str)
+    return matched if matched.present?
     # Only try the URL matching if it looks like a URL
     if UrlCleaner.looks_like_url?(str)
       matched = where(url: UrlCleaner.without_utm(str)).first
@@ -58,8 +67,10 @@ class Citation < ApplicationRecord
       # TODO: remove https://www if still no match, as more fallback
       return matched if matched.present?
     end
-    slugged = Slugifyer.slugify(str)
-    where("slug ILIKE ?", "#{slugged}%").first || where("slug ILIKE ?", "%#{slugged}%").first
+    # Try short slug finding
+    short_slug = Slugifyer.filename_slugify(str)
+    where("slug ILIKE ?", "#{short_slug}%").by_creation.first ||
+      where("slug ILIKE ?", "%#{short_slug}%").by_creation.first
   end
 
   def self.find_or_create_by_params(attrs)
@@ -67,7 +78,7 @@ class Citation < ApplicationRecord
   end
 
   def to_param
-    slug
+    path_slug
   end
 
   def authors_str
@@ -75,7 +86,7 @@ class Citation < ApplicationRecord
   end
 
   def publication_title
-    publication&.title
+    publication&.title || @publication_title
   end
 
   def authors_str=(val)
@@ -83,7 +94,8 @@ class Citation < ApplicationRecord
   end
 
   def publication_title=(val)
-    self.publication = Publication.friendly_find(val) || Publication.create(title: val)
+    @publication_title = val
+    self.publication = Publication.friendly_find(val)
   end
 
   def published_date_str
@@ -116,7 +128,7 @@ class Citation < ApplicationRecord
   end
 
   def file_pathnames
-    ["citations", "#{slug}.yml"]
+    ["citations", publication&.slug, "#{slug}.yml"].compact
   end
 
   def file_path
@@ -138,9 +150,10 @@ class Citation < ApplicationRecord
   def set_calculated_attributes
     self.url = UrlCleaner.with_http(UrlCleaner.without_utm(url))
     self.creator_id ||= hypotheses.first&.creator_id
-    self.publication ||= Publication.create_for_url(url)
+    self.publication ||= Publication.find_or_create_by_params(url: url, title: @publication_title)
     self.title = UrlCleaner.without_base_domain(url) unless title.present?
-    self.slug = Slugifyer.slugify([publication_title, title].compact.join("-"))
+    self.slug = Slugifyer.filename_slugify(title)
+    self.path_slug = [publication&.slug, slug].compact.join("-")
     self.kind ||= calculated_kind(assignable_kind)
     if FETCH_WAYBACK_URL && url_is_direct_link_to_full_text
       self.wayback_machine_url ||= WaybackMachineIntegration.fetch_current_url(url)

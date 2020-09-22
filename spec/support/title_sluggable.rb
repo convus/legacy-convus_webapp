@@ -14,15 +14,17 @@ RSpec.shared_examples "TitleSluggable" do
   describe "friendly_find" do
     before { expect(instance).to be_present }
     context "integer_slug" do
-      it "finds integers" do
+      it "finds integers and fails without error" do
         expect(subject.class.friendly_find("#{instance.id} ")).to eq instance
+        expect(subject.class.friendly_find("12812812812")).to be_blank # Doesn't raise
       end
     end
 
     context "not integer slug" do
-      it "finds by the slug" do
+      it "finds by the slug and fails without error" do
         str = " #{instance.title.upcase}\n"
         expect(subject.class.friendly_find(str)).to eq instance
+        expect(subject.class.friendly_find("gasdfa87")).to be_blank # Doesn't raise
       end
     end
 
