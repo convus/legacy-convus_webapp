@@ -6,9 +6,9 @@ class GithubIntegration
     ["https://github.com", CONTENT_REPO, "blob/main", file_path].join("/")
   end
 
-  def self.pull_request_html_url(pull_request_id)
-    return nil unless pull_request_id.present?
-    ["https://github.com", CONTENT_REPO, "pull", pull_request_id].join("/")
+  def self.pull_request_html_url(pull_request_number)
+    return nil unless pull_request_number.present?
+    ["https://github.com", CONTENT_REPO, "pull", pull_request_number].join("/")
   end
 
   attr_accessor :current_branch, :main_branch_sha
@@ -46,11 +46,13 @@ class GithubIntegration
   end
 
   def create_hypothesis_pull_request(hypothesis)
-    return hypothesis.pull_request_id if hypothesis.pull_request_id.present?
     branch_name = "proposed-hypothesis-#{hypothesis.id}"
     @current_branch = create_branch(branch_name)
     message = "Hypothesis: #{hypothesis.title}"
     create_file_on_current_branch(hypothesis.file_path, FlatFileSerializer.hypothesis_file_content(hypothesis), message)
-    client.create_pull_request(CONTENT_REPO, "main", current_branch_name, message)
+    pull_request = client.create_pull_request(CONTENT_REPO, "main", current_branch_name, message)
+    number = pull_request.url.split("/pulls/").last
+    hypothesis.update(pull_request_number: number)
+    pull_request
   end
 end
