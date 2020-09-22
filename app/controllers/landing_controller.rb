@@ -2,6 +2,6 @@
 
 class LandingController < ApplicationController
   def index
-    @hypotheses = Hypothesis.reorder(created_at: :desc)
+    @hypotheses = Hypothesis.approved.reorder(created_at: :desc)
   end
 end

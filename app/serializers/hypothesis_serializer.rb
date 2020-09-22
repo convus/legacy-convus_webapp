@@ -2,7 +2,7 @@ class HypothesisSerializer < ApplicationSerializer
   attributes :title, :id, :direct_quotation, :created_timestamp, :tag_titles, :citation_urls
 
   def created_timestamp
-    object.created_at.utc.rfc3339
+    (object.created_at || Time.current).utc.rfc3339
   end
 
   def direct_quotation
