@@ -106,7 +106,7 @@ RSpec.describe "/hypotheses", type: :request do
       context "with citation" do
         let(:hypothesis_with_citation_params) do
           {
-            title: "party time is now",
+            title: "Testing party time is now",
             has_direct_quotation: "1",
             tags_string: "parties, Economy",
             citations_attributes: valid_citation_params
@@ -140,8 +140,8 @@ RSpec.describe "/hypotheses", type: :request do
             expect(citation.title).to eq valid_citation_params[:title]
             expect(citation.url).to eq valid_citation_params[:url]
             expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
-            expect(citation.approved?).to be_truthy
-            expect(citation.pull_request_number).to be_blank
+            expect(citation.approved?).to be_falsey
+            expect(citation.pull_request_number).to be_present
 
             expect(citation.publication).to be_present
             expect(citation.publication_title).to eq "example.com"

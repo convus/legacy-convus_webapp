@@ -41,9 +41,4 @@ class User < ApplicationRecord
   def recent_approved_citations
     created_citations.approved.where("created_at > ?", Time.current - 1.month)
   end
-
-  def directly_merge_citation?
-    return true if trustedness > created_citations.count
-    created_citations.count < 5
-  end
 end

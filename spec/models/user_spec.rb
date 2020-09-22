@@ -9,7 +9,6 @@ RSpec.describe User, type: :model do
     it "is based on the recentness of the hypothesis" do
       expect(user.recent_approved_hypotheses.count).to eq 1
       expect(user.trustedness).to eq 10
-      expect(user.directly_merge_citation?).to be_truthy
     end
   end
 end
