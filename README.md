@@ -34,6 +34,4 @@ This explanation assumes you're familiar with developing Ruby on Rails applicati
 
 ---
 
-The content of Convus is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>. The source code for [convus_webapp](https://github.com/convus/convus_webapp) is licensed under [AGPL-3.0](https://github.com/convus/convus_webapp/blob/main/LICENSE).
-
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png"/></a>
+The source code for [convus_webapp](https://github.com/convus/convus_webapp) is licensed under [AGPL-3.0](https://github.com/convus/convus_webapp/blob/main/LICENSE).

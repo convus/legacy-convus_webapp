@@ -35,10 +35,10 @@ class FlatFileImporter
     def import_citation(citation_attrs)
       citation = Citation.where(id: citation_attrs[:id]).first || Citation.new
       citation.update(title: citation_attrs[:title],
-        url: citation_attrs[:url],
-        kind: citation_attrs[:kind],
-        published_date_str: citation_attrs[:published_date],
-        authors: citation_attrs[:authors])
+                      url: citation_attrs[:url],
+                      kind: citation_attrs[:kind],
+                      published_date_str: citation_attrs[:published_date],
+                      authors: citation_attrs[:authors])
       # We need to save first, so we can update the columns if necessary
       unless citation.id == citation_attrs[:id]
         citation.update_columns(id: citation_attrs[:id])

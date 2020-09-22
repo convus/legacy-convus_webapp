@@ -62,4 +62,20 @@ RSpec.describe UrlCleaner do
       expect(subject.with_http("whatever")).to eq "whatever"
     end
   end
+
+  describe "looks_like_url?" do
+    it "is true for url" do
+      expect(subject.looks_like_url?("https://www.nationalreview.com/2020/09/?")).to be_truthy
+    end
+    it "is true for url without protocol" do
+      expect(subject.looks_like_url?("www.nationalreview.com/2020/09/?")).to be_truthy
+      expect(subject.looks_like_url?("www.nationalreview.com")).to be_truthy
+    end
+    it "is false for sentence" do
+      expect(subject.looks_like_url?("quick brown fox")).to be_falsey
+    end
+    it "is false for blank" do
+      expect(subject.looks_like_url?(" ")).to be_falsey
+    end
+  end
 end
