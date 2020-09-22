@@ -18,11 +18,27 @@ RSpec.describe "/citations", type: :request do
   end
 
   describe "show" do
-    let(:subject) { FactoryBot.create(:citation) }
+    let!(:subject) { FactoryBot.create(:citation, publication_title: "Fox News", title: "some research into things") }
     it "renders" do
-      get "#{base_url}/#{subject.to_param}"
+      get "#{base_url}/#{subject.slug}"
       expect(response.code).to eq "200"
       expect(response).to render_template("citations/show")
+      expect(assigns(:citation)).to eq subject
+
+      get "#{base_url}/#{subject.path_slug}"
+      expect(response.code).to eq "200"
+      expect(response).to render_template("citations/show")
+      expect(assigns(:citation)).to eq subject
+
+      get "#{base_url}/fox-news/#{subject.slug}"
+      expect(response.code).to eq "200"
+      expect(response).to render_template("citations/show")
+      expect(assigns(:citation)).to eq subject
+
+      get "#{base_url}/fox-news/#{subject.slug}.yml"
+      expect(response.code).to eq "200"
+      expect(response).to render_template("citations/show")
+      expect(assigns(:citation)).to eq subject
     end
   end
 

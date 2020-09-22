@@ -9,6 +9,8 @@ Rails.application.routes.draw do
 
   resources :citations, :publications, :hypotheses
 
+  get "/citations/:publication_id/:citation_id", to: "citations#show"
+
   authenticate :user, lambda { |u| u.developer? } do
     mount Sidekiq::Web, at: "/sidekiq"
   end

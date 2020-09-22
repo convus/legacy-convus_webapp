@@ -78,7 +78,7 @@ class Citation < ApplicationRecord
   end
 
   def to_param
-    slug
+    path_slug
   end
 
   def authors_str
