@@ -64,6 +64,10 @@ class Hypothesis < ApplicationRecord
   end
 
   def github_html_url
-    GithubIntegration.content_html_url(file_path)
+    approved? ? GithubIntegration.content_html_url(file_path) : pull_request_url
+  end
+
+  def pull_request_url
+    GithubIntegration.pull_request_html_url(pull_request_number)
   end
 end

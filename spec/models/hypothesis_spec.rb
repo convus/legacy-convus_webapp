@@ -48,4 +48,13 @@ RSpec.describe Hypothesis, type: :model do
       end
     end
   end
+
+  describe "github_html_url" do
+    let(:hypothesis) { FactoryBot.create(:hypothesis, pull_request_number: 2) }
+    it "is pull_request if unapproved, file_path if approved" do
+      expect(hypothesis.github_html_url).to match(/pull\/2/)
+      hypothesis.approved_at = Time.current
+      expect(hypothesis.github_html_url).to match(hypothesis.file_path)
+    end
+  end
 end

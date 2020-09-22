@@ -29,6 +29,9 @@ gem "redis", require: ["redis", "redis/connection/hiredis"]
 gem "sidekiq" # Background processing, uses redis, in lieu of activeJob
 gem "sidekiq-failures" # See background job failures
 
+# Git stuff
+gem "octokit"
+
 # logging stuff - make it more useful and ingestible
 gem "lograge" # Structure log data, put it in single lines to improve the functionality
 gem "logstash-event" # Use logstash format for logging data
