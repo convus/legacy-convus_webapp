@@ -9,7 +9,16 @@
         %td= @citation.title
       %tr
         %td GitHub
-        %td= link_to UrlCleaner.pretty_url(@citation.github_html_url), @citation.github_html_url
+        %td
+          - if @citation.approved?
+            = link_to UrlCleaner.pretty_url(@citation.github_html_url), @citation.github_html_url
+            - if @citation.pull_request_number.present?
+              %br
+              Approved by
+              = link_to "PR#{@citation.pull_request_number}", @citation.pull_request_url
+          - elsif @citation.pull_request_number.present?
+            Waiting on
+            = link_to "PR#{@citation.pull_request_number}", @citation.pull_request_url
       %tr
         %td ID
         %td= @citation.id

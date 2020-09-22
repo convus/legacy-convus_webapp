@@ -3,10 +3,9 @@ module ApplicationHelper
     "&#x2713;".html_safe
   end
 
-  def link_emoji(link_title = nil)
+  def internal_link(link_title = nil)
     content_tag(:span, title: link_title || "link") do
-      content_tag(:span, "🔗", class: "emoji") +
-        content_tag(:small, " link")
+      content_tag(:span, "view", class: "emoji")
     end
   end
 

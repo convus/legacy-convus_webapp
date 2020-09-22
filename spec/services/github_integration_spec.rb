@@ -3,6 +3,14 @@ require "rails_helper"
 RSpec.describe GithubIntegration do
   let(:subject) { described_class.new }
 
+  def branches(client)
+    subject.refs.map(&:ref).uniq
+  end
+
+  def open_pull_requests(client)
+    subject.pull_requests(state: "open")
+  end
+
   describe "main_branch_ref" do
     let(:target) { "b26302f7f2872653dece0c814a31401a0653963c" }
     it "gets the main branch sha" do
@@ -17,14 +25,6 @@ RSpec.describe GithubIntegration do
       hy = Hypothesis.create(title: "Testing GitHub integration")
       hy.update_column :id, 42 # So we get consistent PRs
       hy
-    end
-
-    def branches(client)
-      subject.refs.map(&:ref).uniq
-    end
-
-    def open_pull_requests(client)
-      subject.pull_requests(state: "open")
     end
 
     it "creates the pull request" do
@@ -42,7 +42,30 @@ RSpec.describe GithubIntegration do
         hypothesis.reload
         expect(hypothesis.pull_request_number).to be_present
 
-        # Can't do this via octokit.rb right now. BUT OH GOT THIS IS SOMETHING WE WANT
+        # Can't do this via octokit.rb right now. BUT OH GOD THIS IS SOMETHING WE WANT
+        # expect(pull_request.maintainer_can_modify).to be_truthy
+      end
+    end
+  end
+
+  describe "create_citation_pull_request" do
+    let(:citation) do
+      ci = Citation.create(url: "https://www.example.com/testing")
+      ci.update_column :id, 42 # Consistent PRs
+      ci
+    end
+    it "creates the PR" do
+      VCR.use_cassette("github_integration-create_citation_pull_request", match_requests_on: [:method]) do
+        initial_branch_count = branches(subject.client).count
+        initial_pull_requests = open_pull_requests(subject.client)
+        pull_request = subject.create_citation_pull_request(citation)
+        expect(branches(subject.client).count).to be > initial_branch_count
+        prs = open_pull_requests(subject.client)
+        expect(prs.count).to be > initial_pull_requests.count
+        citation.reload
+        expect(citation.pull_request_number).to be_present
+
+        # Can't do this via octokit.rb right now. BUT OH DAMN THIS IS SOMETHING WE WANT
         # expect(pull_request.maintainer_can_modify).to be_truthy
       end
     end

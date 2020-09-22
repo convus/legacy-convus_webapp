@@ -25,7 +25,7 @@ class HypothesesController < ApplicationController
     end
     if @hypothesis.save
       flash[:success] = "Hypothesis created!"
-      redirect_to hypotheses_path
+      redirect_to hypothesis_path(@hypothesis.to_param)
     else
       @hypothesis.errors.full_messages
       render :new

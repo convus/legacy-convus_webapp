@@ -8,8 +8,6 @@
       %th
         Hypothesis
       %th
-        Tags
-      %th
         Created
       %th
         Citation
@@ -18,10 +16,9 @@
         %tr
           %td
             = hypothesis.title
-            = link_to link_emoji, hypothesis_path(hypothesis.to_param), class: "link-with-emoji"
-          %td
+            = link_to internal_link, hypothesis_path(hypothesis.to_param), class: "internal-link"
             - hypothesis.tags.each do |tag|
-              %span.tag-bubble= tag.title
+              %small.tag-bubble= tag.title
           %td
             %span.convertTime
               = l hypothesis.created_at, format: :convert_time
@@ -33,4 +30,4 @@
                   = citation.title.truncate(50)
                 - else
                   = citation.title
-                = link_to link_emoji, citation_path(citation.to_param), class: "link-with-emoji"
+                = link_to internal_link, citation_path(citation.to_param), class: "internal-link"

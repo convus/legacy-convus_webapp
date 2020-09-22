@@ -1,15 +1,15 @@
-.link-with-emoji {
-  text-decoration: none;
-  small {
-    // The non-emoji part
-    display: none;
-    text-decoration: underline;
+.internal-link {
+  text-decoration: underline;
+  font-style: italic;
+  opacity: 0.6;
+  &:hover {
+    opacity: 1;
   }
 }
 .tag-bubble {
-  display: inline-block;
+  display: inline;
   border: 1px solid #dee2e6;
   border-radius: 4px;
-  padding: 0.25rem;
-  line-height: 1;
+  padding: 0 0.25rem;
+  line-height: 1.5;
 }
