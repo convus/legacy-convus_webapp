@@ -1,0 +1,85 @@
+---
+http_interactions:
+  - request:
+      method: get
+      uri: https://api.github.com/repos/convus/convus_content/git/refs
+      body:
+        encoding: US-ASCII
+        string: ""
+      headers:
+        Accept:
+          - application/vnd.github.v3+json
+        User-Agent:
+          - Octokit Ruby Gem 4.18.0
+        Content-Type:
+          - application/json
+        Authorization:
+          - token xxxxxxxxxx
+        Accept-Encoding:
+          - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+    response:
+      status:
+        code: 200
+        message: OK
+      headers:
+        Date:
+          - Tue, 22 Sep 2020 19:18:51 GMT
+        Content-Type:
+          - application/json; charset=utf-8
+        Transfer-Encoding:
+          - chunked
+        Server:
+          - GitHub.com
+        Status:
+          - 200 OK
+        Cache-Control:
+          - private, max-age=60, s-maxage=60
+        Vary:
+          - Accept, Authorization, Cookie, X-GitHub-OTP
+          - Accept-Encoding
+          - Accept-Encoding, Accept, X-Requested-With
+        Etag:
+          - W/"565b41bcadcec7c2af6e4eab5c39fddf91ac6959c7d78b07994c329b2b50fcbd"
+        Last-Modified:
+          - Tue, 22 Sep 2020 18:53:14 GMT
+        X-Poll-Interval:
+          - "300"
+        X-Oauth-Scopes:
+          - repo
+        X-Accepted-Oauth-Scopes:
+          - repo
+        X-Github-Media-Type:
+          - github.v3; format=json
+        X-Ratelimit-Limit:
+          - "5000"
+        X-Ratelimit-Remaining:
+          - "4997"
+        X-Ratelimit-Reset:
+          - "1600805623"
+        X-Ratelimit-Used:
+          - "3"
+        Access-Control-Expose-Headers:
+          - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+            X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
+            X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset
+        Access-Control-Allow-Origin:
+          - "*"
+        Strict-Transport-Security:
+          - max-age=31536000; includeSubdomains; preload
+        X-Frame-Options:
+          - deny
+        X-Content-Type-Options:
+          - nosniff
+        X-Xss-Protection:
+          - 1; mode=block
+        Referrer-Policy:
+          - origin-when-cross-origin, strict-origin-when-cross-origin
+        Content-Security-Policy:
+          - default-src 'none'
+        X-Github-Request-Id:
+          - F1B0:160F:267C6B1:2FB88A4:5F6A4E1A
+      body:
+        encoding: ASCII-8BIT
+        string: '[{"ref":"refs/heads/main","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvaGVhZHMvbWFpbg==","url":"https://api.github.com/repos/convus/convus_content/git/refs/heads/main","object":{"sha":"b26302f7f2872653dece0c814a31401a0653963c","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/b26302f7f2872653dece0c814a31401a0653963c"}},{"ref":"refs/heads/sethherr-patch-1","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvaGVhZHMvc2V0aGhlcnItcGF0Y2gtMQ==","url":"https://api.github.com/repos/convus/convus_content/git/refs/heads/sethherr-patch-1","object":{"sha":"d43a84ae7098200134d8a36ef1099d99d26a581e","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/d43a84ae7098200134d8a36ef1099d99d26a581e"}},{"ref":"refs/pull/1/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xL2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/1/head","object":{"sha":"d43a84ae7098200134d8a36ef1099d99d26a581e","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/d43a84ae7098200134d8a36ef1099d99d26a581e"}},{"ref":"refs/pull/1/merge","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xL21lcmdl","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/1/merge","object":{"sha":"7eda7b34d09a59826265ca08c82c81b1ced38e9c","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/7eda7b34d09a59826265ca08c82c81b1ced38e9c"}}]'
+    recorded_at: Tue, 22 Sep 2020 19:18:51 GMT
+recorded_with: VCR 6.0.0

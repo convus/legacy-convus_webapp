@@ -68,6 +68,6 @@ class Hypothesis < ApplicationRecord
   end
 
   def pull_request_url
-    GithubIntegration.pull_request_html_url(pull_request_number)
+    GithubIntegration.pull_request_html_url(pull_request_id)
   end
 end

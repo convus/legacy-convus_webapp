@@ -41,7 +41,7 @@ ActiveRecord::Schema.define(version: 2020_09_22_180403) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "approved_at"
-    t.integer "pull_request_number"
+    t.integer "pull_request_id"
     t.index ["creator_id"], name: "index_hypotheses_on_creator_id"
   end
 

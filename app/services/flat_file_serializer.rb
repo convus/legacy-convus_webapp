@@ -56,7 +56,7 @@ class FlatFileSerializer
     end
 
     def write_all_tags
-      attrs_to_write = %i[title id slug taxonomy] # Skip price of initializing serializer for csv
+      attrs_to_write = %i[title id taxonomy] # Skip price of initializing serializer for csv
       File.open(tags_file, "w") { |f|
         f.puts attrs_to_write.join(",")
         Tag.alphabetical.pluck(*attrs_to_write).each { |attrs| f.puts attrs.join(",") }
@@ -72,7 +72,7 @@ class FlatFileSerializer
     end
 
     def write_all_publications
-      attrs_to_write = %i[title slug id has_published_retractions has_peer_reviewed_articles home_url]
+      attrs_to_write = %i[title id has_published_retractions has_peer_reviewed_articles home_url]
       File.open(publications_file, "w") { |f|
         f.puts attrs_to_write.join(",")
         Publication.alphabetical.pluck(*attrs_to_write).each { |attrs| f.puts attrs.join(",") }

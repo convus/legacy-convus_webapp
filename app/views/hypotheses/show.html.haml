@@ -9,7 +9,17 @@
         %td= @hypothesis.title
       %tr
         %td GitHub
-        %td= link_to @hypothesis.file_path, @hypothesis.github_html_url
+        %td
+          - if @hypothesis.approved?
+            = link_to @hypothesis.file_path, @hypothesis.github_html_url
+            - if @hypothesis.pull_request_id.present?
+              %br
+              Approved by
+              = link_to "PR#{@hypothesis.pull_request_id}", @hypothesis.pull_request_url
+          - elsif @hypothesis.pull_request_id.present?
+            %em
+              Unapproved. Waiting on
+            = link_to "PR#{@hypothesis.pull_request_id}", @hypothesis.pull_request_url
       %tr
         %td ID
         %td= @hypothesis.id
