@@ -10,6 +10,8 @@ class Hypothesis < ApplicationRecord
 
   accepts_nested_attributes_for :citations
 
+  after_commit :create_pull_request_for_approval
+
   scope :direct_quotation, -> { where(has_direct_quotation: true) }
   scope :approved, -> { where.not(approved_at: nil) }
 
@@ -69,5 +71,10 @@ class Hypothesis < ApplicationRecord
 
   def pull_request_url
     GithubIntegration.pull_request_html_url(pull_request_number)
+  end
+
+  def create_pull_request_for_approval
+    return true if approved? || pull_request_number.present?
+    CreateHypothesisPullRequestJob.perform_async(id)
   end
 end
