@@ -4,7 +4,7 @@ class HypothesesController < ApplicationController
   def index
     page = params[:page] || 1
     per_page = params[:per_page] || 500
-    @hypotheses = Hypothesis.reorder(created_at: :desc)
+    @hypotheses = Hypothesis.approved.reorder(created_at: :desc)
       .page(page).per(per_page)
   end
 

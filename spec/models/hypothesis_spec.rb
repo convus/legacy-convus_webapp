@@ -20,7 +20,7 @@ RSpec.describe Hypothesis, type: :model do
     end
     context "assigning a string" do
       let!(:tag) { FactoryBot.create(:tag, title: "SOME existing title") }
-      let(:hypothesis) { FactoryBot.create(:hypothesis, tags_string: "some  existing titlé  ,") }
+      let(:hypothesis) { FactoryBot.create(:hypothesis_approved, tags_string: "some  existing titlé  ,") }
       it "assigns based on the string, adds removes" do
         hypothesis.reload
         expect(hypothesis.tags.pluck(:id)).to eq([tag.id])
@@ -35,7 +35,7 @@ RSpec.describe Hypothesis, type: :model do
 
   describe "citation_urls" do
     let!(:citation) { FactoryBot.create(:citation, title: "some citation", url: "https://bikeindex.org/about") }
-    let(:hypothesis) { FactoryBot.create(:hypothesis, title: "hypothesis-1") }
+    let(:hypothesis) { FactoryBot.create(:hypothesis_approved, title: "hypothesis-1") }
     it "assigns" do
       hypothesis.update(citation_urls: "bikeindex.org/about")
       expect(hypothesis.citations.pluck(:id)).to eq([citation.id])

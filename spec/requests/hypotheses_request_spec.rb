@@ -5,17 +5,32 @@ require "rails_helper"
 RSpec.describe "/hypotheses", type: :request do
   let(:base_url) { "/hypotheses" }
 
-  it "renders" do
-    get base_url
-    expect(response).to render_template("hypotheses/index")
+  describe "index" do
+    let!(:hypothesis) { FactoryBot.create(:hypothesis) }
+    let!(:hypothesis_approved) { FactoryBot.create(:hypothesis_approved) }
+    it "renders only the approved" do
+      get base_url
+      expect(response).to render_template("hypotheses/index")
+      expect(assigns(:hypotheses).pluck(:id)).to eq([hypothesis_approved.id])
+    end
   end
 
   describe "show" do
-    let(:subject) { FactoryBot.create(:hypothesis) }
+    let(:subject) { FactoryBot.create(:hypothesis_approved) }
     it "renders" do
+      expect(subject.approved?).to be_truthy
       get "#{base_url}/#{subject.to_param}"
       expect(response.code).to eq "200"
       expect(response).to render_template("hypotheses/show")
+    end
+    context "unapproved" do
+      let(:subject) { FactoryBot.create(:hypothesis) }
+      it "renders" do
+        expect(subject.approved?).to be_falsey
+        get "#{base_url}/#{subject.to_param}"
+        expect(response.code).to eq "200"
+        expect(response).to render_template("hypotheses/show")
+      end
     end
   end
 
