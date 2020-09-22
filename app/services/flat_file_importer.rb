@@ -11,7 +11,9 @@ class FlatFileImporter
     end
 
     def import_hypotheses
-      Dir.glob("#{FILES_PATH}/hypotheses/*.yml").each { |file| import_hypothesis(YAML.load_file(file)) }
+      Dir.glob("#{FILES_PATH}/hypotheses/*.yml").each do |file|
+        import_hypothesis(YAML.load_file(file).with_indifferent_access)
+      end
     end
 
     # TODO: This method isn't tested in detail, and should be
@@ -28,7 +30,9 @@ class FlatFileImporter
     end
 
     def import_citations
-      Dir.glob("#{FILES_PATH}/citations/*.yml").each { |file| import_citation(YAML.load_file(file)) }
+      Dir.glob("#{FILES_PATH}/citations/**/*.yml").each do |file|
+        import_citation(YAML.load_file(file).with_indifferent_access)
+      end
     end
 
     # TODO: This method isn't tested in detail, and should be

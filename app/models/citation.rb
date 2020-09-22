@@ -49,11 +49,8 @@ class Citation < ApplicationRecord
   def self.find_by_slug_or_path_slug(str)
     return none unless str.present?
     slug = Slugifyer.slugify(str.gsub(/\.yml\z/i, "")) # remove .yml extension, just in case
-    pp "str: #{str}, slug: #{slug}"
-    # First exact path_slug matching
     where(path_slug: slug).by_creation.first || # exact path_slug matching
-      where("path_slug ILIKE ?", "#{slug.truncate(250, omission: "")}%").by_creation.first || # catch filename truncation
-      where("path_slug ILIKE ?", "#{slug}%").by_creation.first || # path_slug is too short
+      where("path_slug ILIKE ?", "#{slug.truncate(250, omission: "")}%").by_creation.first || # filename truncation
       where(slug: slug).by_creation.first
   end
 

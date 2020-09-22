@@ -19,9 +19,9 @@ class FlatFileSerializer
       dirname = File.dirname(hypothesis.flat_file_name(FILES_PATH))
       # Create the intermidiary directories
       FileUtils.mkdir_p(dirname) unless File.directory?(dirname)
-      File.open(hypothesis.flat_file_name(FILES_PATH), "w") { |f|
-        f.puts(HypothesisSerializer.new(hypothesis, root: false).as_json.to_yaml)
-      }
+      # Serialize to yaml - stringify keys so the keys don't start with :, to make things easier to read
+      serialized = HypothesisSerializer.new(hypothesis, root: false).as_json.deep_stringify_keys.to_yaml
+      File.open(hypothesis.flat_file_name(FILES_PATH), "w") { |f| f.puts(serialized) }
     end
 
     def write_all_citations
@@ -32,9 +32,9 @@ class FlatFileSerializer
       dirname = File.dirname(citation.flat_file_name(FILES_PATH))
       # Create the intermidiary directories
       FileUtils.mkdir_p(dirname) unless File.directory?(dirname)
-      File.open(citation.flat_file_name(FILES_PATH), "w") { |f|
-        f.puts(CitationSerializer.new(citation, root: false).as_json.to_yaml)
-      }
+      # Serialize to yaml - stringify keys so the keys don't start with :, to make things easier to read
+      serialized = CitationSerializer.new(citation, root: false).as_json.deep_stringify_keys.to_yaml
+      File.open(citation.flat_file_name(FILES_PATH), "w") { |f| f.puts(serialized) }
     end
 
     def tags_file

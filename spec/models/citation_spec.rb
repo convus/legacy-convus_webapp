@@ -77,7 +77,6 @@ RSpec.describe Citation, type: :model do
         # It finds the citations in expected ways
         expect(Citation.friendly_find(target_slug).id).to eq citation2.id # Because it's the first created
         expect(Citation.friendly_find("magazine/#{target_slug}")&.id).to eq citation1.id
-        pp citation1.path_slug, "1111"
         expect(Citation.friendly_find("magazine/#{target_slug}.yml")&.id).to eq citation1.id
         expect(Citation.friendly_find("website/#{target_slug}")&.id).to eq citation2.id
         expect(Citation.friendly_find("website/#{target_slug}.yml")&.id).to eq citation2.id
