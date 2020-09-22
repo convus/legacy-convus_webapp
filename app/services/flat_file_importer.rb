@@ -10,15 +10,11 @@ class FlatFileImporter
       # TODO: Import tags and publications
     end
 
-    def hypotheses_files
-
-    end
-
     def import_hypotheses
       Dir.glob("#{FILES_PATH}/hypotheses/*.yml").each { |file| import_hypothesis(YAML.load_file(file)) }
     end
 
-    # TODO: This method isn't tested, and should be
+    # TODO: This method isn't tested in detail, and should be
     def import_hypothesis(hypothesis_attrs)
       hypothesis = Hypothesis.where(id: hypothesis_attrs[:id]).first || Hypothesis.new
       hypothesis.update(title: hypothesis_attrs[:title], has_direct_quotation: hypothesis_attrs[:direct_quotation])
@@ -35,7 +31,7 @@ class FlatFileImporter
       Dir.glob("#{FILES_PATH}/citations/*.yml").each { |file| import_citation(YAML.load_file(file)) }
     end
 
-    # TODO: This method isn't tested, and should be
+    # TODO: This method isn't tested in detail, and should be
     def import_citation(citation_attrs)
       citation = Citation.where(id: citation_attrs[:id]).first || Citation.new
       citation.update(title: citation_attrs[:title],

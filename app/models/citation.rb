@@ -32,9 +32,9 @@ class Citation < ApplicationRecord
   def self.kinds_data
     {
       article: {score: 1, humanized: "Article"},
-      closed_access_peer_reviewed: {score: 2, humanized: "Non-public access research (anything than can not be accessed directly via a URL)"},
-      article_by_publication_with_retractions: {score: 3, humanized: "Article from a publisher that has issued retractions"},
-      quote_from_involved_party: {score: 10, humanized: "Online accessible quote from applicable person (e.g. personal website, tweet, or video)"},
+      article_by_publication_with_retractions: {score: 2, humanized: "Article from a publisher that has issued retractions"},
+      closed_access_peer_reviewed: {score: 3, humanized: "Non-public access research (anything than can not be accessed directly via a URL)"},
+      quote_from_involved_party: {score: 5, humanized: "Online accessible quote from applicable person (e.g. personal website, tweet, or video)"},
       open_access_peer_reviewed: {score: 20, humanized: "Peer reviewed open access study"}
     }.freeze
   end

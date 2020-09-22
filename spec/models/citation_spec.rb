@@ -17,6 +17,19 @@ RSpec.describe Citation, type: :model do
       expect(citation.publication_id).to be_present
       expect(citation.publication.title).to eq "nationalreview.com"
       expect(citation.slug).to eq("nationalreview-com-2020-09-joe-bidens-money-misadventures")
+      expect(citation.title_url?).to be_truthy
+    end
+    context "really long URL" do
+      let(:url) { "https://www.researchgate.net//profile/Mark_Greenberg2/publication/312233343_Promoting_Healthy_Transition_to_College_through_Mindfulness_Training_with_1st_year_College_Students_Pilot_Randomized_Controlled_Trial/links/5ce8706f299bf14d95b76a58/Promoting-Healthy-Transition-to-College-through-Mindfulness-Training-with-1st-year-College-Students-Pilot-Randomized-Controlled-Trial.pdf" }
+      let(:target) { "researchgate-net-profile/Mark_Greenberg2/publication/312233343_Promoting_Healthy_Transition_to_College_through_Mindfulness_Training_with_1st_year_College_Students_Pilot_Randomized_Controlled_Trial/links/5ce8706f299bf14d95b76a58/Promoting-Healthy-Transition-to-College" }
+      it "slugs, limits to 250 characters" do
+        expect(citation.title).to eq "profile/Mark_Greenberg2/publication/312233343_Promoting_Healthy_Transition_to_College_through_Mindfulness_Training_with_1st_year_College_Students_Pilot_Randomized_Controlled_Trial/links/5ce8706f299bf14d95b76a58/Promoting-Healthy-Transition-to-College-through-Mindfulness-Training-with-1st-year-College-Students-Pilot-Randomized-Controlled-Trial.pdf"
+        expect(citation.publication_id).to be_present
+        expect(citation.publication.title).to eq "nationalreview.com"
+        expect(citation.slug.length).to be < 255 # File name length limit
+        expect(citation.slug).to eq target
+        expect(citation.title_url?).to be_truthy
+      end
     end
     context "URL is not a url" do
       let(:url) { "This isn't a URL" }
