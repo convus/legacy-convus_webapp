@@ -1,9 +1,9 @@
-.link-with-emoji {
-  text-decoration: none;
-  small {
-    // The non-emoji part
-    display: none;
-    text-decoration: underline;
+.internal-link {
+  text-decoration: underline;
+  font-style: italic;
+  opacity: 0.6;
+  &:hover {
+    opacity: 1;
   }
 }
 .tag-bubble {
