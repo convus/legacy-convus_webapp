@@ -81,7 +81,7 @@ RSpec.describe "/hypotheses", type: :request do
               post base_url, params: {hypothesis: valid_hypothesis_params.merge(approved_at: Time.current.to_s)}
             }.to change(Hypothesis, :count).by 1
           end
-          expect(response).to redirect_to hypotheses_path
+          expect(response).to redirect_to hypothesis_path(Hypothesis.last.to_param)
           expect(flash[:success]).to be_present
 
           hypothesis = Hypothesis.last
@@ -122,7 +122,7 @@ RSpec.describe "/hypotheses", type: :request do
                 post base_url, params: {hypothesis: hypothesis_with_citation_params}
               }.to change(Hypothesis, :count).by 1
             end
-            expect(response).to redirect_to hypotheses_path
+            expect(response).to redirect_to hypothesis_path(Hypothesis.last.to_param)
             expect(flash[:success]).to be_present
 
             hypothesis = Hypothesis.last
@@ -161,7 +161,7 @@ RSpec.describe "/hypotheses", type: :request do
             expect {
               post base_url, params: {hypothesis: hypothesis_with_citation_params}
             }.to change(Hypothesis, :count).by 1
-            expect(response).to redirect_to hypotheses_path
+            expect(response).to redirect_to hypothesis_path(Hypothesis.last.to_param)
             expect(flash[:success]).to be_present
 
             hypothesis = Hypothesis.last
@@ -185,7 +185,7 @@ RSpec.describe "/hypotheses", type: :request do
             expect {
               post base_url, params: {hypothesis: hypothesis_with_citation_params}
             }.to change(Hypothesis, :count).by 1
-            expect(response).to redirect_to hypotheses_path
+            expect(response).to redirect_to hypothesis_path(Hypothesis.last.to_param)
             expect(flash[:success]).to be_present
 
             hypothesis = Hypothesis.last
