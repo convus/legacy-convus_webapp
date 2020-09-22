@@ -20,7 +20,7 @@ RSpec.describe Hypothesis, type: :model do
     end
     context "assigning a string" do
       let!(:tag) { FactoryBot.create(:tag, title: "SOME existing title") }
-      let(:hypothesis) { FactoryBot.create(:hypothesis, tags_string: "some  existing titlé  ,") }
+      let(:hypothesis) { FactoryBot.create(:hypothesis_approved, tags_string: "some  existing titlé  ,") }
       it "assigns based on the string, adds removes" do
         hypothesis.reload
         expect(hypothesis.tags.pluck(:id)).to eq([tag.id])
@@ -35,7 +35,7 @@ RSpec.describe Hypothesis, type: :model do
 
   describe "citation_urls" do
     let!(:citation) { FactoryBot.create(:citation, title: "some citation", url: "https://bikeindex.org/about") }
-    let(:hypothesis) { FactoryBot.create(:hypothesis, title: "hypothesis-1") }
+    let(:hypothesis) { FactoryBot.create(:hypothesis_approved, title: "hypothesis-1") }
     it "assigns" do
       hypothesis.update(citation_urls: "bikeindex.org/about")
       expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
@@ -46,6 +46,15 @@ RSpec.describe Hypothesis, type: :model do
         expect(hypothesis.citations.pluck(:id)).to include(citation.id)
         expect(hypothesis.citation_urls).to match_array(["https://bikeindex.org/about", "https://bikeindex.org/serials"])
       end
+    end
+  end
+
+  describe "github_html_url" do
+    let(:hypothesis) { FactoryBot.create(:hypothesis, pull_request_number: 2) }
+    it "is pull_request if unapproved, file_path if approved" do
+      expect(hypothesis.github_html_url).to match(/pull\/2/)
+      hypothesis.approved_at = Time.current
+      expect(hypothesis.github_html_url).to match(hypothesis.file_path)
     end
   end
 end

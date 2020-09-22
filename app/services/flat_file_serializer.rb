@@ -15,26 +15,36 @@ class FlatFileSerializer
       Hypothesis.approved.find_each { |hypothesis| write_hypothesis(hypothesis) }
     end
 
+    def hypothesis_file_content(hypothesis)
+      # Serialize to yaml - stringify keys so the keys don't start with :, to make things easier to read
+      HypothesisSerializer.new(hypothesis, root: false).as_json.deep_stringify_keys.to_yaml
+    end
+
     def write_hypothesis(hypothesis)
       dirname = File.dirname(hypothesis.flat_file_name(FILES_PATH))
       # Create the intermidiary directories
       FileUtils.mkdir_p(dirname) unless File.directory?(dirname)
-      # Serialize to yaml - stringify keys so the keys don't start with :, to make things easier to read
-      serialized = HypothesisSerializer.new(hypothesis, root: false).as_json.deep_stringify_keys.to_yaml
-      File.open(hypothesis.flat_file_name(FILES_PATH), "w") { |f| f.puts(serialized) }
+      File.open(hypothesis.flat_file_name(FILES_PATH), "w") do |f|
+        f.puts(hypothesis_file_content(hypothesis))
+      end
     end
 
     def write_all_citations
       Citation.find_each { |citation| write_citation(citation) }
     end
 
+    def citation_file_content(citation)
+      # Serialize to yaml - stringify keys so the keys don't start with :, to make things easier to read
+      CitationSerializer.new(citation, root: false).as_json.deep_stringify_keys.to_yaml
+    end
+
     def write_citation(citation)
       dirname = File.dirname(citation.flat_file_name(FILES_PATH))
       # Create the intermidiary directories
       FileUtils.mkdir_p(dirname) unless File.directory?(dirname)
-      # Serialize to yaml - stringify keys so the keys don't start with :, to make things easier to read
-      serialized = CitationSerializer.new(citation, root: false).as_json.deep_stringify_keys.to_yaml
-      File.open(citation.flat_file_name(FILES_PATH), "w") { |f| f.puts(serialized) }
+      File.open(citation.flat_file_name(FILES_PATH), "w") do |f|
+        f.puts(citation_file_content(citation))
+      end
     end
 
     def tags_file
@@ -46,7 +56,7 @@ class FlatFileSerializer
     end
 
     def write_all_tags
-      attrs_to_write = %i[title id slug taxonomy] # Skip price of initializing serializer for csv
+      attrs_to_write = %i[title id taxonomy] # Skip price of initializing serializer for csv
       File.open(tags_file, "w") { |f|
         f.puts attrs_to_write.join(",")
         Tag.alphabetical.pluck(*attrs_to_write).each { |attrs| f.puts attrs.join(",") }
@@ -62,7 +72,7 @@ class FlatFileSerializer
     end
 
     def write_all_publications
-      attrs_to_write = %i[title slug id has_published_retractions has_peer_reviewed_articles home_url]
+      attrs_to_write = %i[title id has_published_retractions has_peer_reviewed_articles home_url]
       File.open(publications_file, "w") { |f|
         f.puts attrs_to_write.join(",")
         Publication.alphabetical.pluck(*attrs_to_write).each { |attrs| f.puts attrs.join(",") }

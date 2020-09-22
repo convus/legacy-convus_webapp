@@ -1,37 +1,53 @@
 %h1
   Viewing Hypothesis
 
-.max-main-width
-  %table.table-list
-    %tbody
-      %tr
-        %td Title
-        %td= @hypothesis.title
-      %tr
-        %td GitHub
-        %td= link_to @hypothesis.file_path, @hypothesis.github_html_url
-      %tr
-        %td ID
-        %td= @hypothesis.id
-      %tr.small
-        %td Direct quotation?
-        %td= @hypothesis.has_direct_quotation
-      %tr
-        %td Tags
-        %td
-          - if @hypothesis.tags.any?
-            %ul
-              - @hypothesis.tags.each do |tag|
-                %li
-                  = tag.title
-      %tr
-        %td Created at
-        %td
-          %span.convertTime
-            = l @hypothesis.created_at, format: :convert_time
-      %tr
-        %td Citations
-        %td= @citations.count
+- if !@hypothesis.approved?
+  %h2
+    Hypothesis hasn't been approved!
+  %p
+    - if @hypothesis.pull_request_number.present?
+
+      Waiting on
+      = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
+    - else
+      No pull request ID present, try reloading the page
+- else
+  .max-main-width
+    %table.table-list
+      %tbody
+        %tr
+          %td Title
+          %td= @hypothesis.title
+        %tr
+          %td GitHub
+          %td
+            = link_to @hypothesis.file_path, @hypothesis.github_html_url
+            - if @hypothesis.pull_request_number.present?
+              %br
+              Approved by
+              = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
+        %tr
+          %td ID
+          %td= @hypothesis.id
+        %tr.small
+          %td Direct quotation?
+          %td= @hypothesis.has_direct_quotation
+        %tr
+          %td Tags
+          %td
+            - if @hypothesis.tags.any?
+              %ul
+                - @hypothesis.tags.each do |tag|
+                  %li
+                    = tag.title
+        %tr
+          %td Created at
+          %td
+            %span.convertTime
+              = l @hypothesis.created_at, format: :convert_time
+        %tr
+          %td Citations
+          %td= @citations.count
 
 
 
