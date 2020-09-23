@@ -3,7 +3,7 @@ class Hypothesis < ApplicationRecord
 
   belongs_to :creator, class_name: "User"
 
-  has_many :hypothesis_citations
+  has_many :hypothesis_citations, dependent: :destroy
   has_many :citations, through: :hypothesis_citations
   has_many :hypothesis_tags
   has_many :tags, through: :hypothesis_tags

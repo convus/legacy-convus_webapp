@@ -14,7 +14,7 @@ class Citation < ApplicationRecord
   belongs_to :publication
   belongs_to :creator, class_name: "User"
 
-  has_many :hypothesis_citations
+  has_many :hypothesis_citations, dependent: :destroy
   has_many :hypotheses, through: :hypothesis_citations
 
   validates_presence_of :url

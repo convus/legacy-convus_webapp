@@ -44,6 +44,7 @@ unless ENV["CIRCLECI"]
         expect(list_of_files).to match_array(target_filenames)
         hypothesis_id = Hypothesis.first.id
         citation_id = Citation.first.id
+        expect(Citation.first.publication_title).to eq("The Hill")
         Hypothesis.destroy_all
         Citation.destroy_all
         # TODO: import publications and tags
@@ -53,8 +54,9 @@ unless ENV["CIRCLECI"]
         # Tag.destroy_all
         subject.import_all_files
         expect(Hypothesis.approved.pluck(:id)).to eq([hypothesis_id])
-        expect(Citation.approved.count).to eq 1
         expect(Citation.approved.pluck(:id)).to eq([citation_id])
+        expect(HypothesisCitation.count).to eq 1 # Ensure we haven't created extras accidentally
+        expect(Publication.count).to eq 1 # Ensure we haven't created extras accidentally
       end
     end
   end

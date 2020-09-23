@@ -4,8 +4,8 @@ class FlatFileImporter
   FILES_PATH = FlatFileSerializer::FILES_PATH
 
   class << self
-    # TODO: This is an embarrassing solution, and needs to be improved
-    # Probably using octokit?
+    # TODO: This is an embarrassing solution, and needs to be improved, probably using octokit
+    # Right now this is just for a rake task
     def reconcile_flat_files
       git_pull_output = `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" cd $FLAT_FILE_PATH && git pull origin main`
       import_all_files
@@ -51,6 +51,7 @@ class FlatFileImporter
       citation.approved_at ||= Time.current # If it's in the flat files, it's approved
       citation.update(title: citation_attrs[:title],
                       url: citation_attrs[:url],
+                      publication_title: citation_attrs[:publication_title],
                       kind: citation_attrs[:kind],
                       published_date_str: citation_attrs[:published_date],
                       authors: citation_attrs[:authors])
@@ -58,8 +59,6 @@ class FlatFileImporter
       unless citation.id == citation_attrs[:id]
         citation.update_columns(id: citation_attrs[:id])
       end
-      # TODO: Make publication title update here. Currently collides with publication url stuff
-      # citation.update(publication_title: citation_attrs[:publication_title])
       citation
     end
   end
