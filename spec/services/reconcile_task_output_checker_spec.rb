@@ -10,6 +10,8 @@ RSpec.describe ReconcileTaskOutputChecker do
     it "returns true" do
       expect(described_class.success?("already up to date ")).to be_truthy
       expect(described_class.success?("Already up to date.")).to be_truthy
+      multiline = "HEAD is now at 4f6e4b1 remove duped citations again\nAlready up to date.\n[main 24fc419] reconciliation\n1 file changed, 3 deletions(-)"
+      expect(described_class.success?(multiline)).to be_truthy
     end
   end
 end
