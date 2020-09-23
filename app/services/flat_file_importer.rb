@@ -2,12 +2,36 @@
 
 class FlatFileImporter
   FILES_PATH = FlatFileSerializer::FILES_PATH
+  require "csv"
 
   class << self
     def import_all_files
+      import_tags
+      import_publications
       import_citations
       import_hypotheses
-      # TODO: Import tags and publications
+    end
+
+    def import_tags
+      CSV.read(FlatFileSerializer.tags_file, headers: true, header_converters: :symbol).each do |row|
+        tag = Tag.find_by_id(row[:id]) || Tag.new
+        tag.title = row[:title]
+        tag.taxonomy = row[:taxonomy]
+        tag.save if tag.changed?
+        tag.update_column :id, row[:id] unless tag.id == row[:id]
+      end
+    end
+
+    def import_publications
+      CSV.read(FlatFileSerializer.publications_file, headers: true, header_converters: :symbol).each do |row|
+        publication = Publication.find_by_id(row[:id]) || Publication.new
+        publication.attributes = {title: row[:title],
+                                  has_published_retractions: row[:has_published_retractions],
+                                  has_peer_reviewed_articles: row[:has_peer_reviewed_articles],
+                                  home_url: row[:home_url]}
+        publication.save if publication.changed?
+        publication.update_column :id, row[:id] unless publication.id == row[:id]
+      end
     end
 
     def import_hypotheses

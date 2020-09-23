@@ -27,6 +27,7 @@ unless ENV["CIRCLECI"]
       publication = FactoryBot.create(:publication, title: "The Hill")
       citation = FactoryBot.create(:citation_approved, title: "some citation", publication: publication)
       FactoryBot.create(:hypothesis_approved, title: "hypothesis-1", citation_urls: "#{citation.url},")
+      FactoryBot.create(:tag, title: "Health & Wellness", taxonomy: "family_rank")
       FlatFileSerializer.write_all_files
     end
 
@@ -34,7 +35,7 @@ unless ENV["CIRCLECI"]
       expect(Hypothesis.count).to eq 1
       unless Hypothesis.first.flat_file_content == og_content
         pp Hypothesis.first.flat_file_serialized, og_serialized
-        expect(Hypothesis.first.flat_file_content).to eq og_content
+        expect(Hypothesis.first.flat_file_serialized.except("created_timestamp")).to eq og_serialized.except("created_timestamp")
       end
     end
 
@@ -66,23 +67,29 @@ unless ENV["CIRCLECI"]
         expect(Citation.count).to eq 1
         citation_serialized_og = Citation.first.flat_file_serialized
         citation_content_og = Citation.first.flat_file_content
+        expect(Tag.count).to eq 1
+        tag_serialized_og = Tag.pluck(:title, :id, :taxonomy) # This is how tags are serialized
+        expect(Publication.count).to eq 1
+        publication_attrs = %i[title id has_published_retractions has_peer_reviewed_articles home_url]
+        publication_serialized_og = Publication.pluck(*publication_attrs) # This is how publications are serialized
 
         Hypothesis.destroy_all
         Citation.destroy_all
-        # TODO: import publications and tags
-        # publication_id = Publication.first.id
-        # tag_id = Tag.first.id
-        # Publication.destroy_all
-        # Tag.destroy_all
+        Tag.destroy_all
+        Publication.destroy_all
+
         subject.import_all_files
         expect_hypothesis_matches_og_content(hypothesis_content_og, hypothesis_serialized_og)
         expect_citation_matches_og_content(citation_content_og, citation_serialized_og)
+        expect(Tag.pluck(:title, :id, :taxonomy)).to eq tag_serialized_og
 
         # And do it a few more times, to ensure it doesn't duplicate things
         subject.import_all_files
         subject.import_all_files
         expect_hypothesis_matches_og_content(hypothesis_content_og, hypothesis_serialized_og)
         expect_citation_matches_og_content(citation_content_og, citation_serialized_og)
+        expect(Tag.pluck(:title, :id, :taxonomy)).to eq tag_serialized_og
+        expect(Publication.pluck(*publication_attrs)).to eq publication_serialized_og
       end
     end
   end
