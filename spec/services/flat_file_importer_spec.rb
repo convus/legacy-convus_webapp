@@ -30,6 +30,13 @@ unless ENV["CIRCLECI"]
       FlatFileSerializer.write_all_files
     end
 
+    def serialized_hypothesis(hypothesis)
+
+    end
+
+    def serialized_citation(citation)
+    end
+
     describe "import_all_files" do
       let(:target_filenames) do
         [
@@ -39,12 +46,14 @@ unless ENV["CIRCLECI"]
           "tags.csv"
         ]
       end
-      it "writes the expected files" do
+      it "imports what was exported" do
         write_basic_files
         expect(list_of_files).to match_array(target_filenames)
-        hypothesis_id = Hypothesis.first.id
-        citation_id = Citation.first.id
-        expect(Citation.first.publication_title).to eq("The Hill")
+        expect(Hypothesis.count).to eq 1
+        hypothesis_serialized_og = Hypothesis.first.flat_file_content
+        expect(Citation.count).to eq 1
+        citation_serialized_og = Citation.first.flat_file_content
+
         Hypothesis.destroy_all
         Citation.destroy_all
         # TODO: import publications and tags
@@ -53,8 +62,10 @@ unless ENV["CIRCLECI"]
         # Publication.destroy_all
         # Tag.destroy_all
         subject.import_all_files
-        expect(Hypothesis.approved.pluck(:id)).to eq([hypothesis_id])
-        expect(Citation.approved.pluck(:id)).to eq([citation_id])
+        expect(Hypothesis.count).to eq 1
+        expect(Hypothesis.first.flat_file_content).to eq hypothesis_serialized_og
+        expect(Citation.count).to eq 1
+        expect(Citation.first.flat_file_content).to eq citation_serialized_og
         expect(HypothesisCitation.count).to eq 1 # Ensure we haven't created extras accidentally
         expect(Publication.count).to eq 1 # Ensure we haven't created extras accidentally
       end

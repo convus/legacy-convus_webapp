@@ -7,10 +7,15 @@ class FlatFileImporter
     # TODO: This is an embarrassing solution, and needs to be improved, probably using octokit
     # Right now this is just for a rake task
     def reconcile_flat_files
-      git_pull_output = `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" cd $FLAT_FILE_PATH && git pull origin main`
+      Dir.chdir FILES_PATH
+      git_pull_output = `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git pull origin main`
       import_all_files
       FlatFileSerializer.write_all_files
-      git_push_output = `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" cd $FLAT_FILE_PATH && git add -A && git commit -m"reconciliation" && git push origin main`
+      pp "fffxcv7xcv7s9912312"
+      puts `git add -A`
+      puts `git commit -m"reconciliation"`
+      puts `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git push origin main`
+      # git_push_output = `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git add -A && git commit -m"reconciliation" && git push origin main`
     end
 
     def import_all_files
