@@ -30,11 +30,22 @@ unless ENV["CIRCLECI"]
       FlatFileSerializer.write_all_files
     end
 
-    def serialized_hypothesis(hypothesis)
-
+    def expect_hypothesis_matches_og_content(og_content, og_serialized)
+      expect(Hypothesis.count).to eq 1
+      unless Hypothesis.first.flat_file_content == og_content
+        pp Hypothesis.first.flat_file_serialized, og_serialized
+        expect(Hypothesis.first.flat_file_content).to eq og_content
+      end
     end
 
-    def serialized_citation(citation)
+    def expect_citation_matches_og_content(og_content, og_serialized)
+      expect(Citation.count).to eq 1
+      unless Citation.first.flat_file_content == og_content
+        pp Citation.first.flat_file_serialized, og_serialized
+        expect(Citation.first.flat_file_content).to eq og_content
+      end
+      expect(HypothesisCitation.count).to eq 1 # Ensure we haven't created extras accidentally
+      expect(Publication.count).to eq 1 # Ensure we haven't created extras accidentally
     end
 
     describe "import_all_files" do
@@ -50,9 +61,11 @@ unless ENV["CIRCLECI"]
         write_basic_files
         expect(list_of_files).to match_array(target_filenames)
         expect(Hypothesis.count).to eq 1
-        hypothesis_serialized_og = Hypothesis.first.flat_file_content
+        hypothesis_serialized_og = Hypothesis.first.flat_file_serialized
+        hypothesis_content_og = Hypothesis.first.flat_file_content
         expect(Citation.count).to eq 1
-        citation_serialized_og = Citation.first.flat_file_content
+        citation_serialized_og = Citation.first.flat_file_serialized
+        citation_content_og = Citation.first.flat_file_content
 
         Hypothesis.destroy_all
         Citation.destroy_all
@@ -62,12 +75,14 @@ unless ENV["CIRCLECI"]
         # Publication.destroy_all
         # Tag.destroy_all
         subject.import_all_files
-        expect(Hypothesis.count).to eq 1
-        expect(Hypothesis.first.flat_file_content).to eq hypothesis_serialized_og
-        expect(Citation.count).to eq 1
-        expect(Citation.first.flat_file_content).to eq citation_serialized_og
-        expect(HypothesisCitation.count).to eq 1 # Ensure we haven't created extras accidentally
-        expect(Publication.count).to eq 1 # Ensure we haven't created extras accidentally
+        expect_hypothesis_matches_og_content(hypothesis_content_og, hypothesis_serialized_og)
+        expect_citation_matches_og_content(citation_content_og, citation_serialized_og)
+
+        # And do it a few more times, to ensure it doesn't explode
+        subject.import_all_files
+        subject.import_all_files
+        expect_hypothesis_matches_og_content(hypothesis_content_og, hypothesis_serialized_og)
+        expect_citation_matches_og_content(citation_content_og, citation_serialized_og)
       end
     end
   end

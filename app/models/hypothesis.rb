@@ -1,5 +1,6 @@
 class Hypothesis < ApplicationRecord
   include TitleSluggable
+  include FlatFileSerializable
 
   belongs_to :creator, class_name: "User"
 
@@ -53,29 +54,14 @@ class Hypothesis < ApplicationRecord
     citations
   end
 
+  # Required for FlatFileSerializable
   def file_pathnames
     ["hypotheses", "#{slug}.yml"]
   end
 
-  def file_path
-    file_pathnames.join("/")
-  end
-
-  def flat_file_name(root_path)
-    File.join(root_path, *file_pathnames)
-  end
-
-  def flat_file_content
-    # Serialize to yaml - stringify keys so the keys don't start with :, to make things easier to read
-    HypothesisSerializer.new(self, root: false).as_json.deep_stringify_keys.to_yaml
-  end
-
-  def github_html_url
-    approved? ? GithubIntegration.content_html_url(file_path) : pull_request_url
-  end
-
-  def pull_request_url
-    GithubIntegration.pull_request_html_url(pull_request_number)
+  # Required for FlatFileSerializable
+  def flat_file_serialized
+    HypothesisSerializer.new(self, root: false).as_json
   end
 
   def add_to_github_content
