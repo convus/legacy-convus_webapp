@@ -11,6 +11,10 @@ task reconcile_flat_file_database: :environment do
   output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git reset --hard origin/main`
   output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git pull origin main`
   FlatFileImporter.import_all_files # Import the files from the git branch
+  # Remove the existing hypotheses and citations, and then re-write them
+  # Important because of title/slug renaming
+  FileUtils.rm_rf("hypotheses")
+  FileUtils.rm_rf("citations")
   FlatFileSerializer.write_all_files
   output += `git add -A`
   commit_message = "Reconciliation - #{Time.now.utc.to_date.iso8601}"
