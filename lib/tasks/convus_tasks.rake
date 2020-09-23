@@ -13,7 +13,8 @@ task reconcile_flat_file_database: :environment do
   FlatFileImporter.import_all_files # Import the files from the git branch
   FlatFileSerializer.write_all_files
   output += `git add -A`
-  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git commit -m"reconciliation"`
+  commit_message = "Reconciliation - #{Time.now.utc.to_date.iso8601}"
+  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git commit -m"#{commit_message}"`
   output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git push origin main`
 
   puts "Output: " + output " (output end)"
