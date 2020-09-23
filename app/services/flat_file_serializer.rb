@@ -1,7 +1,7 @@
 # Outputs a current version of the database
 
 class FlatFileSerializer
-  FILES_PATH = File.path(ENV["FLAT_FILE_OUT_PATH"])
+  FILES_PATH = File.path(ENV["FLAT_FILE_PATH"])
 
   class << self
     def write_all_files
