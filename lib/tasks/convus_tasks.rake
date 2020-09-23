@@ -6,9 +6,12 @@
 task reconcile_flat_file_database: :environment do
   Dir.chdir FlatFileSerializer::FILES_PATH
   output = ""
-  output += `git reset --hard origin/main`
-  output += `git config --global admin-bot@convus.org`
+  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git config --global admin-bot@convus.org`
+  puts "after config"
+  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa"git reset --hard origin/main`
+  puts "After reset"
   output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git pull origin main`
+  puts "after pull"
   FlatFileImporter.import_all_files # Import the files from the git branch
   FlatFileSerializer.write_all_files
   output += `git add -A`
