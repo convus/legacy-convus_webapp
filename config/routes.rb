@@ -7,6 +7,8 @@ Rails.application.routes.draw do
 
   root "hypotheses#index"
 
+  get :about, to: "landing#about"
+
   resources :citations, :publications, :hypotheses
 
   get "/citations/:publication_id/:citation_id", to: "citations#show"
