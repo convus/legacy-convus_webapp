@@ -2,7 +2,7 @@
 # Ideally this would be in a service. This is mission critical and needs to be tested
 # ....
 # HOWEVER - one of the advantages of this solution is that it is blocking - only one job runs at a time
-# - the idea of managing multiple imports simultaneously is more difficult where things
+# - the idea of managing multiple imports simultaneously is additional complexity that is nice to avoid
 task reconcile_flat_file_database: :environment do
   Dir.chdir FlatFileSerializer::FILES_PATH
   output = ""
