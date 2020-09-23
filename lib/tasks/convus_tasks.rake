@@ -15,9 +15,9 @@ task reconcile_flat_file_database: :environment do
   output += `git add -A`
   output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git commit -m"reconciliation"`
   output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git push origin main`
-  puts "After push"
+
   puts output
-  # if ReconcileTaskOutputChecker.output_contains_error?(output)
-  #   raise output
-  # end
+  if ReconcileTaskOutputChecker.success?(output)
+    raise output
+  end
 end
