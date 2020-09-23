@@ -9,6 +9,7 @@ RSpec.describe ReconcileTaskOutputChecker do
   context "all up to date" do
     it "returns true" do
       expect(described_class.success?("already up to date ")).to be_truthy
+      expect(described_class.success?("Already up to date.")).to be_truthy
     end
   end
 end
