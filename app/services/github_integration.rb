@@ -11,7 +11,7 @@ class GithubIntegration
     ["https://github.com", CONTENT_REPO, "pull", pull_request_number].join("/")
   end
 
-  attr_accessor :current_branch, :main_branch_sha
+  attr_accessor :current_branch
 
   def client
     @client ||= Octokit::Client.new(access_token: ACCESS_TOKEN)
@@ -33,7 +33,7 @@ class GithubIntegration
 
   def current_branch_name
     return nil unless current_branch.present?
-    current_branch.ref.gsub(/\Arefs\/heads\//, "")
+    current_branch.ref.delete_prefix("refs/heads/")
   end
 
   def create_branch(branch_name)

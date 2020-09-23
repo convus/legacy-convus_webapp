@@ -42,8 +42,8 @@ RSpec.describe GithubIntegration do
         hypothesis.reload
         expect(hypothesis.pull_request_number).to be_present
 
-        # Can't do this via octokit.rb right now. BUT OH GOD THIS IS SOMETHING WE WANT
-        # expect(pull_request.maintainer_can_modify).to be_truthy
+        # Can't do this via octokit.rb right now. BUT OH GOD THIS IS SOMETHING WE WANT - to make this truthy
+        expect(pull_request.maintainer_can_modify).to be_falsey
       end
     end
   end
@@ -65,8 +65,8 @@ RSpec.describe GithubIntegration do
         citation.reload
         expect(citation.pull_request_number).to be_present
 
-        # Can't do this via octokit.rb right now. BUT OH DAMN THIS IS SOMETHING WE WANT
-        # expect(pull_request.maintainer_can_modify).to be_truthy
+        # Can't do this via octokit.rb right now. BUT OH DAMN THIS IS SOMETHING WE WANT - to make this truthy
+        expect(pull_request.maintainer_can_modify).to be_falsey
       end
     end
   end
