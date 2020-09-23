@@ -1,4 +1,3 @@
-desc "Write/update flat file database"
-task output_flat_files: :environment do
-  FlatFileSerializer.write_all_files
+task reconcile_flat_file_database: :environment do
+  FlatFileImporter.reconcile_flat_files
 end

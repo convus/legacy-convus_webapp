@@ -52,9 +52,9 @@ unless ENV["CIRCLECI"]
         # Publication.destroy_all
         # Tag.destroy_all
         subject.import_all_files
-        expect(Hypothesis.pluck(:id)).to eq([hypothesis_id])
-        expect(Citation.count).to eq 1
-        expect(Citation.pluck(:id)).to eq([citation_id])
+        expect(Hypothesis.approved.pluck(:id)).to eq([hypothesis_id])
+        expect(Citation.approved.count).to eq 1
+        expect(Citation.approved.pluck(:id)).to eq([citation_id])
       end
     end
   end

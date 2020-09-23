@@ -1,9 +1,18 @@
 # Outputs a current version of the database
 
 class FlatFileImporter
-  FILES_PATH = File.path(ENV["FLAT_FILE_IN_PATH"])
+  FILES_PATH = FlatFileSerializer::FILES_PATH
 
   class << self
+    # TODO: This is an embarrassing solution, and needs to be improved
+    # Probably using octokit?
+    def reconcile_flat_files
+      git_pull_output = `cd $FLAT_FILE_PATH && git pull origin main`
+      import_all_files
+      FlatFileSerializer.write_all_files
+      git_push_output = `cd $FLAT_FILE_PATH && git add -A && git commit -m"reconciliation" && git push origin main`
+    end
+
     def import_all_files
       import_citations
       import_hypotheses
@@ -19,6 +28,7 @@ class FlatFileImporter
     # TODO: This method isn't tested in detail, and should be
     def import_hypothesis(hypothesis_attrs)
       hypothesis = Hypothesis.where(id: hypothesis_attrs[:id]).first || Hypothesis.new
+      hypothesis.approved_at ||= Time.current # If it's in the flat files, it's approved
       hypothesis.update(title: hypothesis_attrs[:title], has_direct_quotation: hypothesis_attrs[:direct_quotation])
       # We need to save first, so we can update the columns if necessary, before creating associations
       unless hypothesis.id == hypothesis_attrs[:id]
@@ -38,6 +48,7 @@ class FlatFileImporter
     # TODO: This method isn't tested in detail, and should be
     def import_citation(citation_attrs)
       citation = Citation.where(id: citation_attrs[:id]).first || Citation.new
+      citation.approved_at ||= Time.current # If it's in the flat files, it's approved
       citation.update(title: citation_attrs[:title],
                       url: citation_attrs[:url],
                       kind: citation_attrs[:kind],
