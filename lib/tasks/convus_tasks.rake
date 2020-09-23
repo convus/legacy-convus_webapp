@@ -17,7 +17,7 @@ task reconcile_flat_file_database: :environment do
   output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git commit -m"#{commit_message}"`
   output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git push origin main`
 
-  puts "Output: " + output " (output end)"
+  puts "Output: " + output + " (output end)"
 
   if ReconcileTaskOutputChecker.success?(output)
     raise output
