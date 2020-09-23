@@ -10,7 +10,7 @@ class FlatFileImporter
       git_pull_output = `cd $FLAT_FILE_PATH && git pull origin main`
       import_all_files
       FlatFileSerializer.write_all_files
-      git_push_output = `cd $FLAT_FILE_PATH && git add -A && git commit -m"reconciliation" && git push origin main`
+      git_push_output = `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" cd $FLAT_FILE_PATH && git add -A && git commit -m"reconciliation" && git push origin main`
     end
 
     def import_all_files
