@@ -45,9 +45,8 @@ html {
   .wrapper {
     padding: 1rem;
   }
-  .full-screen-table {
-    margin-left: -1rem;
-    margin-right: -1rem;
+  .hide-below-main-width {
+    display: none;
   }
 }
 

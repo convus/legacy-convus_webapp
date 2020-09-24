@@ -86,3 +86,10 @@ table {
 .text-center {
   text-align: center !important;
 }
+
+@media (max-width: $max-main-width) {
+  .full-screen-table {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+}
