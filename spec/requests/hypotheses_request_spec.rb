@@ -112,7 +112,7 @@ RSpec.describe "/hypotheses", type: :request do
             citations_attributes: valid_citation_params
           }
         end
-        xit "creates with citation" do
+        it "creates with citation" do
           VCR.use_cassette("hypotheses_controller-create_with_citation", match_requests_on: [:method]) do
             expect(Hypothesis.count).to eq 0
             expect(Citation.count).to eq 0
@@ -132,7 +132,7 @@ RSpec.describe "/hypotheses", type: :request do
             expect(hypothesis.has_direct_quotation).to be_truthy
             expect(hypothesis.direct_quotation?).to be_truthy
             expect(hypothesis.tags_string).to eq "Economy, parties"
-
+            expect(hypothesis.pull_request_number).to be_present
             expect(hypothesis.approved?).to be_falsey
 
             expect(Citation.count).to eq 1
@@ -141,7 +141,7 @@ RSpec.describe "/hypotheses", type: :request do
             expect(citation.url).to eq valid_citation_params[:url]
             expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
             expect(citation.approved?).to be_falsey
-            expect(citation.pull_request_number).to be_present
+            expect(citation.pull_request_number).to eq hypothesis.pull_request_number # Because they're created together
 
             expect(citation.publication).to be_present
             expect(citation.publication_title).to eq "example.com"
@@ -166,7 +166,7 @@ RSpec.describe "/hypotheses", type: :request do
                 expect {
                   post base_url, params: {hypothesis: hypothesis_with_citation_params}
                 }.to change(Hypothesis, :count).by 1
-              }
+              end
               expect(response).to redirect_to hypothesis_path(Hypothesis.last.to_param)
               expect(flash[:success]).to be_present
 

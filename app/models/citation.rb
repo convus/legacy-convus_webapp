@@ -28,6 +28,7 @@ class Citation < ApplicationRecord
 
   scope :by_creation, -> { reorder(:created_at) }
   scope :approved, -> { where.not(approved_at: nil) }
+  scope :unapproved, -> { where(approved_at: nil) }
 
   attr_accessor :assignable_kind, :skip_add_citation_to_github
 
@@ -87,6 +88,10 @@ class Citation < ApplicationRecord
 
   def approved?
     approved_at.present?
+  end
+
+  def unapproved?
+    !approved?
   end
 
   def authors_str

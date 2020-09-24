@@ -15,9 +15,14 @@ class Hypothesis < ApplicationRecord
 
   scope :direct_quotation, -> { where(has_direct_quotation: true) }
   scope :approved, -> { where.not(approved_at: nil) }
+  scope :unapproved, -> { where(approved_at: nil) }
 
   def approved?
     approved_at.present?
+  end
+
+  def unapproved?
+    !approved?
   end
 
   def direct_quotation?

@@ -14,7 +14,7 @@ http_interactions:
         Content-Type:
           - application/json
         Authorization:
-          - token xxxxxxxxxxxx
+          - token xxxxxxxx
         Accept-Encoding:
           - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
     response:
@@ -23,7 +23,7 @@ http_interactions:
         message: OK
       headers:
         Date:
-          - Tue, 22 Sep 2020 23:07:39 GMT
+          - Thu, 24 Sep 2020 16:01:20 GMT
         Content-Type:
           - application/json; charset=utf-8
         Transfer-Encoding:
@@ -39,9 +39,9 @@ http_interactions:
           - Accept-Encoding
           - Accept-Encoding, Accept, X-Requested-With
         Etag:
-          - W/"cd5846dfbdbe4ab5d6913506f0746d4014859cb4a2005342f3c9473de76c8735"
+          - W/"83467cec6ed23b9ddf4789f9a8a112d04df3dc2ec7d51a5331a83031f86dad69"
         Last-Modified:
-          - Tue, 22 Sep 2020 22:28:25 GMT
+          - Thu, 24 Sep 2020 14:16:51 GMT
         X-Poll-Interval:
           - "300"
         X-Oauth-Scopes:
@@ -53,11 +53,11 @@ http_interactions:
         X-Ratelimit-Limit:
           - "5000"
         X-Ratelimit-Remaining:
-          - "4962"
+          - "4987"
         X-Ratelimit-Reset:
-          - "1600818051"
+          - "1600964588"
         X-Ratelimit-Used:
-          - "38"
+          - "13"
         Access-Control-Expose-Headers:
           - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
             X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
@@ -77,17 +77,17 @@ http_interactions:
         Content-Security-Policy:
           - default-src 'none'
         X-Github-Request-Id:
-          - D725:0426:1A64F24:210368E:5F6A83BA
+          - D2AD:2B86:58DBE7:6AFEFB:5F6CC2CF
       body:
         encoding: ASCII-8BIT
-        string: '[{"ref":"refs/heads/main","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvaGVhZHMvbWFpbg==","url":"https://api.github.com/repos/convus/convus_content/git/refs/heads/main","object":{"sha":"3fbced0932bcba76dc2d3c26a053272b6d88dc20","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/3fbced0932bcba76dc2d3c26a053272b6d88dc20"}},{"ref":"refs/heads/proposed-hypothesis-57","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvaGVhZHMvcHJvcG9zZWQtaHlwb3RoZXNpcy01Nw==","url":"https://api.github.com/repos/convus/convus_content/git/refs/heads/proposed-hypothesis-57","object":{"sha":"8b860150567dfa206eb752e271811aa3eeca14b5","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/8b860150567dfa206eb752e271811aa3eeca14b5"}},{"ref":"refs/heads/sethherr-patch-1","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvaGVhZHMvc2V0aGhlcnItcGF0Y2gtMQ==","url":"https://api.github.com/repos/convus/convus_content/git/refs/heads/sethherr-patch-1","object":{"sha":"d43a84ae7098200134d8a36ef1099d99d26a581e","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/d43a84ae7098200134d8a36ef1099d99d26a581e"}},{"ref":"refs/pull/1/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xL2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/1/head","object":{"sha":"d43a84ae7098200134d8a36ef1099d99d26a581e","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/d43a84ae7098200134d8a36ef1099d99d26a581e"}},{"ref":"refs/pull/1/merge","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xL21lcmdl","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/1/merge","object":{"sha":"7eda7b34d09a59826265ca08c82c81b1ced38e9c","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/7eda7b34d09a59826265ca08c82c81b1ced38e9c"}},{"ref":"refs/pull/2/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8yL2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/2/head","object":{"sha":"53b83192b84d30af26ba4a203ad35f0aa5a08c32","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/53b83192b84d30af26ba4a203ad35f0aa5a08c32"}},{"ref":"refs/pull/3/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8zL2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/3/head","object":{"sha":"e9bae3163fac33baf38be32c0149d6b297fcead8","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/e9bae3163fac33baf38be32c0149d6b297fcead8"}},{"ref":"refs/pull/4/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC80L2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/4/head","object":{"sha":"56851d17971cd0fc2a2b85ca470171aa9e8996e4","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/56851d17971cd0fc2a2b85ca470171aa9e8996e4"}},{"ref":"refs/pull/5/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC81L2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/5/head","object":{"sha":"fa6fd968d32013cd223c63ba3221f8d11fdd4933","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/fa6fd968d32013cd223c63ba3221f8d11fdd4933"}},{"ref":"refs/pull/6/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC82L2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/6/head","object":{"sha":"7fb350e39cd9b579c3ffe0adf72426e07ba28fef","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/7fb350e39cd9b579c3ffe0adf72426e07ba28fef"}},{"ref":"refs/pull/7/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC83L2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/7/head","object":{"sha":"216abb83fc75b2b711ba188308f796b737872cad","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/216abb83fc75b2b711ba188308f796b737872cad"}},{"ref":"refs/pull/8/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC84L2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/8/head","object":{"sha":"cc01335ff1f1da5b742dfd05c5a9b0404e36240a","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/cc01335ff1f1da5b742dfd05c5a9b0404e36240a"}},{"ref":"refs/pull/9/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC85L2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/9/head","object":{"sha":"faf43aec04116ecc022f33312853f2cda81e631b","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/faf43aec04116ecc022f33312853f2cda81e631b"}},{"ref":"refs/pull/10/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xMC9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/10/head","object":{"sha":"9ad3fabca5550d0731f462095eac1d5b254debc7","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/9ad3fabca5550d0731f462095eac1d5b254debc7"}},{"ref":"refs/pull/11/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xMS9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/11/head","object":{"sha":"3ae9d5c3df18aef0da65c2d37d6553cb5625d089","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/3ae9d5c3df18aef0da65c2d37d6553cb5625d089"}},{"ref":"refs/pull/12/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xMi9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/12/head","object":{"sha":"8b860150567dfa206eb752e271811aa3eeca14b5","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/8b860150567dfa206eb752e271811aa3eeca14b5"}},{"ref":"refs/pull/12/merge","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xMi9tZXJnZQ==","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/12/merge","object":{"sha":"5d832f7015c2a5c91d6e2febd94f283b95a0cb0a","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/5d832f7015c2a5c91d6e2febd94f283b95a0cb0a"}}]'
-    recorded_at: Tue, 22 Sep 2020 23:07:39 GMT
+        string: '[{"ref":"refs/heads/main","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvaGVhZHMvbWFpbg==","url":"https://api.github.com/repos/convus/convus_content/git/refs/heads/main","object":{"sha":"c0e6d80dd2bab5094c0fa748491c30d178ec7167","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/c0e6d80dd2bab5094c0fa748491c30d178ec7167"}},{"ref":"refs/pull/1/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xL2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/1/head","object":{"sha":"d43a84ae7098200134d8a36ef1099d99d26a581e","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/d43a84ae7098200134d8a36ef1099d99d26a581e"}},{"ref":"refs/pull/2/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8yL2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/2/head","object":{"sha":"53b83192b84d30af26ba4a203ad35f0aa5a08c32","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/53b83192b84d30af26ba4a203ad35f0aa5a08c32"}},{"ref":"refs/pull/3/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8zL2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/3/head","object":{"sha":"e9bae3163fac33baf38be32c0149d6b297fcead8","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/e9bae3163fac33baf38be32c0149d6b297fcead8"}},{"ref":"refs/pull/4/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC80L2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/4/head","object":{"sha":"56851d17971cd0fc2a2b85ca470171aa9e8996e4","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/56851d17971cd0fc2a2b85ca470171aa9e8996e4"}},{"ref":"refs/pull/5/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC81L2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/5/head","object":{"sha":"fa6fd968d32013cd223c63ba3221f8d11fdd4933","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/fa6fd968d32013cd223c63ba3221f8d11fdd4933"}},{"ref":"refs/pull/6/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC82L2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/6/head","object":{"sha":"7fb350e39cd9b579c3ffe0adf72426e07ba28fef","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/7fb350e39cd9b579c3ffe0adf72426e07ba28fef"}},{"ref":"refs/pull/7/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC83L2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/7/head","object":{"sha":"216abb83fc75b2b711ba188308f796b737872cad","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/216abb83fc75b2b711ba188308f796b737872cad"}},{"ref":"refs/pull/8/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC84L2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/8/head","object":{"sha":"cc01335ff1f1da5b742dfd05c5a9b0404e36240a","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/cc01335ff1f1da5b742dfd05c5a9b0404e36240a"}},{"ref":"refs/pull/9/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC85L2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/9/head","object":{"sha":"faf43aec04116ecc022f33312853f2cda81e631b","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/faf43aec04116ecc022f33312853f2cda81e631b"}},{"ref":"refs/pull/10/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xMC9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/10/head","object":{"sha":"9ad3fabca5550d0731f462095eac1d5b254debc7","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/9ad3fabca5550d0731f462095eac1d5b254debc7"}},{"ref":"refs/pull/11/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xMS9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/11/head","object":{"sha":"3ae9d5c3df18aef0da65c2d37d6553cb5625d089","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/3ae9d5c3df18aef0da65c2d37d6553cb5625d089"}},{"ref":"refs/pull/12/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xMi9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/12/head","object":{"sha":"8b860150567dfa206eb752e271811aa3eeca14b5","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/8b860150567dfa206eb752e271811aa3eeca14b5"}},{"ref":"refs/pull/13/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xMy9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/13/head","object":{"sha":"563e7a48d68ab83af8c113ebeb81039e6720c15e","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/563e7a48d68ab83af8c113ebeb81039e6720c15e"}},{"ref":"refs/pull/14/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xNC9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/14/head","object":{"sha":"ed67ab708a676c68abfcfc095186de2df1ef608e","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/ed67ab708a676c68abfcfc095186de2df1ef608e"}},{"ref":"refs/pull/15/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xNS9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/15/head","object":{"sha":"4593d66b5e2c15425aea563bab57dd3bda1b3032","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/4593d66b5e2c15425aea563bab57dd3bda1b3032"}},{"ref":"refs/pull/16/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xNi9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/16/head","object":{"sha":"96060d0ec0da42256412ce0b6216030963cb5ed4","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/96060d0ec0da42256412ce0b6216030963cb5ed4"}},{"ref":"refs/pull/17/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xNy9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/17/head","object":{"sha":"dadde16692b52fa773db0e2a1b5f343604bf5fb0","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/dadde16692b52fa773db0e2a1b5f343604bf5fb0"}},{"ref":"refs/pull/18/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xOC9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/18/head","object":{"sha":"f2a4e794e859b531344af0c6889b25cb9c954336","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/f2a4e794e859b531344af0c6889b25cb9c954336"}},{"ref":"refs/pull/19/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xOS9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/19/head","object":{"sha":"a52c6d9ac0f321e001d07a9ad41ebb3f04f2d020","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/a52c6d9ac0f321e001d07a9ad41ebb3f04f2d020"}},{"ref":"refs/pull/20/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8yMC9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/20/head","object":{"sha":"dc7f58fd7598e089bc9a7de5794ab1a3ee643ea6","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/dc7f58fd7598e089bc9a7de5794ab1a3ee643ea6"}},{"ref":"refs/pull/21/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8yMS9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/21/head","object":{"sha":"263e843fb0d1e60a9b95f5d5c2404648a6759b20","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/263e843fb0d1e60a9b95f5d5c2404648a6759b20"}},{"ref":"refs/pull/22/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8yMi9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/22/head","object":{"sha":"abe6d340d29661c0afb98c70aee0a40cf08148e3","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/abe6d340d29661c0afb98c70aee0a40cf08148e3"}},{"ref":"refs/pull/23/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8yMy9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/23/head","object":{"sha":"f1c77e28da03993618fb6260806a1c1ee2fc83dc","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/f1c77e28da03993618fb6260806a1c1ee2fc83dc"}},{"ref":"refs/pull/24/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8yNC9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/24/head","object":{"sha":"393ee4976e5941c3779b910748d4c1ca2e4c1b26","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/393ee4976e5941c3779b910748d4c1ca2e4c1b26"}},{"ref":"refs/pull/25/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8yNS9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/25/head","object":{"sha":"8dc9d9777321be23540c46c49982fe8d9b3eb2a2","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/8dc9d9777321be23540c46c49982fe8d9b3eb2a2"}},{"ref":"refs/pull/26/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8yNi9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/26/head","object":{"sha":"94e27f0ff02401a9ae83fc5e2250eedbbffa42e1","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/94e27f0ff02401a9ae83fc5e2250eedbbffa42e1"}},{"ref":"refs/pull/27/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8yNy9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/27/head","object":{"sha":"4f603f35831c2c92a6108b3a33a2a8fbead002e3","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/4f603f35831c2c92a6108b3a33a2a8fbead002e3"}}]'
+    recorded_at: Thu, 24 Sep 2020 16:01:20 GMT
   - request:
       method: post
       uri: https://api.github.com/repos/convus/convus_content/git/refs
       body:
         encoding: UTF-8
-        string: '{"ref":"refs/heads/proposed-citation-91","sha":"3fbced0932bcba76dc2d3c26a053272b6d88dc20"}'
+        string: '{"ref":"refs/heads/proposed-hypothesis-90","sha":"c0e6d80dd2bab5094c0fa748491c30d178ec7167"}'
       headers:
         User-Agent:
           - Octokit Ruby Gem 4.18.0
@@ -96,7 +96,7 @@ http_interactions:
         Content-Type:
           - application/json
         Authorization:
-          - token xxxxxxxxxxxx
+          - token xxxxxxxx
         Accept-Encoding:
           - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
     response:
@@ -105,341 +105,7 @@ http_interactions:
         message: Created
       headers:
         Date:
-          - Tue, 22 Sep 2020 23:07:39 GMT
-        Content-Type:
-          - application/json; charset=utf-8
-        Content-Length:
-          - "401"
-        Server:
-          - GitHub.com
-        Status:
-          - 201 Created
-        Cache-Control:
-          - private, max-age=60, s-maxage=60
-        Vary:
-          - Accept, Authorization, Cookie, X-GitHub-OTP
-          - Accept-Encoding
-          - Accept-Encoding, Accept, X-Requested-With
-        Etag:
-          - '"07f0a8f39c118a67d7592c9ba954bba709a7b29b813556144737e673406122a9"'
-        X-Oauth-Scopes:
-          - repo
-        X-Accepted-Oauth-Scopes:
-          - repo
-        Location:
-          - https://api.github.com/repos/convus/convus_content/git/refs/heads/proposed-citation-91
-        X-Github-Media-Type:
-          - github.v3; format=json
-        X-Ratelimit-Limit:
-          - "5000"
-        X-Ratelimit-Remaining:
-          - "4961"
-        X-Ratelimit-Reset:
-          - "1600818051"
-        X-Ratelimit-Used:
-          - "39"
-        Access-Control-Expose-Headers:
-          - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
-            X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
-            X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset
-        Access-Control-Allow-Origin:
-          - "*"
-        Strict-Transport-Security:
-          - max-age=31536000; includeSubdomains; preload
-        X-Frame-Options:
-          - deny
-        X-Content-Type-Options:
-          - nosniff
-        X-Xss-Protection:
-          - 1; mode=block
-        Referrer-Policy:
-          - origin-when-cross-origin, strict-origin-when-cross-origin
-        Content-Security-Policy:
-          - default-src 'none'
-        X-Github-Request-Id:
-          - D72A:1A06:1453889:193CC7B:5F6A83BB
-      body:
-        encoding: UTF-8
-        string: '{"ref":"refs/heads/proposed-citation-91","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvaGVhZHMvcHJvcG9zZWQtY2l0YXRpb24tOTE=","url":"https://api.github.com/repos/convus/convus_content/git/refs/heads/proposed-citation-91","object":{"sha":"3fbced0932bcba76dc2d3c26a053272b6d88dc20","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/3fbced0932bcba76dc2d3c26a053272b6d88dc20"}}'
-    recorded_at: Tue, 22 Sep 2020 23:07:39 GMT
-  - request:
-      method: put
-      uri: https://api.github.com/repos/convus/convus_content/contents/citations/example-com/testing-hypothesis-creation-is-very-important.yml
-      body:
-        encoding: UTF-8
-        string:
-          '{"branch":"proposed-citation-91","content":"LS0tCnRpdGxlOiBUZXN0aW5nIGh5cG90aGVzaXMgY3JlYXRpb24gaXMgdmVyeSBpbXBvcnRhbnQKaWQ6IDkxCnVybDogaHR0cHM6Ly9leGFtcGxlLmNvbS9zb21ldGhpbmctb2YtaW50ZXJlc3QKa2luZDogYXJ0aWNsZQpwdWJsaWNhdGlvbl90aXRsZTogZXhhbXBsZS5jb20KcHVibGlzaGVkX2RhdGU6ICcxOTkwLTEyLTAyJwphdXRob3JzOgotIFphY2sKLSBHZW9yZ2UK","message":"Citation:
-          Testing hypothesis creation is very important"}'
-      headers:
-        User-Agent:
-          - Octokit Ruby Gem 4.18.0
-        Accept:
-          - application/vnd.github.v3+json
-        Content-Type:
-          - application/json
-        Authorization:
-          - token xxxxxxxxxxxx
-        Accept-Encoding:
-          - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-    response:
-      status:
-        code: 201
-        message: Created
-      headers:
-        Date:
-          - Tue, 22 Sep 2020 23:07:40 GMT
-        Content-Type:
-          - application/json; charset=utf-8
-        Content-Length:
-          - "2400"
-        Server:
-          - GitHub.com
-        Status:
-          - 201 Created
-        Cache-Control:
-          - private, max-age=60, s-maxage=60
-        Vary:
-          - Accept, Authorization, Cookie, X-GitHub-OTP
-          - Accept-Encoding
-          - Accept-Encoding, Accept, X-Requested-With
-        Etag:
-          - '"0355640464180f40d4c19f3c4c57e909139c394dc39c0b3536b13b809ef2d64d"'
-        X-Oauth-Scopes:
-          - repo
-        X-Accepted-Oauth-Scopes:
-          - ""
-        X-Github-Media-Type:
-          - github.v3; format=json
-        X-Ratelimit-Limit:
-          - "5000"
-        X-Ratelimit-Remaining:
-          - "4960"
-        X-Ratelimit-Reset:
-          - "1600818051"
-        X-Ratelimit-Used:
-          - "40"
-        Access-Control-Expose-Headers:
-          - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
-            X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
-            X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset
-        Access-Control-Allow-Origin:
-          - "*"
-        Strict-Transport-Security:
-          - max-age=31536000; includeSubdomains; preload
-        X-Frame-Options:
-          - deny
-        X-Content-Type-Options:
-          - nosniff
-        X-Xss-Protection:
-          - 1; mode=block
-        Referrer-Policy:
-          - origin-when-cross-origin, strict-origin-when-cross-origin
-        Content-Security-Policy:
-          - default-src 'none'
-        X-Github-Request-Id:
-          - D72F:015F:2C65E0D:3626E47:5F6A83BB
-      body:
-        encoding: UTF-8
-        string:
-          '{"content":{"name":"testing-hypothesis-creation-is-very-important.yml","path":"citations/example-com/testing-hypothesis-creation-is-very-important.yml","sha":"4eb55b8a9752ab86312d603c06c0473326dadfd6","size":210,"url":"https://api.github.com/repos/convus/convus_content/contents/citations/example-com/testing-hypothesis-creation-is-very-important.yml?ref=proposed-citation-91","html_url":"https://github.com/convus/convus_content/blob/proposed-citation-91/citations/example-com/testing-hypothesis-creation-is-very-important.yml","git_url":"https://api.github.com/repos/convus/convus_content/git/blobs/4eb55b8a9752ab86312d603c06c0473326dadfd6","download_url":"https://raw.githubusercontent.com/convus/convus_content/proposed-citation-91/citations/example-com/testing-hypothesis-creation-is-very-important.yml","type":"file","_links":{"self":"https://api.github.com/repos/convus/convus_content/contents/citations/example-com/testing-hypothesis-creation-is-very-important.yml?ref=proposed-citation-91","git":"https://api.github.com/repos/convus/convus_content/git/blobs/4eb55b8a9752ab86312d603c06c0473326dadfd6","html":"https://github.com/convus/convus_content/blob/proposed-citation-91/citations/example-com/testing-hypothesis-creation-is-very-important.yml"}},"commit":{"sha":"563e7a48d68ab83af8c113ebeb81039e6720c15e","node_id":"MDY6Q29tbWl0Mjk1ODQzNjEwOjU2M2U3YTQ4ZDY4YWI4M2FmOGMxMTNlYmViODEwMzllNjcyMGMxNWU=","url":"https://api.github.com/repos/convus/convus_content/git/commits/563e7a48d68ab83af8c113ebeb81039e6720c15e","html_url":"https://github.com/convus/convus_content/commit/563e7a48d68ab83af8c113ebeb81039e6720c15e","author":{"name":"Convus
-          Bot","email":"bot@convus.org","date":"2020-09-22T23:07:40Z"},"committer":{"name":"Convus
-          Bot","email":"bot@convus.org","date":"2020-09-22T23:07:40Z"},"tree":{"sha":"ae9fb28a47d1bc062c077b46e215a5180c23929e","url":"https://api.github.com/repos/convus/convus_content/git/trees/ae9fb28a47d1bc062c077b46e215a5180c23929e"},"message":"Citation:
-          Testing hypothesis creation is very important","parents":[{"sha":"3fbced0932bcba76dc2d3c26a053272b6d88dc20","url":"https://api.github.com/repos/convus/convus_content/git/commits/3fbced0932bcba76dc2d3c26a053272b6d88dc20","html_url":"https://github.com/convus/convus_content/commit/3fbced0932bcba76dc2d3c26a053272b6d88dc20"}],"verification":{"verified":false,"reason":"unsigned","signature":null,"payload":null}}}'
-    recorded_at: Tue, 22 Sep 2020 23:07:40 GMT
-  - request:
-      method: post
-      uri: https://api.github.com/repos/convus/convus_content/pulls
-      body:
-        encoding: UTF-8
-        string:
-          '{"base":"main","head":"proposed-citation-91","title":"Citation: Testing
-          hypothesis creation is very important"}'
-      headers:
-        User-Agent:
-          - Octokit Ruby Gem 4.18.0
-        Accept:
-          - application/vnd.github.v3+json
-        Content-Type:
-          - application/json
-        Authorization:
-          - token xxxxxxxxxxxx
-        Accept-Encoding:
-          - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-    response:
-      status:
-        code: 201
-        message: Created
-      headers:
-        Date:
-          - Tue, 22 Sep 2020 23:07:42 GMT
-        Content-Type:
-          - application/json; charset=utf-8
-        Content-Length:
-          - "15478"
-        Server:
-          - GitHub.com
-        Status:
-          - 201 Created
-        Cache-Control:
-          - private, max-age=60, s-maxage=60
-        Vary:
-          - Accept, Authorization, Cookie, X-GitHub-OTP
-          - Accept-Encoding
-          - Accept-Encoding, Accept, X-Requested-With
-        Etag:
-          - '"f89b539c62cdd4b6c9a04cf121768dfaebf3b3557f70fb42c8f18f6c291eceeb"'
-        X-Oauth-Scopes:
-          - repo
-        X-Accepted-Oauth-Scopes:
-          - ""
-        Location:
-          - https://api.github.com/repos/convus/convus_content/pulls/13
-        X-Github-Media-Type:
-          - github.v3; format=json
-        X-Ratelimit-Limit:
-          - "5000"
-        X-Ratelimit-Remaining:
-          - "4959"
-        X-Ratelimit-Reset:
-          - "1600818051"
-        X-Ratelimit-Used:
-          - "41"
-        Access-Control-Expose-Headers:
-          - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
-            X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
-            X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset
-        Access-Control-Allow-Origin:
-          - "*"
-        Strict-Transport-Security:
-          - max-age=31536000; includeSubdomains; preload
-        X-Frame-Options:
-          - deny
-        X-Content-Type-Options:
-          - nosniff
-        X-Xss-Protection:
-          - 1; mode=block
-        Referrer-Policy:
-          - origin-when-cross-origin, strict-origin-when-cross-origin
-        Content-Security-Policy:
-          - default-src 'none'
-        X-Github-Request-Id:
-          - D734:3398:3906178:4661C05:5F6A83BC
-      body:
-        encoding: UTF-8
-        string:
-          '{"url":"https://api.github.com/repos/convus/convus_content/pulls/13","id":491239167,"node_id":"MDExOlB1bGxSZXF1ZXN0NDkxMjM5MTY3","html_url":"https://github.com/convus/convus_content/pull/13","diff_url":"https://github.com/convus/convus_content/pull/13.diff","patch_url":"https://github.com/convus/convus_content/pull/13.patch","issue_url":"https://api.github.com/repos/convus/convus_content/issues/13","number":13,"state":"open","locked":false,"title":"Citation:
-          Testing hypothesis creation is very important","user":{"login":"convus-bot","id":26616290,"node_id":"MDQ6VXNlcjI2NjE2Mjkw","avatar_url":"https://avatars2.githubusercontent.com/u/26616290?v=4","gravatar_id":"","url":"https://api.github.com/users/convus-bot","html_url":"https://github.com/convus-bot","followers_url":"https://api.github.com/users/convus-bot/followers","following_url":"https://api.github.com/users/convus-bot/following{/other_user}","gists_url":"https://api.github.com/users/convus-bot/gists{/gist_id}","starred_url":"https://api.github.com/users/convus-bot/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/convus-bot/subscriptions","organizations_url":"https://api.github.com/users/convus-bot/orgs","repos_url":"https://api.github.com/users/convus-bot/repos","events_url":"https://api.github.com/users/convus-bot/events{/privacy}","received_events_url":"https://api.github.com/users/convus-bot/received_events","type":"User","site_admin":false},"body":null,"created_at":"2020-09-22T23:07:41Z","updated_at":"2020-09-22T23:07:41Z","closed_at":null,"merged_at":null,"merge_commit_sha":null,"assignee":null,"assignees":[],"requested_reviewers":[],"requested_teams":[],"labels":[],"milestone":null,"draft":false,"commits_url":"https://api.github.com/repos/convus/convus_content/pulls/13/commits","review_comments_url":"https://api.github.com/repos/convus/convus_content/pulls/13/comments","review_comment_url":"https://api.github.com/repos/convus/convus_content/pulls/comments{/number}","comments_url":"https://api.github.com/repos/convus/convus_content/issues/13/comments","statuses_url":"https://api.github.com/repos/convus/convus_content/statuses/563e7a48d68ab83af8c113ebeb81039e6720c15e","head":{"label":"convus:proposed-citation-91","ref":"proposed-citation-91","sha":"563e7a48d68ab83af8c113ebeb81039e6720c15e","user":{"login":"convus","id":25535213,"node_id":"MDEyOk9yZ2FuaXphdGlvbjI1NTM1MjEz","avatar_url":"https://avatars0.githubusercontent.com/u/25535213?v=4","gravatar_id":"","url":"https://api.github.com/users/convus","html_url":"https://github.com/convus","followers_url":"https://api.github.com/users/convus/followers","following_url":"https://api.github.com/users/convus/following{/other_user}","gists_url":"https://api.github.com/users/convus/gists{/gist_id}","starred_url":"https://api.github.com/users/convus/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/convus/subscriptions","organizations_url":"https://api.github.com/users/convus/orgs","repos_url":"https://api.github.com/users/convus/repos","events_url":"https://api.github.com/users/convus/events{/privacy}","received_events_url":"https://api.github.com/users/convus/received_events","type":"Organization","site_admin":false},"repo":{"id":295843610,"node_id":"MDEwOlJlcG9zaXRvcnkyOTU4NDM2MTA=","name":"convus_content","full_name":"convus/convus_content","private":false,"owner":{"login":"convus","id":25535213,"node_id":"MDEyOk9yZ2FuaXphdGlvbjI1NTM1MjEz","avatar_url":"https://avatars0.githubusercontent.com/u/25535213?v=4","gravatar_id":"","url":"https://api.github.com/users/convus","html_url":"https://github.com/convus","followers_url":"https://api.github.com/users/convus/followers","following_url":"https://api.github.com/users/convus/following{/other_user}","gists_url":"https://api.github.com/users/convus/gists{/gist_id}","starred_url":"https://api.github.com/users/convus/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/convus/subscriptions","organizations_url":"https://api.github.com/users/convus/orgs","repos_url":"https://api.github.com/users/convus/repos","events_url":"https://api.github.com/users/convus/events{/privacy}","received_events_url":"https://api.github.com/users/convus/received_events","type":"Organization","site_admin":false},"html_url":"https://github.com/convus/convus_content","description":"Content
-          for convus.org","fork":false,"url":"https://api.github.com/repos/convus/convus_content","forks_url":"https://api.github.com/repos/convus/convus_content/forks","keys_url":"https://api.github.com/repos/convus/convus_content/keys{/key_id}","collaborators_url":"https://api.github.com/repos/convus/convus_content/collaborators{/collaborator}","teams_url":"https://api.github.com/repos/convus/convus_content/teams","hooks_url":"https://api.github.com/repos/convus/convus_content/hooks","issue_events_url":"https://api.github.com/repos/convus/convus_content/issues/events{/number}","events_url":"https://api.github.com/repos/convus/convus_content/events","assignees_url":"https://api.github.com/repos/convus/convus_content/assignees{/user}","branches_url":"https://api.github.com/repos/convus/convus_content/branches{/branch}","tags_url":"https://api.github.com/repos/convus/convus_content/tags","blobs_url":"https://api.github.com/repos/convus/convus_content/git/blobs{/sha}","git_tags_url":"https://api.github.com/repos/convus/convus_content/git/tags{/sha}","git_refs_url":"https://api.github.com/repos/convus/convus_content/git/refs{/sha}","trees_url":"https://api.github.com/repos/convus/convus_content/git/trees{/sha}","statuses_url":"https://api.github.com/repos/convus/convus_content/statuses/{sha}","languages_url":"https://api.github.com/repos/convus/convus_content/languages","stargazers_url":"https://api.github.com/repos/convus/convus_content/stargazers","contributors_url":"https://api.github.com/repos/convus/convus_content/contributors","subscribers_url":"https://api.github.com/repos/convus/convus_content/subscribers","subscription_url":"https://api.github.com/repos/convus/convus_content/subscription","commits_url":"https://api.github.com/repos/convus/convus_content/commits{/sha}","git_commits_url":"https://api.github.com/repos/convus/convus_content/git/commits{/sha}","comments_url":"https://api.github.com/repos/convus/convus_content/comments{/number}","issue_comment_url":"https://api.github.com/repos/convus/convus_content/issues/comments{/number}","contents_url":"https://api.github.com/repos/convus/convus_content/contents/{+path}","compare_url":"https://api.github.com/repos/convus/convus_content/compare/{base}...{head}","merges_url":"https://api.github.com/repos/convus/convus_content/merges","archive_url":"https://api.github.com/repos/convus/convus_content/{archive_format}{/ref}","downloads_url":"https://api.github.com/repos/convus/convus_content/downloads","issues_url":"https://api.github.com/repos/convus/convus_content/issues{/number}","pulls_url":"https://api.github.com/repos/convus/convus_content/pulls{/number}","milestones_url":"https://api.github.com/repos/convus/convus_content/milestones{/number}","notifications_url":"https://api.github.com/repos/convus/convus_content/notifications{?since,all,participating}","labels_url":"https://api.github.com/repos/convus/convus_content/labels{/name}","releases_url":"https://api.github.com/repos/convus/convus_content/releases{/id}","deployments_url":"https://api.github.com/repos/convus/convus_content/deployments","created_at":"2020-09-15T20:37:48Z","updated_at":"2020-09-22T22:28:25Z","pushed_at":"2020-09-22T23:07:40Z","git_url":"git://github.com/convus/convus_content.git","ssh_url":"git@github.com:convus/convus_content.git","clone_url":"https://github.com/convus/convus_content.git","svn_url":"https://github.com/convus/convus_content","homepage":"https://www.convus.org","size":30,"stargazers_count":0,"watchers_count":0,"language":null,"has_issues":true,"has_projects":false,"has_downloads":true,"has_wiki":true,"has_pages":false,"forks_count":0,"mirror_url":null,"archived":false,"disabled":false,"open_issues_count":3,"license":{"key":"cc-by-sa-4.0","name":"Creative
-          Commons Attribution Share Alike 4.0 International","spdx_id":"CC-BY-SA-4.0","url":"https://api.github.com/licenses/cc-by-sa-4.0","node_id":"MDc6TGljZW5zZTI2"},"forks":0,"open_issues":3,"watchers":0,"default_branch":"main"}},"base":{"label":"convus:main","ref":"main","sha":"3fbced0932bcba76dc2d3c26a053272b6d88dc20","user":{"login":"convus","id":25535213,"node_id":"MDEyOk9yZ2FuaXphdGlvbjI1NTM1MjEz","avatar_url":"https://avatars0.githubusercontent.com/u/25535213?v=4","gravatar_id":"","url":"https://api.github.com/users/convus","html_url":"https://github.com/convus","followers_url":"https://api.github.com/users/convus/followers","following_url":"https://api.github.com/users/convus/following{/other_user}","gists_url":"https://api.github.com/users/convus/gists{/gist_id}","starred_url":"https://api.github.com/users/convus/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/convus/subscriptions","organizations_url":"https://api.github.com/users/convus/orgs","repos_url":"https://api.github.com/users/convus/repos","events_url":"https://api.github.com/users/convus/events{/privacy}","received_events_url":"https://api.github.com/users/convus/received_events","type":"Organization","site_admin":false},"repo":{"id":295843610,"node_id":"MDEwOlJlcG9zaXRvcnkyOTU4NDM2MTA=","name":"convus_content","full_name":"convus/convus_content","private":false,"owner":{"login":"convus","id":25535213,"node_id":"MDEyOk9yZ2FuaXphdGlvbjI1NTM1MjEz","avatar_url":"https://avatars0.githubusercontent.com/u/25535213?v=4","gravatar_id":"","url":"https://api.github.com/users/convus","html_url":"https://github.com/convus","followers_url":"https://api.github.com/users/convus/followers","following_url":"https://api.github.com/users/convus/following{/other_user}","gists_url":"https://api.github.com/users/convus/gists{/gist_id}","starred_url":"https://api.github.com/users/convus/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/convus/subscriptions","organizations_url":"https://api.github.com/users/convus/orgs","repos_url":"https://api.github.com/users/convus/repos","events_url":"https://api.github.com/users/convus/events{/privacy}","received_events_url":"https://api.github.com/users/convus/received_events","type":"Organization","site_admin":false},"html_url":"https://github.com/convus/convus_content","description":"Content
-          for convus.org","fork":false,"url":"https://api.github.com/repos/convus/convus_content","forks_url":"https://api.github.com/repos/convus/convus_content/forks","keys_url":"https://api.github.com/repos/convus/convus_content/keys{/key_id}","collaborators_url":"https://api.github.com/repos/convus/convus_content/collaborators{/collaborator}","teams_url":"https://api.github.com/repos/convus/convus_content/teams","hooks_url":"https://api.github.com/repos/convus/convus_content/hooks","issue_events_url":"https://api.github.com/repos/convus/convus_content/issues/events{/number}","events_url":"https://api.github.com/repos/convus/convus_content/events","assignees_url":"https://api.github.com/repos/convus/convus_content/assignees{/user}","branches_url":"https://api.github.com/repos/convus/convus_content/branches{/branch}","tags_url":"https://api.github.com/repos/convus/convus_content/tags","blobs_url":"https://api.github.com/repos/convus/convus_content/git/blobs{/sha}","git_tags_url":"https://api.github.com/repos/convus/convus_content/git/tags{/sha}","git_refs_url":"https://api.github.com/repos/convus/convus_content/git/refs{/sha}","trees_url":"https://api.github.com/repos/convus/convus_content/git/trees{/sha}","statuses_url":"https://api.github.com/repos/convus/convus_content/statuses/{sha}","languages_url":"https://api.github.com/repos/convus/convus_content/languages","stargazers_url":"https://api.github.com/repos/convus/convus_content/stargazers","contributors_url":"https://api.github.com/repos/convus/convus_content/contributors","subscribers_url":"https://api.github.com/repos/convus/convus_content/subscribers","subscription_url":"https://api.github.com/repos/convus/convus_content/subscription","commits_url":"https://api.github.com/repos/convus/convus_content/commits{/sha}","git_commits_url":"https://api.github.com/repos/convus/convus_content/git/commits{/sha}","comments_url":"https://api.github.com/repos/convus/convus_content/comments{/number}","issue_comment_url":"https://api.github.com/repos/convus/convus_content/issues/comments{/number}","contents_url":"https://api.github.com/repos/convus/convus_content/contents/{+path}","compare_url":"https://api.github.com/repos/convus/convus_content/compare/{base}...{head}","merges_url":"https://api.github.com/repos/convus/convus_content/merges","archive_url":"https://api.github.com/repos/convus/convus_content/{archive_format}{/ref}","downloads_url":"https://api.github.com/repos/convus/convus_content/downloads","issues_url":"https://api.github.com/repos/convus/convus_content/issues{/number}","pulls_url":"https://api.github.com/repos/convus/convus_content/pulls{/number}","milestones_url":"https://api.github.com/repos/convus/convus_content/milestones{/number}","notifications_url":"https://api.github.com/repos/convus/convus_content/notifications{?since,all,participating}","labels_url":"https://api.github.com/repos/convus/convus_content/labels{/name}","releases_url":"https://api.github.com/repos/convus/convus_content/releases{/id}","deployments_url":"https://api.github.com/repos/convus/convus_content/deployments","created_at":"2020-09-15T20:37:48Z","updated_at":"2020-09-22T22:28:25Z","pushed_at":"2020-09-22T23:07:40Z","git_url":"git://github.com/convus/convus_content.git","ssh_url":"git@github.com:convus/convus_content.git","clone_url":"https://github.com/convus/convus_content.git","svn_url":"https://github.com/convus/convus_content","homepage":"https://www.convus.org","size":30,"stargazers_count":0,"watchers_count":0,"language":null,"has_issues":true,"has_projects":false,"has_downloads":true,"has_wiki":true,"has_pages":false,"forks_count":0,"mirror_url":null,"archived":false,"disabled":false,"open_issues_count":3,"license":{"key":"cc-by-sa-4.0","name":"Creative
-          Commons Attribution Share Alike 4.0 International","spdx_id":"CC-BY-SA-4.0","url":"https://api.github.com/licenses/cc-by-sa-4.0","node_id":"MDc6TGljZW5zZTI2"},"forks":0,"open_issues":3,"watchers":0,"default_branch":"main"}},"_links":{"self":{"href":"https://api.github.com/repos/convus/convus_content/pulls/13"},"html":{"href":"https://github.com/convus/convus_content/pull/13"},"issue":{"href":"https://api.github.com/repos/convus/convus_content/issues/13"},"comments":{"href":"https://api.github.com/repos/convus/convus_content/issues/13/comments"},"review_comments":{"href":"https://api.github.com/repos/convus/convus_content/pulls/13/comments"},"review_comment":{"href":"https://api.github.com/repos/convus/convus_content/pulls/comments{/number}"},"commits":{"href":"https://api.github.com/repos/convus/convus_content/pulls/13/commits"},"statuses":{"href":"https://api.github.com/repos/convus/convus_content/statuses/563e7a48d68ab83af8c113ebeb81039e6720c15e"}},"author_association":"MEMBER","active_lock_reason":null,"merged":false,"mergeable":null,"rebaseable":null,"mergeable_state":"unknown","merged_by":null,"comments":0,"review_comments":0,"maintainer_can_modify":false,"commits":1,"additions":10,"deletions":0,"changed_files":1}'
-    recorded_at: Tue, 22 Sep 2020 23:07:42 GMT
-  - request:
-      method: get
-      uri: https://api.github.com/repos/convus/convus_content/git/refs
-      body:
-        encoding: US-ASCII
-        string: ""
-      headers:
-        User-Agent:
-          - Octokit Ruby Gem 4.18.0
-        Accept:
-          - application/vnd.github.v3+json
-        Content-Type:
-          - application/json
-        Authorization:
-          - token xxxxxxxxxxxx
-        Accept-Encoding:
-          - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-    response:
-      status:
-        code: 200
-        message: OK
-      headers:
-        Date:
-          - Tue, 22 Sep 2020 23:07:42 GMT
-        Content-Type:
-          - application/json; charset=utf-8
-        Transfer-Encoding:
-          - chunked
-        Server:
-          - GitHub.com
-        Status:
-          - 200 OK
-        Cache-Control:
-          - private, max-age=60, s-maxage=60
-        Vary:
-          - Accept, Authorization, Cookie, X-GitHub-OTP
-          - Accept-Encoding
-          - Accept-Encoding, Accept, X-Requested-With
-        Etag:
-          - W/"2513652e0b154f8d8af6883e67b01322f253944dc0d6b64c58fab2ccbd2c3926"
-        Last-Modified:
-          - Tue, 22 Sep 2020 22:28:25 GMT
-        X-Poll-Interval:
-          - "300"
-        X-Oauth-Scopes:
-          - repo
-        X-Accepted-Oauth-Scopes:
-          - repo
-        X-Github-Media-Type:
-          - github.v3; format=json
-        X-Ratelimit-Limit:
-          - "5000"
-        X-Ratelimit-Remaining:
-          - "4958"
-        X-Ratelimit-Reset:
-          - "1600818051"
-        X-Ratelimit-Used:
-          - "42"
-        Access-Control-Expose-Headers:
-          - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
-            X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
-            X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset
-        Access-Control-Allow-Origin:
-          - "*"
-        Strict-Transport-Security:
-          - max-age=31536000; includeSubdomains; preload
-        X-Frame-Options:
-          - deny
-        X-Content-Type-Options:
-          - nosniff
-        X-Xss-Protection:
-          - 1; mode=block
-        Referrer-Policy:
-          - origin-when-cross-origin, strict-origin-when-cross-origin
-        Content-Security-Policy:
-          - default-src 'none'
-        X-Github-Request-Id:
-          - D739:160F:2758EBA:30BB882:5F6A83BE
-      body:
-        encoding: ASCII-8BIT
-        string: '[{"ref":"refs/heads/main","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvaGVhZHMvbWFpbg==","url":"https://api.github.com/repos/convus/convus_content/git/refs/heads/main","object":{"sha":"3fbced0932bcba76dc2d3c26a053272b6d88dc20","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/3fbced0932bcba76dc2d3c26a053272b6d88dc20"}},{"ref":"refs/heads/proposed-citation-91","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvaGVhZHMvcHJvcG9zZWQtY2l0YXRpb24tOTE=","url":"https://api.github.com/repos/convus/convus_content/git/refs/heads/proposed-citation-91","object":{"sha":"563e7a48d68ab83af8c113ebeb81039e6720c15e","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/563e7a48d68ab83af8c113ebeb81039e6720c15e"}},{"ref":"refs/heads/proposed-hypothesis-57","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvaGVhZHMvcHJvcG9zZWQtaHlwb3RoZXNpcy01Nw==","url":"https://api.github.com/repos/convus/convus_content/git/refs/heads/proposed-hypothesis-57","object":{"sha":"8b860150567dfa206eb752e271811aa3eeca14b5","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/8b860150567dfa206eb752e271811aa3eeca14b5"}},{"ref":"refs/heads/sethherr-patch-1","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvaGVhZHMvc2V0aGhlcnItcGF0Y2gtMQ==","url":"https://api.github.com/repos/convus/convus_content/git/refs/heads/sethherr-patch-1","object":{"sha":"d43a84ae7098200134d8a36ef1099d99d26a581e","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/d43a84ae7098200134d8a36ef1099d99d26a581e"}},{"ref":"refs/pull/1/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xL2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/1/head","object":{"sha":"d43a84ae7098200134d8a36ef1099d99d26a581e","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/d43a84ae7098200134d8a36ef1099d99d26a581e"}},{"ref":"refs/pull/1/merge","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xL21lcmdl","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/1/merge","object":{"sha":"7eda7b34d09a59826265ca08c82c81b1ced38e9c","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/7eda7b34d09a59826265ca08c82c81b1ced38e9c"}},{"ref":"refs/pull/2/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8yL2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/2/head","object":{"sha":"53b83192b84d30af26ba4a203ad35f0aa5a08c32","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/53b83192b84d30af26ba4a203ad35f0aa5a08c32"}},{"ref":"refs/pull/3/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8zL2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/3/head","object":{"sha":"e9bae3163fac33baf38be32c0149d6b297fcead8","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/e9bae3163fac33baf38be32c0149d6b297fcead8"}},{"ref":"refs/pull/4/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC80L2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/4/head","object":{"sha":"56851d17971cd0fc2a2b85ca470171aa9e8996e4","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/56851d17971cd0fc2a2b85ca470171aa9e8996e4"}},{"ref":"refs/pull/5/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC81L2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/5/head","object":{"sha":"fa6fd968d32013cd223c63ba3221f8d11fdd4933","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/fa6fd968d32013cd223c63ba3221f8d11fdd4933"}},{"ref":"refs/pull/6/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC82L2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/6/head","object":{"sha":"7fb350e39cd9b579c3ffe0adf72426e07ba28fef","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/7fb350e39cd9b579c3ffe0adf72426e07ba28fef"}},{"ref":"refs/pull/7/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC83L2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/7/head","object":{"sha":"216abb83fc75b2b711ba188308f796b737872cad","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/216abb83fc75b2b711ba188308f796b737872cad"}},{"ref":"refs/pull/8/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC84L2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/8/head","object":{"sha":"cc01335ff1f1da5b742dfd05c5a9b0404e36240a","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/cc01335ff1f1da5b742dfd05c5a9b0404e36240a"}},{"ref":"refs/pull/9/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC85L2hlYWQ=","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/9/head","object":{"sha":"faf43aec04116ecc022f33312853f2cda81e631b","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/faf43aec04116ecc022f33312853f2cda81e631b"}},{"ref":"refs/pull/10/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xMC9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/10/head","object":{"sha":"9ad3fabca5550d0731f462095eac1d5b254debc7","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/9ad3fabca5550d0731f462095eac1d5b254debc7"}},{"ref":"refs/pull/11/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xMS9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/11/head","object":{"sha":"3ae9d5c3df18aef0da65c2d37d6553cb5625d089","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/3ae9d5c3df18aef0da65c2d37d6553cb5625d089"}},{"ref":"refs/pull/12/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xMi9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/12/head","object":{"sha":"8b860150567dfa206eb752e271811aa3eeca14b5","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/8b860150567dfa206eb752e271811aa3eeca14b5"}},{"ref":"refs/pull/12/merge","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xMi9tZXJnZQ==","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/12/merge","object":{"sha":"5d832f7015c2a5c91d6e2febd94f283b95a0cb0a","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/5d832f7015c2a5c91d6e2febd94f283b95a0cb0a"}},{"ref":"refs/pull/13/head","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvcHVsbC8xMy9oZWFk","url":"https://api.github.com/repos/convus/convus_content/git/refs/pull/13/head","object":{"sha":"563e7a48d68ab83af8c113ebeb81039e6720c15e","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/563e7a48d68ab83af8c113ebeb81039e6720c15e"}}]'
-    recorded_at: Tue, 22 Sep 2020 23:07:42 GMT
-  - request:
-      method: post
-      uri: https://api.github.com/repos/convus/convus_content/git/refs
-      body:
-        encoding: UTF-8
-        string: '{"ref":"refs/heads/proposed-hypothesis-61","sha":"3fbced0932bcba76dc2d3c26a053272b6d88dc20"}'
-      headers:
-        User-Agent:
-          - Octokit Ruby Gem 4.18.0
-        Accept:
-          - application/vnd.github.v3+json
-        Content-Type:
-          - application/json
-        Authorization:
-          - token xxxxxxxxxxxx
-        Accept-Encoding:
-          - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-    response:
-      status:
-        code: 201
-        message: Created
-      headers:
-        Date:
-          - Tue, 22 Sep 2020 23:07:43 GMT
+          - Thu, 24 Sep 2020 16:01:21 GMT
         Content-Type:
           - application/json; charset=utf-8
         Content-Length:
@@ -455,23 +121,23 @@ http_interactions:
           - Accept-Encoding
           - Accept-Encoding, Accept, X-Requested-With
         Etag:
-          - '"33f429d7c013f945d780c9e15e02cb0bd0443e9880f2ee376fc38f47a6467bc8"'
+          - '"ab4d5ea67f1da558bb732a26dbf9ccd0845adad84f61cb9de7f26d6e766d5acc"'
         X-Oauth-Scopes:
           - repo
         X-Accepted-Oauth-Scopes:
           - repo
         Location:
-          - https://api.github.com/repos/convus/convus_content/git/refs/heads/proposed-hypothesis-61
+          - https://api.github.com/repos/convus/convus_content/git/refs/heads/proposed-hypothesis-90
         X-Github-Media-Type:
           - github.v3; format=json
         X-Ratelimit-Limit:
           - "5000"
         X-Ratelimit-Remaining:
-          - "4957"
+          - "4986"
         X-Ratelimit-Reset:
-          - "1600818051"
+          - "1600964588"
         X-Ratelimit-Used:
-          - "43"
+          - "14"
         Access-Control-Expose-Headers:
           - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
             X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
@@ -491,18 +157,18 @@ http_interactions:
         Content-Security-Policy:
           - default-src 'none'
         X-Github-Request-Id:
-          - D73A:5CDC:1C0EF3F:22D2BDC:5F6A83BE
+          - D2AE:68E0:51517A:62E452:5F6CC2D0
       body:
         encoding: UTF-8
-        string: '{"ref":"refs/heads/proposed-hypothesis-61","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvaGVhZHMvcHJvcG9zZWQtaHlwb3RoZXNpcy02MQ==","url":"https://api.github.com/repos/convus/convus_content/git/refs/heads/proposed-hypothesis-61","object":{"sha":"3fbced0932bcba76dc2d3c26a053272b6d88dc20","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/3fbced0932bcba76dc2d3c26a053272b6d88dc20"}}'
-    recorded_at: Tue, 22 Sep 2020 23:07:43 GMT
+        string: '{"ref":"refs/heads/proposed-hypothesis-90","node_id":"MDM6UmVmMjk1ODQzNjEwOnJlZnMvaGVhZHMvcHJvcG9zZWQtaHlwb3RoZXNpcy05MA==","url":"https://api.github.com/repos/convus/convus_content/git/refs/heads/proposed-hypothesis-90","object":{"sha":"c0e6d80dd2bab5094c0fa748491c30d178ec7167","type":"commit","url":"https://api.github.com/repos/convus/convus_content/git/commits/c0e6d80dd2bab5094c0fa748491c30d178ec7167"}}'
+    recorded_at: Thu, 24 Sep 2020 16:01:21 GMT
   - request:
       method: put
       uri: https://api.github.com/repos/convus/convus_content/contents/hypotheses/testing-party-time-is-now.yml
       body:
         encoding: UTF-8
         string:
-          '{"branch":"proposed-hypothesis-61","content":"LS0tCnRpdGxlOiBUZXN0aW5nIHBhcnR5IHRpbWUgaXMgbm93CmlkOiA2MQpkaXJlY3RfcXVvdGF0aW9uOiB0cnVlCmNyZWF0ZWRfdGltZXN0YW1wOiAnMjAyMC0wOS0yMlQyMzowNzo0MlonCnRhZ190aXRsZXM6Ci0gcGFydGllcwotIEVjb25vbXkKY2l0YXRpb25fdXJsczoKLSBodHRwczovL2V4YW1wbGUuY29tL3NvbWV0aGluZy1vZi1pbnRlcmVzdAo=","message":"Hypothesis:
+          '{"branch":"proposed-hypothesis-90","content":"LS0tCnRpdGxlOiBUZXN0aW5nIHBhcnR5IHRpbWUgaXMgbm93CmlkOiA5MApkaXJlY3RfcXVvdGF0aW9uOiB0cnVlCmNyZWF0ZWRfdGltZXN0YW1wOiAnMjAyMC0wOS0yNFQxNjowMToxOVonCnRhZ190aXRsZXM6Ci0gRWNvbm9teQotIHBhcnRpZXMKY2l0YXRpb25fdXJsczoKLSBodHRwczovL2V4YW1wbGUuY29tL3NvbWV0aGluZy1vZi1pbnRlcmVzdAo=","message":"Hypothesis:
           Testing party time is now"}'
       headers:
         User-Agent:
@@ -512,7 +178,7 @@ http_interactions:
         Content-Type:
           - application/json
         Authorization:
-          - token xxxxxxxxxxxx
+          - token xxxxxxxx
         Accept-Encoding:
           - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
     response:
@@ -521,7 +187,7 @@ http_interactions:
         message: Created
       headers:
         Date:
-          - Tue, 22 Sep 2020 23:07:44 GMT
+          - Thu, 24 Sep 2020 16:01:22 GMT
         Content-Type:
           - application/json; charset=utf-8
         Content-Length:
@@ -537,7 +203,7 @@ http_interactions:
           - Accept-Encoding
           - Accept-Encoding, Accept, X-Requested-With
         Etag:
-          - '"efbdb07acc0fb17b803104f1ed9946040e38ae8331ed8dbdf2c231af09a2dfb8"'
+          - '"30c20502bec2e52a307c539dbf2fb1e5c13f8d860af1f34da88bf94704c5284f"'
         X-Oauth-Scopes:
           - repo
         X-Accepted-Oauth-Scopes:
@@ -547,11 +213,11 @@ http_interactions:
         X-Ratelimit-Limit:
           - "5000"
         X-Ratelimit-Remaining:
-          - "4956"
+          - "4985"
         X-Ratelimit-Reset:
-          - "1600818051"
+          - "1600964588"
         X-Ratelimit-Used:
-          - "44"
+          - "15"
         Access-Control-Expose-Headers:
           - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
             X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
@@ -571,22 +237,106 @@ http_interactions:
         Content-Security-Policy:
           - default-src 'none'
         X-Github-Request-Id:
-          - D73F:8BFC:1C2A54:26DF8B:5F6A83BF
+          - D2B3:6BC2:532E56:64CAB3:5F6CC2D1
       body:
         encoding: UTF-8
         string:
-          '{"content":{"name":"testing-party-time-is-now.yml","path":"hypotheses/testing-party-time-is-now.yml","sha":"6fad83ffa415a22a7f1541dc71979dbe2f6f40dd","size":200,"url":"https://api.github.com/repos/convus/convus_content/contents/hypotheses/testing-party-time-is-now.yml?ref=proposed-hypothesis-61","html_url":"https://github.com/convus/convus_content/blob/proposed-hypothesis-61/hypotheses/testing-party-time-is-now.yml","git_url":"https://api.github.com/repos/convus/convus_content/git/blobs/6fad83ffa415a22a7f1541dc71979dbe2f6f40dd","download_url":"https://raw.githubusercontent.com/convus/convus_content/proposed-hypothesis-61/hypotheses/testing-party-time-is-now.yml","type":"file","_links":{"self":"https://api.github.com/repos/convus/convus_content/contents/hypotheses/testing-party-time-is-now.yml?ref=proposed-hypothesis-61","git":"https://api.github.com/repos/convus/convus_content/git/blobs/6fad83ffa415a22a7f1541dc71979dbe2f6f40dd","html":"https://github.com/convus/convus_content/blob/proposed-hypothesis-61/hypotheses/testing-party-time-is-now.yml"}},"commit":{"sha":"ed67ab708a676c68abfcfc095186de2df1ef608e","node_id":"MDY6Q29tbWl0Mjk1ODQzNjEwOmVkNjdhYjcwOGE2NzZjNjhhYmZjZmMwOTUxODZkZTJkZjFlZjYwOGU=","url":"https://api.github.com/repos/convus/convus_content/git/commits/ed67ab708a676c68abfcfc095186de2df1ef608e","html_url":"https://github.com/convus/convus_content/commit/ed67ab708a676c68abfcfc095186de2df1ef608e","author":{"name":"Convus
-          Bot","email":"bot@convus.org","date":"2020-09-22T23:07:44Z"},"committer":{"name":"Convus
-          Bot","email":"bot@convus.org","date":"2020-09-22T23:07:44Z"},"tree":{"sha":"4bcdce99aeac04ad8bfc1527b75a7caf844703ca","url":"https://api.github.com/repos/convus/convus_content/git/trees/4bcdce99aeac04ad8bfc1527b75a7caf844703ca"},"message":"Hypothesis:
-          Testing party time is now","parents":[{"sha":"3fbced0932bcba76dc2d3c26a053272b6d88dc20","url":"https://api.github.com/repos/convus/convus_content/git/commits/3fbced0932bcba76dc2d3c26a053272b6d88dc20","html_url":"https://github.com/convus/convus_content/commit/3fbced0932bcba76dc2d3c26a053272b6d88dc20"}],"verification":{"verified":false,"reason":"unsigned","signature":null,"payload":null}}}'
-    recorded_at: Tue, 22 Sep 2020 23:07:44 GMT
+          '{"content":{"name":"testing-party-time-is-now.yml","path":"hypotheses/testing-party-time-is-now.yml","sha":"ae92a42034df5d438ff6d38685034254427bb6eb","size":200,"url":"https://api.github.com/repos/convus/convus_content/contents/hypotheses/testing-party-time-is-now.yml?ref=proposed-hypothesis-90","html_url":"https://github.com/convus/convus_content/blob/proposed-hypothesis-90/hypotheses/testing-party-time-is-now.yml","git_url":"https://api.github.com/repos/convus/convus_content/git/blobs/ae92a42034df5d438ff6d38685034254427bb6eb","download_url":"https://raw.githubusercontent.com/convus/convus_content/proposed-hypothesis-90/hypotheses/testing-party-time-is-now.yml","type":"file","_links":{"self":"https://api.github.com/repos/convus/convus_content/contents/hypotheses/testing-party-time-is-now.yml?ref=proposed-hypothesis-90","git":"https://api.github.com/repos/convus/convus_content/git/blobs/ae92a42034df5d438ff6d38685034254427bb6eb","html":"https://github.com/convus/convus_content/blob/proposed-hypothesis-90/hypotheses/testing-party-time-is-now.yml"}},"commit":{"sha":"e78580d0e4991f5215e3b04b213a18089f83e877","node_id":"MDY6Q29tbWl0Mjk1ODQzNjEwOmU3ODU4MGQwZTQ5OTFmNTIxNWUzYjA0YjIxM2ExODA4OWY4M2U4Nzc=","url":"https://api.github.com/repos/convus/convus_content/git/commits/e78580d0e4991f5215e3b04b213a18089f83e877","html_url":"https://github.com/convus/convus_content/commit/e78580d0e4991f5215e3b04b213a18089f83e877","author":{"name":"Convus
+          Bot","email":"bot@convus.org","date":"2020-09-24T16:01:21Z"},"committer":{"name":"Convus
+          Bot","email":"bot@convus.org","date":"2020-09-24T16:01:21Z"},"tree":{"sha":"0b10485319a3e3c00a7566718a6646766dcf1274","url":"https://api.github.com/repos/convus/convus_content/git/trees/0b10485319a3e3c00a7566718a6646766dcf1274"},"message":"Hypothesis:
+          Testing party time is now","parents":[{"sha":"c0e6d80dd2bab5094c0fa748491c30d178ec7167","url":"https://api.github.com/repos/convus/convus_content/git/commits/c0e6d80dd2bab5094c0fa748491c30d178ec7167","html_url":"https://github.com/convus/convus_content/commit/c0e6d80dd2bab5094c0fa748491c30d178ec7167"}],"verification":{"verified":false,"reason":"unsigned","signature":null,"payload":null}}}'
+    recorded_at: Thu, 24 Sep 2020 16:01:22 GMT
+  - request:
+      method: put
+      uri: https://api.github.com/repos/convus/convus_content/contents/citations/example-com/testing-hypothesis-creation-is-very-important.yml
+      body:
+        encoding: UTF-8
+        string:
+          '{"branch":"proposed-hypothesis-90","content":"LS0tCnRpdGxlOiBUZXN0aW5nIGh5cG90aGVzaXMgY3JlYXRpb24gaXMgdmVyeSBpbXBvcnRhbnQKaWQ6IDExMwp1cmw6IGh0dHBzOi8vZXhhbXBsZS5jb20vc29tZXRoaW5nLW9mLWludGVyZXN0CmtpbmQ6IGFydGljbGUKcHVibGljYXRpb25fdGl0bGU6IGV4YW1wbGUuY29tCnB1Ymxpc2hlZF9kYXRlOiAnMTk5MC0xMi0wMicKYXV0aG9yczoKLSBaYWNrCi0gR2VvcmdlCg==","message":"Citation:
+          Testing hypothesis creation is very important"}'
+      headers:
+        User-Agent:
+          - Octokit Ruby Gem 4.18.0
+        Accept:
+          - application/vnd.github.v3+json
+        Content-Type:
+          - application/json
+        Authorization:
+          - token xxxxxxxx
+        Accept-Encoding:
+          - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+    response:
+      status:
+        code: 201
+        message: Created
+      headers:
+        Date:
+          - Thu, 24 Sep 2020 16:01:23 GMT
+        Content-Type:
+          - application/json; charset=utf-8
+        Content-Length:
+          - "2410"
+        Server:
+          - GitHub.com
+        Status:
+          - 201 Created
+        Cache-Control:
+          - private, max-age=60, s-maxage=60
+        Vary:
+          - Accept, Authorization, Cookie, X-GitHub-OTP
+          - Accept-Encoding
+          - Accept-Encoding, Accept, X-Requested-With
+        Etag:
+          - '"b65673d001187e940d6455b7f00d8558d9afb0d8c26903ad421efbda7492de0e"'
+        X-Oauth-Scopes:
+          - repo
+        X-Accepted-Oauth-Scopes:
+          - ""
+        X-Github-Media-Type:
+          - github.v3; format=json
+        X-Ratelimit-Limit:
+          - "5000"
+        X-Ratelimit-Remaining:
+          - "4984"
+        X-Ratelimit-Reset:
+          - "1600964588"
+        X-Ratelimit-Used:
+          - "16"
+        Access-Control-Expose-Headers:
+          - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+            X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
+            X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset
+        Access-Control-Allow-Origin:
+          - "*"
+        Strict-Transport-Security:
+          - max-age=31536000; includeSubdomains; preload
+        X-Frame-Options:
+          - deny
+        X-Content-Type-Options:
+          - nosniff
+        X-Xss-Protection:
+          - 1; mode=block
+        Referrer-Policy:
+          - origin-when-cross-origin, strict-origin-when-cross-origin
+        Content-Security-Policy:
+          - default-src 'none'
+        X-Github-Request-Id:
+          - D2B8:6376:6D50CC:86B850:5F6CC2D2
+      body:
+        encoding: UTF-8
+        string:
+          '{"content":{"name":"testing-hypothesis-creation-is-very-important.yml","path":"citations/example-com/testing-hypothesis-creation-is-very-important.yml","sha":"7874743be75733ab99e1db8bd291c8f3f6675bcb","size":211,"url":"https://api.github.com/repos/convus/convus_content/contents/citations/example-com/testing-hypothesis-creation-is-very-important.yml?ref=proposed-hypothesis-90","html_url":"https://github.com/convus/convus_content/blob/proposed-hypothesis-90/citations/example-com/testing-hypothesis-creation-is-very-important.yml","git_url":"https://api.github.com/repos/convus/convus_content/git/blobs/7874743be75733ab99e1db8bd291c8f3f6675bcb","download_url":"https://raw.githubusercontent.com/convus/convus_content/proposed-hypothesis-90/citations/example-com/testing-hypothesis-creation-is-very-important.yml","type":"file","_links":{"self":"https://api.github.com/repos/convus/convus_content/contents/citations/example-com/testing-hypothesis-creation-is-very-important.yml?ref=proposed-hypothesis-90","git":"https://api.github.com/repos/convus/convus_content/git/blobs/7874743be75733ab99e1db8bd291c8f3f6675bcb","html":"https://github.com/convus/convus_content/blob/proposed-hypothesis-90/citations/example-com/testing-hypothesis-creation-is-very-important.yml"}},"commit":{"sha":"0e1f86528250c3cac96670b0c1680fb6d85237e3","node_id":"MDY6Q29tbWl0Mjk1ODQzNjEwOjBlMWY4NjUyODI1MGMzY2FjOTY2NzBiMGMxNjgwZmI2ZDg1MjM3ZTM=","url":"https://api.github.com/repos/convus/convus_content/git/commits/0e1f86528250c3cac96670b0c1680fb6d85237e3","html_url":"https://github.com/convus/convus_content/commit/0e1f86528250c3cac96670b0c1680fb6d85237e3","author":{"name":"Convus
+          Bot","email":"bot@convus.org","date":"2020-09-24T16:01:22Z"},"committer":{"name":"Convus
+          Bot","email":"bot@convus.org","date":"2020-09-24T16:01:22Z"},"tree":{"sha":"1da82bc23d313de9e9047c03f54ef4abe685a093","url":"https://api.github.com/repos/convus/convus_content/git/trees/1da82bc23d313de9e9047c03f54ef4abe685a093"},"message":"Citation:
+          Testing hypothesis creation is very important","parents":[{"sha":"e78580d0e4991f5215e3b04b213a18089f83e877","url":"https://api.github.com/repos/convus/convus_content/git/commits/e78580d0e4991f5215e3b04b213a18089f83e877","html_url":"https://github.com/convus/convus_content/commit/e78580d0e4991f5215e3b04b213a18089f83e877"}],"verification":{"verified":false,"reason":"unsigned","signature":null,"payload":null}}}'
+    recorded_at: Thu, 24 Sep 2020 16:01:23 GMT
   - request:
       method: post
       uri: https://api.github.com/repos/convus/convus_content/pulls
       body:
         encoding: UTF-8
         string:
-          '{"base":"main","head":"proposed-hypothesis-61","title":"Hypothesis:
+          '{"base":"main","head":"proposed-hypothesis-90","title":"Hypothesis:
           Testing party time is now"}'
       headers:
         User-Agent:
@@ -596,7 +346,7 @@ http_interactions:
         Content-Type:
           - application/json
         Authorization:
-          - token xxxxxxxxxxxx
+          - token xxxxxxxx
         Accept-Encoding:
           - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
     response:
@@ -605,7 +355,7 @@ http_interactions:
         message: Created
       headers:
         Date:
-          - Tue, 22 Sep 2020 23:07:46 GMT
+          - Thu, 24 Sep 2020 16:01:24 GMT
         Content-Type:
           - application/json; charset=utf-8
         Content-Length:
@@ -621,23 +371,23 @@ http_interactions:
           - Accept-Encoding
           - Accept-Encoding, Accept, X-Requested-With
         Etag:
-          - '"6c8c4cec00a5d4ee5e37d28c1eb58071ffc320c97d662823cf25ed7b6b8d927a"'
+          - '"eeb4cf926a849a6f11b00fbda7f33d87ab41709af48a24d26521daacf3e8145a"'
         X-Oauth-Scopes:
           - repo
         X-Accepted-Oauth-Scopes:
           - ""
         Location:
-          - https://api.github.com/repos/convus/convus_content/pulls/14
+          - https://api.github.com/repos/convus/convus_content/pulls/28
         X-Github-Media-Type:
           - github.v3; format=json
         X-Ratelimit-Limit:
           - "5000"
         X-Ratelimit-Remaining:
-          - "4955"
+          - "4983"
         X-Ratelimit-Reset:
-          - "1600818051"
+          - "1600964588"
         X-Ratelimit-Used:
-          - "45"
+          - "17"
         Access-Control-Expose-Headers:
           - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
             X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
@@ -657,15 +407,15 @@ http_interactions:
         Content-Security-Policy:
           - default-src 'none'
         X-Github-Request-Id:
-          - D748:160E:1D5E5BE:241341C:5F6A83C0
+          - D2BD:1403:40ABCE:4D97BD:5F6CC2D3
       body:
         encoding: UTF-8
         string:
-          '{"url":"https://api.github.com/repos/convus/convus_content/pulls/14","id":491239196,"node_id":"MDExOlB1bGxSZXF1ZXN0NDkxMjM5MTk2","html_url":"https://github.com/convus/convus_content/pull/14","diff_url":"https://github.com/convus/convus_content/pull/14.diff","patch_url":"https://github.com/convus/convus_content/pull/14.patch","issue_url":"https://api.github.com/repos/convus/convus_content/issues/14","number":14,"state":"open","locked":false,"title":"Hypothesis:
-          Testing party time is now","user":{"login":"convus-bot","id":26616290,"node_id":"MDQ6VXNlcjI2NjE2Mjkw","avatar_url":"https://avatars2.githubusercontent.com/u/26616290?v=4","gravatar_id":"","url":"https://api.github.com/users/convus-bot","html_url":"https://github.com/convus-bot","followers_url":"https://api.github.com/users/convus-bot/followers","following_url":"https://api.github.com/users/convus-bot/following{/other_user}","gists_url":"https://api.github.com/users/convus-bot/gists{/gist_id}","starred_url":"https://api.github.com/users/convus-bot/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/convus-bot/subscriptions","organizations_url":"https://api.github.com/users/convus-bot/orgs","repos_url":"https://api.github.com/users/convus-bot/repos","events_url":"https://api.github.com/users/convus-bot/events{/privacy}","received_events_url":"https://api.github.com/users/convus-bot/received_events","type":"User","site_admin":false},"body":null,"created_at":"2020-09-22T23:07:45Z","updated_at":"2020-09-22T23:07:45Z","closed_at":null,"merged_at":null,"merge_commit_sha":null,"assignee":null,"assignees":[],"requested_reviewers":[],"requested_teams":[],"labels":[],"milestone":null,"draft":false,"commits_url":"https://api.github.com/repos/convus/convus_content/pulls/14/commits","review_comments_url":"https://api.github.com/repos/convus/convus_content/pulls/14/comments","review_comment_url":"https://api.github.com/repos/convus/convus_content/pulls/comments{/number}","comments_url":"https://api.github.com/repos/convus/convus_content/issues/14/comments","statuses_url":"https://api.github.com/repos/convus/convus_content/statuses/ed67ab708a676c68abfcfc095186de2df1ef608e","head":{"label":"convus:proposed-hypothesis-61","ref":"proposed-hypothesis-61","sha":"ed67ab708a676c68abfcfc095186de2df1ef608e","user":{"login":"convus","id":25535213,"node_id":"MDEyOk9yZ2FuaXphdGlvbjI1NTM1MjEz","avatar_url":"https://avatars0.githubusercontent.com/u/25535213?v=4","gravatar_id":"","url":"https://api.github.com/users/convus","html_url":"https://github.com/convus","followers_url":"https://api.github.com/users/convus/followers","following_url":"https://api.github.com/users/convus/following{/other_user}","gists_url":"https://api.github.com/users/convus/gists{/gist_id}","starred_url":"https://api.github.com/users/convus/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/convus/subscriptions","organizations_url":"https://api.github.com/users/convus/orgs","repos_url":"https://api.github.com/users/convus/repos","events_url":"https://api.github.com/users/convus/events{/privacy}","received_events_url":"https://api.github.com/users/convus/received_events","type":"Organization","site_admin":false},"repo":{"id":295843610,"node_id":"MDEwOlJlcG9zaXRvcnkyOTU4NDM2MTA=","name":"convus_content","full_name":"convus/convus_content","private":false,"owner":{"login":"convus","id":25535213,"node_id":"MDEyOk9yZ2FuaXphdGlvbjI1NTM1MjEz","avatar_url":"https://avatars0.githubusercontent.com/u/25535213?v=4","gravatar_id":"","url":"https://api.github.com/users/convus","html_url":"https://github.com/convus","followers_url":"https://api.github.com/users/convus/followers","following_url":"https://api.github.com/users/convus/following{/other_user}","gists_url":"https://api.github.com/users/convus/gists{/gist_id}","starred_url":"https://api.github.com/users/convus/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/convus/subscriptions","organizations_url":"https://api.github.com/users/convus/orgs","repos_url":"https://api.github.com/users/convus/repos","events_url":"https://api.github.com/users/convus/events{/privacy}","received_events_url":"https://api.github.com/users/convus/received_events","type":"Organization","site_admin":false},"html_url":"https://github.com/convus/convus_content","description":"Content
-          for convus.org","fork":false,"url":"https://api.github.com/repos/convus/convus_content","forks_url":"https://api.github.com/repos/convus/convus_content/forks","keys_url":"https://api.github.com/repos/convus/convus_content/keys{/key_id}","collaborators_url":"https://api.github.com/repos/convus/convus_content/collaborators{/collaborator}","teams_url":"https://api.github.com/repos/convus/convus_content/teams","hooks_url":"https://api.github.com/repos/convus/convus_content/hooks","issue_events_url":"https://api.github.com/repos/convus/convus_content/issues/events{/number}","events_url":"https://api.github.com/repos/convus/convus_content/events","assignees_url":"https://api.github.com/repos/convus/convus_content/assignees{/user}","branches_url":"https://api.github.com/repos/convus/convus_content/branches{/branch}","tags_url":"https://api.github.com/repos/convus/convus_content/tags","blobs_url":"https://api.github.com/repos/convus/convus_content/git/blobs{/sha}","git_tags_url":"https://api.github.com/repos/convus/convus_content/git/tags{/sha}","git_refs_url":"https://api.github.com/repos/convus/convus_content/git/refs{/sha}","trees_url":"https://api.github.com/repos/convus/convus_content/git/trees{/sha}","statuses_url":"https://api.github.com/repos/convus/convus_content/statuses/{sha}","languages_url":"https://api.github.com/repos/convus/convus_content/languages","stargazers_url":"https://api.github.com/repos/convus/convus_content/stargazers","contributors_url":"https://api.github.com/repos/convus/convus_content/contributors","subscribers_url":"https://api.github.com/repos/convus/convus_content/subscribers","subscription_url":"https://api.github.com/repos/convus/convus_content/subscription","commits_url":"https://api.github.com/repos/convus/convus_content/commits{/sha}","git_commits_url":"https://api.github.com/repos/convus/convus_content/git/commits{/sha}","comments_url":"https://api.github.com/repos/convus/convus_content/comments{/number}","issue_comment_url":"https://api.github.com/repos/convus/convus_content/issues/comments{/number}","contents_url":"https://api.github.com/repos/convus/convus_content/contents/{+path}","compare_url":"https://api.github.com/repos/convus/convus_content/compare/{base}...{head}","merges_url":"https://api.github.com/repos/convus/convus_content/merges","archive_url":"https://api.github.com/repos/convus/convus_content/{archive_format}{/ref}","downloads_url":"https://api.github.com/repos/convus/convus_content/downloads","issues_url":"https://api.github.com/repos/convus/convus_content/issues{/number}","pulls_url":"https://api.github.com/repos/convus/convus_content/pulls{/number}","milestones_url":"https://api.github.com/repos/convus/convus_content/milestones{/number}","notifications_url":"https://api.github.com/repos/convus/convus_content/notifications{?since,all,participating}","labels_url":"https://api.github.com/repos/convus/convus_content/labels{/name}","releases_url":"https://api.github.com/repos/convus/convus_content/releases{/id}","deployments_url":"https://api.github.com/repos/convus/convus_content/deployments","created_at":"2020-09-15T20:37:48Z","updated_at":"2020-09-22T22:28:25Z","pushed_at":"2020-09-22T23:07:44Z","git_url":"git://github.com/convus/convus_content.git","ssh_url":"git@github.com:convus/convus_content.git","clone_url":"https://github.com/convus/convus_content.git","svn_url":"https://github.com/convus/convus_content","homepage":"https://www.convus.org","size":30,"stargazers_count":0,"watchers_count":0,"language":null,"has_issues":true,"has_projects":false,"has_downloads":true,"has_wiki":true,"has_pages":false,"forks_count":0,"mirror_url":null,"archived":false,"disabled":false,"open_issues_count":4,"license":{"key":"cc-by-sa-4.0","name":"Creative
-          Commons Attribution Share Alike 4.0 International","spdx_id":"CC-BY-SA-4.0","url":"https://api.github.com/licenses/cc-by-sa-4.0","node_id":"MDc6TGljZW5zZTI2"},"forks":0,"open_issues":4,"watchers":0,"default_branch":"main"}},"base":{"label":"convus:main","ref":"main","sha":"3fbced0932bcba76dc2d3c26a053272b6d88dc20","user":{"login":"convus","id":25535213,"node_id":"MDEyOk9yZ2FuaXphdGlvbjI1NTM1MjEz","avatar_url":"https://avatars0.githubusercontent.com/u/25535213?v=4","gravatar_id":"","url":"https://api.github.com/users/convus","html_url":"https://github.com/convus","followers_url":"https://api.github.com/users/convus/followers","following_url":"https://api.github.com/users/convus/following{/other_user}","gists_url":"https://api.github.com/users/convus/gists{/gist_id}","starred_url":"https://api.github.com/users/convus/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/convus/subscriptions","organizations_url":"https://api.github.com/users/convus/orgs","repos_url":"https://api.github.com/users/convus/repos","events_url":"https://api.github.com/users/convus/events{/privacy}","received_events_url":"https://api.github.com/users/convus/received_events","type":"Organization","site_admin":false},"repo":{"id":295843610,"node_id":"MDEwOlJlcG9zaXRvcnkyOTU4NDM2MTA=","name":"convus_content","full_name":"convus/convus_content","private":false,"owner":{"login":"convus","id":25535213,"node_id":"MDEyOk9yZ2FuaXphdGlvbjI1NTM1MjEz","avatar_url":"https://avatars0.githubusercontent.com/u/25535213?v=4","gravatar_id":"","url":"https://api.github.com/users/convus","html_url":"https://github.com/convus","followers_url":"https://api.github.com/users/convus/followers","following_url":"https://api.github.com/users/convus/following{/other_user}","gists_url":"https://api.github.com/users/convus/gists{/gist_id}","starred_url":"https://api.github.com/users/convus/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/convus/subscriptions","organizations_url":"https://api.github.com/users/convus/orgs","repos_url":"https://api.github.com/users/convus/repos","events_url":"https://api.github.com/users/convus/events{/privacy}","received_events_url":"https://api.github.com/users/convus/received_events","type":"Organization","site_admin":false},"html_url":"https://github.com/convus/convus_content","description":"Content
-          for convus.org","fork":false,"url":"https://api.github.com/repos/convus/convus_content","forks_url":"https://api.github.com/repos/convus/convus_content/forks","keys_url":"https://api.github.com/repos/convus/convus_content/keys{/key_id}","collaborators_url":"https://api.github.com/repos/convus/convus_content/collaborators{/collaborator}","teams_url":"https://api.github.com/repos/convus/convus_content/teams","hooks_url":"https://api.github.com/repos/convus/convus_content/hooks","issue_events_url":"https://api.github.com/repos/convus/convus_content/issues/events{/number}","events_url":"https://api.github.com/repos/convus/convus_content/events","assignees_url":"https://api.github.com/repos/convus/convus_content/assignees{/user}","branches_url":"https://api.github.com/repos/convus/convus_content/branches{/branch}","tags_url":"https://api.github.com/repos/convus/convus_content/tags","blobs_url":"https://api.github.com/repos/convus/convus_content/git/blobs{/sha}","git_tags_url":"https://api.github.com/repos/convus/convus_content/git/tags{/sha}","git_refs_url":"https://api.github.com/repos/convus/convus_content/git/refs{/sha}","trees_url":"https://api.github.com/repos/convus/convus_content/git/trees{/sha}","statuses_url":"https://api.github.com/repos/convus/convus_content/statuses/{sha}","languages_url":"https://api.github.com/repos/convus/convus_content/languages","stargazers_url":"https://api.github.com/repos/convus/convus_content/stargazers","contributors_url":"https://api.github.com/repos/convus/convus_content/contributors","subscribers_url":"https://api.github.com/repos/convus/convus_content/subscribers","subscription_url":"https://api.github.com/repos/convus/convus_content/subscription","commits_url":"https://api.github.com/repos/convus/convus_content/commits{/sha}","git_commits_url":"https://api.github.com/repos/convus/convus_content/git/commits{/sha}","comments_url":"https://api.github.com/repos/convus/convus_content/comments{/number}","issue_comment_url":"https://api.github.com/repos/convus/convus_content/issues/comments{/number}","contents_url":"https://api.github.com/repos/convus/convus_content/contents/{+path}","compare_url":"https://api.github.com/repos/convus/convus_content/compare/{base}...{head}","merges_url":"https://api.github.com/repos/convus/convus_content/merges","archive_url":"https://api.github.com/repos/convus/convus_content/{archive_format}{/ref}","downloads_url":"https://api.github.com/repos/convus/convus_content/downloads","issues_url":"https://api.github.com/repos/convus/convus_content/issues{/number}","pulls_url":"https://api.github.com/repos/convus/convus_content/pulls{/number}","milestones_url":"https://api.github.com/repos/convus/convus_content/milestones{/number}","notifications_url":"https://api.github.com/repos/convus/convus_content/notifications{?since,all,participating}","labels_url":"https://api.github.com/repos/convus/convus_content/labels{/name}","releases_url":"https://api.github.com/repos/convus/convus_content/releases{/id}","deployments_url":"https://api.github.com/repos/convus/convus_content/deployments","created_at":"2020-09-15T20:37:48Z","updated_at":"2020-09-22T22:28:25Z","pushed_at":"2020-09-22T23:07:44Z","git_url":"git://github.com/convus/convus_content.git","ssh_url":"git@github.com:convus/convus_content.git","clone_url":"https://github.com/convus/convus_content.git","svn_url":"https://github.com/convus/convus_content","homepage":"https://www.convus.org","size":30,"stargazers_count":0,"watchers_count":0,"language":null,"has_issues":true,"has_projects":false,"has_downloads":true,"has_wiki":true,"has_pages":false,"forks_count":0,"mirror_url":null,"archived":false,"disabled":false,"open_issues_count":4,"license":{"key":"cc-by-sa-4.0","name":"Creative
-          Commons Attribution Share Alike 4.0 International","spdx_id":"CC-BY-SA-4.0","url":"https://api.github.com/licenses/cc-by-sa-4.0","node_id":"MDc6TGljZW5zZTI2"},"forks":0,"open_issues":4,"watchers":0,"default_branch":"main"}},"_links":{"self":{"href":"https://api.github.com/repos/convus/convus_content/pulls/14"},"html":{"href":"https://github.com/convus/convus_content/pull/14"},"issue":{"href":"https://api.github.com/repos/convus/convus_content/issues/14"},"comments":{"href":"https://api.github.com/repos/convus/convus_content/issues/14/comments"},"review_comments":{"href":"https://api.github.com/repos/convus/convus_content/pulls/14/comments"},"review_comment":{"href":"https://api.github.com/repos/convus/convus_content/pulls/comments{/number}"},"commits":{"href":"https://api.github.com/repos/convus/convus_content/pulls/14/commits"},"statuses":{"href":"https://api.github.com/repos/convus/convus_content/statuses/ed67ab708a676c68abfcfc095186de2df1ef608e"}},"author_association":"MEMBER","active_lock_reason":null,"merged":false,"mergeable":null,"rebaseable":null,"mergeable_state":"unknown","merged_by":null,"comments":0,"review_comments":0,"maintainer_can_modify":false,"commits":1,"additions":10,"deletions":0,"changed_files":1}'
-    recorded_at: Tue, 22 Sep 2020 23:07:46 GMT
+          '{"url":"https://api.github.com/repos/convus/convus_content/pulls/28","id":492548289,"node_id":"MDExOlB1bGxSZXF1ZXN0NDkyNTQ4Mjg5","html_url":"https://github.com/convus/convus_content/pull/28","diff_url":"https://github.com/convus/convus_content/pull/28.diff","patch_url":"https://github.com/convus/convus_content/pull/28.patch","issue_url":"https://api.github.com/repos/convus/convus_content/issues/28","number":28,"state":"open","locked":false,"title":"Hypothesis:
+          Testing party time is now","user":{"login":"convus-bot","id":26616290,"node_id":"MDQ6VXNlcjI2NjE2Mjkw","avatar_url":"https://avatars2.githubusercontent.com/u/26616290?v=4","gravatar_id":"","url":"https://api.github.com/users/convus-bot","html_url":"https://github.com/convus-bot","followers_url":"https://api.github.com/users/convus-bot/followers","following_url":"https://api.github.com/users/convus-bot/following{/other_user}","gists_url":"https://api.github.com/users/convus-bot/gists{/gist_id}","starred_url":"https://api.github.com/users/convus-bot/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/convus-bot/subscriptions","organizations_url":"https://api.github.com/users/convus-bot/orgs","repos_url":"https://api.github.com/users/convus-bot/repos","events_url":"https://api.github.com/users/convus-bot/events{/privacy}","received_events_url":"https://api.github.com/users/convus-bot/received_events","type":"User","site_admin":false},"body":null,"created_at":"2020-09-24T16:01:23Z","updated_at":"2020-09-24T16:01:23Z","closed_at":null,"merged_at":null,"merge_commit_sha":null,"assignee":null,"assignees":[],"requested_reviewers":[],"requested_teams":[],"labels":[],"milestone":null,"draft":false,"commits_url":"https://api.github.com/repos/convus/convus_content/pulls/28/commits","review_comments_url":"https://api.github.com/repos/convus/convus_content/pulls/28/comments","review_comment_url":"https://api.github.com/repos/convus/convus_content/pulls/comments{/number}","comments_url":"https://api.github.com/repos/convus/convus_content/issues/28/comments","statuses_url":"https://api.github.com/repos/convus/convus_content/statuses/0e1f86528250c3cac96670b0c1680fb6d85237e3","head":{"label":"convus:proposed-hypothesis-90","ref":"proposed-hypothesis-90","sha":"0e1f86528250c3cac96670b0c1680fb6d85237e3","user":{"login":"convus","id":25535213,"node_id":"MDEyOk9yZ2FuaXphdGlvbjI1NTM1MjEz","avatar_url":"https://avatars0.githubusercontent.com/u/25535213?v=4","gravatar_id":"","url":"https://api.github.com/users/convus","html_url":"https://github.com/convus","followers_url":"https://api.github.com/users/convus/followers","following_url":"https://api.github.com/users/convus/following{/other_user}","gists_url":"https://api.github.com/users/convus/gists{/gist_id}","starred_url":"https://api.github.com/users/convus/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/convus/subscriptions","organizations_url":"https://api.github.com/users/convus/orgs","repos_url":"https://api.github.com/users/convus/repos","events_url":"https://api.github.com/users/convus/events{/privacy}","received_events_url":"https://api.github.com/users/convus/received_events","type":"Organization","site_admin":false},"repo":{"id":295843610,"node_id":"MDEwOlJlcG9zaXRvcnkyOTU4NDM2MTA=","name":"convus_content","full_name":"convus/convus_content","private":false,"owner":{"login":"convus","id":25535213,"node_id":"MDEyOk9yZ2FuaXphdGlvbjI1NTM1MjEz","avatar_url":"https://avatars0.githubusercontent.com/u/25535213?v=4","gravatar_id":"","url":"https://api.github.com/users/convus","html_url":"https://github.com/convus","followers_url":"https://api.github.com/users/convus/followers","following_url":"https://api.github.com/users/convus/following{/other_user}","gists_url":"https://api.github.com/users/convus/gists{/gist_id}","starred_url":"https://api.github.com/users/convus/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/convus/subscriptions","organizations_url":"https://api.github.com/users/convus/orgs","repos_url":"https://api.github.com/users/convus/repos","events_url":"https://api.github.com/users/convus/events{/privacy}","received_events_url":"https://api.github.com/users/convus/received_events","type":"Organization","site_admin":false},"html_url":"https://github.com/convus/convus_content","description":"Content
+          for convus.org","fork":false,"url":"https://api.github.com/repos/convus/convus_content","forks_url":"https://api.github.com/repos/convus/convus_content/forks","keys_url":"https://api.github.com/repos/convus/convus_content/keys{/key_id}","collaborators_url":"https://api.github.com/repos/convus/convus_content/collaborators{/collaborator}","teams_url":"https://api.github.com/repos/convus/convus_content/teams","hooks_url":"https://api.github.com/repos/convus/convus_content/hooks","issue_events_url":"https://api.github.com/repos/convus/convus_content/issues/events{/number}","events_url":"https://api.github.com/repos/convus/convus_content/events","assignees_url":"https://api.github.com/repos/convus/convus_content/assignees{/user}","branches_url":"https://api.github.com/repos/convus/convus_content/branches{/branch}","tags_url":"https://api.github.com/repos/convus/convus_content/tags","blobs_url":"https://api.github.com/repos/convus/convus_content/git/blobs{/sha}","git_tags_url":"https://api.github.com/repos/convus/convus_content/git/tags{/sha}","git_refs_url":"https://api.github.com/repos/convus/convus_content/git/refs{/sha}","trees_url":"https://api.github.com/repos/convus/convus_content/git/trees{/sha}","statuses_url":"https://api.github.com/repos/convus/convus_content/statuses/{sha}","languages_url":"https://api.github.com/repos/convus/convus_content/languages","stargazers_url":"https://api.github.com/repos/convus/convus_content/stargazers","contributors_url":"https://api.github.com/repos/convus/convus_content/contributors","subscribers_url":"https://api.github.com/repos/convus/convus_content/subscribers","subscription_url":"https://api.github.com/repos/convus/convus_content/subscription","commits_url":"https://api.github.com/repos/convus/convus_content/commits{/sha}","git_commits_url":"https://api.github.com/repos/convus/convus_content/git/commits{/sha}","comments_url":"https://api.github.com/repos/convus/convus_content/comments{/number}","issue_comment_url":"https://api.github.com/repos/convus/convus_content/issues/comments{/number}","contents_url":"https://api.github.com/repos/convus/convus_content/contents/{+path}","compare_url":"https://api.github.com/repos/convus/convus_content/compare/{base}...{head}","merges_url":"https://api.github.com/repos/convus/convus_content/merges","archive_url":"https://api.github.com/repos/convus/convus_content/{archive_format}{/ref}","downloads_url":"https://api.github.com/repos/convus/convus_content/downloads","issues_url":"https://api.github.com/repos/convus/convus_content/issues{/number}","pulls_url":"https://api.github.com/repos/convus/convus_content/pulls{/number}","milestones_url":"https://api.github.com/repos/convus/convus_content/milestones{/number}","notifications_url":"https://api.github.com/repos/convus/convus_content/notifications{?since,all,participating}","labels_url":"https://api.github.com/repos/convus/convus_content/labels{/name}","releases_url":"https://api.github.com/repos/convus/convus_content/releases{/id}","deployments_url":"https://api.github.com/repos/convus/convus_content/deployments","created_at":"2020-09-15T20:37:48Z","updated_at":"2020-09-24T14:16:51Z","pushed_at":"2020-09-24T16:01:23Z","git_url":"git://github.com/convus/convus_content.git","ssh_url":"git@github.com:convus/convus_content.git","clone_url":"https://github.com/convus/convus_content.git","svn_url":"https://github.com/convus/convus_content","homepage":"https://www.convus.org","size":60,"stargazers_count":3,"watchers_count":3,"language":null,"has_issues":true,"has_projects":false,"has_downloads":true,"has_wiki":true,"has_pages":false,"forks_count":0,"mirror_url":null,"archived":false,"disabled":false,"open_issues_count":1,"license":{"key":"cc-by-sa-4.0","name":"Creative
+          Commons Attribution Share Alike 4.0 International","spdx_id":"CC-BY-SA-4.0","url":"https://api.github.com/licenses/cc-by-sa-4.0","node_id":"MDc6TGljZW5zZTI2"},"forks":0,"open_issues":1,"watchers":3,"default_branch":"main"}},"base":{"label":"convus:main","ref":"main","sha":"c0e6d80dd2bab5094c0fa748491c30d178ec7167","user":{"login":"convus","id":25535213,"node_id":"MDEyOk9yZ2FuaXphdGlvbjI1NTM1MjEz","avatar_url":"https://avatars0.githubusercontent.com/u/25535213?v=4","gravatar_id":"","url":"https://api.github.com/users/convus","html_url":"https://github.com/convus","followers_url":"https://api.github.com/users/convus/followers","following_url":"https://api.github.com/users/convus/following{/other_user}","gists_url":"https://api.github.com/users/convus/gists{/gist_id}","starred_url":"https://api.github.com/users/convus/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/convus/subscriptions","organizations_url":"https://api.github.com/users/convus/orgs","repos_url":"https://api.github.com/users/convus/repos","events_url":"https://api.github.com/users/convus/events{/privacy}","received_events_url":"https://api.github.com/users/convus/received_events","type":"Organization","site_admin":false},"repo":{"id":295843610,"node_id":"MDEwOlJlcG9zaXRvcnkyOTU4NDM2MTA=","name":"convus_content","full_name":"convus/convus_content","private":false,"owner":{"login":"convus","id":25535213,"node_id":"MDEyOk9yZ2FuaXphdGlvbjI1NTM1MjEz","avatar_url":"https://avatars0.githubusercontent.com/u/25535213?v=4","gravatar_id":"","url":"https://api.github.com/users/convus","html_url":"https://github.com/convus","followers_url":"https://api.github.com/users/convus/followers","following_url":"https://api.github.com/users/convus/following{/other_user}","gists_url":"https://api.github.com/users/convus/gists{/gist_id}","starred_url":"https://api.github.com/users/convus/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/convus/subscriptions","organizations_url":"https://api.github.com/users/convus/orgs","repos_url":"https://api.github.com/users/convus/repos","events_url":"https://api.github.com/users/convus/events{/privacy}","received_events_url":"https://api.github.com/users/convus/received_events","type":"Organization","site_admin":false},"html_url":"https://github.com/convus/convus_content","description":"Content
+          for convus.org","fork":false,"url":"https://api.github.com/repos/convus/convus_content","forks_url":"https://api.github.com/repos/convus/convus_content/forks","keys_url":"https://api.github.com/repos/convus/convus_content/keys{/key_id}","collaborators_url":"https://api.github.com/repos/convus/convus_content/collaborators{/collaborator}","teams_url":"https://api.github.com/repos/convus/convus_content/teams","hooks_url":"https://api.github.com/repos/convus/convus_content/hooks","issue_events_url":"https://api.github.com/repos/convus/convus_content/issues/events{/number}","events_url":"https://api.github.com/repos/convus/convus_content/events","assignees_url":"https://api.github.com/repos/convus/convus_content/assignees{/user}","branches_url":"https://api.github.com/repos/convus/convus_content/branches{/branch}","tags_url":"https://api.github.com/repos/convus/convus_content/tags","blobs_url":"https://api.github.com/repos/convus/convus_content/git/blobs{/sha}","git_tags_url":"https://api.github.com/repos/convus/convus_content/git/tags{/sha}","git_refs_url":"https://api.github.com/repos/convus/convus_content/git/refs{/sha}","trees_url":"https://api.github.com/repos/convus/convus_content/git/trees{/sha}","statuses_url":"https://api.github.com/repos/convus/convus_content/statuses/{sha}","languages_url":"https://api.github.com/repos/convus/convus_content/languages","stargazers_url":"https://api.github.com/repos/convus/convus_content/stargazers","contributors_url":"https://api.github.com/repos/convus/convus_content/contributors","subscribers_url":"https://api.github.com/repos/convus/convus_content/subscribers","subscription_url":"https://api.github.com/repos/convus/convus_content/subscription","commits_url":"https://api.github.com/repos/convus/convus_content/commits{/sha}","git_commits_url":"https://api.github.com/repos/convus/convus_content/git/commits{/sha}","comments_url":"https://api.github.com/repos/convus/convus_content/comments{/number}","issue_comment_url":"https://api.github.com/repos/convus/convus_content/issues/comments{/number}","contents_url":"https://api.github.com/repos/convus/convus_content/contents/{+path}","compare_url":"https://api.github.com/repos/convus/convus_content/compare/{base}...{head}","merges_url":"https://api.github.com/repos/convus/convus_content/merges","archive_url":"https://api.github.com/repos/convus/convus_content/{archive_format}{/ref}","downloads_url":"https://api.github.com/repos/convus/convus_content/downloads","issues_url":"https://api.github.com/repos/convus/convus_content/issues{/number}","pulls_url":"https://api.github.com/repos/convus/convus_content/pulls{/number}","milestones_url":"https://api.github.com/repos/convus/convus_content/milestones{/number}","notifications_url":"https://api.github.com/repos/convus/convus_content/notifications{?since,all,participating}","labels_url":"https://api.github.com/repos/convus/convus_content/labels{/name}","releases_url":"https://api.github.com/repos/convus/convus_content/releases{/id}","deployments_url":"https://api.github.com/repos/convus/convus_content/deployments","created_at":"2020-09-15T20:37:48Z","updated_at":"2020-09-24T14:16:51Z","pushed_at":"2020-09-24T16:01:23Z","git_url":"git://github.com/convus/convus_content.git","ssh_url":"git@github.com:convus/convus_content.git","clone_url":"https://github.com/convus/convus_content.git","svn_url":"https://github.com/convus/convus_content","homepage":"https://www.convus.org","size":60,"stargazers_count":3,"watchers_count":3,"language":null,"has_issues":true,"has_projects":false,"has_downloads":true,"has_wiki":true,"has_pages":false,"forks_count":0,"mirror_url":null,"archived":false,"disabled":false,"open_issues_count":1,"license":{"key":"cc-by-sa-4.0","name":"Creative
+          Commons Attribution Share Alike 4.0 International","spdx_id":"CC-BY-SA-4.0","url":"https://api.github.com/licenses/cc-by-sa-4.0","node_id":"MDc6TGljZW5zZTI2"},"forks":0,"open_issues":1,"watchers":3,"default_branch":"main"}},"_links":{"self":{"href":"https://api.github.com/repos/convus/convus_content/pulls/28"},"html":{"href":"https://github.com/convus/convus_content/pull/28"},"issue":{"href":"https://api.github.com/repos/convus/convus_content/issues/28"},"comments":{"href":"https://api.github.com/repos/convus/convus_content/issues/28/comments"},"review_comments":{"href":"https://api.github.com/repos/convus/convus_content/pulls/28/comments"},"review_comment":{"href":"https://api.github.com/repos/convus/convus_content/pulls/comments{/number}"},"commits":{"href":"https://api.github.com/repos/convus/convus_content/pulls/28/commits"},"statuses":{"href":"https://api.github.com/repos/convus/convus_content/statuses/0e1f86528250c3cac96670b0c1680fb6d85237e3"}},"author_association":"MEMBER","active_lock_reason":null,"merged":false,"mergeable":null,"rebaseable":null,"mergeable_state":"unknown","merged_by":null,"comments":0,"review_comments":0,"maintainer_can_modify":false,"commits":2,"additions":20,"deletions":0,"changed_files":2}'
+    recorded_at: Thu, 24 Sep 2020 16:01:24 GMT
 recorded_with: VCR 6.0.0
