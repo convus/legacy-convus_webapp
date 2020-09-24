@@ -19,10 +19,8 @@ class HypothesesController < ApplicationController
 
   def create
     @hypothesis = Hypothesis.new(permitted_params)
-    if permitted_citation_params.present?
-      citation = Citation.find_or_create_by_params(permitted_citation_params.merge(creator: current_user))
-      @hypothesis.citations << citation
-    end
+    citation = Citation.find_or_create_by_params(permitted_citation_params)
+    @hypothesis.citations << citation if citation.present?
     if @hypothesis.save
       flash[:success] = "Hypothesis created!"
       redirect_to hypothesis_path(@hypothesis.to_param)
@@ -39,8 +37,10 @@ class HypothesesController < ApplicationController
   end
 
   def permitted_citation_params
-    params.require(:hypothesis).permit(citations_attributes: permitted_citation_attrs)
+    cparams = params.require(:hypothesis).permit(citations_attributes: permitted_citation_attrs)
       .dig(:citations_attributes)
+    return cparams if cparams.blank? # NOTE: This shouldn't really happen because the HTML fields are required
+    cparams.merge(creator: current_user, skip_add_citation_to_github: true)
   end
 
   def permitted_citation_attrs

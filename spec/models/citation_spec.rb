@@ -12,6 +12,21 @@ RSpec.describe Citation, type: :model do
     end
   end
 
+  describe "find_or_create_by_params" do
+    it "creates" do
+      citation = Citation.find_or_create_by_params(url: "https://something.com", title: "something cool")
+      expect(citation).to be_valid
+      expect(Citation.find_or_create_by_params(url: "https://something.com").id).to eq citation.id
+    end
+    context "missing url" do
+      it "doesn't do anything" do
+        expect(Citation.find_or_create_by_params(nil)).to be_blank
+        expect(Citation.find_or_create_by_params({})).to be_blank
+        expect(Citation.find_or_create_by_params({title: "party"})).to be_blank
+      end
+    end
+  end
+
   describe "slugging" do
     let(:url) { "https://www.nationalreview.com/2020/09/joe-bidens-money-misadventures/" }
     let(:citation) { FactoryBot.create(:citation, url: url, title: nil) }
