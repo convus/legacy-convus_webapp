@@ -13,6 +13,8 @@
       %nav.main-nav.navbar.primary-navbar.navbar-expand-md.navbar-light
         %ul.navbar-nav
           %li
+            = active_link "About", about_path, class: "nav-link"
+          %li
             = active_link "Hypotheses", hypotheses_path, class: "nav-link"
           - if current_user.present?
             %li
