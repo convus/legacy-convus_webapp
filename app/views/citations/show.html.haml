@@ -2,6 +2,18 @@
   Viewing Citation
 
 .max-main-width
+  - if @citation.unapproved?
+    .alert.alert-info
+      - if @citation.pull_request_number.present?
+        %h4
+          Citation waiting on approval,
+          = link_to "PR#{@citation.pull_request_number}", @citation.pull_request_url
+      - else
+        Waiting for pull request to be created, page will reload.
+        -# NOTE: This will reload endlessly, which may not be what we want
+        :javascript
+          window.setTimeout(() => {location.reload();}, 1000);
+
   %table.table-list
     %tbody
       %tr
@@ -16,9 +28,6 @@
               %br
               Approved by
               = link_to "PR#{@citation.pull_request_number}", @citation.pull_request_url
-          - elsif @citation.pull_request_number.present?
-            Waiting on
-            = link_to "PR#{@citation.pull_request_number}", @citation.pull_request_url
       %tr
         %td ID
         %td= @citation.id

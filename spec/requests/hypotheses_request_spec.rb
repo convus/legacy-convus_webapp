@@ -22,6 +22,16 @@ RSpec.describe "/hypotheses", type: :request do
       get "#{base_url}/#{subject.to_param}"
       expect(response.code).to eq "200"
       expect(response).to render_template("hypotheses/show")
+
+      get "/#{subject.file_path}"
+      expect(response.code).to eq "200"
+      expect(response).to render_template("hypotheses/show")
+      expect(assigns(:hypothesis)).to eq subject
+
+      get "#{base_url}/#{subject.id}"
+      expect(response.code).to eq "200"
+      expect(response).to render_template("hypotheses/show")
+      expect(assigns(:hypothesis)).to eq subject
     end
     context "unapproved" do
       let(:subject) { FactoryBot.create(:hypothesis) }
