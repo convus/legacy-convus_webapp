@@ -4,6 +4,8 @@ class HypothesisCitation < ApplicationRecord
 
   before_create :set_calculated_attributes
 
+  validates :citation_id, presence: true, uniqueness: {scope: [:hypothesis_id]}
+
   scope :direct_quotation, -> { where(has_direct_quotation: true) }
 
   def direct_quotation?

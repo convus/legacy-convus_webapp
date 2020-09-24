@@ -10,6 +10,6 @@ class HypothesisSerializer < ApplicationSerializer
   end
 
   def tag_titles
-    object.tags.pluck(:title)
+    object.tags.alphabetical.pluck(:title)
   end
 end
