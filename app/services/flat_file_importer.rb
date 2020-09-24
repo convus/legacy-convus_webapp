@@ -2,21 +2,36 @@
 
 class FlatFileImporter
   FILES_PATH = FlatFileSerializer::FILES_PATH
+  require "csv"
 
   class << self
-    # TODO: This is an embarrassing solution, and needs to be improved
-    # Probably using octokit?
-    def reconcile_flat_files
-      git_pull_output = `cd $FLAT_FILE_PATH && git pull origin main`
-      import_all_files
-      FlatFileSerializer.write_all_files
-      git_push_output = `cd $FLAT_FILE_PATH && git add -A && git commit -m"reconciliation" && git push origin main`
-    end
-
     def import_all_files
+      import_tags
+      import_publications
       import_citations
       import_hypotheses
-      # TODO: Import tags and publications
+    end
+
+    def import_tags
+      CSV.read(FlatFileSerializer.tags_file, headers: true, header_converters: :symbol).each do |row|
+        tag = Tag.find_by_id(row[:id]) || Tag.new
+        tag.title = row[:title]
+        tag.taxonomy = row[:taxonomy]
+        tag.save if tag.changed?
+        tag.update_column :id, row[:id] unless tag.id == row[:id]
+      end
+    end
+
+    def import_publications
+      CSV.read(FlatFileSerializer.publications_file, headers: true, header_converters: :symbol).each do |row|
+        publication = Publication.find_by_id(row[:id]) || Publication.new
+        publication.attributes = {title: row[:title],
+                                  has_published_retractions: row[:has_published_retractions],
+                                  has_peer_reviewed_articles: row[:has_peer_reviewed_articles],
+                                  home_url: row[:home_url]}
+        publication.save if publication.changed?
+        publication.update_column :id, row[:id] unless publication.id == row[:id]
+      end
     end
 
     def import_hypotheses
@@ -51,6 +66,7 @@ class FlatFileImporter
       citation.approved_at ||= Time.current # If it's in the flat files, it's approved
       citation.update(title: citation_attrs[:title],
                       url: citation_attrs[:url],
+                      publication_title: citation_attrs[:publication_title],
                       kind: citation_attrs[:kind],
                       published_date_str: citation_attrs[:published_date],
                       authors: citation_attrs[:authors])
@@ -58,8 +74,6 @@ class FlatFileImporter
       unless citation.id == citation_attrs[:id]
         citation.update_columns(id: citation_attrs[:id])
       end
-      # TODO: Make publication title update here. Currently collides with publication url stuff
-      # citation.update(publication_title: citation_attrs[:publication_title])
       citation
     end
   end

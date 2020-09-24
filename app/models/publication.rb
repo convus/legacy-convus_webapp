@@ -22,6 +22,7 @@ class Publication < ApplicationRecord
     matching = friendly_find(title) || friendly_find(url)
     if matching.present?
       matching.add_base_domain(url) if url.present?
+      matching.title = title if title.present? && matching.title_url?
       matching.save if matching.changed? # Add any new base domains
       return matching
     end
@@ -35,6 +36,10 @@ class Publication < ApplicationRecord
     end
     publication.save
     publication
+  end
+
+  def title_url?
+    ((base_domains || []) + [home_url]).compact.any? { |url| url.match?(title) }
   end
 
   def published_retractions?

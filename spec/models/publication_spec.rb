@@ -52,6 +52,32 @@ RSpec.describe Publication, type: :model do
         end
       end
     end
+    context "existing publication" do
+      let!(:publication) { Publication.find_or_create_by_params(url: "https://www.journals.uchicago.edu/doi/full/10.1086/691462") }
+      it "does not create a new publication for a matching publication" do
+        expect(publication.title_url?).to be_truthy
+        expect {
+          expect(Publication.find_or_create_by_params(url: "https://www.journals.uchicago.edu/doi/10.1086/691974").id).to eq publication.id
+        }.to_not change(Publication, :count)
+      end
+      context "passing in a title" do
+        it "updates the publication" do
+          expect(publication.title_url?).to be_truthy
+          expect {
+            Publication.find_or_create_by_params(url: "https://www.journals.uchicago.edu/doi/10.1086/691974", title: "Journal of the Association for Consumer Research")
+          }.to_not change(Publication, :count)
+          publication.reload
+          expect(publication.title).to eq "Journal of the Association for Consumer Research"
+          expect(publication.title_url?).to be_falsey
+
+          # But it doesn't update again. Potentially a place/time to update multiple publications?
+          Publication.find_or_create_by_params(url: "https://www.journals.uchicago.edu/doi/10.1086/691974", title: "Crap journal")
+          publication.reload
+          expect(publication.title).to eq "Journal of the Association for Consumer Research"
+          expect(publication.title_url?).to be_falsey
+        end
+      end
+    end
   end
 
   describe "friendly_find and base_domains" do

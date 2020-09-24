@@ -2,10 +2,13 @@ require "rails_helper"
 
 RSpec.describe Citation, type: :model do
   describe "factory" do
-    let(:citation) { FactoryBot.create(:citation) }
+    let(:publication) { FactoryBot.create(:publication) }
+    let(:citation) { FactoryBot.create(:citation, publication: publication) }
     it "is valid" do
+      expect(Publication.count).to eq 0
       expect(citation.errors.full_messages).to be_blank
       expect(citation.id).to be_present
+      expect(Publication.count).to eq 1 # Ensure there is just one created in this contrived example
     end
   end
 
