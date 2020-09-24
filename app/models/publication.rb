@@ -38,6 +38,10 @@ class Publication < ApplicationRecord
     publication
   end
 
+  def self.serialized_attrs
+    %i[title id has_published_retractions has_peer_reviewed_articles home_url].freeze
+  end
+
   def title_url?
     ((base_domains || []) + [home_url]).compact.any? { |url| url.match?(title) }
   end

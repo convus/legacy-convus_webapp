@@ -68,10 +68,9 @@ unless ENV["CIRCLECI"]
         citation_serialized_og = Citation.first.flat_file_serialized
         citation_content_og = Citation.first.flat_file_content
         expect(Tag.count).to eq 1
-        tag_serialized_og = Tag.pluck(:title, :id, :taxonomy) # This is how tags are serialized
+        tag_serialized_og = Tag.pluck(*Tag.serialized_attrs) # This is how tags are serialized
         expect(Publication.count).to eq 1
-        publication_attrs = %i[title id has_published_retractions has_peer_reviewed_articles home_url]
-        publication_serialized_og = Publication.pluck(*publication_attrs) # This is how publications are serialized
+        publication_serialized_og = Publication.pluck(*Publication.serialized_attrs) # This is how publications are serialized
 
         Hypothesis.destroy_all
         Citation.destroy_all
@@ -88,8 +87,8 @@ unless ENV["CIRCLECI"]
         subject.import_all_files
         expect_hypothesis_matches_og_content(hypothesis_content_og, hypothesis_serialized_og)
         expect_citation_matches_og_content(citation_content_og, citation_serialized_og)
-        expect(Tag.pluck(:title, :id, :taxonomy)).to eq tag_serialized_og
-        expect(Publication.pluck(*publication_attrs)).to eq publication_serialized_og
+        expect(Tag.pluck(*Tag.serialized_attrs)).to eq tag_serialized_og
+        expect(Publication.pluck(*Publication.serialized_attrs)).to eq publication_serialized_og
       end
     end
   end
