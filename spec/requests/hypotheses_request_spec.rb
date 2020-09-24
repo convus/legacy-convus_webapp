@@ -112,7 +112,7 @@ RSpec.describe "/hypotheses", type: :request do
             citations_attributes: valid_citation_params
           }
         end
-        it "creates with citation" do
+        xit "creates with citation" do
           VCR.use_cassette("hypotheses_controller-create_with_citation", match_requests_on: [:method]) do
             expect(Hypothesis.count).to eq 0
             expect(Citation.count).to eq 0
@@ -153,28 +153,38 @@ RSpec.describe "/hypotheses", type: :request do
         end
 
         context "citation already exists" do
-          let!(:citation) { Citation.create(url: valid_citation_params[:url], creator: FactoryBot.create(:user)) }
+          let!(:citation) { Citation.create(url: valid_citation_params[:url], creator: FactoryBot.create(:user), pull_request_number: 12) }
           it "does not create a new citation" do
-            expect(Hypothesis.count).to eq 0
-            expect(Citation.count).to eq 1
-            expect(citation.title).to eq "something-of-interest"
-            expect {
-              post base_url, params: {hypothesis: hypothesis_with_citation_params}
-            }.to change(Hypothesis, :count).by 1
-            expect(response).to redirect_to hypothesis_path(Hypothesis.last.to_param)
-            expect(flash[:success]).to be_present
+            VCR.use_cassette("hypotheses_controller-create_skip_citation", match_requests_on: [:method]) do
+              expect(Hypothesis.count).to eq 0
+              expect(Citation.count).to eq 1
+              expect(citation.title).to eq "something-of-interest"
+              expect(citation.pull_request_number).to be_present
+              expect(citation.approved?).to be_falsey
+              Sidekiq::Worker.clear_all
+              Sidekiq::Testing.inline! do
+                expect {
+                  post base_url, params: {hypothesis: hypothesis_with_citation_params}
+                }.to change(Hypothesis, :count).by 1
+              }
+              expect(response).to redirect_to hypothesis_path(Hypothesis.last.to_param)
+              expect(flash[:success]).to be_present
 
-            hypothesis = Hypothesis.last
-            expect(hypothesis.title).to eq hypothesis_with_citation_params[:title]
-            expect(hypothesis.creator).to eq current_user
-            expect(hypothesis.citations.count).to eq 1
-            expect(hypothesis.has_direct_quotation).to be_truthy
-            expect(hypothesis.direct_quotation?).to be_truthy
-            expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
-            expect(hypothesis.approved?).to be_falsey
-            # Even though passed new information, it doesn't update the existing citation
-            citation.reload
-            expect(citation.title).to eq "something-of-interest"
+              hypothesis = Hypothesis.last
+              expect(hypothesis.title).to eq hypothesis_with_citation_params[:title]
+              expect(hypothesis.creator).to eq current_user
+              expect(hypothesis.citations.count).to eq 1
+              expect(hypothesis.has_direct_quotation).to be_truthy
+              expect(hypothesis.direct_quotation?).to be_truthy
+              expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
+              expect(hypothesis.approved?).to be_falsey
+              expect(hypothesis.pull_request_number).to be_present
+              expect(hypothesis.pull_request_number).to_not eq 12
+              # Even though passed new information, it doesn't update the existing citation
+              citation.reload
+              expect(citation.title).to eq "something-of-interest"
+              expect(citation.pull_request_number).to eq 12
+            end
           end
         end
         context "citation with matching title but different publisher exists" do
@@ -182,9 +192,12 @@ RSpec.describe "/hypotheses", type: :request do
           it "creates a new citation" do
             expect(Hypothesis.count).to eq 0
             expect(Citation.count).to eq 1
+            Sidekiq::Worker.clear_all
             expect {
               post base_url, params: {hypothesis: hypothesis_with_citation_params}
             }.to change(Hypothesis, :count).by 1
+            expect(AddHypothesisToGithubContentJob.jobs.count).to eq 1
+            expect(AddCitationToGithubContentJob.jobs.count).to eq 0
             expect(response).to redirect_to hypothesis_path(Hypothesis.last.to_param)
             expect(flash[:success]).to be_present
 
@@ -195,6 +208,7 @@ RSpec.describe "/hypotheses", type: :request do
             expect(hypothesis.has_direct_quotation).to be_truthy
             expect(hypothesis.direct_quotation?).to be_truthy
             expect(hypothesis.approved?).to be_falsey
+            expect(hypothesis.pull_request_number).to be_blank # Because job hasn't run
 
             expect(Citation.count).to eq 2
             citation = Citation.last

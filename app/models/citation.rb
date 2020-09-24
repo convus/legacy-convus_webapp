@@ -29,7 +29,7 @@ class Citation < ApplicationRecord
   scope :by_creation, -> { reorder(:created_at) }
   scope :approved, -> { where.not(approved_at: nil) }
 
-  attr_accessor :assignable_kind
+  attr_accessor :assignable_kind, :skip_add_citation_to_github
 
   def self.kinds
     KIND_ENUM.keys.map(&:to_s)
@@ -77,6 +77,7 @@ class Citation < ApplicationRecord
   end
 
   def self.find_or_create_by_params(attrs)
+    return nil unless (attrs || {}).dig(:url).present?
     friendly_find(attrs[:url]) || create(attrs)
   end
 
@@ -163,6 +164,7 @@ class Citation < ApplicationRecord
 
   def add_to_github_content
     return true if approved? || pull_request_number.present?
+    return true if skip_add_citation_to_github
     AddCitationToGithubContentJob.perform_async(id)
   end
 
