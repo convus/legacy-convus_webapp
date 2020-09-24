@@ -1,4 +1,9 @@
 module ApplicationHelper
+  def page_title
+    return @page_title if @page_title
+    [default_action_name_title, controller_title_for_action].compact.join(" ")
+  end
+
   def check_mark
     "&#x2713;".html_safe
   end
@@ -24,5 +29,17 @@ module ApplicationHelper
     current_page?(link_path) || matches_controller && active_path[:action] == link_path[:action]
   rescue # This mainly fails in testing - but why not rescue always
     false
+  end
+
+  private
+
+  def default_action_name_title
+    return "Display" if action_name == "show"
+    action_name == "index" ? "" : action_name.titleize
+  end
+
+  def controller_title_for_action
+    return controller_name.titleize if %(index).include?(action_name)
+    controller_name.singularize.titleize
   end
 end

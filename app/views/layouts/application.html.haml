@@ -1,8 +1,9 @@
 !!!
 %html
   %head
-    %meta{content: "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}
-    %title Convus
+    %meta{ content: "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}
+    %meta{ name:"viewport", content:"width=device-width, initial-scale=1, shrink-to-fit=no" }
+    %title= page_title
     = csrf_meta_tags
     = csp_meta_tag
     %link{ href: "/favicon.ico", rel: "icon", sizes: "192x192" }
@@ -18,7 +19,7 @@
             = active_link "Hypotheses", hypotheses_path, class: "nav-link"
           - if current_user.present?
             %li
-              = link_to "add hypothesis", new_hypothesis_path
+              = link_to "Add hypothesis", new_hypothesis_path
           %li
             - if current_user.present?
               %small.less-strong
