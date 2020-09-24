@@ -1,8 +1,7 @@
-%h1
-  New Hypothesis
+%h1 New Hypothesis
 
 .form-wrapper
-  = form_for @hypothesis, url: hypotheses_path, method: "POST", html: { class: "form mt-4 mb-4" } do |f|
+  = form_for @hypothesis, url: hypotheses_path, method: "POST", html: { class: "form mt-2 mb-4" } do |f|
     - if @hypothesis.errors.any?
       = render partial: "/shared/errors", locals: { name: "Hypothesis", obj: @hypothesis }
     .form-group
@@ -16,36 +15,15 @@
       = f.label :tags_string do
         Primary topic tag(s)
         %small.less-strong
-          Up to 3 topics, comma delineated. Each tag should be less than 5 words
+          up to 4 topics, comma delineated
       = f.text_field :tags_string, required: true, class: "form-control"
 
-    %h3 Citation
+    %h3.mt-4.mb-1 Citation
 
     - @hypothesis.citations.build unless @hypothesis.citations.count > 0
     - @hypothesis.citations.each do |citation|
       = f.fields_for :citations_attributes, citation do |nested_form|
-        .form-group
-          = nested_form.label :url, "URL"
-          = nested_form.text_field :url, required: true, class: "form-control"
-        .form-group
-          = nested_form.label :assignable_kind, "Source kind"
-          = nested_form.select :assignable_kind, Citation.assignable_kinds.map { |k| [k.humanize.to_s, k] }, {}, { class: "form-control" }
-        .form-group
-          %label.form-check-label
-            = nested_form.check_box :url_is_direct_link_to_full_text, class: "form-check-input"
-            URL is a direct link to the full text of the article
-        .form-group
-          = nested_form.label :title do
-            -# TODO: Make this update and change based on the
-            %span#citationKind
-              Article
-            title
-          = nested_form.text_field :title, placeholder: "optional", class: "form-control"
-        .form-group
-          = nested_form.label :authors_str do
-            Authors
-            %em.less-strong new line delineated
-          = nested_form.text_area :authors_str, placeholder: "optional", class: "form-control"
+        = render partial: "/citations/new_fields", locals: {form: nested_form}
 
         -# TODO: add published_date_str fields
 

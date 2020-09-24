@@ -23,7 +23,7 @@ class CitationsController < ApplicationController
     @citation = Citation.new(permitted_citation_params)
     if @citation.save
       flash[:success] = "Citation created"
-      redirect_to citations_path
+      redirect_to citation_path(@citation)
     else
       render :new
     end

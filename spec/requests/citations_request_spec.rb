@@ -77,10 +77,10 @@ RSpec.describe "/citations", type: :request do
         expect {
           post base_url, params: {citation: valid_citation_params}
         }.to change(Citation, :count).by 1
-        expect(response).to redirect_to citations_path
-        expect(flash[:success]).to be_present
-
         citation = Citation.last
+        expect(flash[:success]).to be_present
+        expect(response).to redirect_to citation_path(citation.to_param)
+
         expect(citation.title).to eq valid_citation_params[:title]
         expect(citation.url).to eq valid_citation_params[:url]
         expect(citation.authors).to eq(["Joseph A. Wulfsohn"])
