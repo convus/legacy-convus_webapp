@@ -69,6 +69,7 @@ RSpec.describe "/citations", type: :request do
           url_is_direct_link_to_full_text: "1",
           authors_str: " Joseph A. Wulfsohn",
           published_date_str: "2020-09-11",
+          url_is_not_publisher: false,
           url: "https://www.foxnews.com/media/the-atlantic-end-nobel-peace-prize-trump"
         }
       end
@@ -87,6 +88,7 @@ RSpec.describe "/citations", type: :request do
         expect(citation.published_date_str).to eq "2020-09-11"
         expect(citation.url_is_direct_link_to_full_text).to be_truthy
         expect(citation.creator).to eq current_user
+        expect(citation.url_is_publisher?).to be_truthy
 
         publication.reload
         expect(citation.publication).to eq publication

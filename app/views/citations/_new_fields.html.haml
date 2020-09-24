@@ -5,9 +5,15 @@
   = form.label :assignable_kind, "Source kind"
   = form.select :assignable_kind, Citation.assignable_kinds.map { |k| [k.humanize.to_s, k] }, {}, { class: "form-control" }
 .form-group
-  %label.form-check-label
-    = form.check_box :url_is_direct_link_to_full_text, class: "form-check-input"
-    URL is a direct link to the full text of the article
+  .row
+    .col-sm-8
+      %label.form-check-label
+        = form.check_box :url_is_direct_link_to_full_text, class: "form-check-input"
+        URL is a direct link to the full text of the article
+    .col-sm-4
+      %label.form-check-label.small
+        = form.check_box :url_is_not_publisher, class: "form-check-input"
+        URL is not the publisher (e.g. jstor)
 .form-group
   = form.label :title do
     -# TODO: Make this update and change based on the assignable_kind

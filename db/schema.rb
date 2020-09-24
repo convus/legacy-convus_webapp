@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_22_215358) do
+ActiveRecord::Schema.define(version: 2020_09_24_163532) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,6 +31,7 @@ ActiveRecord::Schema.define(version: 2020_09_22_215358) do
     t.text "path_slug"
     t.datetime "approved_at"
     t.integer "pull_request_number"
+    t.boolean "url_is_not_publisher", default: false
     t.index ["creator_id"], name: "index_citations_on_creator_id"
     t.index ["publication_id"], name: "index_citations_on_publication_id"
   end
@@ -75,6 +76,7 @@ ActiveRecord::Schema.define(version: 2020_09_22_215358) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.jsonb "base_domains"
+    t.boolean "meta_publication", default: false
   end
 
   create_table "tags", force: :cascade do |t|
