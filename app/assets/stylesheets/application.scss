@@ -4,6 +4,14 @@
 
 $max-main-width: 800px;
 
+body,
+html {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .wrapper {
   padding: 1rem 2rem 2rem;
   margin: 0 auto;
@@ -30,6 +38,16 @@ $max-main-width: 800px;
 .max-main-width {
   width: 100%;
   max-width: $max-main-width;
+  position: relative;
+}
+
+@media (max-width: $max-main-width) {
+  .wrapper {
+    padding: 1rem;
+  }
+  .hide-below-main-width {
+    display: none;
+  }
 }
 
 .flash-alert-container {
