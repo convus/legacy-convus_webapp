@@ -20,6 +20,10 @@
       %tr
         %td Title
         %td= @hypothesis.title
+      - if current_user&.developer?
+        %tr.only-dev-visible
+          %td slug
+          %td= @hypothesis.to_param
       %tr
         %td GitHub
         %td
@@ -50,6 +54,7 @@
       %tr
         %td Citations
         %td= @citations.count
+
 
 
 
