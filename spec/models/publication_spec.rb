@@ -87,7 +87,7 @@ RSpec.describe Publication, type: :model do
         expect(Publication.find_or_create_by_params(url: "https://www.jstor.org")).to eq publication
         expect(Publication.find_or_create_by_params(url: "https://jstor.org")).to eq publication
       end
-      it "uses the assigned title when passed a title" do
+      it "uses the assigned title when passed a matching title" do
         expect(Publication.find_or_create_by_params(url: "jstor.org", title: "JStor  thing  ")).to eq publication
         publication.reload
         expect(publication.title).to eq "JSTOR thing"
