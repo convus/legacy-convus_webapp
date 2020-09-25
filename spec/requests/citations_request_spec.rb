@@ -20,7 +20,7 @@ RSpec.describe "/citations", type: :request do
   describe "show" do
     let!(:subject) { FactoryBot.create(:citation, publication_title: "Fox News", title: "some research into things") }
     it "renders" do
-      expect(citation.unapproved?).to be_truthy
+      expect(subject.unapproved?).to be_truthy
       get "#{base_url}/#{subject.slug}"
       expect(response.code).to eq "200"
       expect(response).to render_template("citations/show")
@@ -42,9 +42,9 @@ RSpec.describe "/citations", type: :request do
       expect(assigns(:citation)).to eq subject
     end
     context "approved" do
-      let(:citation) { FactoryBot.create(:citation_approved) }
+      let(:subject) { FactoryBot.create(:citation_approved) }
       it "renders" do
-        expect(citation.approved?).to be_truthy
+        expect(subject.approved?).to be_truthy
         get "#{base_url}/#{subject.path_slug}"
         expect(response.code).to eq "200"
         expect(response).to render_template("citations/show")
