@@ -71,10 +71,44 @@ RSpec.describe Publication, type: :model do
           expect(publication.title_url?).to be_falsey
 
           # But it doesn't update again. Potentially a place/time to update multiple publications?
-          Publication.find_or_create_by_params(url: "https://www.journals.uchicago.edu/doi/10.1086/691974", title: "Crap journal")
+          Publication.find_or_create_by_params(url: "https://www.journals.uchicago.edu/doi/10.1086/691974", title: "Ignore this journal")
           publication.reload
           expect(publication.title).to eq "Journal of the Association for Consumer Research"
           expect(publication.title_url?).to be_falsey
+        end
+      end
+    end
+    context "meta_publication" do
+      let!(:publication) { Publication.find_or_create_by_params(url: "https://www.jstor.org", meta_publication: true, title: "JSTOR thing") }
+      it "does not assign url if passed meta_publication" do
+        expect(publication.title).to eq "JSTOR thing"
+        expect(publication.home_url).to eq "https://www.jstor.org"
+        expect(publication.base_domains).to include("jstor.org")
+        expect(Publication.find_or_create_by_params(url: "https://www.jstor.org")).to eq publication
+        expect(Publication.find_or_create_by_params(url: "https://jstor.org")).to eq publication
+      end
+      it "uses the assigned title when passed a matching title" do
+        expect(Publication.find_or_create_by_params(url: "jstor.org", title: "JStor  thing  ")).to eq publication
+        publication.reload
+        expect(publication.title).to eq "JSTOR thing"
+        expect(publication.meta_publication).to be_truthy
+      end
+      context "sub-publication" do
+        let(:publication2) { Publication.find_or_create_by_params(url: "http://jstor.org", title: "Some cool journal") }
+        it "correctly assigns" do
+          expect(publication2.title).to eq "Some cool journal"
+          expect(publication2.home_url).to be_blank
+          expect(publication2.base_domains).to be_blank
+          expect(publication2.meta_publication).to be_falsey
+        end
+        it "assigns sub-publication URL when passed a new URL" do
+          expect(publication2.meta_publication).to be_falsey
+          expect(Publication.find_or_create_by_params(url: "https://journal-website.org", title: "Some cool Journal ")).to eq publication2
+          publication2.reload
+          expect(publication2.meta_publication).to be_falsey
+          expect(publication2.title).to eq "Some cool journal" # Unchanged
+          expect(publication2.home_url).to eq "https://journal-website.org"
+          expect(publication2.base_domains).to eq(["journal-website.org"])
         end
       end
     end
@@ -119,6 +153,19 @@ RSpec.describe Publication, type: :model do
         publication.add_base_domain("wwwwrestling.com")
         expect(publication.base_domains).to eq(["wwwwrestling.com"])
       end
+    end
+  end
+
+  describe "meta_publication update" do
+    let!(:citation) { Citation.create(title: "some cool title", url: "https://jstor.org") }
+    let(:publication) { citation.publication }
+    it "marks all the citations url_is_not_publisher" do
+      expect(citation).to be_valid
+      expect(citation.url_is_not_publisher).to be_falsey
+      expect(publication.meta_publication).to be_falsey
+      publication.update(meta_publication: true)
+      citation.reload
+      expect(citation.url_is_not_publisher).to be_truthy
     end
   end
 end

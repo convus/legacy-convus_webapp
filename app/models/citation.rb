@@ -94,6 +94,10 @@ class Citation < ApplicationRecord
     !approved?
   end
 
+  def url_is_publisher?
+    !url_is_not_publisher
+  end
+
   def authors_str
     (authors || []).join("; ")
   end
@@ -157,7 +161,7 @@ class Citation < ApplicationRecord
   def set_calculated_attributes
     self.url = UrlCleaner.with_http(UrlCleaner.without_utm(url))
     self.creator_id ||= hypotheses.first&.creator_id
-    self.publication ||= Publication.find_or_create_by_params(url: url, title: @publication_title)
+    self.publication ||= Publication.find_or_create_by_params(title: @publication_title, url: url, meta_publication: url_is_not_publisher)
     self.title = UrlCleaner.without_base_domain(url) unless title.present?
     self.slug = Slugifyer.filename_slugify(title)
     self.path_slug = [publication&.slug, slug].compact.join("-")

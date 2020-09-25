@@ -20,7 +20,7 @@ RSpec.describe "/citations", type: :request do
   describe "show" do
     let!(:subject) { FactoryBot.create(:citation, publication_title: "Fox News", title: "some research into things") }
     it "renders" do
-      expect(citation.unapproved?).to be_truthy
+      expect(subject.unapproved?).to be_truthy
       get "#{base_url}/#{subject.slug}"
       expect(response.code).to eq "200"
       expect(response).to render_template("citations/show")
@@ -42,9 +42,9 @@ RSpec.describe "/citations", type: :request do
       expect(assigns(:citation)).to eq subject
     end
     context "approved" do
-      let(:citation) { FactoryBot.create(:citation_approved) }
+      let(:subject) { FactoryBot.create(:citation_approved) }
       it "renders" do
-        expect(citation.approved?).to be_truthy
+        expect(subject.approved?).to be_truthy
         get "#{base_url}/#{subject.path_slug}"
         expect(response.code).to eq "200"
         expect(response).to render_template("citations/show")
@@ -80,6 +80,7 @@ RSpec.describe "/citations", type: :request do
           url_is_direct_link_to_full_text: "1",
           authors_str: " Joseph A. Wulfsohn",
           published_date_str: "2020-09-11",
+          url_is_not_publisher: false,
           url: "https://www.foxnews.com/media/the-atlantic-end-nobel-peace-prize-trump"
         }
       end
@@ -98,6 +99,7 @@ RSpec.describe "/citations", type: :request do
         expect(citation.published_date_str).to eq "2020-09-11"
         expect(citation.url_is_direct_link_to_full_text).to be_truthy
         expect(citation.creator).to eq current_user
+        expect(citation.url_is_publisher?).to be_truthy
 
         publication.reload
         expect(citation.publication).to eq publication
