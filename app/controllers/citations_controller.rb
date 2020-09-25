@@ -38,7 +38,7 @@ class CitationsController < ApplicationController
 
   def permitted_citation_params
     params.require(:citation)
-      .permit(:title, :authors_str, :assignable_kind, :url,
+      .permit(:title, :authors_str, :assignable_kind, :url, :url_is_not_publisher,
         :url_is_direct_link_to_full_text, :published_date_str)
       .merge(creator: current_user)
   end
