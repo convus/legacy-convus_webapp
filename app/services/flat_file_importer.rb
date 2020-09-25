@@ -28,7 +28,8 @@ class FlatFileImporter
         publication.attributes = {title: row[:title],
                                   has_published_retractions: row[:has_published_retractions],
                                   has_peer_reviewed_articles: row[:has_peer_reviewed_articles],
-                                  home_url: row[:home_url]}
+                                  home_url: row[:home_url],
+                                  meta_publication: row[:meta_publication]}
         publication.save if publication.changed?
         publication.update_column :id, row[:id] unless publication.id == row[:id]
       end
@@ -66,6 +67,7 @@ class FlatFileImporter
       citation.approved_at ||= Time.current # If it's in the flat files, it's approved
       citation.update(title: citation_attrs[:title],
                       url: citation_attrs[:url],
+                      url_is_not_publisher: citation_attrs[:url_is_not_publisher],
                       publication_title: citation_attrs[:publication_title],
                       kind: citation_attrs[:kind],
                       published_date_str: citation_attrs[:published_date],
