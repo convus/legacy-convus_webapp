@@ -67,6 +67,7 @@ class FlatFileImporter
       citation.approved_at ||= Time.current # If it's in the flat files, it's approved
       citation.update(title: citation_attrs[:title],
                       url: citation_attrs[:url],
+                      url_is_not_publisher: citation_attrs[:url_is_not_publisher],
                       publication_title: citation_attrs[:publication_title],
                       kind: citation_attrs[:kind],
                       published_date_str: citation_attrs[:published_date],
