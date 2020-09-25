@@ -157,7 +157,15 @@ RSpec.describe Publication, type: :model do
   end
 
   describe "meta_publication update" do
+    let!(:citation) { Citation.create(title: "some cool title", url: "https://jstor.org") }
+    let(:publication) { citation.publication }
     it "marks all the citations url_is_not_publisher" do
+      expect(citation).to be_valid
+      expect(citation.url_is_not_publisher).to be_falsey
+      expect(publication.meta_publication).to be_falsey
+      publication.update(meta_publication: true)
+      citation.reload
+      expect(citation.url_is_not_publisher).to be_truthy
     end
   end
 end

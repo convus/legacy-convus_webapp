@@ -5,6 +5,7 @@ class Publication < ApplicationRecord
   has_many :hypotheses, through: :citations
 
   before_validation :set_calculated_attributes
+  after_commit :update_associations
 
   scope :published_retractions, -> { where(has_published_retractions: true) }
   scope :alphabetical, -> { reorder("lower(title)") }
@@ -68,5 +69,12 @@ class Publication < ApplicationRecord
       self.home_url = "http://#{home_url}" unless home_url.start_with?(/http/i) # We need a protocol for home_url
       add_base_domain(home_url)
     end
+    @update_citations_for_meta_publication = meta_publication_changed?(from: false, to: true)
+  end
+
+  def update_associations
+    # We're only updating on changing meta_publication from false to true
+    return true unless @update_citations_for_meta_publication
+    citations.update_all(url_is_not_publisher: true)
   end
 end

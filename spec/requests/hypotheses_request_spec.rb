@@ -267,7 +267,7 @@ RSpec.describe "/hypotheses", type: :request do
             expect(citation.url_is_not_publisher).to be_truthy
             expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
 
-            expect(citation.publication).to be_blank
+            expect(citation.publication.meta_publication).to be_truthy
             expect(citation.authors).to eq(["Zack", "George"])
             expect(citation.published_at).to be_within(5).of Time.at(660124800)
             expect(citation.url_is_direct_link_to_full_text).to be_falsey

@@ -204,22 +204,23 @@ RSpec.describe Citation, type: :model do
       end
     end
     context "url_is_not_publisher" do
-      let(:citation) { Citation.new(url: "https://jstor.org/some/thing/here", url_is_not_publisher: true) }
-      it "does not create a publication" do
-        expect {
-          citation.save
-        }.to_not change(Publication, :count)
+      let(:citation) { Citation.create(url: "https://jstor.org/some/thing/here", url_is_not_publisher: true) }
+      it "creates a meta_publication" do
+        expect(citation).to be_valid
         expect(citation.id).to be_present
         expect(citation.title).to eq "some/thing/here"
+        expect(citation.publication.meta_publication).to be_truthy
       end
-      context "with publication title" do
+      context "adding a publication title afterward" do
         it "creates the publication" do
-          citation.publication_title = "Journal of Something"
+          meta_publication = citation.publication
+          expect(meta_publication.meta_publication).to be_truthy
           expect {
-            citation.save
+            citation.update(publication_title: "Journal of Something")
           }.to change(Publication, :count).by 1
           expect(citation.id).to be_present
           publication = citation.publication
+          expect(publication.id).to_not eq meta_publication
           expect(publication.title).to eq "Journal of Something"
           expect(publication.home_url).to be_blank
           expect(publication.base_domains).to be_blank
