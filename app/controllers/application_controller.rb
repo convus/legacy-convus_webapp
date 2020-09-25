@@ -1,6 +1,12 @@
 class ApplicationController < ActionController::Base
   before_action :enable_rack_profiler
 
+  before_action do
+    if Rails.env.production? && current_user.present?
+      Honeybadger.context(user_id: current_user.id, user_email: current_user.email)
+    end
+  end
+
   def append_info_to_payload(payload)
     super
     payload[:ip] = forwarded_ip_address
