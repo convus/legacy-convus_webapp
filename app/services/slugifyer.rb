@@ -17,5 +17,6 @@ class Slugifyer
   # ... Leave space for the extension by truncating at 250
   def self.filename_slugify(string)
     slugify(string)&.truncate(250, omission: "")
+      &.delete_suffix("-") # Remove trailing -
   end
 end
