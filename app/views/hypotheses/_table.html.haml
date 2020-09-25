@@ -7,7 +7,7 @@
     %thead
       %th
         Hypothesis
-      %th
+      %th.hide-below-main-width
         Created
       %th.hide-below-main-width
         Citation
@@ -19,7 +19,7 @@
             = link_to internal_link, hypothesis_path(hypothesis.to_param), class: "internal-link"
             - hypothesis.tags.each do |tag|
               %small.tag-bubble= tag.title
-          %td
+          %td.hide-below-main-width
             %span.convertTime
               = l hypothesis.created_at, format: :convert_time
           %td.hide-below-main-width

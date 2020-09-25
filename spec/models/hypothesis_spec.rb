@@ -10,6 +10,19 @@ RSpec.describe Hypothesis, type: :model do
     expect(hypothesis.tags.pluck(:id)).to eq([])
   end
 
+  describe "slugify" do
+    # Issue with trailing - (dash) in filename_slug
+    let(:title) { "Overall, the case for reduced meat consumption is strong. Vegetarianism is cheaper, better for your health (if you can afford a diverse diet and are not an infant), and is less impactful for the environment. It also has a significant moral cost in terms of animal suffering." }
+    let(:hypothesis) { FactoryBot.create(:hypothesis, title: title) }
+    it "makes a valid slug" do
+      expect(hypothesis).to be_valid
+      slug = hypothesis.slug
+      expect(Slugifyer.filename_slugify(slug)).to eq slug
+      expect(Hypothesis.friendly_find(slug)).to eq hypothesis
+      expect(Hypothesis.friendly_find(title)).to eq hypothesis
+    end
+  end
+
   describe "tags_string" do
     let(:hypothesis) { FactoryBot.create(:hypothesis) }
     it "assigns an array" do

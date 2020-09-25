@@ -48,4 +48,11 @@ RSpec.describe Slugifyer do
       end
     end
   end
+
+  describe "filename_slugify" do
+    it "does not leave trailing -" do
+      string = "Overall, the case for reduced meat consumption is strong. Vegetarianism is cheaper, better for your health (if you can afford a diverse diet and are not an infant), and is less impactful for the environment. It also has a significant moral cost in terms of animal suffering."
+      expect(subject.filename_slugify(string)).to_not match(/-\z/)
+    end
+  end
 end

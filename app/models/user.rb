@@ -11,6 +11,11 @@ class User < ApplicationRecord
 
   before_validation :set_calculated_attributes
 
+  # TODO: make this better, with case insensitivity and striping
+  def self.friendly_find(str)
+    find_by_username(str) || find_by_email(str) || find_by_id(str)
+  end
+
   def self.from_omniauth(uid, auth)
     user = where(github_id: uid.to_i).first
 
