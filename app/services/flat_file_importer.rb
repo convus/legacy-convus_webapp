@@ -28,7 +28,8 @@ class FlatFileImporter
         publication.attributes = {title: row[:title],
                                   has_published_retractions: row[:has_published_retractions],
                                   has_peer_reviewed_articles: row[:has_peer_reviewed_articles],
-                                  home_url: row[:home_url]}
+                                  home_url: row[:home_url],
+                                  meta_publication: row[:meta_publication]}
         publication.save if publication.changed?
         publication.update_column :id, row[:id] unless publication.id == row[:id]
       end
