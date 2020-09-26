@@ -1,0 +1,25 @@
+.table-list {
+  @extend .table;
+  @extend .table-striped;
+  @extend .table-bordered;
+  @extend .table-sm;
+  tr td:first-child {
+    font-size: 80%;
+    font-style: italic;
+  }
+  td img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+  }
+  tr td:last-child {
+    width: 85%; // This is effectively min-width for table cells, which means that the definition max-width is 15%
+  }
+  tr.active-row {
+    background-color: #ebf5fb !important;
+    a {
+      text-decoration: underline;
+    }
+  }
+}

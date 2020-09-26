@@ -6,10 +6,19 @@
     "@rails/activestorage": "^6.0.0",
     "@rails/ujs": "^6.0.0",
     "@rails/webpacker": "4.3.0",
+    "bootstrap": "~>4.5.2",
+    "jquery": "~>3.5.1",
+    "loglevel": "^1.7.0",
+    "moment": "^2.29.0",
+    "moment-timezone": "^0.5.31",
+    "popper.js": "^1.16.1",
+    "sass": "^1.26.11",
+    "selectize": "^0.12.6",
     "turbolinks": "^5.2.0"
   },
   "version": "0.1.0",
   "devDependencies": {
+    "prettier": "^1.19.1",
     "webpack-dev-server": "^3.11.0"
   }
 }

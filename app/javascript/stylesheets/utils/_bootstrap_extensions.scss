@@ -1,0 +1,11 @@
+// Bootstrap extensions/additions
+// To make bootstrap work better for us
+
+.mt-big {
+  margin-top: 60px;
+}
+
+// Make alert errors (used by devise) inherit alert danger
+.alert-error {
+  @extend .alert-danger;
+}

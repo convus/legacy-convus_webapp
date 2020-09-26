@@ -1,5 +1,4 @@
 en:
   time:
     formats:
-      convert_time: "%Y.%-m.%-d" # This is not the real time - it's just because we need something
-      # convert_time: "%FT%T%z"
+      convert_time: "%FT%T%z"

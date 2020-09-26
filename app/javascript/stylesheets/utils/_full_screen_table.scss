@@ -1,0 +1,36 @@
+.full-screen-table-overflown {
+  // Enable scrolling and make it edge to edge
+  // separate class so it can be applied via js if applicable
+  overflow-x: scroll;
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+.full-screen-table {
+  @include media-breakpoint-down(sm) {
+    // same properties as .full-screen-table-overflow
+    overflow-x: scroll;
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+
+  // Dropdown headers
+  .dropdown-toggle {
+    font-weight: normal;
+    &:active,
+    &.active {
+      font-weight: bold;
+      text-decoration: underline;
+    }
+  }
+}
+
+table .table-cell-check {
+  font-family: Courier;
+  text-align: center;
+  font-weight: bold;
+}
+
+table code {
+  word-break: break-all;
+}
