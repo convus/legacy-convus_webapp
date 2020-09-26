@@ -3,9 +3,10 @@
 @import "../stylesheets/fonts";
 
 // Utilities
+@import "../stylesheets/utils/bootstrap_extensions";
+@import "../stylesheets/utils/selectize";
 @import "../stylesheets/utils/full_screen_table";
 @import "../stylesheets/utils/table_list";
-@import "../stylesheets/utils/bootstrap_extensions";
 
 .internal-link {
   text-decoration: underline;

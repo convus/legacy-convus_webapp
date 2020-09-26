@@ -18,6 +18,13 @@ const LoadFancySelects = () => {
   // Remove them so we don't initialize twice
   $(".unfancy.fancy-select").removeClass("unfancy");
 
+  $(".unfancy.fancy-select-create").selectize({
+    create: true,
+    plugins: ["restore_on_backspace"],
+  });
+  // Remove them so we don't initialize twice
+  $(".unfancy.fancy-select-create").removeClass("unfancy");
+
   // Turbolinks addition h/t https://gist.github.com/simonini/c237df3770b223acf3c3de6c3cd38226
   document.addEventListener("turbolinks:load", function() {
     $(".selectize").selectize();
