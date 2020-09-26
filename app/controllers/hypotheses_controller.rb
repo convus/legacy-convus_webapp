@@ -7,6 +7,7 @@ class HypothesesController < ApplicationController
     per_page = params[:per_page] || 500
     @hypotheses = Hypothesis.approved.reorder(created_at: :desc)
       .page(page).per(per_page)
+    @page_title = "Convus"
   end
 
   def show
