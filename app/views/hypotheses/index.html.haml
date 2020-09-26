@@ -1,9 +1,11 @@
 %h1 Working toward truth
 
-%p
+%p.mt-4
   %strong
     = number_with_delimiter(@hypotheses.total_count)
-  matching hypotheses
+  - if sortable_search_params?
+    matching
+  = "hypothesis".pluralize(@hypotheses.total_count)
 
 .paginate-wrapper
   = paginate @hypotheses

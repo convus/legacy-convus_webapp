@@ -31,6 +31,16 @@ module ApplicationHelper
     false
   end
 
+  def sortable_search_params
+    search_param_keys = params.keys.select { |k| k.to_s.start_with?(/search_/) }
+    params.permit(:direction, :sort, :period, :start_time, :end_time, :render_chart,
+      :query, *search_param_keys)
+  end
+
+  def sortable_search_params?
+    sortable_search_params.values.reject(&:blank?).any?
+  end
+
   private
 
   def default_action_name_title

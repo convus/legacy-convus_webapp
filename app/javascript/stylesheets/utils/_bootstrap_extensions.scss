@@ -9,3 +9,15 @@
 .alert-error {
   @extend .alert-danger;
 }
+
+.less-strong {
+  opacity: 0.65;
+}
+
+label {
+  cursor: pointer;
+}
+
+.em {
+  font-style: italic;
+}
