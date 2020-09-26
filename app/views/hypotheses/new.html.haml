@@ -1,31 +1,37 @@
 %h1 New Hypothesis
 
-.form-wrapper
-  = form_for @hypothesis, url: hypotheses_path, method: "POST", html: { class: "form mt-2 mb-4" } do |f|
+.row.mt-4.mb-4
+  .col-md-8.col-xl-6
     - if @hypothesis.errors.any?
       = render partial: "/shared/errors", locals: { name: "Hypothesis", obj: @hypothesis }
-    .form-group
-      = f.label :title, "Hypothesis text"
-      = f.text_area :title,  required: true, class: "form-control"
-    .form-group
-      %label.form-check-label
-        = f.check_box :has_direct_quotation, class: "form-check-input"
-        Direct quotation
-    .form-group
-      = f.label :tags_string do
-        Primary topic tag(s)
-        %small.less-strong
-          up to 4 topics, comma delineated
-      = f.text_field :tags_string, required: true, class: "form-control"
 
-    %h3.mt-4.mb-1 Citation
+    = form_for @hypothesis, url: hypotheses_path, method: "POST", html: { class: "form" } do |f|
+      .form-group
+        = f.label :title do
+          Hypothesis text
+          %span.small.less-strong
+            must be falsifiable
+        = f.text_area :title,  required: true, class: "form-control"
+      .form-group
+        .form-check
+          %label.form-check-label
+            = f.check_box :has_direct_quotation, class: "form-check-input"
+            Direct quotation
+      .form-group
+        = f.label :tags_string do
+          Primary topic tag(s)
+          %small.less-strong
+            up to 4 topics, comma delineated
+        = f.text_field :tags_string, required: true, class: "form-control"
 
-    - @hypothesis.citations.build unless @hypothesis.citations.count > 0
-    - @hypothesis.citations.each do |citation|
-      = f.fields_for :citations_attributes, citation do |nested_form|
-        = render partial: "/citations/new_fields", locals: {form: nested_form}
+      %h3.mt-4.mb-1 Citation
 
-        -# TODO: add published_date_str fields
+      - @hypothesis.citations.build unless @hypothesis.citations.count > 0
+      - @hypothesis.citations.each do |citation|
+        = f.fields_for :citations_attributes, citation do |nested_form|
+          = render partial: "/citations/new_fields", locals: {form: nested_form}
 
-    .form-group
-      = submit_tag "Submit for review", class: "btn btn-primary"
+          -# TODO: add published_date_str fields
+
+      .form-group
+        = submit_tag "Submit for review", class: "btn btn-primary"

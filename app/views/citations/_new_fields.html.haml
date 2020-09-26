@@ -5,9 +5,10 @@
   = form.label :assignable_kind, "Source kind"
   = form.select :assignable_kind, Citation.assignable_kinds.map { |k| [k.humanize.to_s, k] }, {}, { class: "form-control" }
 .form-group
-  %label.form-check-label
-    = form.check_box :url_is_direct_link_to_full_text, class: "form-check-input"
-    URL is a direct link to the full text of the article
+  .form-check
+    %label.form-check-label
+      = form.check_box :url_is_direct_link_to_full_text, class: "form-check-input"
+      URL is a direct link to the full text of the article
   -# Once we have a lot of publications, we may want to show/hide this based on the publication.
   -# For now, just assigning meta_publication to publications is easier to deal with
   -# %label.form-check-label.small

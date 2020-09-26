@@ -7,9 +7,9 @@
     %thead
       %th
         Hypothesis
-      %th.hide-below-main-width
+      %th.d-none.d-md-table-cell
         Created
-      %th.hide-below-main-width
+      %th.d-none.d-md-table-cell
         Citation
     %tbody
       - hypotheses.each do |hypothesis|
@@ -19,10 +19,10 @@
             = link_to internal_link, hypothesis_path(hypothesis.to_param), class: "internal-link"
             - hypothesis.tags.each do |tag|
               %small.tag-bubble= tag.title
-          %td.hide-below-main-width
+          %td.d-none.d-md-table-cell
             %span.convertTime
               = l hypothesis.created_at, format: :convert_time
-          %td.hide-below-main-width
+          %td.d-none.d-md-table-cell
             - citation = hypothesis.citations.each do |citation|
               - next if citation.id == skip_citation_id
               .d-block
