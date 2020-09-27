@@ -26,6 +26,11 @@
             %td slug
             %td= @hypothesis.to_param
         %tr
+          %td Points
+          %td
+            %strong
+              = @hypothesis.points
+        %tr
           %td GitHub
           %td
             = link_to @hypothesis.file_path, @hypothesis.github_html_url

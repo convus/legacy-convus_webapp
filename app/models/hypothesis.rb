@@ -12,6 +12,7 @@ class Hypothesis < ApplicationRecord
 
   accepts_nested_attributes_for :citations
 
+  before_validation :set_calculated_attributes
   after_commit :add_to_github_content
 
   scope :direct_quotation, -> { where(has_direct_quotation: true) }
@@ -72,5 +73,20 @@ class Hypothesis < ApplicationRecord
   def add_to_github_content
     return true if approved? || pull_request_number.present?
     AddHypothesisToGithubContentJob.perform_async(id)
+  end
+
+  def set_calculated_attributes
+    self.points = calculated_points
+  end
+
+  private
+
+  # TODO: Make this actually take more into account
+  def calculated_points
+    total_points = 0
+    return total_points unless approved_at.present? && citations.approved.any?
+    total_points += 1 if direct_quotation?
+    total_points += citations.approved.map(&:kind_score).max
+    total_points
   end
 end
