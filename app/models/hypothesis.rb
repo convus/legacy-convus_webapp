@@ -17,6 +17,15 @@ class Hypothesis < ApplicationRecord
   scope :approved, -> { where.not(approved_at: nil) }
   scope :unapproved, -> { where(approved_at: nil) }
 
+  def self.with_tags(string_or_array)
+    with_tag_ids(Tag.matching_tags(string_or_array).pluck(:id))
+  end
+
+  def self.with_tag_ids(tag_ids_array)
+    joins(:hypothesis_tags).distinct.where(hypothesis_tags: { tag_id: tag_ids_array })
+      .group("hypotheses.id").having("count(*) = ?", tag_ids_array.count)
+  end
+
   def approved?
     approved_at.present?
   end
