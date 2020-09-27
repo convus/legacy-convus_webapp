@@ -17,10 +17,13 @@
 .form-group
   = form.label :title do
     -# TODO: Make this update and change based on the assignable_kind
-    %span#citationKind
+    %span
       Article
     title
   = form.text_field :title, placeholder: "optional", class: "form-control"
+.form-group
+  = form.label :publication_title
+  = form.text_field :publication_title, placeholder: "optional", class: "form-control"
 .form-group
   = form.label :authors_str do
     Authors
