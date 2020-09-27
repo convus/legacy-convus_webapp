@@ -12,13 +12,14 @@
       %th.d-none.d-md-table-cell
         Citation
     %tbody
+      - search_tags = @search_tags || []
       - hypotheses.each do |hypothesis|
         %tr
           %td
             = hypothesis.title
             = link_to internal_link, hypothesis_path(hypothesis.to_param), class: "internal-link"
             - hypothesis.tags.each do |tag|
-              %small.tag-bubble= tag.title
+              = link_to tag.title, hypotheses_path(sortable_search_params.merge(search_tags: (search_tags + [tag.title]))), class: "tag-bubble small"
           %td.d-none.d-md-table-cell
             %span.convertTime
               = l hypothesis.created_at, format: :convert_time

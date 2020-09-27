@@ -68,6 +68,7 @@ unless ENV["CIRCLECI"]
         citation_serialized_og = Citation.first.flat_file_serialized
         citation_content_og = Citation.first.flat_file_content
         expect(Tag.count).to eq 1
+        expect(Tag.approved.count).to eq 0
         tag_serialized_og = Tag.pluck(*Tag.serialized_attrs) # This is how tags are serialized
         expect(Publication.count).to eq 1
         publication_serialized_og = Publication.pluck(*Publication.serialized_attrs) # This is how publications are serialized
@@ -90,6 +91,37 @@ unless ENV["CIRCLECI"]
         expect(Tag.pluck(*Tag.serialized_attrs)).to eq tag_serialized_og
         expect(Publication.pluck(*Publication.serialized_attrs)).to eq publication_serialized_og
       end
+    end
+  end
+
+  describe "import_hypothesis" do
+    let(:hypothesis_attrs) do
+      {
+        title: "Purple air sensors are less accurate than EPA sensors. By turning on the conversion \"AQandU\" the data will more closely align with EPA readings",
+        id: 2115,
+        direct_quotation: false,
+        tag_titles: ["environment ", "Air quality"],
+        citation_urls: ["https://www.kqed.org/science/1969271/making-sense-of-purple-air-vs-airnow-and-a-new-map-to-rule-them-all"]
+      }
+    end
+    let!(:tag) { Tag.create(title: "Environment") }
+    it "imports the hypothesis we expect" do
+      expect(Hypothesis.count).to eq 0
+      expect(Citation.count).to eq 0
+      expect(Tag.count).to eq 1
+      expect(tag.approved?).to be_falsey
+      hypothesis = FlatFileImporter.import_hypothesis(hypothesis_attrs)
+      expect(hypothesis.title).to eq hypothesis_attrs[:title]
+      expect(hypothesis.id).to eq hypothesis_attrs[:id]
+
+      expect(hypothesis.direct_quotation?).to be_falsey
+      expect(hypothesis.tags.approved.count).to eq 2
+      expect(hypothesis.tags.pluck(:title)).to match_array(["Environment", "Air quality"])
+      tag.reload
+      expect(tag.approved_at).to be_within(5).of Time.current
+
+      expect(hypothesis.citations.count).to eq 1
+      expect(hypothesis.flat_file_serialized.except(:tag_titles)).to eq(hypothesis_attrs.except(:tag_titles))
     end
   end
 end

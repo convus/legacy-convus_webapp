@@ -1,5 +1,6 @@
 class Tag < ApplicationRecord
   include TitleSluggable
+  include ApprovedAtable
 
   TAXONOMY_ENUM = {
     domain_rank: 0,
@@ -13,6 +14,16 @@ class Tag < ApplicationRecord
   enum taxonomy: TAXONOMY_ENUM
 
   scope :alphabetical, -> { reorder("lower(title)") }
+
+  def self.matching_tags(string_or_array)
+    Tag.where(id: matching_tag_ids(string_or_array))
+  end
+
+  def self.matching_tag_ids(string_or_array)
+    return none unless string_or_array.present?
+    array = string_or_array.is_a?(Array) ? string_or_array : string_or_array.split(/,|\n/)
+    array.map { |s| friendly_find_id(s) }.compact
+  end
 
   def self.find_or_create_for_title(str)
     return nil unless str.present?

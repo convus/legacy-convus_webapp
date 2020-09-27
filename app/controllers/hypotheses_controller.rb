@@ -5,7 +5,7 @@ class HypothesesController < ApplicationController
   def index
     page = params[:page] || 1
     per_page = params[:per_page] || 500
-    @hypotheses = Hypothesis.approved.reorder(created_at: :desc)
+    @hypotheses = matching_hypotheses.reorder(created_at: :desc)
       .page(page).per(per_page)
     @page_title = "Convus"
   end
@@ -32,11 +32,22 @@ class HypothesesController < ApplicationController
     end
   end
 
+  helper_method :matching_hypotheses
+
   private
 
   # To make it possible to use the file path from a citation directly
   def set_permitted_format
     request.format = "html" unless request.format == "json"
+  end
+
+  def matching_hypotheses
+    hypotheses = Hypothesis.approved
+    if params[:search_tags].present?
+      @search_tags = Tag.matching_tags(params[:search_tags])
+      hypotheses = hypotheses.with_tag_ids(@search_tags.pluck(:id))
+    end
+    hypotheses
   end
 
   def permitted_params

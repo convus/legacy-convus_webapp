@@ -17,6 +17,7 @@ class FlatFileImporter
         tag = Tag.find_by_id(row[:id]) || Tag.new
         tag.title = row[:title]
         tag.taxonomy = row[:taxonomy]
+        tag.approved_at ||= Time.current
         tag.save if tag.changed?
         tag.update_column :id, row[:id] unless tag.id == row[:id]
       end
@@ -48,10 +49,10 @@ class FlatFileImporter
       hypothesis.update(title: hypothesis_attrs[:title], has_direct_quotation: hypothesis_attrs[:direct_quotation])
       # We need to save first, so we can update the columns if necessary, before creating associations
       unless hypothesis.id == hypothesis_attrs[:id]
-        created_at = TimeParser.parse(hypothesis_attrs[:created_at]) || Time.current
-        hypothesis.update_columns(id: hypothesis_attrs[:id], created_at: created_at)
+        hypothesis.update_columns(id: hypothesis_attrs[:id])
       end
       hypothesis.update(tags_string: hypothesis_attrs[:tag_titles], citation_urls: hypothesis_attrs[:citation_urls])
+      hypothesis.tags.unapproved.update_all(approved_at: Time.current)
       hypothesis
     end
 

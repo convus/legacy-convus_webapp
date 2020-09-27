@@ -1,0 +1,14 @@
+.hypotheses-search {
+  .hypotheses-search-select-group {
+    width: 75%;
+    .form-control {
+      width: 100%;
+    }
+    @include media-breakpoint-down(xs) {
+      width: 100%;
+    }
+  }
+  .hypotheses-search-btn {
+    margin-left: 0.5rem;
+  }
+}

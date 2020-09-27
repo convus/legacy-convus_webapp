@@ -30,6 +30,11 @@ RSpec.describe Hypothesis, type: :model do
       hypothesis.save
       hypothesis.reload
       expect(hypothesis.tags_string).to eq("Space")
+      expect(Hypothesis.with_tags("Space").pluck(:id)).to eq([hypothesis.id])
+      expect(Hypothesis.with_tags(["space "]).pluck(:id)).to eq([hypothesis.id])
+      expect(Hypothesis.with_tags("Spacer").pluck(:id)).to eq([])
+      Tag.create(title: "Stuff")
+      expect(Hypothesis.with_tags("Space, stuff").pluck(:id)).to eq([])
     end
     context "assigning a string" do
       let!(:tag) { FactoryBot.create(:tag, title: "SOME existing title") }
@@ -42,6 +47,11 @@ RSpec.describe Hypothesis, type: :model do
         expect(hypothesis.tags.count).to eq 3
         expect(hypothesis.tags.pluck(:id)).to_not include(tag.id)
         expect(hypothesis.tags_string).to eq("a new tag, environmenT, Something")
+        hypothesis2 = FactoryBot.create(:hypothesis, tags_string: "environment ")
+        expect(Hypothesis.with_tags("environment").pluck(:id)).to eq([hypothesis.id, hypothesis2.id])
+        expect(Hypothesis.with_tags("environment, Something").pluck(:id)).to eq([hypothesis.id])
+        tag_ids = Tag.matching_tags("environment, Something").pluck(:id)
+        expect(Hypothesis.with_tag_ids(tag_ids).pluck(:id)).to eq([hypothesis.id])
       end
     end
   end
