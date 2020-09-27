@@ -242,10 +242,9 @@ RSpec.describe "/hypotheses", type: :request do
           end
         end
         context "citation with url_is_not_publisher" do
-          let(:citation_url_not_publisher_params) do
-            hypothesis_with_citation_params.merge(citations_attributes: valid_citation_params.merge(url_is_not_publisher: true))
-          end
-          it "creates, citation doesn't create publication" do
+          let(:citation_params) { valid_citation_params.merge(url_is_not_publisher: true) }
+          let(:citation_url_not_publisher_params) { hypothesis_with_citation_params.merge(citations_attributes: citation_params) }
+          it "creates" do
             expect(Hypothesis.count).to eq 0
             expect(Citation.count).to eq 0
             Sidekiq::Worker.clear_all
@@ -273,11 +272,52 @@ RSpec.describe "/hypotheses", type: :request do
             expect(citation.url_is_not_publisher).to be_truthy
             expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
 
-            expect(citation.publication.meta_publication).to be_truthy
             expect(citation.authors).to eq(["Zack", "George"])
             expect(citation.published_at).to be_within(5).of Time.at(660124800)
             expect(citation.url_is_direct_link_to_full_text).to be_falsey
             expect(citation.creator).to eq current_user
+
+            publication = citation.publication
+            expect(publication).to be_present
+            expect(publication.meta_publication).to be_truthy
+            expect(publication.home_url).to eq "https://example.com"
+            expect(publication.title).to eq "example.com"
+          end
+          context "with publication_title" do
+            let(:citation_params) { valid_citation_params.merge(url_is_not_publisher: true, publication_title: "Some other title") }
+            it "creates with publication title" do
+              expect(Hypothesis.count).to eq 0
+              expect(Citation.count).to eq 0
+              Sidekiq::Worker.clear_all
+              expect {
+                post base_url, params: {hypothesis: citation_url_not_publisher_params}
+              }.to change(Hypothesis, :count).by 1
+              expect(AddHypothesisToGithubContentJob.jobs.count).to eq 1
+              expect(AddCitationToGithubContentJob.jobs.count).to eq 0
+              expect(response).to redirect_to hypothesis_path(Hypothesis.last.to_param)
+              expect(flash[:success]).to be_present
+
+              hypothesis = Hypothesis.last
+              expect(hypothesis.title).to eq citation_url_not_publisher_params[:title]
+
+              expect(Citation.count).to eq 1
+              citation = Citation.last
+              expect(citation.title).to eq valid_citation_params[:title]
+              expect(citation.url).to eq valid_citation_params[:url]
+              expect(citation.url_is_not_publisher).to be_truthy
+              expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
+
+              expect(citation.authors).to eq(["Zack", "George"])
+              expect(citation.published_at).to be_within(5).of Time.at(660124800)
+              expect(citation.url_is_direct_link_to_full_text).to be_falsey
+              expect(citation.creator).to eq current_user
+
+              publication = citation.publication
+              expect(publication).to be_present
+              expect(publication.meta_publication).to be_falsey
+              expect(publication.home_url).to be_blank
+              expect(publication.title).to eq "Some other title"
+            end
           end
         end
       end

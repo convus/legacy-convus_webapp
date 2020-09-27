@@ -21,24 +21,25 @@
         %tr
           %td Title
           %td= @hypothesis.title
-        - if current_user&.developer?
-          %tr.only-dev-visible
-            %td slug
-            %td= @hypothesis.to_param
+        -# - if current_user&.developer?
+        -#   %tr.only-dev-visible
+        -#     %td slug
+        -#     %td= @hypothesis.to_param
         %tr
           %td Points
           %td
             %strong
               = @hypothesis.points
-        %tr
-          %td GitHub
-          %td
-            = link_to @hypothesis.file_path, @hypothesis.github_html_url
-            - if @hypothesis.pull_request_number.present?
-              %br
-              %em.less-strong
-                Approved by
-                = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
+        - if @hypothesis.approved?
+          %tr
+            %td GitHub
+            %td
+              = link_to @hypothesis.file_path, @hypothesis.github_html_url
+              - if @hypothesis.pull_request_number.present?
+                %br
+                %em.less-strong
+                  Approved by
+                  = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
         %tr
           %td ID
           %td= @hypothesis.id
