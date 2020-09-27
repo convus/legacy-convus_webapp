@@ -7,7 +7,7 @@ class FlatFileSerializer
     def write_all_files
       Hypothesis.approved.find_each { |hypothesis| write_hypothesis(hypothesis) }
       Citation.approved.find_each { |citation| write_citation(citation) }
-      write_all_tags
+      write_approved_tags
       write_all_publications
     end
 
@@ -37,7 +37,7 @@ class FlatFileSerializer
       filepath
     end
 
-    def write_all_tags
+    def write_approved_tags
       File.open(tags_file, "w") { |f|
         f.puts Tag.serialized_attrs.join(",") # Skip price of initializing serializer for csv, instead use pluck
         Tag.alphabetical.pluck(*Tag.serialized_attrs).each { |attrs| f.puts attrs.join(",") }

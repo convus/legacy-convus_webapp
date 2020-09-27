@@ -71,10 +71,10 @@ unless ENV["CIRCLECI"]
     end
 
     describe "write_all_tags" do
-      let!(:tag) { FactoryBot.create(:tag) }
+      let!(:tag) { FactoryBot.create(:tag_approved) }
       it "writes the csv file" do
         expect(list_of_files).to eq([])
-        subject.write_all_tags
+        subject.write_approved_tags
         expect(list_of_files).to eq(["tags.csv"])
         output = File.read(subject.tags_file)
         expect(output.split("\n").count).to eq 2
