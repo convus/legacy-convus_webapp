@@ -10,7 +10,7 @@
     = stylesheet_pack_tag "application_css", media: "all", "data-turbolinks-track": "reload"
     = javascript_pack_tag "application", "data-turbolinks-track": "reload"
     :javascript
-      window.tags = #{Tag.approved.pluck(:title)};
+      window.tags = #{tag_titles};
   %body
     %nav.navbar.navbar-expand.navbar-light
       .container-fluid

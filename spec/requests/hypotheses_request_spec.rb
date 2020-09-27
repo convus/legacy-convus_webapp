@@ -12,7 +12,7 @@ RSpec.describe "/hypotheses", type: :request do
       get base_url
       expect(response).to render_template("hypotheses/index")
       expect(assigns(:hypotheses).pluck(:id)).to eq([hypothesis_approved.id])
-      get base_url, params: { search_tags: "something of interest,,"}
+      get base_url, params: {search_tags: "something of interest,,"}
       expect(response).to render_template("hypotheses/index")
       expect(assigns(:hypotheses).pluck(:id)).to eq([hypothesis_approved.id])
     end

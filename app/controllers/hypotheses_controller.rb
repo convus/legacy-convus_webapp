@@ -44,8 +44,8 @@ class HypothesesController < ApplicationController
   def matching_hypotheses
     hypotheses = Hypothesis.approved
     if params[:search_tags].present?
-      @searched_tags = Tag.matching_tags(params[:search_tags])
-      hypotheses = hypotheses.with_tag_ids(@searched_tags.pluck(:id))
+      @search_tags = Tag.matching_tags(params[:search_tags])
+      hypotheses = hypotheses.with_tag_ids(@search_tags.pluck(:id))
     end
     hypotheses
   end

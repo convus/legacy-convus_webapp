@@ -21,7 +21,7 @@ class Hypothesis < ApplicationRecord
   end
 
   def self.with_tag_ids(tag_ids_array)
-    joins(:hypothesis_tags).distinct.where(hypothesis_tags: { tag_id: tag_ids_array })
+    joins(:hypothesis_tags).distinct.where(hypothesis_tags: {tag_id: tag_ids_array})
       .group("hypotheses.id").having("count(*) = ?", tag_ids_array.count)
   end
 

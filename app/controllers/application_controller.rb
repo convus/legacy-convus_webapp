@@ -33,7 +33,11 @@ class ApplicationController < ActionController::Base
     user_github_omniauth_authorize_path
   end
 
-  helper_method :user_root_path, :github_link
+  helper_method :user_root_path, :github_link, :tag_titles
+
+  def tag_titles
+    @tag_titles ||= Tag.approved.pluck(:title)
+  end
 
   def user_root_path
     return github_link unless current_user.present?
