@@ -17,6 +17,7 @@ class FlatFileImporter
         tag = Tag.find_by_id(row[:id]) || Tag.new
         tag.title = row[:title]
         tag.taxonomy = row[:taxonomy]
+        tag.approved_at ||= Time.current
         tag.save if tag.changed?
         tag.update_column :id, row[:id] unless tag.id == row[:id]
       end
@@ -52,6 +53,7 @@ class FlatFileImporter
         hypothesis.update_columns(id: hypothesis_attrs[:id], created_at: created_at)
       end
       hypothesis.update(tags_string: hypothesis_attrs[:tag_titles], citation_urls: hypothesis_attrs[:citation_urls])
+      hypothesis.tags.unapproved.update_all(approved_at: Time.current)
       hypothesis
     end
 
