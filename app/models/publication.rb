@@ -48,7 +48,7 @@ class Publication < ApplicationRecord
   end
 
   def self.serialized_attrs
-    %i[title id meta_publication has_published_retractions has_peer_reviewed_articles home_url].freeze
+    %i[title id meta_publication has_published_retractions has_peer_reviewed_articles impact_factor home_url].freeze
   end
 
   def title_url?

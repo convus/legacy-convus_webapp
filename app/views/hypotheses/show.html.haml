@@ -26,13 +26,19 @@
             %td slug
             %td= @hypothesis.to_param
         %tr
+          %td Points
+          %td
+            %strong
+              = @hypothesis.points
+        %tr
           %td GitHub
           %td
             = link_to @hypothesis.file_path, @hypothesis.github_html_url
             - if @hypothesis.pull_request_number.present?
               %br
-              Approved by
-              = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
+              %em.less-strong
+                Approved by
+                = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
         %tr
           %td ID
           %td= @hypothesis.id
