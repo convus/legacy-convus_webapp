@@ -73,7 +73,7 @@ RSpec.describe "/hypotheses", type: :request do
     end
 
     describe "create" do
-      let(:tag) { FactoryBot.create(:tag, "Economy") }
+      let!(:tag) { FactoryBot.create(:tag_approved, title: "Economy") }
       let(:valid_hypothesis_params) { {title: "This seems like the truth", tags_string: "economy\n"} }
       let(:valid_citation_params) do
         {
@@ -105,6 +105,7 @@ RSpec.describe "/hypotheses", type: :request do
           expect(hypothesis.direct_quotation?).to be_falsey
           expect(hypothesis.pull_request_number).to be_present
           expect(hypothesis.approved?).to be_falsey
+          expect(hypothesis.tags.pluck(:id)).to eq([tag.id])
         end
       end
       context "invalid params" do
@@ -148,6 +149,8 @@ RSpec.describe "/hypotheses", type: :request do
             expect(hypothesis.tags_string).to eq "Economy, parties"
             expect(hypothesis.pull_request_number).to be_present
             expect(hypothesis.approved?).to be_falsey
+            expect(tag.approved?).to be_truthy
+            expect(Tag.friendly_find("parties").approved?).to be_falsey
 
             expect(Citation.count).to eq 1
             citation = Citation.last

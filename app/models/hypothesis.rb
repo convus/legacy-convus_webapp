@@ -1,6 +1,7 @@
 class Hypothesis < ApplicationRecord
   include TitleSluggable
   include FlatFileSerializable
+  include ApprovedAtable
 
   belongs_to :creator, class_name: "User"
 
@@ -14,8 +15,6 @@ class Hypothesis < ApplicationRecord
   after_commit :add_to_github_content
 
   scope :direct_quotation, -> { where(has_direct_quotation: true) }
-  scope :approved, -> { where.not(approved_at: nil) }
-  scope :unapproved, -> { where(approved_at: nil) }
 
   def self.with_tags(string_or_array)
     with_tag_ids(Tag.matching_tags(string_or_array).pluck(:id))
@@ -24,14 +23,6 @@ class Hypothesis < ApplicationRecord
   def self.with_tag_ids(tag_ids_array)
     joins(:hypothesis_tags).distinct.where(hypothesis_tags: { tag_id: tag_ids_array })
       .group("hypotheses.id").having("count(*) = ?", tag_ids_array.count)
-  end
-
-  def approved?
-    approved_at.present?
-  end
-
-  def unapproved?
-    !approved?
   end
 
   def direct_quotation?

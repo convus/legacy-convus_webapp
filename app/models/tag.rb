@@ -1,5 +1,6 @@
 class Tag < ApplicationRecord
   include TitleSluggable
+  include ApprovedAtable
 
   TAXONOMY_ENUM = {
     domain_rank: 0,

@@ -1,6 +1,7 @@
 class Citation < ApplicationRecord
   include FriendlyFindable
   include FlatFileSerializable
+  include ApprovedAtable
 
   KIND_ENUM = {
     article: 0,
@@ -27,8 +28,6 @@ class Citation < ApplicationRecord
   after_commit :add_to_github_content
 
   scope :by_creation, -> { reorder(:created_at) }
-  scope :approved, -> { where.not(approved_at: nil) }
-  scope :unapproved, -> { where(approved_at: nil) }
 
   attr_accessor :assignable_kind, :skip_add_citation_to_github
 
@@ -84,14 +83,6 @@ class Citation < ApplicationRecord
 
   def to_param
     path_slug
-  end
-
-  def approved?
-    approved_at.present?
-  end
-
-  def unapproved?
-    !approved?
   end
 
   def url_is_publisher?
