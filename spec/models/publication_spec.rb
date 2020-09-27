@@ -79,7 +79,7 @@ RSpec.describe Publication, type: :model do
       end
     end
     context "meta_publication" do
-      let!(:publication) { Publication.find_or_create_by_params(url: "https://www.jstor.org", meta_publication: true, title: "JSTOR thing") }
+      let!(:publication) { Publication.create(home_url: "https://www.jstor.org", meta_publication: true, title: "JSTOR thing") }
       it "does not assign url if passed meta_publication" do
         expect(publication.title).to eq "JSTOR thing"
         expect(publication.home_url).to eq "https://www.jstor.org"
@@ -92,6 +92,14 @@ RSpec.describe Publication, type: :model do
         publication.reload
         expect(publication.title).to eq "JSTOR thing"
         expect(publication.meta_publication).to be_truthy
+      end
+      context "using find_or_create_by_params" do
+        let!(:publication) { Publication.find_or_create_by_params(url: "https://www.jstor.org", url_is_not_publisher: true) }
+        it "includes url and is meta_publication" do
+          expect(publication.title).to eq "jstor.org"
+          expect(publication.home_url).to eq "https://www.jstor.org"
+          expect(publication.base_domains).to include("jstor.org")
+        end
       end
       context "sub-publication" do
         let(:publication2) { Publication.find_or_create_by_params(url: "http://jstor.org", title: "Some cool journal") }

@@ -20,13 +20,15 @@ class Publication < ApplicationRecord
   end
 
   # TODO: Re-factor, because this is confusing. This is well tested, so have at it!
-  def self.find_or_create_by_params(title: nil, url: nil, meta_publication: false)
+  # IN REALITY this method is find_or_create_by_citation_params
+  def self.find_or_create_by_params(title: nil, url: nil, url_is_not_publisher: false)
+    meta_publication = title.blank? && url_is_not_publisher
     matching = friendly_find(title) || friendly_find(url)
     if matching.present? && matching.meta_publication
       # as a meta_publication, if passed a publication title, that is the title (not the meta_publication's title)
       return matching if title.blank? || Slugifyer.slugify(title) == matching.slug
       # otherwise, we want to create a new publication without a URL (since the URL is the meta_publication's URL)
-      matching_meta_publication = true
+      url_is_not_publisher = true
     elsif matching.present?
       matching.home_url ||= url # If assigning here, publication probably created with a meta_publication URL
       matching.add_base_domain(url) if url.present?
@@ -36,12 +38,14 @@ class Publication < ApplicationRecord
       return matching
     end
     publication = new(title: title, meta_publication: meta_publication)
-    if url.present? && !matching_meta_publication
-      base_domains = UrlCleaner.base_domains(url)
-      return nil if base_domains.none? && title.blank?
-      # Use .first for url because it will include www.
-      publication.home_url = url.split(base_domains.first).first + base_domains.first
-      publication.title ||= base_domains.last
+    if url.present?
+      if !url_is_not_publisher || meta_publication
+        base_domains = UrlCleaner.base_domains(url)
+        return nil if base_domains.none? && title.blank?
+        # Use .first for url because it will include www.
+        publication.home_url = url.split(base_domains.first).first + base_domains.first
+        publication.title ||= base_domains.last
+      end
     end
     publication.save
     publication
