@@ -8,13 +8,15 @@ RSpec.describe "/hypotheses", type: :request do
   describe "index" do
     let!(:hypothesis) { FactoryBot.create(:hypothesis) }
     let!(:hypothesis_approved) { FactoryBot.create(:hypothesis_approved, tags_string: "something of interest") }
+    let(:tag) { hypothesis_approved.tags.first }
     it "renders only the approved" do
       get base_url
       expect(response).to render_template("hypotheses/index")
       expect(assigns(:hypotheses).pluck(:id)).to eq([hypothesis_approved.id])
-      get base_url, params: {search_tags: "something of interest,,"}
+      get base_url, params: {search_array: "something of interest,,"}
       expect(response).to render_template("hypotheses/index")
       expect(assigns(:hypotheses).pluck(:id)).to eq([hypothesis_approved.id])
+      expect(assigns(:search_tags).pluck(:id)).to eq([tag.id])
     end
   end
 

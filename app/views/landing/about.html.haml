@@ -1,25 +1,41 @@
-%h1
-  Convus
+.max-width-text-container
+  %h1
+    Convus
 
-%p.mt-4
-  A platform to seek the truth.
+  %p.mt-4
+    A platform to improve our collective understanding.
 
-%p.mt-4
-  Propose hypotheses > Hypothesis is approved > Hypothesis improved and/or refuted by others
+  %hr.mt-big
 
-%p.mt-4
-  Objectives, in no particular order:
-%ul
-  %li
-    Only reward evidence
-    -# See what's there, not what you wish was there - or something. There's a quote for this, maybe?
-  %li
-    Provide a way to learn about other people's views
-  %li
-    Offer a way to check whether your opinions hold up to inspection
-  %li
-    Iterate. Not perfection, just a little better than before
+  %p.mt-4 General process:
 
-%p.mt-big
-  %em
-    Convus is open source. Check out #{link_to "the web app repository", "https://github.com/convus/convus_webapp"} and #{link_to "the content repository", "https://github.com/convus/convus_content"}.
+  %ul
+    %li
+      When a hypothesis is submitted, a GitHub pull request is created - which moderators review and approve (if the hypothesis is valid, ie falsifiable)
+    %li
+      Hypotheses are given points based on the rigorousness of what they cite
+    %li
+      Disagree with a hypothesis? Propose a hypothesis with a stronger citation and refute the other hypothesis
+
+  %hr.mt-big
+
+  %p.mt-4
+    Some broad objectives:
+  %ul
+    %li
+      Encourage scientific communication and the consideration of scientific research
+    %li
+      Require falsifiable claims&mdash;so discussion uses evidence and reasoning
+    %li
+      Provide a platform to learn about other viewpoints and question your own opinions
+    %li
+      Iteratively improve; better than before > perfection
+
+  %hr.mt-big
+
+  %p.mt-4
+    %strong
+      Convus is open source.
+    Check out #{link_to "the web app repository", "https://github.com/convus/convus_webapp"} and #{link_to "the content repository", "https://github.com/convus/convus_content"}.
+  %p
+    Convus uses GitHub for authentication, but will not publish your GitHub username - or tie your submissions to your GitHub username - without your consent. We use GitHub for sign in so we can award you points based any updates you make to the the #{link_to "content", "https://github.com/convus/convus_content"}.

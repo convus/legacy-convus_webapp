@@ -3,6 +3,9 @@
 
 .mt-big {
   margin-top: 60px;
+  @include media-breakpoint-down(sm) {
+    margin-top: 40px;
+  }
 }
 
 // Make alert errors (used by devise) inherit alert danger
