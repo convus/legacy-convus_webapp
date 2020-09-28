@@ -33,11 +33,11 @@ RSpec.describe GithubIntegration do
       # Delete it either by closing the PR: https://github.com/convus/convus_content/pulls
       # Or deleting the branch manually (if PR wasn't created): https://github.com/convus/convus_content/branches
       VCR.use_cassette("github_integration-create_hypothesis_pull_request", match_requests_on: [:method]) do
-        initial_branch_count = branches(subject.client).count
-        initial_pull_requests = open_pull_requests(subject.client)
+        branches(subject.client).count
+        open_pull_requests(subject.client)
         pull_request = subject.create_hypothesis_pull_request(hypothesis)
         # This isn't testing correctly, even though the pull request is being created correctly
-        # ... so ignore for now
+        # ... so ignore for now. To re-enable, will require assigning results above to variables
         # expect(branches(subject.client).count).to be > initial_branch_count
         # prs = open_pull_requests(subject.client)
         # expect(prs.count).to be > initial_pull_requests.count

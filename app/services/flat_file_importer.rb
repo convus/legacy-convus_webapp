@@ -46,7 +46,6 @@ class FlatFileImporter
     def import_hypothesis(hypothesis_attrs)
       hypothesis = Hypothesis.where(id: hypothesis_attrs[:id]).first || Hypothesis.new
       hypothesis.approved_at ||= Time.current # If it's in the flat files, it's approved
-      previously_direct_quotation = hypothesis.has_direct_quotation
       hypothesis.update(title: hypothesis_attrs[:title], has_direct_quotation: hypothesis_attrs[:direct_quotation])
       # We need to save first, so we can update the columns if necessary, before creating associations
       unless hypothesis.id == hypothesis_attrs[:id]
