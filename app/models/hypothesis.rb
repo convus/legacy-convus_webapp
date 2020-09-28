@@ -7,6 +7,7 @@ class Hypothesis < ApplicationRecord
 
   has_many :hypothesis_citations, dependent: :destroy
   has_many :citations, through: :hypothesis_citations
+  has_many :publications, through: :citations
   has_many :hypothesis_tags
   has_many :tags, through: :hypothesis_tags
 
@@ -49,6 +50,10 @@ class Hypothesis < ApplicationRecord
     }
     hypothesis_tags.where.not(tag_id: new_ids).destroy_all
     tags
+  end
+
+  def citation_for_score
+    citations.approved.first # TODO: Make this grab the citation with the highest score (and add tests)
   end
 
   def citation_urls

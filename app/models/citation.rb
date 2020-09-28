@@ -135,6 +135,14 @@ class Citation < ApplicationRecord
     kind_data[:score]
   end
 
+  def badges
+    HypothesisScorer.citation_badges(self)
+  end
+
+  def score
+    badges.values.sum
+  end
+
   # Required for FlatFileSerializable
   def file_pathnames
     ["citations", publication&.slug, "#{slug}.yml"].compact
