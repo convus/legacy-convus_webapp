@@ -27,18 +27,22 @@ class Hypothesis < ApplicationRecord
   end
 
   def direct_quotation?
-    has_direct_quotation || hypothesis_citations.direct_quotation.any?
+    has_direct_quotation
+  end
+
+  def tag_titles
+    tags.alphabetical.pluck(:title)
   end
 
   def tags_string
-    tags.alphabetical.pluck(:title).join(", ")
+    tag_titles.join(", ")
   end
 
   def tags_string=(val)
     new_tags = (val.is_a?(Array) ? val : val.to_s.split(/,|\n/)).reject(&:blank?)
     new_ids = new_tags.map { |string|
       tag_id = Tag.find_or_create_for_title(string)&.id
-      hypothesis_tags.build(tag_id: tag_id)
+      hypothesis_tags.build(tag_id: tag_id) unless hypothesis_tags.find_by_tag_id(tag_id).present?
       tag_id
     }
     hypothesis_tags.where.not(tag_id: new_ids).destroy_all
@@ -53,7 +57,9 @@ class Hypothesis < ApplicationRecord
     new_citations = (val.is_a?(Array) ? val : val.to_s.split(/,|\n/)).reject(&:blank?)
     new_ids = new_citations.map { |string|
       citation_id = Citation.find_or_create_by_params({url: string})&.id
-      hypothesis_citations.build(citation_id: citation_id)
+      unless hypothesis_citations.find_by_citation_id(citation_id).present?
+        hypothesis_citations.build(citation_id: citation_id)
+      end
       citation_id
     }
     hypothesis_citations.where.not(citation_id: new_ids).destroy_all
