@@ -94,23 +94,23 @@ RSpec.describe Hypothesis, type: :model do
     end
   end
 
-  describe "points" do
+  describe "score" do
     let(:hypothesis) { FactoryBot.create(:hypothesis_approved) }
-    it "sets the points" do
+    it "sets the score" do
       hypothesis.reload
       expect(hypothesis.citations.count).to eq 0
-      expect(hypothesis.points).to eq 0
+      expect(hypothesis.score).to eq 0
     end
     context "direct_quote, peer_reviewed" do
       let(:citation) { FactoryBot.create(:citation_approved, kind: "open_access_peer_reviewed", url_is_direct_link_to_full_text: true) }
       let(:hypothesis) { FactoryBot.create(:hypothesis, citation_urls: [citation.url]) }
-      it "sets the points" do
+      it "sets the score" do
         expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
         expect(citation.kind_score).to eq 20
-        expect(hypothesis.points).to eq 0
+        expect(hypothesis.score).to eq 0
         hypothesis.update(approved_at: Time.current)
         hypothesis.reload
-        expect(hypothesis.points).to eq 20
+        expect(hypothesis.score).to eq 20
       end
     end
   end

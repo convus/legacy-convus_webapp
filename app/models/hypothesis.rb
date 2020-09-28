@@ -93,6 +93,12 @@ class Hypothesis < ApplicationRecord
   end
 
   def set_calculated_attributes
-    self.score = badges.values.sum
+    self.score = calculated_score
+  end
+
+  private
+
+  def calculated_score
+    badges.values.sum
   end
 end
