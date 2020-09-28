@@ -74,7 +74,7 @@ class Hypothesis < ApplicationRecord
   end
 
   def badges
-    HypothesisScorer.citation_badges(self)
+    HypothesisScorer.hypothesis_badges(self)
   end
 
   # Required for FlatFileSerializable
@@ -93,6 +93,6 @@ class Hypothesis < ApplicationRecord
   end
 
   def set_calculated_attributes
-    self.points = badges.values.sum
+    self.score = badges.values.sum
   end
 end

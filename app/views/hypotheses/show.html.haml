@@ -26,10 +26,10 @@
         -#     %td slug
         -#     %td= @hypothesis.to_param
         %tr
-          %td Points
+          %td Score
           %td
             %strong
-              = @hypothesis.points
+              = @hypothesis.score
         - if @hypothesis.approved?
           %tr
             %td GitHub

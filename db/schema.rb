@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_28_213258) do
+ActiveRecord::Schema.define(version: 2020_09_28_220627) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -47,7 +47,7 @@ ActiveRecord::Schema.define(version: 2020_09_28_213258) do
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "approved_at"
     t.integer "pull_request_number"
-    t.integer "points"
+    t.integer "score"
     t.index ["creator_id"], name: "index_hypotheses_on_creator_id"
   end
 

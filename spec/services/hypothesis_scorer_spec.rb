@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe HypothesisScorer do
-  let(:subject) { described_class }
+  let(:subject) { HypothesisScorer }
 
   describe "hypothesis" do
     it "returns" do
@@ -23,7 +23,7 @@ RSpec.describe HypothesisScorer do
           publication: publication)
       end
       let!(:hypothesis) { FactoryBot.create(:hypothesis, citations: [citation], has_direct_quotation: true) }
-      let(:target_badges) { {direct_quotation:1, randomized_controlled_trial: 2, open_access_research: 10, peer_reviewed_medium_impact_factor: 6} }
+      let(:target_badges) { {direct_quotation: 1, randomized_controlled_trial: 2, open_access_research: 10, peer_reviewed_medium_impact_factor: 6} }
       it "returns with citation and publication" do
         expect(hypothesis.publications.pluck(:id)).to eq([publication.id])
         expect(hypothesis.citation_for_score&.id).to eq citation.id

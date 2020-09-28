@@ -1,7 +1,7 @@
 class HypothesisScorer
   BADGES = {
     hypothesis: {
-      direct_quotation: 1,
+      direct_quotation: 1
     },
 
     citation: {
