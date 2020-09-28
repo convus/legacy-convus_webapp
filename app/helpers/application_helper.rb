@@ -32,9 +32,11 @@ module ApplicationHelper
   end
 
   def sortable_search_params
-    search_param_keys = params.keys.select { |k| k.to_s.start_with?(/search_/) }
+    search_param_keys = params.keys.select { |k| k.to_s.start_with?(/search_/i) }
+    # NOTE: with permitted params, to permit searching an array, you have to pass it in specifically
+    # ... for now, it needs to be in the search_array parameter - TODO: improve this
     params.permit(:direction, :sort, :period, :start_time, :end_time, :render_chart,
-      :query, *search_param_keys)
+      :query, *search_param_keys, search_array: [])
   end
 
   def sortable_search_params?

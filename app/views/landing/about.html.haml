@@ -1,25 +1,37 @@
-%h1
-  Convus
+.max-width-text-container
+  %h1
+    Convus
 
-%p.mt-4
-  A platform to seek the truth.
+  %p.mt-4
+    A platform to improve our collective understanding.
 
-%p.mt-4
-  Propose hypotheses > Hypothesis is approved > Hypothesis improved and/or refuted by others
+  %p.mt-4 General process:
 
-%p.mt-4
-  Objectives, in no particular order:
-%ul
-  %li
-    Only reward evidence
-    -# See what's there, not what you wish was there - or something. There's a quote for this, maybe?
-  %li
-    Provide a way to learn about other people's views
-  %li
-    Offer a way to check whether your opinions hold up to inspection
-  %li
-    Iterate. Not perfection, just a little better than before
+  %ol
+    %li
+      Propose a hypothesis (hypothesis is given points based on its citation)
+    %li
+      Moderators approve the hypothesis (in the GitHub pull request, created why the hypothesis is submitted). Hypotheses can also be rejected, or requested additional information.
+    %li
+      Disagree with a hypothesis? Propose a hypothesis, with a strong citation, and refute the hypothesis
 
-%p.mt-big
-  %em
-    Convus is open source. Check out #{link_to "the web app repository", "https://github.com/convus/convus_webapp"} and #{link_to "the content repository", "https://github.com/convus/convus_content"}.
+  %p.mt-4
+    Propose hypotheses → hypothesis is approved → hypothesis improved and/or refuted by others
+
+  %p.mt-4
+    Some broad objectives:
+  %ul
+    %li
+      Make it easy to share and access scientific knowledge
+    %li
+      Prioritize evidence; encourage discussion with falsifiable claims and
+    %li
+      Provide a platform to learn about other viewpoints and question your own opinions
+    %li
+      Iteratively improve&mdash;better than before is better perfection
+
+  %p
+    %em
+      Convus is open source. Check out #{link_to "the web app repository", "https://github.com/convus/convus_webapp"} and #{link_to "the content repository", "https://github.com/convus/convus_content"}.
+  %p
+    Convus uses GitHub for sign in, but will not publish your GitHub username - or tie your submissions to your GitHub username - without your consent. We authenticate with GitHub so that we can award you points based any updates you make to the

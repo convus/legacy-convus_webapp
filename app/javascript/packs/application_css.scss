@@ -2,6 +2,11 @@
 
 @import "../stylesheets/fonts";
 
+$max-width-text: 900px;
+.max-width-text-container {
+  max-width: $max-width-text;
+}
+
 // Utilities
 @import "../stylesheets/utils/bootstrap_extensions";
 @import "../stylesheets/utils/selectize";
