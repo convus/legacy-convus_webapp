@@ -15,9 +15,6 @@
         = select_tag :search_array, options_for_select(tag_titles, @search_tags&.pluck(:title)), class: "form-control ", prompt: "Matching tags", multiple: true
       = submit_tag "Search", class: "btn btn-outline-primary hypotheses-search-btn"
 
-
-
-
 .paginate-wrapper
   = paginate @hypotheses
 .mt-4
