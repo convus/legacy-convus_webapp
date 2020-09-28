@@ -73,6 +73,10 @@ class Hypothesis < ApplicationRecord
     citations
   end
 
+  def badges
+    HypothesisScorer.citation_badges(self)
+  end
+
   # Required for FlatFileSerializable
   def file_pathnames
     ["hypotheses", "#{slug}.yml"]
@@ -89,17 +93,6 @@ class Hypothesis < ApplicationRecord
   end
 
   def set_calculated_attributes
-    self.points = calculated_points
-  end
-
-  private
-
-  # TODO: Make this actually take more into account
-  def calculated_points
-    total_points = 0
-    return total_points unless approved_at.present? && citations.approved.any?
-    total_points += 1 if direct_quotation?
-    total_points += citations.approved.map(&:kind_score).max
-    total_points
+    self.points = badges.values.sum
   end
 end
