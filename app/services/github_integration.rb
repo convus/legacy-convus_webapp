@@ -48,15 +48,16 @@ class GithubIntegration
   def create_hypothesis_pull_request(hypothesis)
     branch_name = "proposed-hypothesis-#{hypothesis.id}"
     @current_branch = create_branch(branch_name)
-    message = "Hypothesis: #{hypothesis.title}"
-    create_file_on_current_branch(hypothesis.file_path, hypothesis.flat_file_content, message)
+    commit_message = "Hypothesis: #{hypothesis.title}"
+    create_file_on_current_branch(hypothesis.file_path, hypothesis.flat_file_content, commit_message)
     # If there is a citation that hasn't been added to github yet, add it to this PR
     citation = hypothesis.citations.unapproved.first
     add_citation = citation.present? && citation.pull_request_number.blank?
     if add_citation
       create_file_on_current_branch(citation.file_path, citation.flat_file_content, "Citation: #{citation.title}")
     end
-    pull_request = client.create_pull_request(CONTENT_REPO, "main", current_branch_name, message)
+    pr_body = "View [Hypothesis on Convus](https://convus.org/hypotheses/#{hypothesis.id})"
+    pull_request = client.create_pull_request(CONTENT_REPO, "main", current_branch_name, commit_message, pr_body)
     number = pull_request.url.split("/pulls/").last
     hypothesis.update(pull_request_number: number)
     citation.update(pull_request_number: number) if add_citation
