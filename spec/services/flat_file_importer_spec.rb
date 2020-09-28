@@ -104,7 +104,7 @@ unless ENV["CIRCLECI"]
         citation_urls: ["https://www.kqed.org/science/1969271/making-sense-of-purple-air-vs-airnow-and-a-new-map-to-rule-them-all"]
       }
     end
-    let!(:tag) { Tag.create(title: "Environment") }
+    let!(:tag) { Tag.find_or_create_for_title("Environment") }
     it "imports the hypothesis we expect" do
       expect(Hypothesis.count).to eq 0
       expect(Citation.count).to eq 0
@@ -122,6 +122,34 @@ unless ENV["CIRCLECI"]
 
       expect(hypothesis.citations.count).to eq 1
       expect(hypothesis.flat_file_serialized.except(:tag_titles)).to eq(hypothesis_attrs.except(:tag_titles))
+    end
+    context "hypothesis already exists" do
+      let(:old_attrs) { hypothesis_attrs.merge(title: "Purple air sensors are less accurate than EPA sensors", direct_quotation: true, tag_titles: ["Environment"]) }
+      let(:hypothesis) { FlatFileImporter.import_hypothesis(old_attrs) }
+      it "imports as expected" do
+        og_slug = hypothesis.slug
+        expect(hypothesis.title).to_not eq hypothesis_attrs[:title]
+        expect(hypothesis.tag_titles).to eq(["Environment"])
+        expect(hypothesis.tags.pluck(:id)).to eq([tag.id])
+        expect(Tag.count).to eq 1
+        expect(tag.approved?).to be_falsey
+
+        FlatFileImporter.import_hypothesis(hypothesis_attrs)
+        hypothesis.reload
+        expect(hypothesis.title).to eq hypothesis_attrs[:title]
+        expect(hypothesis.id).to eq hypothesis_attrs[:id]
+        expect(hypothesis.slug).to_not eq og_slug
+
+        expect(hypothesis.direct_quotation?).to be_falsey
+        expect(hypothesis.tags.approved.count).to eq 2
+        expect(hypothesis.tags.pluck(:title)).to match_array(["Environment", "Air quality"])
+        tag.reload
+        expect(tag.approved_at).to be_within(5).of Time.current
+        expect(Tag.count).to eq 2
+
+        expect(hypothesis.citations.count).to eq 1
+        expect(hypothesis.flat_file_serialized.except(:tag_titles)).to eq(hypothesis_attrs.except(:tag_titles))
+      end
     end
   end
 end

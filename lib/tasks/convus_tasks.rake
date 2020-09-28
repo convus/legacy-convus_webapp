@@ -8,8 +8,9 @@ task reconcile_flat_file_database: :environment do
   output = ""
   output += `git config user.email admin-bot@convus.org`
   output += `git config user.name convus-admin-bot`
-  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git reset --hard origin/main`
-  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git pull origin main`
+  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git reset --hard origin/main 2>&1`
+  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git fetch origin 2>&1`
+  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git merge origin 2>&1`
   FlatFileImporter.import_all_files # Import the files from the git branch
   # Remove the existing hypotheses and citations, and then re-write them
   # Important because of title/slug renaming
@@ -18,8 +19,8 @@ task reconcile_flat_file_database: :environment do
   FlatFileSerializer.write_all_files
   output += `git add -A`
   commit_message = "Reconciliation: #{Time.now.utc.to_date.iso8601}"
-  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git commit -m"#{commit_message}"`
-  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git push origin main`
+  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git commit -m"#{commit_message}" 2>&1`
+  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git push origin main 2>&1`
 
   puts "(Output start) " + output + " (output end)"
 

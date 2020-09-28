@@ -4,8 +4,4 @@ class HypothesisSerializer < ApplicationSerializer
   def direct_quotation
     object.has_direct_quotation
   end
-
-  def tag_titles
-    object.tags.alphabetical.pluck(:title)
-  end
 end

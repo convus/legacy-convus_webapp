@@ -54,6 +54,19 @@ RSpec.describe Hypothesis, type: :model do
         expect(Hypothesis.with_tag_ids(tag_ids).pluck(:id)).to eq([hypothesis.id])
       end
     end
+    context "Assigning a new tag" do
+      let(:hypothesis) { Hypothesis.create(title: "Some new thing", tags_string: "Something") }
+      let(:tag) { hypothesis.tags.first }
+      let(:target_tag_titles) { ["Something", "Another thing"] }
+      it "adds the new tag" do
+        expect(hypothesis.tags.pluck(:id)).to eq([tag.id])
+        hypothesis.update(tags_string: target_tag_titles)
+        expect(hypothesis.hypothesis_tags.count).to eq 2
+        hypothesis.reload
+        expect(hypothesis.tags.count).to eq 2
+        expect(hypothesis.tag_titles).to match_array(target_tag_titles)
+      end
+    end
   end
 
   describe "citation_urls" do
