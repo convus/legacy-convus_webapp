@@ -28,7 +28,7 @@ RSpec.describe HypothesisScorer do
         expect(hypothesis.publications.pluck(:id)).to eq([publication.id])
         expect(hypothesis.citation_for_score&.id).to eq citation.id
         expect(subject.hypothesis_badges(hypothesis)).to eq target_badges
-        expect(hypothesis.send(:calculated_score)).to eq 19
+        expect(hypothesis.calculated_score).to eq 19
         hypothesis.update(approved_at: Time.current)
         expect(hypothesis.score).to eq 19
       end

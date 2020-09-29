@@ -78,6 +78,7 @@ unless ENV["CIRCLECI"]
         Tag.destroy_all
         Publication.destroy_all
 
+        Sidekiq::Worker.clear_all
         subject.import_all_files
         expect_hypothesis_matches_og_content(hypothesis_content_og, hypothesis_serialized_og)
         expect_citation_matches_og_content(citation_content_og, citation_serialized_og)
@@ -90,6 +91,7 @@ unless ENV["CIRCLECI"]
         expect_citation_matches_og_content(citation_content_og, citation_serialized_og)
         expect(Tag.pluck(*Tag.serialized_attrs)).to eq tag_serialized_og
         expect(Publication.pluck(*Publication.serialized_attrs)).to eq publication_serialized_og
+        expect(UpdateHypothesisScoreJob.jobs.count).to eq 1
       end
     end
   end

@@ -89,14 +89,13 @@ class Hypothesis < ApplicationRecord
 
   def add_to_github_content
     return true if approved? || pull_request_number.present?
+    return true if GithubIntegration::SKIP_GITHUB_UPDATE
     AddHypothesisToGithubContentJob.perform_async(id)
   end
 
   def set_calculated_attributes
     self.score = calculated_score
   end
-
-  private
 
   def calculated_score
     badges.values.sum
