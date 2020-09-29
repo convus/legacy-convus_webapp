@@ -176,6 +176,47 @@ RSpec.describe Citation, type: :model do
     end
   end
 
+  describe "add_to_github_content" do
+    let(:citation) { FactoryBot.build(:citation) }
+    it "enqueues job" do
+      expect {
+        citation.save
+      }.to change(AddCitationToGithubContentJob.jobs, :count).by 1
+    end
+    context "with skip_add_citation_to_github" do
+      let(:citation) { FactoryBot.build(:citation, skip_add_citation_to_github: true) }
+      it "does not enqueue job" do
+        expect {
+          citation.save
+        }.to change(AddCitationToGithubContentJob.jobs, :count).by 0
+      end
+    end
+    context "via hypothesis creation" do
+      let(:hypothesis) { FactoryBot.build(:hypothesis, citation_urls: "https://something.com") }
+      it "enqueues job" do
+        # This might not be how it should work, but it is how it works right now, so document it.
+        # ... via HypothesesController, it does not enqueue the citation job
+        Sidekiq::Worker.clear_all
+        expect(Hypothesis.count).to eq 0
+        expect(Citation.count).to eq 0
+        expect {
+          hypothesis.save
+        }.to change(AddCitationToGithubContentJob.jobs, :count).by 1
+        expect(AddHypothesisToGithubContentJob.jobs.count).to eq 1
+        expect(Hypothesis.count).to eq 1
+        expect(Citation.count).to eq 1
+      end
+    end
+    context "with skip_github_update" do
+      it "does not enqueue job" do
+        stub_const("GithubIntegration::SKIP_GITHUB_UPDATE", true)
+        expect {
+          citation.save
+        }.to change(AddCitationToGithubContentJob.jobs, :count).by 0
+      end
+    end
+  end
+
   describe "publication_title" do
     # TODO: make this use both the url and the title, if possible
     let(:citation) { Citation.new }

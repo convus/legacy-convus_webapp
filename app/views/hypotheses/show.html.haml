@@ -1,10 +1,18 @@
 %h1
   Viewing Hypothesis
 
+- if @hypothesis.approved?
+  - badges = @hypothesis.badges
+- else
+  - badges = @hypothesis.unapproved_badges
+  %p.mt-4
+    %span.text-warning This Hypothesis hasn't been approved
+    \- the score is if the hypothesis and citation are approved as they were originally submitted
 .row.mt-4
   .col-md-6
-
-    - if @hypothesis.unapproved?
+    -# Skip rendering waiting for approval if hypothesis is over a minute old (something broke?) or SKIP_GITHUB_UPDATE
+    - render_waiting_for_approval = @hypothesis.unapproved? && !GithubIntegration::SKIP_GITHUB_UPDATE && @hypothesis.created_at > Time.current - 1.minute
+    - if render_waiting_for_approval
       .alert.alert-info
         - if @hypothesis.pull_request_number.present?
           %h4
@@ -14,38 +22,48 @@
           Waiting for pull request to be created, page will reload.
           -# NOTE: This will reload endlessly, which may not be what we want
           :javascript
-            window.setTimeout(() => {location.reload();}, 1000);
+            window.setTimeout(() => {location.reload();}, 2000);
 
     %table.table-list
       %tbody
         %tr
           %td Title
           %td= @hypothesis.title
-        -# - if current_user&.developer?
-        -#   %tr.only-dev-visible
-        -#     %td slug
-        -#     %td= @hypothesis.to_param
+        %tr
+          %td Created at
+          %td
+            %span.convertTime
+              = l @hypothesis.created_at, format: :convert_time
+        - if current_user&.developer?
+          %tr.only-dev-visible
+            %td ID
+            %td
+              = @hypothesis.id
+          -# %tr.only-dev-visible
+          -#   %td slug
+          -#   %td= @hypothesis.to_param
         %tr
           %td Score
           %td
-            %strong
-              = @hypothesis.score
-        - if @hypothesis.approved?
-          %tr
-            %td GitHub
-            %td
-              = link_to @hypothesis.file_path, @hypothesis.github_html_url
-              - if @hypothesis.pull_request_number.present?
-                %br
-                %em.less-strong
-                  Approved by
-                  = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
+            - if @hypothesis.approved?
+              %strong
+                = @hypothesis.score
+            - unapproved_score = @hypothesis.unapproved_score
+            - if @hypothesis.score != unapproved_score
+              = unapproved_score
+              %em.less-strong (when approved)
         %tr
-          %td ID
-          %td= @hypothesis.id
-        %tr.small
+          %td GitHub
+          %td
+            - if @hypothesis.approved?
+              = link_to @hypothesis.file_path, @hypothesis.github_html_url
+            - if @hypothesis.pull_request_number.present?
+              %em.small.less-strong.d-block.mt-2
+                Approved by
+                = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
+        %tr
           %td Direct quotation?
-          %td= @hypothesis.has_direct_quotation
+          %td= display_true_or_false(@hypothesis.has_direct_quotation)
         %tr
           %td Tags
           %td
@@ -54,18 +72,39 @@
                 - @hypothesis.tags.each do |tag|
                   %li
                     = tag.title
+
+  .col-md-6
+    %table.table.table-sm.table-striped.table-bordered
+      %thead
+        %th Qualification
+        %th Potential
+        %th Received
+      %tbody
+        - total_potential = 0
+        - HypothesisScorer::BADGES.each do |section_key, section_badges|
+          - section_badges.each do |badge_key, value|
+            - total_potential += value
+            %tr
+              %td
+                = HypothesisScorer.badge_humanized(badge_key)
+              %td
+                %span.less-strong= value
+              %td
+                - if badges.include?(badge_key)
+                  = value
+                - else
+                  0
         %tr
-          %td Created at
           %td
-            %span.convertTime
-              = l @hypothesis.created_at, format: :convert_time
-        %tr
-          %td Citations
-          %td= @citations.count
+            %strong Total
+          %td
+            %span.less-strong= total_potential
+          %td
+            %strong= badges.values.sum
 
+%h2.mt-4.mb-0
+  = "Citation".pluralize(@hypothesis.citations.count)
 
-
-
-%h2.mt-4.mb-1 Citations
-
-= render partial: "/citations/table", locals: { citations: @citations }
+.row.mt-2
+  - @citations.each do |citation|
+    = render partial: "/citations/display", locals: { citation: citation }

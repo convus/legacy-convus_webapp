@@ -1,5 +1,4 @@
-%h1
-  = @publication.title
+%h1 Publication
 
 .row
   .col-md-6
@@ -8,15 +7,21 @@
         %tr
           %td Title
           %td= @publication.title
-        %tr
-          %td ID
-          %td= @publication.id
+        - if current_user&.developer?
+          %tr.only-dev-visible
+            %td ID
+            %td= @publication.id
         %tr
           %td Retractions?
           %td= check_mark if @publication.has_published_retractions
         %tr
           %td peer-reviewed?
           %td= check_mark if @publication.has_peer_reviewed_articles
+        %tr
+          %td Impact factor
+          %td
+            - if @publication.impact_factor.present? && @publication.impact_factor > 0
+              = @publication.impact_factor
         %tr
           %td Urls
           %td

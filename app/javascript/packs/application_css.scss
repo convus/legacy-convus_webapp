@@ -42,9 +42,5 @@ $max-width-text: 900px;
 $dev-color: #9400d3;
 .only-dev-visible {
   border: 1px solid $dev-color;
-  background: rgba($dev-color, 0.1);
-}
-// This is frequently used in display-tables, make it work
-.table-list td .only-dev-visible {
-  padding: 2px 0.25rem;
+  background: rgba($dev-color, 0.1) !important;
 }

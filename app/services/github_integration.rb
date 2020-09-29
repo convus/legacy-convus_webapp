@@ -1,6 +1,7 @@
 class GithubIntegration
   CONTENT_REPO = ENV["CONTENT_REPO"].presence || "convus/convus_content"
   ACCESS_TOKEN = ENV["OCTOKIT_ACCESS_TOKEN"]
+  SKIP_GITHUB_UPDATE = ENV["SKIP_GITHUB_UPDATE"].present?
 
   def self.content_html_url(file_path)
     ["https://github.com", CONTENT_REPO, "blob/main", file_path].join("/")

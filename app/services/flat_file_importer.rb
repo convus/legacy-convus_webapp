@@ -10,6 +10,7 @@ class FlatFileImporter
       import_publications
       import_citations
       import_hypotheses
+      UpdateHypothesisScoreJob.perform_async
     end
 
     def import_tags

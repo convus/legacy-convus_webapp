@@ -94,6 +94,23 @@ RSpec.describe Hypothesis, type: :model do
     end
   end
 
+  describe "add_to_github_content" do
+    let(:hypothesis) { FactoryBot.build(:hypothesis) }
+    it "enqueues job" do
+      expect {
+        hypothesis.save
+      }.to change(AddHypothesisToGithubContentJob.jobs, :count).by 1
+    end
+    context "with skip_github_update" do
+      it "does not enqueue job" do
+        stub_const("GithubIntegration::SKIP_GITHUB_UPDATE", true)
+        expect {
+          hypothesis.save
+        }.to change(AddHypothesisToGithubContentJob.jobs, :count).by 0
+      end
+    end
+  end
+
   describe "score" do
     let(:hypothesis) { FactoryBot.create(:hypothesis_approved) }
     it "sets the score" do
@@ -107,7 +124,7 @@ RSpec.describe Hypothesis, type: :model do
       it "sets the score" do
         expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
         expect(hypothesis.score).to eq 0
-        expect(hypothesis.send(:calculated_score)).to eq 10
+        expect(hypothesis.calculated_score).to eq 10
         hypothesis.update(approved_at: Time.current)
         hypothesis.reload
         expect(hypothesis.score).to eq 10

@@ -140,7 +140,7 @@ class Citation < ApplicationRecord
     HypothesisScorer.citation_badges(self)
   end
 
-  def score
+  def calculated_score
     badges.values.sum
   end
 
@@ -166,14 +166,15 @@ class Citation < ApplicationRecord
     self.slug = Slugifyer.filename_slugify(title)
     self.path_slug = [publication&.slug, slug].compact.join("-")
     self.kind ||= calculated_kind(assignable_kind)
+    self.score = calculated_score
     if FETCH_WAYBACK_URL && url_is_direct_link_to_full_text
       self.wayback_machine_url ||= WaybackMachineIntegration.fetch_current_url(url)
     end
   end
 
   def add_to_github_content
-    return true if approved? || pull_request_number.present?
-    return true if skip_add_citation_to_github
+    return true if approved? || pull_request_number.present? ||
+      skip_add_citation_to_github || GithubIntegration::SKIP_GITHUB_UPDATE
     AddCitationToGithubContentJob.perform_async(id)
   end
 

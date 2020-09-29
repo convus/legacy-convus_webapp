@@ -53,7 +53,7 @@ class Hypothesis < ApplicationRecord
   end
 
   def citation_for_score
-    citations.approved.first # TODO: Make this grab the citation with the highest score (and add tests)
+    citations.approved.order(:score).last
   end
 
   def citation_urls
@@ -74,7 +74,11 @@ class Hypothesis < ApplicationRecord
   end
 
   def badges
-    HypothesisScorer.hypothesis_badges(self)
+    HypothesisScorer.hypothesis_badges(self, citation_for_score)
+  end
+
+  def unapproved_badges
+    HypothesisScorer.hypothesis_badges(self, citations.order(:score).last)
   end
 
   # Required for FlatFileSerializable
@@ -88,7 +92,8 @@ class Hypothesis < ApplicationRecord
   end
 
   def add_to_github_content
-    return true if approved? || pull_request_number.present?
+    return true if approved? || pull_request_number.present? ||
+      GithubIntegration::SKIP_GITHUB_UPDATE
     AddHypothesisToGithubContentJob.perform_async(id)
   end
 
@@ -96,9 +101,11 @@ class Hypothesis < ApplicationRecord
     self.score = calculated_score
   end
 
-  private
-
   def calculated_score
     badges.values.sum
+  end
+
+  def unapproved_score
+    unapproved_badges.values.sum
   end
 end

@@ -17,9 +17,9 @@ class HypothesisScorer
     }
   }
 
-  def self.hypothesis_badges(hypothesis)
+  def self.hypothesis_badges(hypothesis, citation = nil)
     badges = hypothesis.direct_quotation? ? BADGES[:hypothesis].slice(:direct_quotation) : {}
-    citation = hypothesis.citation_for_score
+    citation ||= hypothesis.citation_for_score
     badges.merge(citation_badges(citation))
       .merge(publication_badges(citation&.publication))
   end
@@ -53,5 +53,10 @@ class HypothesisScorer
       return {} unless publication.has_published_retractions
       pub_badges.slice(:non_peer_reviewed_with_retractions)
     end
+  end
+
+  # May do more later
+  def self.badge_humanized(badge)
+    badge.to_s.tr("_", " ")
   end
 end

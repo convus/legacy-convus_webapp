@@ -78,10 +78,12 @@ unless ENV["CIRCLECI"]
         Tag.destroy_all
         Publication.destroy_all
 
+        Sidekiq::Worker.clear_all
         subject.import_all_files
         expect_hypothesis_matches_og_content(hypothesis_content_og, hypothesis_serialized_og)
         expect_citation_matches_og_content(citation_content_og, citation_serialized_og)
         expect(Tag.pluck(:title, :id, :taxonomy)).to eq tag_serialized_og
+        expect(UpdateHypothesisScoreJob.jobs.count).to eq 1
 
         # And do it a few more times, to ensure it doesn't duplicate things
         subject.import_all_files

@@ -4,9 +4,10 @@ RSpec.describe Publication, type: :model do
   it_behaves_like "TitleSluggable"
 
   describe "factory" do
-    let(:publication) { FactoryBot.create(:publication) }
+    let(:publication) { FactoryBot.create(:publication, impact_factor: -1.2) }
     it "is valid" do
       expect(publication.id).to be_present
+      expect(publication.impact_factor).to eq(nil)
     end
   end
 
