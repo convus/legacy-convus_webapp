@@ -173,8 +173,8 @@ class Citation < ApplicationRecord
   end
 
   def add_to_github_content
-    return true if approved? || pull_request_number.present?
-    return true if skip_add_citation_to_github || GithubIntegration::SKIP_GITHUB_UPDATE
+    return true if approved? || pull_request_number.present? ||
+      skip_add_citation_to_github || GithubIntegration::SKIP_GITHUB_UPDATE
     AddCitationToGithubContentJob.perform_async(id)
   end
 

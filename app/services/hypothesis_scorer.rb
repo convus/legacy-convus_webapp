@@ -57,6 +57,6 @@ class HypothesisScorer
 
   # May do more later
   def self.badge_humanized(badge)
-    badge.to_s.gsub("_", " ")
+    badge.to_s.tr("_", " ")
   end
 end

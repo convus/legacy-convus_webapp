@@ -92,8 +92,8 @@ class Hypothesis < ApplicationRecord
   end
 
   def add_to_github_content
-    return true if approved? || pull_request_number.present?
-    return true if GithubIntegration::SKIP_GITHUB_UPDATE
+    return true if approved? || pull_request_number.present? ||
+      GithubIntegration::SKIP_GITHUB_UPDATE
     AddHypothesisToGithubContentJob.perform_async(id)
   end
 
