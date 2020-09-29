@@ -56,7 +56,7 @@ class GithubIntegration
     if add_citation
       create_file_on_current_branch(citation.file_path, citation.flat_file_content, "Citation: #{citation.title}")
     end
-    pr_body = "View [Hypothesis on Convus](https://convus.org/hypotheses/#{hypothesis.id})"
+    pr_body = "View [hypothesis on Convus](https://convus.org/hypotheses/#{hypothesis.id})"
     pull_request = client.create_pull_request(CONTENT_REPO, "main", current_branch_name, commit_message, pr_body)
     number = pull_request.url.split("/pulls/").last
     hypothesis.update(pull_request_number: number)
