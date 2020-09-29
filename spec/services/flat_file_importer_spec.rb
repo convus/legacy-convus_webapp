@@ -83,6 +83,7 @@ unless ENV["CIRCLECI"]
         expect_hypothesis_matches_og_content(hypothesis_content_og, hypothesis_serialized_og)
         expect_citation_matches_og_content(citation_content_og, citation_serialized_og)
         expect(Tag.pluck(:title, :id, :taxonomy)).to eq tag_serialized_og
+        expect(UpdateHypothesisScoreJob.jobs.count).to eq 1
 
         # And do it a few more times, to ensure it doesn't duplicate things
         subject.import_all_files
@@ -91,7 +92,6 @@ unless ENV["CIRCLECI"]
         expect_citation_matches_og_content(citation_content_og, citation_serialized_og)
         expect(Tag.pluck(*Tag.serialized_attrs)).to eq tag_serialized_og
         expect(Publication.pluck(*Publication.serialized_attrs)).to eq publication_serialized_og
-        expect(UpdateHypothesisScoreJob.jobs.count).to eq 1
       end
     end
   end

@@ -17,9 +17,9 @@ class HypothesisScorer
     }
   }
 
-  def self.hypothesis_badges(hypothesis)
+  def self.hypothesis_badges(hypothesis, citation = nil)
     badges = hypothesis.direct_quotation? ? BADGES[:hypothesis].slice(:direct_quotation) : {}
-    citation = hypothesis.citation_for_score
+    citation ||= hypothesis.citation_for_score
     badges.merge(citation_badges(citation))
       .merge(publication_badges(citation&.publication))
   end
