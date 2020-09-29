@@ -63,6 +63,6 @@ class HypothesesController < ApplicationController
 
   def permitted_citation_attrs
     %w[title authors_str assignable_kind url url_is_direct_link_to_full_text published_date_str
-      url_is_not_publisher publication_title]
+      url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial]
   end
 end

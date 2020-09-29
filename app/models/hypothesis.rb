@@ -7,6 +7,7 @@ class Hypothesis < ApplicationRecord
 
   has_many :hypothesis_citations, dependent: :destroy
   has_many :citations, through: :hypothesis_citations
+  has_many :publications, through: :citations
   has_many :hypothesis_tags
   has_many :tags, through: :hypothesis_tags
 
@@ -51,6 +52,10 @@ class Hypothesis < ApplicationRecord
     tags
   end
 
+  def citation_for_score
+    citations.approved.first # TODO: Make this grab the citation with the highest score (and add tests)
+  end
+
   def citation_urls
     citations.pluck(:url)
   end
@@ -66,6 +71,10 @@ class Hypothesis < ApplicationRecord
     }
     hypothesis_citations.where.not(citation_id: new_ids).destroy_all
     citations
+  end
+
+  def badges
+    HypothesisScorer.hypothesis_badges(self)
   end
 
   # Required for FlatFileSerializable
@@ -84,17 +93,12 @@ class Hypothesis < ApplicationRecord
   end
 
   def set_calculated_attributes
-    self.points = calculated_points
+    self.score = calculated_score
   end
 
   private
 
-  # TODO: Make this actually take more into account
-  def calculated_points
-    total_points = 0
-    return total_points unless approved_at.present? && citations.approved.any?
-    total_points += 1 if direct_quotation?
-    total_points += citations.approved.map(&:kind_score).max
-    total_points
+  def calculated_score
+    badges.values.sum
   end
 end

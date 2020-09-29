@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_28_203013) do
+ActiveRecord::Schema.define(version: 2020_09_28_220627) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,6 +32,8 @@ ActiveRecord::Schema.define(version: 2020_09_28_203013) do
     t.datetime "approved_at"
     t.integer "pull_request_number"
     t.boolean "url_is_not_publisher", default: false
+    t.boolean "randomized_controlled_trial", default: false
+    t.boolean "peer_reviewed", default: false
     t.index ["creator_id"], name: "index_citations_on_creator_id"
     t.index ["publication_id"], name: "index_citations_on_publication_id"
   end
@@ -45,7 +47,7 @@ ActiveRecord::Schema.define(version: 2020_09_28_203013) do
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "approved_at"
     t.integer "pull_request_number"
-    t.integer "points"
+    t.integer "score"
     t.index ["creator_id"], name: "index_hypotheses_on_creator_id"
   end
 
