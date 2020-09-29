@@ -170,6 +170,59 @@ RSpec.describe "/hypotheses", type: :request do
             expect(citation.creator).to eq current_user
           end
         end
+        context "peer_reviewed and randomized_controlled_trial, not assignable_kind" do
+          let(:valid_citation_params) do
+            {
+              title: "Testing hypothesis creation is very important",
+              peer_reviewed: true,
+              randomized_controlled_trial: true,
+              url_is_direct_link_to_full_text: "0",
+              authors_str: "\nZack\n George\n",
+              published_date_str: "1990-12-2",
+              url_is_not_publisher: false,
+              url: "https://example.com/something-of-interest"
+            }
+          end
+          it "creates" do
+            expect(Hypothesis.count).to eq 0
+            expect(Citation.count).to eq 0
+            Sidekiq::Worker.clear_all
+            expect {
+              post base_url, params: {hypothesis: hypothesis_with_citation_params}
+            }.to change(Hypothesis, :count).by 1
+            expect(AddHypothesisToGithubContentJob.jobs.count).to eq 1
+            expect(response).to redirect_to hypothesis_path(Hypothesis.last.to_param)
+            expect(flash[:success]).to be_present
+
+            hypothesis = Hypothesis.last
+            expect(hypothesis.title).to eq hypothesis_with_citation_params[:title]
+            expect(hypothesis.creator).to eq current_user
+            expect(hypothesis.citations.count).to eq 1
+            expect(hypothesis.has_direct_quotation).to be_truthy
+            expect(hypothesis.direct_quotation?).to be_truthy
+            expect(hypothesis.tags_string).to eq "Economy, parties"
+            expect(hypothesis.pull_request_number).to be_blank
+            expect(hypothesis.approved?).to be_falsey
+            expect(tag.approved?).to be_truthy
+            expect(Tag.friendly_find("parties").approved?).to be_falsey
+
+            expect(Citation.count).to eq 1
+            citation = Citation.last
+            expect(citation.title).to eq valid_citation_params[:title]
+            expect(citation.url).to eq valid_citation_params[:url]
+            expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
+            expect(citation.approved?).to be_falsey
+
+            expect(citation.publication).to be_present
+            expect(citation.publication_title).to eq "example.com"
+            expect(citation.authors).to eq(["Zack", "George"])
+            expect(citation.published_date_str).to eq "1990-12-02"
+            expect(citation.url_is_direct_link_to_full_text).to be_falsey
+            expect(citation.peer_reviewed).to be_truthy
+            expect(citation.randomized_controlled_trial).to be_truthy
+            expect(citation.creator).to eq current_user
+          end
+        end
 
         context "citation already exists" do
           let!(:citation) { Citation.create(url: valid_citation_params[:url], creator: FactoryBot.create(:user), pull_request_number: 12) }
