@@ -46,12 +46,15 @@
           %td Score
           %td
             - if @hypothesis.approved?
-              %strong
+              %strong.score-bubble{ class: hypothesis_score_class(@hypothesis.score) }
                 = @hypothesis.score
             - unapproved_score = @hypothesis.unapproved_score
             - if @hypothesis.score < unapproved_score
-              = unapproved_score
-              %em.less-strong (when approved)
+              %em.less-strong
+                when approved:
+              %span.score-bubble.small.less-strong{ class: hypothesis_score_class(unapproved_score) }
+                = unapproved_score
+
         %tr
           %td GitHub
           %td
@@ -90,9 +93,9 @@
                 %span.less-strong= value
               %td
                 - if badges.include?(badge_key)
-                  = value
+                  %strong= value
                 - else
-                  0
+                  %span.less-strong 0
         %tr
           %td
             %strong Total

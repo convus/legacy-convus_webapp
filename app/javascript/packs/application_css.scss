@@ -39,6 +39,14 @@ $max-width-text: 900px;
   color: $gray-600;
 }
 
+.score-bubble {
+  display: inline-block;
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.5em;
+  line-height: 1;
+  background: $gray-200;
+}
+
 $dev-color: #9400d3;
 .only-dev-visible {
   border: 1px solid $dev-color;
