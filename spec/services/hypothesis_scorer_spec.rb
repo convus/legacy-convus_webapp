@@ -43,7 +43,7 @@ RSpec.describe HypothesisScorer do
       let(:citation) { Citation.new(randomized_controlled_trial: true) }
       it "returns 5" do
         expect(subject.citation_badges(citation)).to eq({randomized_controlled_trial: 2})
-        expect(citation.score).to eq 2
+        expect(citation.calculated_score).to eq 2
       end
     end
     context "citation is peer_reviewed" do

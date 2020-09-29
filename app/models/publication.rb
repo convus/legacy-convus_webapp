@@ -81,6 +81,7 @@ class Publication < ApplicationRecord
       self.home_url = "http://#{home_url}" unless home_url.start_with?(/http/i) # We need a protocol for home_url
       add_base_domain(home_url)
     end
+    self.impact_factor = nil if impact_factor.to_i <= 0
     @update_citations_for_meta_publication = meta_publication_changed?(from: false, to: true)
   end
 

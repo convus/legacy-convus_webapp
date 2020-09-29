@@ -53,7 +53,7 @@ class Hypothesis < ApplicationRecord
   end
 
   def citation_for_score
-    citations.approved.first # TODO: Make this grab the citation with the highest score (and add tests)
+    citations.approved.order(:score).last
   end
 
   def citation_urls
@@ -74,7 +74,11 @@ class Hypothesis < ApplicationRecord
   end
 
   def badges
-    HypothesisScorer.hypothesis_badges(self)
+    HypothesisScorer.hypothesis_badges(self, citation_for_score)
+  end
+
+  def unapproved_badges
+    HypothesisScorer.hypothesis_badges(self, citations.order(:score).last)
   end
 
   # Required for FlatFileSerializable
@@ -99,5 +103,9 @@ class Hypothesis < ApplicationRecord
 
   def calculated_score
     badges.values.sum
+  end
+
+  def unapproved_score
+    unapproved_badges.values.sum
   end
 end

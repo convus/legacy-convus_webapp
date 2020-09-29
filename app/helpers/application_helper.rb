@@ -43,6 +43,10 @@ module ApplicationHelper
     sortable_search_params.values.reject(&:blank?).any?
   end
 
+  def display_true_or_false(t_or_f)
+    (t_or_f || false).to_s.titleize
+  end
+
   private
 
   def default_action_name_title

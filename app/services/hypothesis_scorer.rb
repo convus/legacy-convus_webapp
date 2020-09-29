@@ -54,4 +54,9 @@ class HypothesisScorer
       pub_badges.slice(:non_peer_reviewed_with_retractions)
     end
   end
+
+  # May do more later
+  def self.badge_humanized(badge)
+    badge.to_s.gsub("_", " ")
+  end
 end
