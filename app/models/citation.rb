@@ -3,6 +3,7 @@ class Citation < ApplicationRecord
   include FlatFileSerializable
   include ApprovedAtable
 
+  # NOTE: Kind is deprecated, and can be removed sometime soon
   KIND_ENUM = {
     article: 0,
     closed_access_peer_reviewed: 1,
