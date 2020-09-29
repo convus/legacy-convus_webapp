@@ -3,6 +3,12 @@ require "rails_helper"
 RSpec.describe HypothesisScorer do
   let(:subject) { HypothesisScorer }
 
+  describe "total_potential_value" do
+    it "is the sum of everything, but only highest value publication" do
+      expect(HypothesisScorer.total_potential_score).to eq 26
+    end
+  end
+
   describe "hypothesis" do
     it "returns" do
       expect(subject.hypothesis_badges(Hypothesis.new)).to eq({})
