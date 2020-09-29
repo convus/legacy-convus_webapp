@@ -17,21 +17,20 @@
         %tr
           %td
             = hypothesis.title
+            .score-bubble.small{ class: hypothesis_score_class(hypothesis.score) }
+              = hypothesis.score
             = link_to internal_link, hypothesis_path(hypothesis.to_param), class: "internal-link"
             - hypothesis.tags.each do |tag|
               = link_to tag.title, hypotheses_path(sortable_search_params.merge(search_tags: (search_tags + [tag.title]))), class: "tag-bubble small"
-            .score-bubble.small.ml-2{ class: hypothesis_score_class(hypothesis.score) }
-              = hypothesis.score
 
           %td.d-none.d-md-table-cell
-            %span.convertTime
+            %small.convertTime
               = l hypothesis.created_at, format: :convert_time
           %td.d-none.d-md-table-cell
             - citation = hypothesis.citations.each do |citation|
               - next if citation.id == skip_citation_id
-              .d-block
-                - if citation.title_url? # If it's a URL, truncate so it isn't too ugly
-                  = citation.title.truncate(50)
-                - else
-                  = citation.title
-                = link_to internal_link, citation_path(citation.to_param), class: "internal-link"
+              .d-block.small
+                - if citation.publication.present? && !citation.publication.title_url?
+                  #{citation.publication.title}:
+                %em
+                  = citation.title.truncate(75)

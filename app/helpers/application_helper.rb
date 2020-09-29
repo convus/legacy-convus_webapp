@@ -44,7 +44,11 @@ module ApplicationHelper
   end
 
   def display_true_or_false(t_or_f)
-    (t_or_f || false).to_s.titleize
+    if !t_or_f
+      content_tag(:span, "False", class: "less-strong")
+    else
+      content_tag(:span, "True")
+    end
   end
 
   def hypothesis_score_class(score)

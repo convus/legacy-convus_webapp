@@ -51,7 +51,7 @@
             - unapproved_score = @hypothesis.unapproved_score
             - if @hypothesis.score < unapproved_score
               %em.less-strong
-                \- when approved:
+                when approved:
               %span.score-bubble.small.less-strong{ class: hypothesis_score_class(unapproved_score) }
                 = unapproved_score
 

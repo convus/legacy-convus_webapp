@@ -13,10 +13,10 @@
             %td= @publication.id
         %tr
           %td Retractions?
-          %td= check_mark if @publication.has_published_retractions
+          %td= display_true_or_false(@publication.has_published_retractions)
         %tr
           %td peer-reviewed?
-          %td= check_mark if @publication.has_peer_reviewed_articles
+          %td= display_true_or_false(@publication.has_peer_reviewed_articles)
         %tr
           %td Impact factor
           %td
