@@ -47,6 +47,18 @@ module ApplicationHelper
     (t_or_f || false).to_s.titleize
   end
 
+  def hypothesis_score_class(score)
+    if score > 17
+      "score-very-high"
+    elsif score > 11
+      "score-high"
+    elsif score > 5
+      "score-medium"
+    else
+      "score-low"
+    end
+  end
+
   private
 
   def default_action_name_title
