@@ -1,10 +1,13 @@
 class HypothesisScorer
   BADGES = {
     hypothesis: {
-      direct_quotation: 1
+      direct_quotation: 1,
+      has_at_least_two_tags: 1
     },
 
     citation: {
+      has_author: 1,
+      has_publication_date: 1,
       open_access_research: 10,
       randomized_controlled_trial: 2
     },
@@ -18,7 +21,11 @@ class HypothesisScorer
   }
 
   def self.hypothesis_badges(hypothesis, citation = nil)
-    badges = hypothesis.direct_quotation? ? BADGES[:hypothesis].slice(:direct_quotation) : {}
+    badges = {}
+    return badges unless hypothesis.present?
+    hy_badges = BADGES[:hypothesis]
+    badges.merge!(hy_badges.slice(:direct_quotation)) if hypothesis.direct_quotation?
+    badges.merge!(hy_badges.slice(:has_at_least_two_tags)) if hypothesis.tags.count > 1
     citation ||= hypothesis.citation_for_score
     badges.merge(citation_badges(citation))
       .merge(publication_badges(citation&.publication))
@@ -34,6 +41,8 @@ class HypothesisScorer
     if citation.randomized_controlled_trial
       badges.merge!(cite_badges.slice(:randomized_controlled_trial))
     end
+    badges.merge!(cite_badges.slice(:has_author)) if citation.authors.present?
+    badges.merge!(cite_badges.slice(:has_publication_date)) if citation.published_at.present?
     badges
   end
 

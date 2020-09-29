@@ -49,7 +49,7 @@
               %strong
                 = @hypothesis.score
             - unapproved_score = @hypothesis.unapproved_score
-            - if @hypothesis.score != unapproved_score
+            - if @hypothesis.score < unapproved_score
               = unapproved_score
               %em.less-strong (when approved)
         %tr
@@ -74,7 +74,7 @@
                     = tag.title
 
   .col-md-6
-    %table.table.table-sm.table-striped.table-bordered
+    %table.table.table-sm.table-striped.table-bordered.scoring-table
       %thead
         %th Qualification
         %th Potential
@@ -86,7 +86,7 @@
             - total_potential += value
             %tr
               %td
-                = HypothesisScorer.badge_humanized(badge_key)
+                <strong>#{section_key.to_s.titleize}:</strong> #{HypothesisScorer.badge_humanized(badge_key)}
               %td
                 %span.less-strong= value
               %td

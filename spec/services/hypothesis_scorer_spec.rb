@@ -22,15 +22,15 @@ RSpec.describe HypothesisScorer do
           url_is_direct_link_to_full_text: true,
           publication: publication)
       end
-      let!(:hypothesis) { FactoryBot.create(:hypothesis, citations: [citation], has_direct_quotation: true) }
-      let(:target_badges) { {direct_quotation: 1, randomized_controlled_trial: 2, open_access_research: 10, peer_reviewed_medium_impact_factor: 6} }
+      let!(:hypothesis) { FactoryBot.create(:hypothesis, citations: [citation], has_direct_quotation: true, tags_string: "A first tag, a second tag") }
+      let(:target_badges) { {direct_quotation: 1, has_at_least_two_tags: 1, randomized_controlled_trial: 2, open_access_research: 10, peer_reviewed_medium_impact_factor: 6} }
       it "returns with citation and publication" do
         expect(hypothesis.publications.pluck(:id)).to eq([publication.id])
         expect(hypothesis.citation_for_score&.id).to eq citation.id
         expect(subject.hypothesis_badges(hypothesis)).to eq target_badges
-        expect(hypothesis.calculated_score).to eq 19
+        expect(hypothesis.calculated_score).to eq 20
         hypothesis.update(approved_at: Time.current)
-        expect(hypothesis.score).to eq 19
+        expect(hypothesis.score).to eq 20
       end
     end
   end
@@ -43,6 +43,13 @@ RSpec.describe HypothesisScorer do
       let(:citation) { Citation.new(randomized_controlled_trial: true) }
       it "returns 5" do
         expect(subject.citation_badges(citation)).to eq({randomized_controlled_trial: 2})
+        expect(citation.calculated_score).to eq 2
+      end
+    end
+    context "has_author and has_publication_date" do
+      let(:citation) { Citation.new(authors_str: "Somebody", published_at: Time.current) }
+      it "returns 2" do
+        expect(subject.citation_badges(citation)).to eq({has_author: 1, has_publication_date: 1})
         expect(citation.calculated_score).to eq 2
       end
     end
