@@ -10,19 +10,21 @@
     \- the score is if the hypothesis and citation are approved as they were originally submitted
 .row.mt-4
   .col-md-6
-    -# Skip rendering waiting for approval if hypothesis is over a minute old (something broke?) or SKIP_GITHUB_UPDATE
-    - render_waiting_for_approval = @hypothesis.unapproved? && !GithubIntegration::SKIP_GITHUB_UPDATE && @hypothesis.created_at > Time.current - 1.minute
-    - if render_waiting_for_approval
-      .alert.alert-info
-        - if @hypothesis.pull_request_number.present?
-          %h4
-            Hypothesis waiting on approval,
-            = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
-        - else
-          Waiting for pull request to be created, page will reload.
-          -# NOTE: This will reload endlessly, which may not be what we want
-          :javascript
-            window.setTimeout(() => {location.reload();}, 2000);
+    - if @hypothesis.unapproved?
+      -# Skip rendering waiting for approval if hypothesis is over a minute old (something broke?) or SKIP_GITHUB_UPDATE
+      -# ... but definitely render it if pull_request_number
+      - render_waiting_for_approval = @hypothesis.pull_request_number.present? || !GithubIntegration::SKIP_GITHUB_UPDATE && @hypothesis.created_at > Time.current - 1.minute
+      - if render_waiting_for_approval
+        .alert.alert-info
+          - if @hypothesis.pull_request_number.present?
+            %h4
+              Hypothesis waiting on approval,
+              = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
+          - else
+            Waiting for pull request to be created, page will reload.
+            -# NOTE: This will reload endlessly, which may not be what we want
+            :javascript
+              window.setTimeout(() => {location.reload();}, 2000);
 
     %table.table-list
       %tbody
@@ -60,10 +62,10 @@
           %td
             - if @hypothesis.approved?
               = link_to @hypothesis.file_path, @hypothesis.github_html_url
-            - if @hypothesis.pull_request_number.present?
-              %em.small.less-strong.d-block.mt-2
-                Approved by
-                = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
+              - if @hypothesis.pull_request_number.present?
+                %em.small.less-strong.d-block.mt-2
+                  Approved by
+                  = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
         %tr
           %td Direct quotation?
           %td= display_true_or_false(@hypothesis.has_direct_quotation)
