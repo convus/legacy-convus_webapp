@@ -1,37 +1,40 @@
-%h1{ style: "font-size: 1.5rem" }
-  Hypothesis:
+.max-width-text-container.mt-big
+  %h1{ style: "font-size: 1.5rem" }
+    Hypothesis:
 
-- if @hypothesis.approved?
-  - badges = @hypothesis.badges
-- else
-  - badges = @hypothesis.unapproved_badges
   %p.mt-4
-    %span.text-warning This Hypothesis hasn't been approved
-    \- the score is if the hypothesis and citation are approved as they were originally submitted
-
-.max-width-text-container.mt-4.ml-auto.mr-auto
-  %p
     %span{ style: "font-size: 125%;" }
       = @hypothesis.title
 
-.row.mt-big
-  .col-md-6
-    - if @hypothesis.unapproved?
-      -# Skip rendering waiting for approval if hypothesis is over a minute old (something broke?) or SKIP_GITHUB_UPDATE
-      -# ... but definitely render it if pull_request_number
-      - render_waiting_for_approval = @hypothesis.pull_request_number.present? || !GithubIntegration::SKIP_GITHUB_UPDATE && @hypothesis.created_at > Time.current - 1.minute
-      - if render_waiting_for_approval
-        .alert.alert-info
-          - if @hypothesis.pull_request_number.present?
-            %h4
-              Hypothesis waiting on approval,
-              = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
-          - else
-            Waiting for pull request to be created, page will reload.
-            -# NOTE: This will reload endlessly, which may not be what we want
-            :javascript
-              window.setTimeout(() => {location.reload();}, 2000);
+  - if @hypothesis.approved?
+    - badges = @hypothesis.badges
+    %hr.mt-big
+  - else
+    %hr.mt-big
+    - badges = @hypothesis.unapproved_badges
+    %p.mt-4
+      %span.text-warning This Hypothesis hasn't been approved
+      \- the score is if the hypothesis and citation are approved as they were originally submitted
 
+  - if @hypothesis.unapproved?
+    -# Skip rendering waiting for approval if hypothesis is over a minute old (something broke?) or SKIP_GITHUB_UPDATE
+    -# ... but definitely render it if pull_request_number
+    - render_waiting_for_approval = @hypothesis.pull_request_number.present? || !GithubIntegration::SKIP_GITHUB_UPDATE && @hypothesis.created_at > Time.current - 1.minute
+    - if render_waiting_for_approval
+      .alert.alert-info.mt-4
+        - if @hypothesis.pull_request_number.present?
+          %h4
+            Hypothesis waiting on approval,
+            = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
+        - else
+          Waiting for pull request to be created, page will reload.
+          -# NOTE: This will reload endlessly, which may not be what we want
+          :javascript
+            window.setTimeout(() => {location.reload();}, 2000);
+
+%h2.mt-big Details
+.row.mt-4
+  .col-md-6
     %table.table-list
       %tbody
         -# %tr
