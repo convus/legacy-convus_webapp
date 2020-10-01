@@ -23,9 +23,9 @@ class HypothesisScorer
   def self.total_potential_score
     # Only possible to get one of the publication values. Definitely a better way to manage this in the future
     skipped = %i[peer_reviewed_medium_impact_factor peer_reviewed_low_impact_factor non_peer_reviewed_with_retractions]
-    BADGES.values.reduce({}, :merge).map do |badge, value|
+    BADGES.values.reduce({}, :merge).map { |badge, value|
       skipped.include?(badge) ? 0 : value
-    end.sum
+    }.sum
   end
 
   def self.hypothesis_badges(hypothesis, citation = nil)

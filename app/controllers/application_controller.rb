@@ -46,7 +46,17 @@ class ApplicationController < ActionController::Base
 
   def redirect_to_signup_unless_user_present!
     return current_user if current_user.present?
+    store_return_to
     redirect_to github_link
     nil
+  end
+
+  def store_return_to
+    return if not_stored_paths.include?(request.path) || request.xhr?
+    session[:user_return_to] = request.path
+  end
+
+  def not_stored_paths
+    ["/users/sign_in", "/users/sign_up", "/users/password", "/users/sign_out"]
   end
 end
