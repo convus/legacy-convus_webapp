@@ -17,12 +17,11 @@
         %ul.navbar-nav.ml-auto
           %li.nav-item
             = active_link "Hypotheses", hypotheses_path, class: "nav-link"
-          - if current_user.present?
-            %li.nav-item
-              - on_new_hypothesis = controller_name == "hypotheses" && action_name == "new"
-              = link_to new_hypothesis_path, class: "nav-link #{on_new_hypothesis ? 'active' : ''}" do
-                Add
-                %span.d-none.d-sm-inline hypothesis
+          %li.nav-item
+            - on_new_hypothesis = controller_name == "hypotheses" && action_name == "new"
+            = link_to new_hypothesis_path, class: "nav-link #{on_new_hypothesis ? 'active' : ''}" do
+              Add
+              %span.d-none.d-sm-inline hypothesis
           %li.nav-item
             = active_link "About", about_path, class: "nav-link"
 
