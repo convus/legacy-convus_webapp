@@ -18,12 +18,15 @@
     %tbody
       %tr
         %td Title
-        %td= citation.title
+        %td
+          = citation.title
+          - unless controller_name == "citations" && action_name == "show"
+            = link_to internal_link, citation_path(citation.to_param), class: "internal-link"
       %tr
         %td GitHub
         %td
           - if citation.approved?
-            = link_to UrlCleaner.pretty_url(citation.github_html_url), citation.github_html_url
+            = link_to citation.file_path.truncate(75), citation.github_html_url, title: citation.file_path
             - if citation.pull_request_number.present?
               %em.small.less-strong.mt-2.d-block
                 Approved by
@@ -32,10 +35,6 @@
         %tr.only-dev-visible
           %td ID
           %td= citation.id
-      %tr
-        %td URL
-        %td
-          = link_to citation.file_path, citation.url
       %tr
         %td URL direct link?
         %td= display_true_or_false(citation.url_is_direct_link_to_full_text)
