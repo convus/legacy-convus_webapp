@@ -102,7 +102,7 @@ unless ENV["CIRCLECI"]
         title: "Purple air sensors are less accurate than EPA sensors. By turning on the conversion \"AQandU\" the data will more closely align with EPA readings",
         id: 2115,
         direct_quotation: false,
-        tag_titles: ["environment ", "Air quality"],
+        topics: ["environment ", "Air quality"],
         citation_urls: ["https://www.kqed.org/science/1969271/making-sense-of-purple-air-vs-airnow-and-a-new-map-to-rule-them-all"]
       }
     end
@@ -123,10 +123,10 @@ unless ENV["CIRCLECI"]
       expect(tag.approved_at).to be_within(5).of Time.current
 
       expect(hypothesis.citations.count).to eq 1
-      expect(hypothesis.flat_file_serialized.except(:tag_titles)).to eq(hypothesis_attrs.except(:tag_titles))
+      expect(hypothesis.flat_file_serialized.except(:topics)).to eq(hypothesis_attrs.except(:topics))
     end
     context "hypothesis already exists" do
-      let(:old_attrs) { hypothesis_attrs.merge(title: "Purple air sensors are less accurate than EPA sensors", direct_quotation: true, tag_titles: ["Environment"]) }
+      let(:old_attrs) { hypothesis_attrs.merge(title: "Purple air sensors are less accurate than EPA sensors", direct_quotation: true, topics: ["Environment"]) }
       let(:hypothesis) { FlatFileImporter.import_hypothesis(old_attrs) }
       it "imports as expected" do
         og_slug = hypothesis.slug
@@ -150,7 +150,7 @@ unless ENV["CIRCLECI"]
         expect(Tag.count).to eq 2
 
         expect(hypothesis.citations.count).to eq 1
-        expect(hypothesis.flat_file_serialized.except(:tag_titles)).to eq(hypothesis_attrs.except(:tag_titles))
+        expect(hypothesis.flat_file_serialized.except(:topics)).to eq(hypothesis_attrs.except(:topics))
       end
     end
   end
