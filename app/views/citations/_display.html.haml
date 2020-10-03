@@ -17,15 +17,21 @@
   %table.table-list
     %tbody
       %tr
+        %td Citation URL
+        %td
+          - if citation.url.present?
+            = link_to UrlCleaner.pretty_url(citation.url), citation.url
+      %tr
         %td Title
         %td
           = citation.title
           - unless controller_name == "citations" && action_name == "show"
             = link_to internal_link, citation_path(citation.to_param), class: "internal-link"
-      %tr
-        %td GitHub
-        %td
-          - if citation.approved?
+
+      - if citation.approved?
+        %tr
+          %td GitHub
+          %td
             = link_to citation.file_path.truncate(75), citation.github_html_url, title: citation.file_path
             - if citation.pull_request_number.present?
               %em.small.less-strong.mt-2.d-block

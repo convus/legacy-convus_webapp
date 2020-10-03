@@ -19,9 +19,9 @@
             Direct quotation
       .form-group
         = f.label :tags_string do
-          Primary topic tag(s)
+          Topics
           %small.less-strong
-            up to 4 topics, comma delineated
+            at least 2, comma delineated
         = f.text_field :tags_string, required: true, class: "form-control"
 
       %h3.mt-4.mb-1 Citation

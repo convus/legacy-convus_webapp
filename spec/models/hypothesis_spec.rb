@@ -75,6 +75,7 @@ RSpec.describe Hypothesis, type: :model do
     it "assigns" do
       hypothesis.update(citation_urls: "bikeindex.org/about")
       expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
+      expect(hypothesis.citation_for_score).to be_blank
     end
     context "new url" do
       it "assigns both" do

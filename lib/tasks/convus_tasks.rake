@@ -28,3 +28,12 @@ task reconcile_flat_file_database: :environment do
     raise output
   end
 end
+
+task dev_update_from_git: :environment do
+  Dir.chdir FlatFileSerializer::FILES_PATH
+  output = `git reset --hard origin/main 2>&1`
+  output += `git fetch origin 2>&1`
+  output += `git merge origin 2>&1`
+  pp "Output:", output
+  FlatFileImporter.import_all_files # Import the files from the git branch
+end
