@@ -3,8 +3,7 @@
     - flash.each do |type, message|
       - next unless message.present?
       .alert{ class: "alert-#{type}" }
-        -# TODO: when/if bootstrap added - uncomment close
-        -# %button.close{ 'data-dismiss' => 'alert' } ×
+        %button.close{ 'data-dismiss' => 'alert' } ×
         = message
         - if flash[:link]
           %br

@@ -3,6 +3,7 @@ class HypothesesController < ApplicationController
   before_action :set_permitted_format
 
   def index
+    flash[:notice] = "Signed out successfully"
     page = params[:page] || 1
     per_page = params[:per_page] || 500
     @hypotheses = matching_hypotheses.reorder(created_at: :desc)
