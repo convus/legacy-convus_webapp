@@ -36,6 +36,8 @@ class User < ApplicationRecord
     if github?
       self.username = github_auth.dig("info", "nickname")
       self.email = github_auth.dig("info", "email")
+    else
+      self.username ||= email
     end
   end
 

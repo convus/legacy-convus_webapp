@@ -5,12 +5,14 @@
       = f.label :email
       = f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control"
     .form-group
-      = f.label :password
+      = f.label :password do
+        Password
+        %small.less-strong
+          minimum length #{Devise.password_length.first}
       = f.password_field :password, autocomplete: "current-password", class: "form-control"
-      - if @minimum_password_length
-        %small.form-text.text-muted= t("devise.shared.minimum_password_length", count: @minimum_password_length)
     .form-group
       = f.label :password_confirmation
       = f.password_field :password_confirmation, autocomplete: "current-password", class: "form-control"
     .form-group
-      = f.submit "Sign up", class: "btn btn-primary"
+      = f.submit "Sign up", class: "btn btn-primary", style: "margin-right: 5rem;"
+      = link_to "Sign up with GitHub", github_link, class: "btn btn-outline-primary"

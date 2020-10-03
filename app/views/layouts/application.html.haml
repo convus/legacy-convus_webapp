@@ -9,8 +9,8 @@
     %link{ href: "/favicon.ico", rel: "icon", sizes: "192x192" }
     = stylesheet_pack_tag "application_css", media: "all", "data-turbolinks-track": "reload"
     = javascript_pack_tag "application", "data-turbolinks-track": "reload"
-    -# :javascript
-    -#   window.tags = #{tag_titles};
+    :javascript
+      window.tags = #{tag_titles};
   %body
     %nav.navbar.navbar-expand.navbar-light
       .container-fluid
@@ -33,7 +33,10 @@
               %small.less-strong
                 %span.d-none.d-sm-inline
                   Signed in as
-                = link_to current_user.username, user_edit_path
+                - if current_user.github? # github users can't edit anything right now
+                  = current_user.username
+                - else
+                  = link_to current_user.username, edit_user_registration_path
 
     = render "/shared/flash_messages"
 

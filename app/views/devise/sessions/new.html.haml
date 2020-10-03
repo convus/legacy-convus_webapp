@@ -15,7 +15,12 @@
           = f.label :remember_me, class: 'form-check-label' do
             = resource.class.human_attribute_name('remember_me')
       .form-group
-        = f.submit "Sign in", class: 'btn btn-primary'
+        = f.submit "Sign in", class: 'btn btn-primary', style: "margin-right: 5rem;"
+        = link_to "Sign in with GitHub", github_link, class: "btn btn-outline-primary"
+
+  .col-md-6
+
+
 
 %h2.mt-big Sign up
 .row.mt-2
