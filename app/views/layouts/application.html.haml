@@ -27,13 +27,16 @@
 
           - if current_user.blank?
             %li.nav-item
-              = link_to "Sign in", github_link, class: "nav-link"
+              = active_link "Login", new_user_session_path, class: "nav-link"
           - else
             %li.navbar-text.ml-2
               %small.less-strong
                 %span.d-none.d-sm-inline
                   Signed in as
-                = current_user.username
+                - if current_user.github? # github users can't edit anything right now
+                  = current_user.username
+                - else
+                  = link_to current_user.username, edit_user_registration_path
 
     = render "/shared/flash_messages"
 
