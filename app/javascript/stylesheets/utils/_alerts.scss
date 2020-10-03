@@ -1,0 +1,27 @@
+// Bootstrap alerts for flash message types
+.alert-error {
+  @extend .alert-danger;
+}
+.alert-alert {
+  @extend .alert-warning;
+}
+.alert-notice {
+  @extend .alert-info;
+}
+
+.flash-alert-container {
+  position: fixed;
+  z-index: 1049; // Modal z-index minus 1
+  width: 90%;
+  max-width: 500px;
+  top: 48px;
+  left: 15px;
+  .alert {
+    box-shadow: 1px 1px 2px rgba(black, 0.1);
+    margin-bottom: 0;
+    margin-top: 10px;
+    &:first-of-type {
+      margin-top: 0;
+    }
+  }
+}
