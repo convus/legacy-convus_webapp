@@ -60,7 +60,7 @@
               %strong.score-bubble{ class: hypothesis_score_class(@hypothesis.score) }
                 = @hypothesis.score
             - unapproved_score = @hypothesis.unapproved_score
-            - if @hypothesis.score < unapproved_score
+            - if @hypothesis.unapproved? || @hypothesis.score < unapproved_score
               %em.less-strong
                 when approved:
               %span.score-bubble.small.less-strong{ class: hypothesis_score_class(unapproved_score) }
@@ -79,7 +79,7 @@
           %td Direct quotation?
           %td= display_true_or_false(@hypothesis.has_direct_quotation)
         %tr
-          %td Tags
+          %td Topics
           %td
             - if @hypothesis.tags.any?
               %ul
