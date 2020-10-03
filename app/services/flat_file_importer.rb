@@ -52,7 +52,8 @@ class FlatFileImporter
       unless hypothesis.id == hypothesis_attrs[:id]
         hypothesis.update_columns(id: hypothesis_attrs[:id])
       end
-      hypothesis.update(tags_string: hypothesis_attrs[:topics], citation_urls: hypothesis_attrs[:citation_urls])
+      tags_string = hypothesis_attrs[:tag_titles] || hypothesis_attrs[:topics] # Migration to new key for tags_string
+      hypothesis.update(tags_string: tags_string, citation_urls: hypothesis_attrs[:citation_urls])
       hypothesis.tags.unapproved.update_all(approved_at: Time.current)
       hypothesis
     end
