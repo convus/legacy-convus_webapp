@@ -15,11 +15,11 @@ class FlatFileImporter
 
     def import_tags
       CSV.read(FlatFileSerializer.tags_file, headers: true, header_converters: :symbol).each do |row|
-        tag = Tag.find_by_id(row[:id]) || Tag.new
+        tag = Tag.find_by_id(row[:id]) || Tag.friendly_find(row[:title]) || Tag.new
         tag.title = row[:title]
         tag.taxonomy = row[:taxonomy]
         tag.approved_at ||= Time.current
-        tag.save if tag.changed?
+        tag.save if tag.changed? || tag.id.blank?
         tag.update_column :id, row[:id] unless tag.id == row[:id]
       end
     end

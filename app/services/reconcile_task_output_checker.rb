@@ -5,6 +5,7 @@ class ReconcileTaskOutputChecker
   ]
 
   def self.success?(output)
+    return true if output.blank?
     NON_ERROR_STRINGS.any? { |string| output.match?(/#{string}/i) }
   end
 end
