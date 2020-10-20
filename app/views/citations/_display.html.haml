@@ -26,7 +26,7 @@
         %td
           = citation.title
           - unless controller_name == "citations" && action_name == "show"
-            = link_to internal_link, citation_path(citation.to_param), class: "internal-link"
+            = link_to internal_link_text, citation_path(citation.to_param), class: "internal-link"
 
       - if citation.approved?
         %tr
