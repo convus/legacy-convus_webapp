@@ -17,4 +17,5 @@
 .paginate-wrapper
   = paginate @hypotheses
 .mt-4
-= render partial: "/hypotheses/table", locals: { hypotheses: @hypotheses }
+
+= render partial: "/hypotheses/list", locals: { hypotheses: @hypotheses }
