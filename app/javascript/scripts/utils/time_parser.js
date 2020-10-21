@@ -14,10 +14,14 @@ export default class TimeParser {
     }
     this.localTimezone = window.localTimezone;
     moment.tz.setDefault(this.localTimezone);
-    this.yesterdayStart = moment().subtract(1, "day").startOf("day");
+    this.yesterdayStart = moment()
+      .subtract(1, "day")
+      .startOf("day");
     this.todayStart = moment().startOf("day");
     this.todayEnd = moment().endOf("day");
-    this.tomorrowEnd = moment().add(1, "day").endOf("day");
+    this.tomorrowEnd = moment()
+      .add(1, "day")
+      .endOf("day");
   }
 
   // If we're display time with the hour, we have different formats based on whether we include seconds
@@ -78,9 +82,9 @@ export default class TimeParser {
     // Otherwise, format in basic format
     if (time.year() === moment().year()) {
       if (classList.contains("withPreposition")) {
-        return prefix + time.format("MMM Do[,]") + " at " + time.format("ha");
+        return prefix + time.format("MMM Do");
       } else {
-        return prefix + time.format("MMM Do[,] ha");
+        return prefix + time.format("MMM Do");
       }
     } else {
       return prefix + time.format("YYYY-MM-DD");

@@ -50,9 +50,9 @@
         -#   %td Title
         -#   %td= @hypothesis.title
         %tr
-          %td Created at
+          %td Created
           %td
-            %span.convertTime
+            %span.convertTime.preciseTime
               = l @hypothesis.created_at, format: :convert_time
         - if current_user&.developer?
           %tr.only-dev-visible
