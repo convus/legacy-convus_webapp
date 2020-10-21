@@ -140,9 +140,7 @@ RSpec.describe "/hypotheses", type: :request do
           expect(errored_hypothesis.errors_full_messages).to match_array(["Citation URL can't be blank", "Title can't be blank"])
           expect(errored_hypothesis.tags_string).to eq "economy"
           # map so that count isn't 0 (because they don't have ids)
-          expect(errored_hypothesis.hypothesis_citations.map(&:quotes_text).count).to eq 1
-          # map so that count isn't 0 (because they don't have ids)
-          expect(errored_hypothesis.hypothesis_citations.map(&:quotes_text).count).to eq 1
+          expect(errored_hypothesis.hypothesis_citations.map(&:quotes_text).count).to eq 2
           errored_citation = errored_hypothesis.hypothesis_citations.first.citation
           expect(errored_citation.url).to be_blank
           expect(errored_citation.quotes_text).to eq citation_params[:quotes_text]

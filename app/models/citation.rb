@@ -82,8 +82,7 @@ class Citation < ApplicationRecord
   end
 
   def self.find_or_create_by_params(attrs)
-    return nil unless attrs.present?
-    existing = friendly_find(attrs[:url]) if attrs.dig(:url).present?
+    existing = friendly_find(attrs[:url]) if (attrs || {}).dig(:url).present?
     existing || create(attrs)
   end
 

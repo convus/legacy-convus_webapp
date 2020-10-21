@@ -41,13 +41,13 @@ RSpec.describe HypothesisCitation, type: :model do
         expect(hypothesis_citation.quotes.count).to eq 2
         expect(hypothesis_citation.quotes.pluck(:text)).to eq(["some quote", quote_text1])
 
-        hypothesis_citation.update(quotes_text: "#{quote_text1}\nsome quote")
+        hypothesis_citation.update(quotes_text: "#{quote_text1}\n\n\nsome quote")
         expect(UpdateCitationQuotesJob.jobs.count).to eq 1
         UpdateCitationQuotesJob.drain
         hypothesis_citation.reload
         hypothesis_quote1.reload
         hypothesis_quote2.reload
-        expect(hypothesis_citation.quotes_text).to eq("#{quote_text1}\nsome quote")
+        expect(hypothesis_citation.quotes_text).to eq("#{quote_text1}\n\nsome quote")
         expect(hypothesis_quote1.score).to be < hypothesis_quote2.score
         expect(hypothesis_citation.quotes.pluck(:id)).to eq([hypothesis_quote2.quote_id, hypothesis_quote1.quote_id])
         hypothesis_citation.update(quotes_text: quote_text1)
@@ -73,7 +73,7 @@ RSpec.describe HypothesisCitation, type: :model do
           }.to change(Quote, :count).by 1
           expect(UpdateCitationQuotesJob.jobs.count).to eq 1
           UpdateCitationQuotesJob.drain
-          expect(hypothesis_citation.quotes_text).to eq("some quote\n#{quote_text1}")
+          expect(hypothesis_citation.quotes_text).to eq("some quote\n\n#{quote_text1}")
           expect(hypothesis_citation.quotes.count).to eq 2
           expect(hypothesis_citation.quotes.pluck(:id)).to include hypothesis_quote_other.quote_id
 

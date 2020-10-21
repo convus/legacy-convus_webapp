@@ -20,9 +20,9 @@ RSpec.describe Citation, type: :model do
     end
     context "missing url" do
       it "doesn't do anything" do
-        expect(Citation.find_or_create_by_params(nil)).to be_blank
-        expect(Citation.find_or_create_by_params({})).to be_blank
-        expect(Citation.find_or_create_by_params({title: "party"})).to be_blank
+        expect(Citation.find_or_create_by_params(nil)).to_not be_valid
+        expect(Citation.find_or_create_by_params({})).to_not be_valid
+        expect(Citation.find_or_create_by_params({title: "party"})).to_not be_valid
       end
     end
   end
