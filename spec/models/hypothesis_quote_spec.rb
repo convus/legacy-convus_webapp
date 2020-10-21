@@ -1,13 +1,20 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe HypothesisQuote, type: :model do
-  it "has a valid factory" do
-    expect(FactoryBot.create(:hypothesis_quote)).to be_valid
+  describe "factory" do
+    let(:hypothesis_quote) { FactoryBot.create(:hypothesis_quote, importance: nil) }
+    it "has a valid factory" do
+      expect(hypothesis_quote).to be_valid
+      expect(hypothesis_quote.hypothesis.quotes.pluck(:id)).to eq([hypothesis_quote.quote_id])
+      expect(hypothesis_quote.importance).to eq 5
+      expect(hypothesis_quote.score).to eq 5
+    end
   end
 
   describe "importance limits" do
+    before { hypothesis_quote.set_calculated_attributes }
     context "nil importance" do
-      let(:hypothesis_quote) { FactoryBot.create(:hypothesis_quote, importance: nil) }
+      let(:hypothesis_quote) { HypothesisQuote.new(importance: nil) }
       it "sets importance to default" do
         expect(hypothesis_quote.importance).to eq 5
         expect(hypothesis_quote.score).to eq 5
@@ -15,7 +22,6 @@ RSpec.describe HypothesisQuote, type: :model do
     end
     context "-1 importance" do
       let(:hypothesis_quote) { HypothesisQuote.new(importance: -1) }
-      before { hypothesis_quote.set_calculated_attributes }
       it "sets importance to max" do
         expect(hypothesis_quote.importance).to eq 1
         expect(hypothesis_quote.score).to eq 1
@@ -23,7 +29,6 @@ RSpec.describe HypothesisQuote, type: :model do
     end
     context "20 importance" do
       let(:hypothesis_quote) { HypothesisQuote.new(importance: 20) }
-      before { hypothesis_quote.set_calculated_attributes }
       it "sets importance to max" do
         expect(hypothesis_quote.importance).to eq 10
         expect(hypothesis_quote.score).to eq 10

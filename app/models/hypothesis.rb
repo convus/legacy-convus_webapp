@@ -10,6 +10,8 @@ class Hypothesis < ApplicationRecord
   has_many :publications, through: :citations
   has_many :hypothesis_tags
   has_many :tags, through: :hypothesis_tags
+  has_many :hypothesis_quotes
+  has_many :quotes, through: :hypothesis_quotes
 
   accepts_nested_attributes_for :citations
 
