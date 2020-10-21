@@ -19,11 +19,14 @@
             at least 2, comma delineated
         = f.text_field :tags_string, required: true, class: "form-control"
 
-      %h3.mt-4.mb-1 Citation
+      %h3.mt-4.mb-1
+        = "Citation".pluralize(@hypothesis.hypothesis_citations.count)
 
-      - @hypothesis.citations.build unless @hypothesis.citations.count > 0
-      - @hypothesis.citations.each do |citation|
-        = f.fields_for :citations_attributes, citation do |nested_form|
+      - @hypothesis.hypothesis_citations.build unless @hypothesis.hypothesis_citations.count > 0
+      - @hypothesis.hypothesis_citations.each do |hypothesis_citation|
+        - hypothesis_citation.citation ||= Citation.new
+        - hypothesis_citation.citation.quotes_text = hypothesis_citation.quotes_text
+        = f.fields_for :citations_attributes, hypothesis_citation.citation do |nested_form|
           = render partial: "/citations/fields", locals: {form: nested_form}
 
           -# TODO: add published_date_str fields

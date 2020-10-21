@@ -31,6 +31,10 @@ RSpec.describe UrlCleaner do
     it "returns without the base domain" do
       expect(subject.without_base_domain("https://www.nationalreview.com/2020/09/the-cdcs-power-grab/")).to eq "2020/09/the-cdcs-power-grab"
     end
+    it "returns the domain if there is no query" do
+      expect(subject.without_base_domain("https://bikeindex.org")).to eq "bikeindex.org"
+      expect(subject.without_base_domain("http://example.com")).to eq "example.com"
+    end
   end
 
   describe "pretty_url" do
@@ -54,6 +58,8 @@ RSpec.describe UrlCleaner do
   describe "with_http" do
     it "returns with http" do
       expect(subject.with_http("example.com")).to eq "http://example.com"
+      expect(subject.with_http("http://example.com")).to eq "http://example.com"
+      expect(subject.with_http(subject.without_utm("example.com"))).to eq "http://example.com"
     end
     it "doesn't modify https" do
       expect(subject.with_http("https://www.nationalreview.com/2020/09/?")).to eq "https://www.nationalreview.com/2020/09/?"

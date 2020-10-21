@@ -27,6 +27,15 @@ RSpec.describe Citation, type: :model do
     end
   end
 
+  describe "very basic" do
+    let(:citation) { Citation.create(url: "example.com") }
+    it "is what we expect" do
+      expect(citation).to be_valid
+      expect(citation.url).to eq "http://example.com"
+      expect(citation.title).to eq "example.com"
+    end
+  end
+
   describe "slugging" do
     let(:url) { "https://www.nationalreview.com/2020/09/joe-bidens-money-misadventures/" }
     let(:citation) { FactoryBot.create(:citation, url: url, title: nil) }

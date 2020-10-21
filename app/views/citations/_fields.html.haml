@@ -1,4 +1,5 @@
 - render_only_simple_attrs ||= false
+
 .form-group
   = form.label :url, "URL"
   = form.text_field :url, required: true, class: "form-control"
@@ -9,7 +10,7 @@
   = form.label :quotes_text do
     Relevant quotes
     %small.less-strong new line delineated
-  = form.text_area :quotes_text, required: true, class: "form-control"
+  = form.text_area :quotes_text, required: true, rows: 4, class: "form-control"
 
 - unless render_only_simple_attrs
   .form-group.mt-0

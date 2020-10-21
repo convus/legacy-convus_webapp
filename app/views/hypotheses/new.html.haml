@@ -18,8 +18,9 @@
       - @hypothesis.hypothesis_citations.build unless @hypothesis.hypothesis_citations.count > 0
       - @hypothesis.hypothesis_citations.each do |hypothesis_citation|
         - hypothesis_citation.citation ||= Citation.new
+        - hypothesis_citation.citation.quotes_text = hypothesis_citation.quotes_text
         = f.fields_for :citations_attributes, hypothesis_citation.citation do |nested_form|
-          = render partial: "/citations/fields", locals: {form: nested_form, render_only_simple_attrs: true}
+          = render partial: "/citations/fields", locals: {form: nested_form, quotes_text: hypothesis_citation.quotes_text, render_only_simple_attrs: true}
       .form-group
         = submit_tag "Save", class: "btn btn-primary"
 

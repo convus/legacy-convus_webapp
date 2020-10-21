@@ -91,7 +91,7 @@ RSpec.describe "/hypotheses", type: :request do
       let(:citation_params) do
         {
           url: "https://example.com/something-of-interest",
-          quotes_text: "a quote from this article\n\n and another quote from it\n"
+          quotes_text: "a quote from this article\n and another quote from it\n"
         }
       end
       it "creates" do
@@ -143,7 +143,7 @@ RSpec.describe "/hypotheses", type: :request do
           expect(errored_hypothesis.hypothesis_citations.map(&:quotes_text).count).to eq 2
           errored_citation = errored_hypothesis.hypothesis_citations.first.citation
           expect(errored_citation.url).to be_blank
-          expect(errored_citation.quotes_text).to eq citation_params[:quotes_text]
+          expect(errored_citation.quotes_text).to eq("a quote from this article\n\nand another quote from it")
         end
       end
 
