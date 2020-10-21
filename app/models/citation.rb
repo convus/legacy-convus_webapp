@@ -19,6 +19,9 @@ class Citation < ApplicationRecord
 
   has_many :hypothesis_citations, dependent: :destroy
   has_many :hypotheses, through: :hypothesis_citations
+  has_many :quotes
+
+  accepts_nested_attributes_for :quotes
 
   validates_presence_of :url
   validates :slug, presence: true, uniqueness: {scope: [:publication_id]}

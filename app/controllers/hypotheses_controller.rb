@@ -42,7 +42,6 @@ class HypothesesController < ApplicationController
   end
 
   def matching_hypotheses
-
     hypotheses = params[:unapproved].present? ? Hypothesis.unapproved : Hypothesis.approved
     if params[:search_array].present?
       @search_tags = Tag.matching_tags(params[:search_array])

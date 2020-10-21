@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_29_154514) do
+ActiveRecord::Schema.define(version: 2020_10_21_002851) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -81,6 +81,14 @@ ActiveRecord::Schema.define(version: 2020_09_29_154514) do
     t.jsonb "base_domains"
     t.boolean "meta_publication", default: false
     t.float "impact_factor"
+  end
+
+  create_table "quotes", force: :cascade do |t|
+    t.bigint "citation_id"
+    t.text "quote"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["citation_id"], name: "index_quotes_on_citation_id"
   end
 
   create_table "tags", force: :cascade do |t|
