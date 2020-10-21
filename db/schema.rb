@@ -57,17 +57,22 @@ ActiveRecord::Schema.define(version: 2020_10_21_151309) do
     t.bigint "citation_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.text "quotes_text"
     t.index ["citation_id"], name: "index_hypothesis_citations_on_citation_id"
     t.index ["hypothesis_id"], name: "index_hypothesis_citations_on_hypothesis_id"
   end
 
   create_table "hypothesis_quotes", force: :cascade do |t|
+    t.bigint "hypothesis_citation_id"
     t.bigint "hypothesis_id"
     t.bigint "quote_id"
+    t.bigint "citation_id"
     t.integer "importance"
     t.integer "score"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["citation_id"], name: "index_hypothesis_quotes_on_citation_id"
+    t.index ["hypothesis_citation_id"], name: "index_hypothesis_quotes_on_hypothesis_citation_id"
     t.index ["hypothesis_id"], name: "index_hypothesis_quotes_on_hypothesis_id"
     t.index ["quote_id"], name: "index_hypothesis_quotes_on_quote_id"
   end
@@ -96,7 +101,7 @@ ActiveRecord::Schema.define(version: 2020_10_21_151309) do
 
   create_table "quotes", force: :cascade do |t|
     t.bigint "citation_id"
-    t.text "quote"
+    t.text "text"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["citation_id"], name: "index_quotes_on_citation_id"

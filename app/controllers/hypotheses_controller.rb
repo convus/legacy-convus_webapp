@@ -1,5 +1,6 @@
 class HypothesesController < ApplicationController
   before_action :redirect_to_signup_unless_user_present!, except: %i[index show]
+  before_action :find_hypothesis, except: %i[index new create]
   before_action :set_permitted_format
 
   def index
@@ -11,8 +12,9 @@ class HypothesesController < ApplicationController
   end
 
   def show
-    @hypothesis = Hypothesis.friendly_find!(params[:id])
-    @citations = @hypothesis.citations
+  end
+
+  def edit
   end
 
   def new
@@ -25,7 +27,7 @@ class HypothesesController < ApplicationController
     @hypothesis.citations << citation if citation.present?
     if @hypothesis.save
       flash[:success] = "Hypothesis created!"
-      redirect_to hypothesis_path(@hypothesis.to_param)
+      redirect_to edit_hypothesis_path(@hypothesis.id)
     else
       @hypothesis.errors.full_messages
       render :new
@@ -41,6 +43,11 @@ class HypothesesController < ApplicationController
     request.format = "html" unless request.format == "json"
   end
 
+  def find_hypothesis
+    @hypothesis = Hypothesis.friendly_find!(params[:id])
+    @citations = @hypothesis.citations
+  end
+
   def matching_hypotheses
     hypotheses = params[:unapproved].present? ? Hypothesis.unapproved : Hypothesis.approved
     if params[:search_array].present?
@@ -51,14 +58,14 @@ class HypothesesController < ApplicationController
   end
 
   def permitted_params
-    params.require(:hypothesis).permit(:title, :has_direct_quotation, :tags_string).merge(creator: current_user)
+    params.require(:hypothesis).permit(:title, :add_to_github, :tags_string).merge(creator: current_user)
   end
 
   def permitted_citation_params
     cparams = params.require(:hypothesis).permit(citations_attributes: permitted_citation_attrs)
       .dig(:citations_attributes)
     return cparams if cparams.blank? # NOTE: This shouldn't really happen because the HTML fields are required
-    cparams.merge(creator: current_user, skip_add_citation_to_github: true)
+    cparams.merge(creator: current_user)
   end
 
   def permitted_citation_attrs

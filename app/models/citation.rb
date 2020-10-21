@@ -20,6 +20,7 @@ class Citation < ApplicationRecord
   has_many :hypothesis_citations, dependent: :destroy
   has_many :hypotheses, through: :hypothesis_citations
   has_many :quotes
+  has_many :hypothesis_quotes
 
   accepts_nested_attributes_for :quotes
 
