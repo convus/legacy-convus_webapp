@@ -33,7 +33,7 @@ class Citation < ApplicationRecord
 
   scope :by_creation, -> { reorder(:created_at) }
 
-  attr_accessor :assignable_kind, :skip_add_citation_to_github
+  attr_accessor :assignable_kind, :add_to_github
 
   def self.kinds
     KIND_ENUM.keys.map(&:to_s)
@@ -176,8 +176,8 @@ class Citation < ApplicationRecord
   end
 
   def add_to_github_content
-    return true if approved? || pull_request_number.present? ||
-      skip_add_citation_to_github || GithubIntegration::SKIP_GITHUB_UPDATE
+    return true if approved? || pull_request_number.present? || GithubIntegration::SKIP_GITHUB_UPDATE
+    return false unless add_to_github
     AddCitationToGithubContentJob.perform_async(id)
   end
 

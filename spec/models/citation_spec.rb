@@ -178,17 +178,30 @@ RSpec.describe Citation, type: :model do
 
   describe "add_to_github_content" do
     let(:citation) { FactoryBot.build(:citation) }
-    it "enqueues job" do
+    it "enqueues only when add_to_github and not already added" do
       expect {
         citation.save
-      }.to change(AddCitationToGithubContentJob.jobs, :count).by 1
+      }.to change(AddCitationToGithubContentJob.jobs, :count).by 0
+
+      expect {
+        citation.update(add_to_github: true)
+        citation.update(add_to_github: true)
+      }.to change(AddCitationToGithubContentJob.jobs, :count).by 2
+
+      expect {
+        citation.update(add_to_github: true, pull_request_number: 12)
+      }.to change(AddCitationToGithubContentJob.jobs, :count).by 0
+
+      expect {
+        citation.update(add_to_github: true, pull_request_number: nil, approved_at: Time.current)
+      }.to change(AddCitationToGithubContentJob.jobs, :count).by 0
     end
-    context "with skip_add_citation_to_github" do
-      let(:citation) { FactoryBot.build(:citation, skip_add_citation_to_github: true) }
-      it "does not enqueue job" do
+    context "create with add_to_github" do
+      let(:citation) { FactoryBot.build(:citation, add_to_github: true) }
+      it "enqueues job" do
         expect {
           citation.save
-        }.to change(AddCitationToGithubContentJob.jobs, :count).by 0
+        }.to change(AddCitationToGithubContentJob.jobs, :count).by 1
       end
     end
     context "via hypothesis creation" do
@@ -200,8 +213,8 @@ RSpec.describe Citation, type: :model do
         expect(Hypothesis.count).to eq 0
         expect(Citation.count).to eq 0
         expect {
-          hypothesis.save
-        }.to change(AddCitationToGithubContentJob.jobs, :count).by 1
+          hypothesis.update(add_to_github: true)
+        }.to change(AddCitationToGithubContentJob.jobs, :count).by 0
         expect(AddHypothesisToGithubContentJob.jobs.count).to eq 1
         expect(Hypothesis.count).to eq 1
         expect(Citation.count).to eq 1

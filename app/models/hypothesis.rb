@@ -20,6 +20,8 @@ class Hypothesis < ApplicationRecord
 
   scope :direct_quotation, -> { where(has_direct_quotation: true) }
 
+  attr_accessor :add_to_github
+
   def self.with_tags(string_or_array)
     with_tag_ids(Tag.matching_tags(string_or_array).pluck(:id))
   end
@@ -94,8 +96,8 @@ class Hypothesis < ApplicationRecord
   end
 
   def add_to_github_content
-    return true if approved? || pull_request_number.present? ||
-      GithubIntegration::SKIP_GITHUB_UPDATE
+    return true if approved? || pull_request_number.present? || GithubIntegration::SKIP_GITHUB_UPDATE
+    return false unless add_to_github
     AddHypothesisToGithubContentJob.perform_async(id)
   end
 

@@ -100,13 +100,26 @@ RSpec.describe Hypothesis, type: :model do
     it "enqueues job" do
       expect {
         hypothesis.save
-      }.to change(AddHypothesisToGithubContentJob.jobs, :count).by 1
+      }.to change(AddHypothesisToGithubContentJob.jobs, :count).by 0
+
+      expect {
+        hypothesis.update(add_to_github: true)
+        hypothesis.update(add_to_github: true)
+      }.to change(AddHypothesisToGithubContentJob.jobs, :count).by 2
+
+      expect {
+        hypothesis.update(add_to_github: true, pull_request_number: 12)
+      }.to change(AddHypothesisToGithubContentJob.jobs, :count).by 0
+
+      expect {
+        hypothesis.update(add_to_github: true, pull_request_number: nil, approved_at: Time.current)
+      }.to change(AddHypothesisToGithubContentJob.jobs, :count).by 0
     end
     context "with skip_github_update" do
       it "does not enqueue job" do
         stub_const("GithubIntegration::SKIP_GITHUB_UPDATE", true)
         expect {
-          hypothesis.save
+          hypothesis.update(add_to_github: true)
         }.to change(AddHypothesisToGithubContentJob.jobs, :count).by 0
       end
     end
