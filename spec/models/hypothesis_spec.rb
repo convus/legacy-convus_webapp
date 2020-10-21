@@ -86,7 +86,7 @@ RSpec.describe Hypothesis, type: :model do
       end
     end
     context "assigning without creating" do
-      let(:hypothesis) { Hypothesis.new(tags_string: "One,    Xwo, three")}
+      let(:hypothesis) { Hypothesis.new(tags_string: "One,    Xwo, three") }
       it "returns what was assigned" do
         expect(hypothesis.tags_string).to eq("One, three, Xwo")
       end
