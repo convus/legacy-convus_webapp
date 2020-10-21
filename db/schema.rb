@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_21_002851) do
+ActiveRecord::Schema.define(version: 2020_10_21_151309) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -59,6 +59,15 @@ ActiveRecord::Schema.define(version: 2020_10_21_002851) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["citation_id"], name: "index_hypothesis_citations_on_citation_id"
     t.index ["hypothesis_id"], name: "index_hypothesis_citations_on_hypothesis_id"
+  end
+
+  create_table "hypothesis_quotes", force: :cascade do |t|
+    t.bigint "hypothesis_id"
+    t.bigint "quote_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["hypothesis_id"], name: "index_hypothesis_quotes_on_hypothesis_id"
+    t.index ["quote_id"], name: "index_hypothesis_quotes_on_quote_id"
   end
 
   create_table "hypothesis_tags", force: :cascade do |t|
