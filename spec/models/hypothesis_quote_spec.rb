@@ -40,10 +40,7 @@ RSpec.describe HypothesisQuote, type: :model do
     let(:importance) { HypothesisQuote::DEFAULT_IMPORTANCE }
     let(:hypothesis_quote) { HypothesisQuote.new(quote: quote, importance: importance) }
     let(:quote) { Quote.new(citation: citation) }
-    before do
-      # citation.set_calculated_attributes
-      hypothesis_quote.set_calculated_attributes
-    end
+    before { hypothesis_quote.set_calculated_attributes }
     context "citation peer_reviewed open access" do
       let(:citation) { Citation.new(peer_reviewed: true, url_is_direct_link_to_full_text: true) }
       it "sets closed_access" do
