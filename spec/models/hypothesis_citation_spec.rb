@@ -20,7 +20,7 @@ RSpec.describe HypothesisCitation, type: :model do
     end
     context "with multiple quotes" do
       let(:quote_text1) { "The Shooting arrest population is similarly distributed to the shooting suspects. Black arrestees (71.6%) and Hispanic arrestees (24.1%) account for the majority of Shooting arrest population. White arrestees (2.7%) and Asian/Pacific Islander arrestees (1.5%) account for the remaining portion of the Shooting arrest population." }
-      let(:quotes_text) { "  some quote\n\n #{quote_text1} "}
+      let(:quotes_text) { "  some quote\n\n #{quote_text1} " }
       it "saves, doesn't create duplicates or error when resubmitted" do
         expect(citation.quotes.count).to eq 0
         expect(hypothesis.quotes.count).to eq 0

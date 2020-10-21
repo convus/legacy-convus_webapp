@@ -87,9 +87,11 @@ RSpec.describe "/citations", type: :request do
       end
       it "creates" do
         expect(Citation.count).to eq 0
+        Sidekiq::Worker.clear_all
         expect {
           post base_url, params: {citation: valid_citation_params}
         }.to change(Citation, :count).by 1
+        expect(AddCitationToGithubContentJob.jobs.count).to eq 0
         citation = Citation.last
         expect(flash[:success]).to be_present
         expect(response).to redirect_to citation_path(citation.to_param)
@@ -105,6 +107,14 @@ RSpec.describe "/citations", type: :request do
         publication.reload
         expect(citation.publication).to eq publication
         expect(publication.base_domains).to eq(["foxnews.com", "www.foxnews.com"])
+      end
+      it "adds to github if passed" do
+        expect(Citation.count).to eq 0
+        Sidekiq::Worker.clear_all
+        expect {
+          post base_url, params: {citation: valid_citation_params.merge(add_to_github: true)}
+        }.to change(Citation, :count).by 1
+        expect(AddCitationToGithubContentJob.jobs.count).to eq 1
       end
     end
   end

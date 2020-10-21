@@ -34,7 +34,7 @@ class Citation < ApplicationRecord
 
   scope :by_creation, -> { reorder(:created_at) }
 
-  attr_accessor :assignable_kind, :add_to_github
+  attr_accessor :assignable_kind, :add_to_github, :quotes_text
 
   def self.kinds
     KIND_ENUM.keys.map(&:to_s)
@@ -82,8 +82,9 @@ class Citation < ApplicationRecord
   end
 
   def self.find_or_create_by_params(attrs)
-    return nil unless (attrs || {}).dig(:url).present?
-    friendly_find(attrs[:url]) || create(attrs)
+    return nil unless attrs.present?
+    existing = friendly_find(attrs[:url]) if attrs.dig(:url).present?
+    existing || create(attrs)
   end
 
   def to_param

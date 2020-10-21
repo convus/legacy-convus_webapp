@@ -2,7 +2,7 @@ class HypothesisCitation < ApplicationRecord
   belongs_to :hypothesis
   belongs_to :citation
 
-  has_many :hypothesis_quotes, -> {score_ordered}
+  has_many :hypothesis_quotes, -> { score_ordered }
   has_many :quotes, through: :hypothesis_quotes
 
   validates :citation, presence: true, uniqueness: {scope: [:hypothesis_id]}
@@ -23,7 +23,7 @@ class HypothesisCitation < ApplicationRecord
       if hypothesis_quote.present?
         hypothesis_quote.quote_text_index = indx
         hypothesis_quote.save if hypothesis_quote.changed? && id.present?
-        ids_for_removal = ids_for_removal - [hypothesis_quote.id]
+        ids_for_removal -= [hypothesis_quote.id]
       else
         hypothesis_quotes.build(hypothesis_citation: self, quote_text: quote_text, quote_text_index: indx)
       end

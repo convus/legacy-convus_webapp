@@ -91,7 +91,7 @@ RSpec.describe "/hypotheses", type: :request do
       let(:citation_params) do
         {
           url: "https://example.com/something-of-interest",
-          quotes_text: "a quote from this article\n\n and another quote from\n"
+          quotes_text: "a quote from this article\n\n and another quote from it\n"
         }
       end
       it "creates" do
@@ -103,32 +103,48 @@ RSpec.describe "/hypotheses", type: :request do
           }.to change(Hypothesis, :count).by 1
         end
         hypothesis = Hypothesis.last
-        expect(response).to redirect_to edit_hypothesis_path(hypothesis.to_param)
+        expect(response).to redirect_to edit_hypothesis_path(hypothesis.id)
         expect(AddHypothesisToGithubContentJob.jobs.count).to eq 0
         expect(flash[:success]).to be_present
 
-        expect(hypothesis.title).to eq valid_hypothesis_params[:title]
+        expect(hypothesis.title).to eq simple_hypothesis_params[:title]
         expect(hypothesis.creator).to eq current_user
-        expect(hypothesis.citations.count).to eq 1
-        expect(hypothesis.pull_request_number).to be_present
+        expect(hypothesis.pull_request_number).to be_blank
         expect(hypothesis.approved_at).to be_blank
         expect(hypothesis.tags.count).to eq 1
         expect(hypothesis.tags.pluck(:title)).to eq(["economy"])
+
+        expect(hypothesis.citations.count).to eq 1
+        citation = hypothesis.citations.first
+        expect(citation.url).to eq citation_params[:url]
+
+        expect(hypothesis.hypothesis_quotes.count).to eq 2
+        hypothesis_quote1 = hypothesis.hypothesis_quotes.first
+        hypothesis_quote2 = hypothesis.hypothesis_quotes.second
+        expect(hypothesis_quote1.quote_text).to eq "a quote from this article"
+        expect(hypothesis_quote1.citation_id).to eq citation.id
+        expect(hypothesis_quote2.quote_text).to eq "and another quote from it"
+        expect(hypothesis_quote2.citation_id).to eq citation.id
+        expect(hypothesis_quote1.score).to be > hypothesis_quote2.score
       end
       context "invalid params" do
         # TODO: test that this deals with multiple citations
-        let(:invalid_hypothesis_params) { simple_hypothesis_params.merge(title: "") }
+        let(:invalid_hypothesis_params) { simple_hypothesis_params.merge(title: "", citations_attributes: citation_params.merge(url: " ")) }
         it "does not create, does not explode" do
           expect {
             post base_url, params: {hypothesis: invalid_hypothesis_params}
-          }.to_not change(Citation, :count)
-          expect(response).to render_template("/hypotheses/new")
+          }.to_not change(Hypothesis, :count)
+          expect(response).to render_template("hypotheses/new")
           errored_hypothesis = assigns(:hypothesis)
           expect(errored_hypothesis.title).to be_blank
-          expect(errored_hypothesis.tags_string).to eq "economy\n"
-          expect(errored_hypothesis.citations.count).to eq 1
-          errored_citation = errored_hypothesis.citations.first
-          expect(errored_citation.url).to eq citation_params[:url]
+          expect(errored_hypothesis.errors_full_messages).to match_array(["Citation URL can't be blank", "Title can't be blank"])
+          expect(errored_hypothesis.tags_string).to eq "economy"
+          # map so that count isn't 0 (because they don't have ids)
+          expect(errored_hypothesis.hypothesis_citations.map(&:quotes_text).count).to eq 1
+          # map so that count isn't 0 (because they don't have ids)
+          expect(errored_hypothesis.hypothesis_citations.map(&:quotes_text).count).to eq 1
+          errored_citation = errored_hypothesis.hypothesis_citations.first.citation
+          expect(errored_citation.url).to be_blank
           expect(errored_citation.quotes_text).to eq citation_params[:quotes_text]
         end
       end

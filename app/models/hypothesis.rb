@@ -5,12 +5,12 @@ class Hypothesis < ApplicationRecord
 
   belongs_to :creator, class_name: "User"
 
-  has_many :hypothesis_citations, dependent: :destroy
+  has_many :hypothesis_citations, autosave: true, dependent: :destroy
   has_many :citations, through: :hypothesis_citations
   has_many :publications, through: :citations
   has_many :hypothesis_tags
   has_many :tags, through: :hypothesis_tags
-  has_many :hypothesis_quotes
+  has_many :hypothesis_quotes, -> { score_ordered }
   has_many :quotes, through: :hypothesis_quotes
 
   accepts_nested_attributes_for :citations
@@ -31,6 +31,23 @@ class Hypothesis < ApplicationRecord
       .group("hypotheses.id").having("count(*) = ?", tag_ids_array.count)
   end
 
+  # We're saving hypothesis with a bunch of associations, make it easier to override the errors
+  # So that association errors are less annoying.
+  def errors_full_messages
+    # autosave: true makes this slightly less annoying
+    messages = hypothesis_citations.map do |hc|
+      next ["Citation URL can't be blank"] if hc.citation.errors.full_messages.include?("Url can't be blank")
+      next [] unless hc.errors.full_messages.any?
+      if hc.errors.full_messages.include?("Citation can't be blank")
+        ["Citation URL can't be blank"]
+      else
+        hc.errors.full_messages
+      end
+    end.flatten
+    ignored_messages = ["Hypothesis citations citation can't be blank"]
+    (messages + errors.full_messages).compact.uniq - ignored_messages
+  end
+
   def direct_quotation?
     has_direct_quotation
   end
@@ -40,11 +57,16 @@ class Hypothesis < ApplicationRecord
   end
 
   def tags_string
-    tag_titles.join(", ")
+    if defined?(@updated_tags)
+      hypothesis_tags.map(&:tag_title).sort_by(&:downcase).join(", ")
+    else
+      tag_titles.join(", ")
+    end
   end
 
   def tags_string=(val)
     new_tags = (val.is_a?(Array) ? val : val.to_s.split(/,|\n/)).reject(&:blank?)
+    @updated_tags = true
     new_ids = new_tags.map { |string|
       tag_id = Tag.find_or_create_for_title(string)&.id
       unless hypothesis_tags.find_by_tag_id(tag_id).present?

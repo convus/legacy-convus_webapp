@@ -24,12 +24,12 @@ class HypothesesController < ApplicationController
   def create
     @hypothesis = Hypothesis.new(permitted_params)
     citation = Citation.find_or_create_by_params(permitted_citation_params)
-    @hypothesis.citations << citation if citation.present?
+    @hypothesis.hypothesis_citations.build(citation: citation, quotes_text: citation&.quotes_text)
     if @hypothesis.save
       flash[:success] = "Hypothesis created!"
       redirect_to edit_hypothesis_path(@hypothesis.id)
     else
-      @hypothesis.errors.full_messages
+      @hypothesis.errors_full_messages
       render :new
     end
   end
@@ -57,6 +57,10 @@ class HypothesesController < ApplicationController
     hypotheses
   end
 
+  def permitted_create_params
+    params.require(:hypothesis).permit(:title, :add_to_github, :tags_string).merge(creator: current_user)
+  end
+
   def permitted_params
     params.require(:hypothesis).permit(:title, :add_to_github, :tags_string).merge(creator: current_user)
   end
@@ -70,6 +74,6 @@ class HypothesesController < ApplicationController
 
   def permitted_citation_attrs
     %w[title authors_str assignable_kind url url_is_direct_link_to_full_text published_date_str
-      url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial]
+      url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial quotes_text]
   end
 end

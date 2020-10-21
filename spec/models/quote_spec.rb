@@ -17,7 +17,6 @@ RSpec.describe Quote, type: :model do
     expect(quote2.text).to eq quote1.text
   end
 
-
   describe "friendly_find_quote" do
     let(:quote1) { FactoryBot.create(:quote, text: "some cool quote") }
     let(:quote2) { FactoryBot.create(:quote, text: "some cool quote") }
