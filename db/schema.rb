@@ -64,6 +64,8 @@ ActiveRecord::Schema.define(version: 2020_10_21_151309) do
   create_table "hypothesis_quotes", force: :cascade do |t|
     t.bigint "hypothesis_id"
     t.bigint "quote_id"
+    t.integer "importance"
+    t.integer "score"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["hypothesis_id"], name: "index_hypothesis_quotes_on_hypothesis_id"
