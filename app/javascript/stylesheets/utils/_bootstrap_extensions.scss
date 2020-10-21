@@ -12,6 +12,11 @@
   opacity: 0.65;
 }
 
+.less-strong:hover,
+.less-strong a:hover {
+  opacity: 1;
+}
+
 label {
   cursor: pointer;
 }
