@@ -115,6 +115,7 @@ RSpec.describe "/citations", type: :request do
           post base_url, params: {citation: valid_citation_params.merge(add_to_github: true)}
         }.to change(Citation, :count).by 1
         expect(AddCitationToGithubContentJob.jobs.count).to eq 1
+        expect(assigns(:citation).submitted_to_github?).to be_truthy
       end
     end
   end

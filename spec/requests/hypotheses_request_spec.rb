@@ -8,6 +8,8 @@ RSpec.describe "/hypotheses", type: :request do
     {
       title: "Testing hypothesis creation is very important",
       assignable_kind: "article",
+      peer_reviewed: true,
+      randomized_controlled_trial: true,
       url_is_direct_link_to_full_text: "0",
       authors_str: "\nZack\n George\n",
       published_date_str: "1990-12-2",
@@ -187,12 +189,13 @@ RSpec.describe "/hypotheses", type: :request do
       let(:hypothesis_params) do
         {
           title: "This seems like the truth",
-          tags_string: "economy\n",
+          tags_string: "economy\nparties",
           citations_attributes: full_citation_params
           # TODO: switch to submitting multiple citations
           # citations_attributes: { Time.current.to_i.to_s => full_citation_params }
         }
       end
+      let(:hypothesis_add_to_github_params) { {hypothesis: hypothesis_params.merge(add_to_github: true)} }
       it "updates" do
         expect(subject.citations.count).to eq 0
         Sidekiq::Worker.clear_all
@@ -250,28 +253,29 @@ RSpec.describe "/hypotheses", type: :request do
           expect(flash).to be_blank
           rendered_hypothesis = assigns(:hypothesis)
           expect(rendered_hypothesis.title).to eq " "
-          expect(rendered_hypothesis.tags_string).to eq "economy"
+          expect(rendered_hypothesis.tags_string).to eq "economy, parties"
           expect(rendered_hypothesis.citations.map(&:title)).to eq([full_citation_params[:title]])
         end
       end
-
       context "add_to_github" do
+        let!(:tag) { FactoryBot.create(:tag_approved, title: "Economy") }
         it "updates, enqueues job" do
           expect(subject.citations.count).to eq 0
           Sidekiq::Worker.clear_all
-          put "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_params.merge(add_to_github: true)}
+          put "#{base_url}/#{subject.id}", params: hypothesis_add_to_github_params
           expect(flash[:success]).to be_present
           expect(response).to redirect_to hypothesis_path(subject.id)
           expect(assigns(:hypothesis)&.id).to eq subject.id
           expect(assigns(:hypothesis).submitted_to_github?).to be_truthy
           expect(AddHypothesisToGithubContentJob.jobs.count).to eq 1
+          expect(AddCitationToGithubContentJob.jobs.count).to eq 0
           subject.reload
           expect(subject.title).to eq hypothesis_params[:title]
           expect(subject.submitted_to_github?).to be_truthy
           expect(subject.pull_request_number).to be_blank
           expect(subject.approved_at).to be_blank
           expect(subject.submitting_to_github).to be_truthy
-          expect(subject.tags_string).to eq "economy"
+          expect(subject.tags_string).to eq "Economy, parties"
           expect(subject.citations.count).to eq 1
 
           citation = subject.citations.last
@@ -286,198 +290,144 @@ RSpec.describe "/hypotheses", type: :request do
           expect(citation.authors).to eq(["Zack", "George"])
           expect(citation.published_date_str).to eq "1990-12-02"
           expect(citation.url_is_direct_link_to_full_text).to be_falsey
+          expect(citation.peer_reviewed).to be_truthy
+          expect(citation.randomized_controlled_trial).to be_truthy
           expect(citation.creator_id).to eq current_user.id
         end
       end
 
+      context "citation already exists" do
+        let!(:citation) { Citation.create(url: full_citation_params[:url], creator: FactoryBot.create(:user), pull_request_number: 12) }
+        it "does not create a new citation" do
+          subject.reload
+          VCR.use_cassette("hypotheses_controller-create_skip_citation", match_requests_on: [:method]) do
+            expect(Hypothesis.count).to eq 1
+            expect(Citation.count).to eq 1
+            expect(citation.title).to eq "something-of-interest"
+            expect(citation.pull_request_number).to be_present
+            expect(citation.approved?).to be_falsey
+            Sidekiq::Worker.clear_all
+            Sidekiq::Testing.inline! do
+              put "#{base_url}/#{subject.to_param}", params: hypothesis_add_to_github_params
+            end
+            expect(response).to redirect_to hypothesis_path(subject.id)
+            expect(flash[:success]).to be_present
 
-      #     context "peer_reviewed and randomized_controlled_trial, not assignable_kind" do
-      #       it "creates" do
-      #         expect(Hypothesis.count).to eq 0
-      #         expect(Citation.count).to eq 0
-      #         Sidekiq::Worker.clear_all
-      #         expect {
-      #           post base_url, params: {hypothesis: hypothesis_with_citation_params}
-      #         }.to change(Hypothesis, :count).by 1
-      #         expect(AddHypothesisToGithubContentJob.jobs.count).to eq 1
-      #         expect(response).to redirect_to hypothesis_path(Hypothesis.last.to_param)
-      #         expect(flash[:success]).to be_present
+            subject.reload
+            expect(subject.title).to eq hypothesis_params[:title]
+            expect(subject.citations.count).to eq 1
+            expect(subject.citations.pluck(:id)).to eq([citation.id])
+            expect(subject.approved?).to be_falsey
+            expect(subject.pull_request_number).to be_present
+            expect(subject.pull_request_number).to_not eq 12
+            expect(subject.submitting_to_github).to be_truthy
+            # Even though passed new information, it doesn't update the existing citation
+            citation.reload
+            expect(citation.title).to eq "something-of-interest"
+            expect(citation.pull_request_number).to eq 12
+          end
+        end
+      end
+      context "citation with matching title but different publisher exists" do
+        let!(:citation) { Citation.create(title: full_citation_params[:title], url: "https://www.foxnews.com/politics/trump-bahrain-israel-mideast-deal-peace", creator: FactoryBot.create(:user)) }
+        it "creates a new citation" do
+          expect(Citation.count).to eq 1
+          Sidekiq::Worker.clear_all
+          put "#{base_url}/#{subject.to_param}", params: hypothesis_add_to_github_params
+          expect(AddHypothesisToGithubContentJob.jobs.count).to eq 1
+          expect(AddCitationToGithubContentJob.jobs.count).to eq 0
+          expect(response).to redirect_to hypothesis_path(subject.id)
+          expect(flash[:success]).to be_present
 
-      #         hypothesis = Hypothesis.last
-      #         expect(hypothesis.title).to eq hypothesis_with_citation_params[:title]
-      #         expect(hypothesis.creator).to eq current_user
-      #         expect(hypothesis.citations.count).to eq 1
-      #         expect(hypothesis.tags_string).to eq "Economy, parties"
-      #         expect(hypothesis.pull_request_number).to be_blank
-      #         expect(hypothesis.approved?).to be_falsey
-      #         expect(tag.approved?).to be_truthy
-      #         expect(Tag.friendly_find("parties").approved?).to be_falsey
+          subject.reload
+          expect(subject.title).to eq hypothesis_params[:title]
+          expect(subject.creator).to eq current_user
+          expect(subject.citations.count).to eq 1
+          expect(subject.approved?).to be_falsey
+          expect(subject.pull_request_number).to be_blank # Because job hasn't run
 
-      #         expect(Citation.count).to eq 1
-      #         citation = Citation.last
-      #         expect(citation.title).to eq full_citation_params[:title]
-      #         expect(citation.url).to eq full_citation_params[:url]
-      #         expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
-      #         expect(citation.approved?).to be_falsey
+          expect(Citation.count).to eq 2
+          citation = Citation.last
+          expect(citation.title).to eq full_citation_params[:title]
+          expect(citation.url).to eq full_citation_params[:url]
+          expect(subject.citations.pluck(:id)).to eq([citation.id])
 
-      #         expect(citation.publication).to be_present
-      #         expect(citation.publication_title).to eq "example.com"
-      #         expect(citation.authors).to eq(["Zack", "George"])
-      #         expect(citation.published_date_str).to eq "1990-12-02"
-      #         expect(citation.url_is_direct_link_to_full_text).to be_falsey
-      #         expect(citation.peer_reviewed).to be_truthy
-      #         expect(citation.randomized_controlled_trial).to be_truthy
-      #         expect(citation.creator).to eq current_user
-      #       end
-      #     end
+          expect(citation.publication).to be_present
+          expect(citation.publication_title).to eq "example.com"
+          expect(citation.authors).to eq(["Zack", "George"])
+          expect(citation.published_at).to be_within(5).of Time.at(660124800)
+          expect(citation.url_is_direct_link_to_full_text).to be_falsey
+          expect(citation.creator).to eq current_user
+        end
+      end
+      context "citation with url_is_not_publisher" do
+        let(:citation_params) { full_citation_params.merge(url_is_not_publisher: true) }
+        let(:citation_url_not_publisher_params) { hypothesis_params.merge(citations_attributes: citation_params) }
+        it "creates" do
+          Sidekiq::Worker.clear_all
+          put "#{base_url}/#{subject.to_param}", params: {hypothesis: citation_url_not_publisher_params}
+          expect(AddHypothesisToGithubContentJob.jobs.count).to eq 0
+          expect(response).to redirect_to edit_hypothesis_path(subject.id)
+          expect(flash[:success]).to be_present
 
-      #     context "citation already exists" do
-      #       let!(:citation) { Citation.create(url: full_citation_params[:url], creator: FactoryBot.create(:user), pull_request_number: 12) }
-      #       it "does not create a new citation" do
-      #         VCR.use_cassette("hypotheses_controller-create_skip_citation", match_requests_on: [:method]) do
-      #           expect(Hypothesis.count).to eq 0
-      #           expect(Citation.count).to eq 1
-      #           expect(citation.title).to eq "something-of-interest"
-      #           expect(citation.pull_request_number).to be_present
-      #           expect(citation.approved?).to be_falsey
-      #           Sidekiq::Worker.clear_all
-      #           Sidekiq::Testing.inline! do
-      #             expect {
-      #               post base_url, params: {hypothesis: hypothesis_with_citation_params}
-      #             }.to change(Hypothesis, :count).by 1
-      #           end
-      #           expect(response).to redirect_to hypothesis_path(Hypothesis.last.to_param)
-      #           expect(flash[:success]).to be_present
+          subject.reload
+          expect(subject.title).to eq citation_url_not_publisher_params[:title]
+          expect(subject.creator).to eq current_user
+          expect(subject.citations.count).to eq 1
+          expect(subject.approved?).to be_falsey
+          expect(subject.pull_request_number).to be_blank # Because job hasn't run
 
-      #           hypothesis = Hypothesis.last
-      #           expect(hypothesis.title).to eq hypothesis_with_citation_params[:title]
-      #           expect(hypothesis.creator).to eq current_user
-      #           expect(hypothesis.citations.count).to eq 1
-      #           expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
-      #           expect(hypothesis.approved?).to be_falsey
-      #           expect(hypothesis.pull_request_number).to be_present
-      #           expect(hypothesis.pull_request_number).to_not eq 12
-      #           # Even though passed new information, it doesn't update the existing citation
-      #           citation.reload
-      #           expect(citation.title).to eq "something-of-interest"
-      #           expect(citation.pull_request_number).to eq 12
-      #         end
-      #       end
-      #     end
-      #     context "citation with matching title but different publisher exists" do
-      #       let!(:citation) { Citation.create(title: full_citation_params[:title], url: "https://www.foxnews.com/politics/trump-bahrain-israel-mideast-deal-peace", creator: FactoryBot.create(:user)) }
-      #       it "creates a new citation" do
-      #         expect(Hypothesis.count).to eq 0
-      #         expect(Citation.count).to eq 1
-      #         Sidekiq::Worker.clear_all
-      #         expect {
-      #           post base_url, params: {hypothesis: hypothesis_with_citation_params}
-      #         }.to change(Hypothesis, :count).by 1
-      #         expect(AddHypothesisToGithubContentJob.jobs.count).to eq 1
-      #         expect(AddCitationToGithubContentJob.jobs.count).to eq 0
-      #         expect(response).to redirect_to hypothesis_path(Hypothesis.last.to_param)
-      #         expect(flash[:success]).to be_present
+          expect(Citation.count).to eq 1
+          citation = Citation.last
+          expect(citation.title).to eq full_citation_params[:title]
+          expect(citation.url).to eq full_citation_params[:url]
+          expect(citation.url_is_not_publisher).to be_truthy
+          expect(subject.citations.pluck(:id)).to eq([citation.id])
 
-      #         hypothesis = Hypothesis.last
-      #         expect(hypothesis.title).to eq hypothesis_with_citation_params[:title]
-      #         expect(hypothesis.creator).to eq current_user
-      #         expect(hypothesis.citations.count).to eq 1
-      #         expect(hypothesis.approved?).to be_falsey
-      #         expect(hypothesis.pull_request_number).to be_blank # Because job hasn't run
+          expect(citation.authors).to eq(["Zack", "George"])
+          expect(citation.published_at).to be_within(5).of Time.at(660124800)
+          expect(citation.url_is_direct_link_to_full_text).to be_falsey
+          expect(citation.creator).to eq current_user
 
-      #         expect(Citation.count).to eq 2
-      #         citation = Citation.last
-      #         expect(citation.title).to eq full_citation_params[:title]
-      #         expect(citation.url).to eq full_citation_params[:url]
-      #         expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
+          publication = citation.publication
+          expect(publication).to be_present
+          expect(publication.meta_publication).to be_truthy
+          expect(publication.home_url).to eq "https://example.com"
+          expect(publication.title).to eq "example.com"
+        end
+        context "with publication_title" do
+          let(:citation_params) { full_citation_params.merge(url_is_not_publisher: true, publication_title: "Some other title") }
+          it "creates with publication title" do
+            Sidekiq::Worker.clear_all
+            put "#{base_url}/#{subject.to_param}", params: {hypothesis: citation_url_not_publisher_params}
+            expect(AddHypothesisToGithubContentJob.jobs.count).to eq 0
+            expect(AddCitationToGithubContentJob.jobs.count).to eq 0
+            expect(response).to redirect_to edit_hypothesis_path(subject.id)
+            expect(flash[:success]).to be_present
 
-      #         expect(citation.publication).to be_present
-      #         expect(citation.publication_title).to eq "example.com"
-      #         expect(citation.authors).to eq(["Zack", "George"])
-      #         expect(citation.published_at).to be_within(5).of Time.at(660124800)
-      #         expect(citation.url_is_direct_link_to_full_text).to be_falsey
-      #         expect(citation.creator).to eq current_user
-      #       end
-      #     end
-      #     context "citation with url_is_not_publisher" do
-      #       let(:citation_params) { full_citation_params.merge(url_is_not_publisher: true) }
-      #       let(:citation_url_not_publisher_params) { hypothesis_with_citation_params.merge(citations_attributes: citation_params) }
-      #       it "creates" do
-      #         expect(Hypothesis.count).to eq 0
-      #         expect(Citation.count).to eq 0
-      #         Sidekiq::Worker.clear_all
-      #         expect {
-      #           post base_url, params: {hypothesis: citation_url_not_publisher_params}
-      #         }.to change(Hypothesis, :count).by 1
-      #         expect(AddHypothesisToGithubContentJob.jobs.count).to eq 1
-      #         expect(AddCitationToGithubContentJob.jobs.count).to eq 0
-      #         expect(response).to redirect_to hypothesis_path(Hypothesis.last.to_param)
-      #         expect(flash[:success]).to be_present
+            subject.reload
+            expect(subject.title).to eq citation_url_not_publisher_params[:title]
 
-      #         hypothesis = Hypothesis.last
-      #         expect(hypothesis.title).to eq citation_url_not_publisher_params[:title]
-      #         expect(hypothesis.creator).to eq current_user
-      #         expect(hypothesis.citations.count).to eq 1
-      #         expect(hypothesis.approved?).to be_falsey
-      #         expect(hypothesis.pull_request_number).to be_blank # Because job hasn't run
+            expect(Citation.count).to eq 1
+            citation = Citation.last
+            expect(citation.title).to eq full_citation_params[:title]
+            expect(citation.url).to eq full_citation_params[:url]
+            expect(citation.url_is_not_publisher).to be_truthy
+            expect(subject.citations.pluck(:id)).to eq([citation.id])
 
-      #         expect(Citation.count).to eq 1
-      #         citation = Citation.last
-      #         expect(citation.title).to eq full_citation_params[:title]
-      #         expect(citation.url).to eq full_citation_params[:url]
-      #         expect(citation.url_is_not_publisher).to be_truthy
-      #         expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
+            expect(citation.authors).to eq(["Zack", "George"])
+            expect(citation.published_at).to be_within(5).of Time.at(660124800)
+            expect(citation.url_is_direct_link_to_full_text).to be_falsey
+            expect(citation.creator).to eq current_user
 
-      #         expect(citation.authors).to eq(["Zack", "George"])
-      #         expect(citation.published_at).to be_within(5).of Time.at(660124800)
-      #         expect(citation.url_is_direct_link_to_full_text).to be_falsey
-      #         expect(citation.creator).to eq current_user
-
-      #         publication = citation.publication
-      #         expect(publication).to be_present
-      #         expect(publication.meta_publication).to be_truthy
-      #         expect(publication.home_url).to eq "https://example.com"
-      #         expect(publication.title).to eq "example.com"
-      #       end
-      #       context "with publication_title" do
-      #         let(:citation_params) { full_citation_params.merge(url_is_not_publisher: true, publication_title: "Some other title") }
-      #         it "creates with publication title" do
-      #           expect(Hypothesis.count).to eq 0
-      #           expect(Citation.count).to eq 0
-      #           Sidekiq::Worker.clear_all
-      #           expect {
-      #             post base_url, params: {hypothesis: citation_url_not_publisher_params}
-      #           }.to change(Hypothesis, :count).by 1
-      #           expect(AddHypothesisToGithubContentJob.jobs.count).to eq 1
-      #           expect(AddCitationToGithubContentJob.jobs.count).to eq 0
-      #           expect(response).to redirect_to hypothesis_path(Hypothesis.last.to_param)
-      #           expect(flash[:success]).to be_present
-
-      #           hypothesis = Hypothesis.last
-      #           expect(hypothesis.title).to eq citation_url_not_publisher_params[:title]
-
-      #           expect(Citation.count).to eq 1
-      #           citation = Citation.last
-      #           expect(citation.title).to eq full_citation_params[:title]
-      #           expect(citation.url).to eq full_citation_params[:url]
-      #           expect(citation.url_is_not_publisher).to be_truthy
-      #           expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
-
-      #           expect(citation.authors).to eq(["Zack", "George"])
-      #           expect(citation.published_at).to be_within(5).of Time.at(660124800)
-      #           expect(citation.url_is_direct_link_to_full_text).to be_falsey
-      #           expect(citation.creator).to eq current_user
-
-      #           publication = citation.publication
-      #           expect(publication).to be_present
-      #           expect(publication.meta_publication).to be_falsey
-      #           expect(publication.home_url).to be_blank
-      #           expect(publication.title).to eq "Some other title"
-      #         end
-      #       end
-      #     end
-      #   end
-      # end
+            publication = citation.publication
+            expect(publication).to be_present
+            expect(publication.meta_publication).to be_falsey
+            expect(publication.home_url).to be_blank
+            expect(publication.title).to eq "Some other title"
+          end
+        end
+      end
     end
   end
 end
