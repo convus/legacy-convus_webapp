@@ -208,7 +208,7 @@ RSpec.describe "/hypotheses", type: :request do
         subject.reload
         expect(subject.title).to eq hypothesis_params[:title]
         expect(subject.submitted_to_github?).to be_falsey
-        expect(subject.tags_string).to eq "economy"
+        expect(subject.tags_string).to eq "economy, parties"
         expect(subject.citations.count).to eq 1
 
         citation = subject.citations.last

@@ -130,7 +130,7 @@ RSpec.describe Hypothesis, type: :model do
       expect {
         hypothesis.update(add_to_github: true)
         hypothesis.update(add_to_github: true)
-      }.to change(AddHypothesisToGithubContentJob.jobs, :count).by 2
+      }.to change(AddHypothesisToGithubContentJob.jobs, :count).by 1
 
       expect {
         hypothesis.update(add_to_github: true, pull_request_number: 12)

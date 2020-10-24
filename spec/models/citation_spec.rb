@@ -197,7 +197,7 @@ RSpec.describe Citation, type: :model do
       expect {
         citation.update(add_to_github: true)
         citation.update(add_to_github: true)
-      }.to change(AddCitationToGithubContentJob.jobs, :count).by 2
+      }.to change(AddCitationToGithubContentJob.jobs, :count).by 1
 
       expect {
         citation.update(add_to_github: true, pull_request_number: 12)
