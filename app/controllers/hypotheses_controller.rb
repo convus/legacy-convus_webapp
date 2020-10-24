@@ -24,14 +24,31 @@ class HypothesesController < ApplicationController
 
   def create
     @hypothesis = Hypothesis.new(permitted_params)
+    @hypothesis.creator_id = current_user.id
     citation = Citation.find_or_create_by_params(permitted_citation_params)
     @hypothesis.hypothesis_citations.build(citation: citation, quotes_text: citation&.quotes_text)
     if @hypothesis.save
       flash[:success] = "Hypothesis created!"
       redirect_to edit_hypothesis_path(@hypothesis.id)
     else
-      @hypothesis.errors_full_messages
       render :new
+    end
+  end
+
+  def update
+    if @hypothesis.update(permitted_params)
+      citation = Citation.find_or_create_by_params(permitted_citation_params)
+      @hypothesis.hypothesis_citations.create(citation: citation, quotes_text: citation&.quotes_text)
+      if @hypothesis.submitted_to_github?
+        flash[:success] = "Hypothesis submitted for review"
+        redirect_to hypothesis_path(@hypothesis.id)
+      else
+        flash[:success] = "Hypothesis saved"
+        redirect_to edit_hypothesis_path(@hypothesis.id)
+      end
+    else
+      @hypothesis.citations_attributes = permitted_citations_params
+      render :edit
     end
   end
 
@@ -69,14 +86,22 @@ class HypothesesController < ApplicationController
     hypotheses
   end
 
-  def permitted_create_params
-    params.require(:hypothesis).permit(:title, :add_to_github, :tags_string).merge(creator: current_user)
-  end
-
   def permitted_params
-    params.require(:hypothesis).permit(:title, :add_to_github, :tags_string).merge(creator: current_user)
+    params.require(:hypothesis).permit(:title, :add_to_github, :tags_string)
   end
 
+  def create_or_update_citations
+    # Something like:
+    # permitted_citations_params.dig(:citations_attributes).each do |key, citation_params|
+    #   Citation.find_or_create_by_params citation_params
+    # end
+  end
+
+  def permitted_citations_params
+    params.require(:hypothesis).permit(citations_attributes: permitted_citation_attrs)
+  end
+
+  # TODO: remove, always use multiple
   def permitted_citation_params
     cparams = params.require(:hypothesis).permit(citations_attributes: permitted_citation_attrs)
       .dig(:citations_attributes)

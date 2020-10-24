@@ -59,7 +59,7 @@ class Hypothesis < ApplicationRecord
 
   def tags_string
     if defined?(@updated_tags)
-      hypothesis_tags.map(&:tag_title).sort_by(&:downcase).join(", ")
+      @updated_tags.sort_by(&:downcase).compact.uniq.join(", ")
     else
       tag_titles.join(", ")
     end
@@ -67,13 +67,14 @@ class Hypothesis < ApplicationRecord
 
   def tags_string=(val)
     new_tags = (val.is_a?(Array) ? val : val.to_s.split(/,|\n/)).reject(&:blank?)
-    @updated_tags = true
+    @updated_tags = []
     new_ids = new_tags.map { |string|
-      tag_id = Tag.find_or_create_for_title(string)&.id
-      unless hypothesis_tags.find_by_tag_id(tag_id).present?
-        hypothesis_tags.build(tag_id: tag_id)
+      tag = Tag.find_or_create_for_title(string)
+      @updated_tags << tag.title
+      unless hypothesis_tags.find_by_tag_id(tag.id).present?
+        hypothesis_tags.build(tag_id: tag.id)
       end
-      tag_id
+      tag.id
     }
     hypothesis_tags.where.not(tag_id: new_ids).destroy_all
     tags

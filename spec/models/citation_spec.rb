@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Citation, type: :model do
+  it_behaves_like "GithubSubmittable"
+
   describe "factory" do
     let(:publication) { FactoryBot.create(:publication) }
     let(:citation) { FactoryBot.create(:citation, publication: publication) }

@@ -3,12 +3,12 @@ module GithubSubmittable
   extend ActiveSupport::Concern
 
   included do
-    scope :submitted_to_github, -> { approved.or(where.not(pull_request_number: nil)) }
-    scope :not_submitted_to_github, -> { where(approved_at: nil, pull_request_number: nil) }
+    scope :submitted_to_github, -> { approved.or(where.not(pull_request_number: nil)).or(where(submitting_to_github: true)) }
+    scope :not_submitted_to_github, -> { where(approved_at: nil, pull_request_number: nil, submitting_to_github: false) }
   end
 
   def submitted_to_github?
-    approved? || pull_request_number.present?
+    approved? || pull_request_number.present? || submitting_to_github
   end
 
   def not_submitted_to_github?
