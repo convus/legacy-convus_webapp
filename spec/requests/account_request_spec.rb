@@ -7,7 +7,7 @@ RSpec.describe "/account", type: :request do
 
   it "redirects" do
     get base_url
-    expect(response).to redirect_to user_github_omniauth_authorize_path
+    expect(response).to redirect_to new_user_session_path
   end
 
   context "logged in" do

@@ -2,6 +2,7 @@ class Citation < ApplicationRecord
   include FriendlyFindable
   include FlatFileSerializable
   include ApprovedAtable
+  include GithubSubmittable
 
   # NOTE: Kind is deprecated, and can be removed sometime soon
   KIND_ENUM = {
@@ -19,6 +20,10 @@ class Citation < ApplicationRecord
 
   has_many :hypothesis_citations, dependent: :destroy
   has_many :hypotheses, through: :hypothesis_citations
+  has_many :quotes
+  has_many :hypothesis_quotes
+
+  accepts_nested_attributes_for :quotes
 
   validates_presence_of :url
   validates :slug, presence: true, uniqueness: {scope: [:publication_id]}
@@ -30,7 +35,7 @@ class Citation < ApplicationRecord
 
   scope :by_creation, -> { reorder(:created_at) }
 
-  attr_accessor :assignable_kind, :skip_add_citation_to_github
+  attr_accessor :assignable_kind, :add_to_github, :quotes_text
 
   def self.kinds
     KIND_ENUM.keys.map(&:to_s)
@@ -78,8 +83,10 @@ class Citation < ApplicationRecord
   end
 
   def self.find_or_create_by_params(attrs)
-    return nil unless (attrs || {}).dig(:url).present?
-    friendly_find(attrs[:url]) || create(attrs)
+    existing = friendly_find(attrs[:url]) if (attrs || {}).dig(:url).present?
+    return create(attrs) if existing.blank?
+    existing.quotes_text = attrs[:quotes_text]
+    existing
   end
 
   def to_param
@@ -173,9 +180,11 @@ class Citation < ApplicationRecord
   end
 
   def add_to_github_content
-    return true if approved? || pull_request_number.present? ||
-      skip_add_citation_to_github || GithubIntegration::SKIP_GITHUB_UPDATE
+    return true if submitted_to_github? || GithubIntegration::SKIP_GITHUB_UPDATE
+    return false unless ParamsNormalizer.boolean(add_to_github)
     AddCitationToGithubContentJob.perform_async(id)
+    # Because we've enqueued, and we want the fact that it is submitted to be reflected instantly
+    update(submitting_to_github: true)
   end
 
   private

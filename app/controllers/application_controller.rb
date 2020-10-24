@@ -40,14 +40,15 @@ class ApplicationController < ActionController::Base
   end
 
   def user_root_path
-    return github_link unless current_user.present?
-    root_url
+    return @user_root_path if defined?(@user_root_path)
+    return @user_root_path = new_user_session_path if current_user.blank?
+    @user_root_path = root_url
   end
 
   def redirect_to_signup_unless_user_present!
     return current_user if current_user.present?
     store_return_to
-    redirect_to github_link
+    redirect_to new_user_session_path
     nil
   end
 

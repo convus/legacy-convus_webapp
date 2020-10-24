@@ -28,4 +28,3 @@ RSpec.describe ReconcileTaskOutputChecker do
     end
   end
 end
-

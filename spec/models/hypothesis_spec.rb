@@ -2,6 +2,7 @@ require "rails_helper"
 
 RSpec.describe Hypothesis, type: :model do
   it_behaves_like "TitleSluggable"
+  it_behaves_like "GithubSubmittable"
 
   it "has a valid factory" do
     hypothesis = FactoryBot.create(:hypothesis)
@@ -20,6 +21,24 @@ RSpec.describe Hypothesis, type: :model do
       expect(Slugifyer.filename_slugify(slug)).to eq slug
       expect(Hypothesis.friendly_find(slug)).to eq hypothesis
       expect(Hypothesis.friendly_find(title)).to eq hypothesis
+    end
+  end
+
+  describe "errors_full_messages" do
+    let(:hypothesis) { Hypothesis.new }
+    it "returns errors full_messages" do
+      expect(hypothesis.errors_full_messages).to be_blank
+      hypothesis.save
+      expect(hypothesis.errors_full_messages).to eq(["Title can't be blank"])
+    end
+    context "with hypothesis_citation" do
+      let(:hypothesis_citation) { hypothesis.hypothesis_citations.build(quotes_text: " ") }
+      it "returns hypothesis_citation errors as well" do
+        expect(hypothesis.errors_full_messages).to be_blank
+        expect(hypothesis_citation.errors.full_messages).to be_blank
+        hypothesis.save
+        expect(hypothesis.errors_full_messages).to eq(["Citation URL can't be blank", "Title can't be blank"])
+      end
     end
   end
 
@@ -67,6 +86,12 @@ RSpec.describe Hypothesis, type: :model do
         expect(hypothesis.tag_titles).to match_array(target_tag_titles)
       end
     end
+    context "assigning without creating" do
+      let(:hypothesis) { Hypothesis.new(tags_string: "One,    Xwo, three") }
+      it "returns what was assigned" do
+        expect(hypothesis.tags_string).to eq("One, three, Xwo")
+      end
+    end
   end
 
   describe "citation_urls" do
@@ -100,13 +125,26 @@ RSpec.describe Hypothesis, type: :model do
     it "enqueues job" do
       expect {
         hypothesis.save
+      }.to change(AddHypothesisToGithubContentJob.jobs, :count).by 0
+
+      expect {
+        hypothesis.update(add_to_github: true)
+        hypothesis.update(add_to_github: true)
       }.to change(AddHypothesisToGithubContentJob.jobs, :count).by 1
+
+      expect {
+        hypothesis.update(add_to_github: true, pull_request_number: 12)
+      }.to change(AddHypothesisToGithubContentJob.jobs, :count).by 0
+
+      expect {
+        hypothesis.update(add_to_github: true, pull_request_number: nil, approved_at: Time.current)
+      }.to change(AddHypothesisToGithubContentJob.jobs, :count).by 0
     end
     context "with skip_github_update" do
       it "does not enqueue job" do
         stub_const("GithubIntegration::SKIP_GITHUB_UPDATE", true)
         expect {
-          hypothesis.save
+          hypothesis.update(add_to_github: true)
         }.to change(AddHypothesisToGithubContentJob.jobs, :count).by 0
       end
     end
