@@ -1,0 +1,48 @@
+%h1 Edit Hypothesis
+
+= form_for @hypothesis, url: { action: "update" }, html: { class: "form", id: "hypothesisForm" } do |f|
+  = f.hidden_field :add_to_github
+
+  .row.mt-4.mb-4
+    .col-md-8.col-xl-6
+      - if @hypothesis.errors_full_messages.any?
+        = render partial: "/shared/errors", locals: { name: "Hypothesis", obj: @hypothesis, error_messages: @hypothesis.errors_full_messages }
+
+      .form-group
+        = f.label :title do
+          Hypothesis text
+          %span.small.less-strong
+            must be falsifiable
+        = f.text_area :title,  required: true, class: "form-control"
+      .form-group
+        = f.label :tags_string do
+          Topics
+          %small.less-strong
+            at least 2, comma delineated
+        = f.text_field :tags_string, required: true, class: "form-control"
+
+      %h3.mt-4.mb-1
+        = "Citation".pluralize(@hypothesis.hypothesis_citations.count)
+
+      - @hypothesis.hypothesis_citations.build unless @hypothesis.hypothesis_citations.count > 0
+      - @hypothesis.hypothesis_citations.each do |hypothesis_citation|
+        - hypothesis_citation.citation ||= Citation.new
+        - hypothesis_citation.citation.quotes_text = hypothesis_citation.quotes_text
+        = f.fields_for :citations_attributes, hypothesis_citation.citation do |nested_form|
+          = render partial: "/citations/fields", locals: {form: nested_form}
+
+          -# TODO: add published_date_str fields
+  .row
+    .col-6.col-md-4.col-xl-3
+      .form-group
+        = submit_tag "Save", class: "btn btn-primary submit-input"
+    .col-6.col-md-4.col-xl-3
+      .form-group.text-right
+        %a#submitForApproval.btn.btn-outline-success.submit-input{ href: "#" }
+          Submit for approval
+          %span.loadingSpinner.spinner-border.spinner-border-sm.collapse.ml-2
+            %span.sr-only Loading...
+%hr.mt-4
+%small.less-strong
+  Content submitted to Convus is licensed under the
+  = link_to "Creative Commons Attribution-ShareAlike 4.0 International License", "http://creativecommons.org/licenses/by-sa/4.0/", target: "blank"

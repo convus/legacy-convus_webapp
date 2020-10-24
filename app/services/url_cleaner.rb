@@ -43,6 +43,7 @@ class UrlCleaner
       # Get the first domain - which will be the actual base domain passed in
       base_domain = base_domains(str).first
       return str unless base_domain.present?
+      return base_domain unless str.split(base_domain).count > 1
       str.split(base_domain).last&.gsub(/\A\//, "")&.gsub(/\/\z/, "")
     end
 

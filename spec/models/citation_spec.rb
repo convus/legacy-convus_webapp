@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Citation, type: :model do
+  it_behaves_like "GithubSubmittable"
+
   describe "factory" do
     let(:publication) { FactoryBot.create(:publication) }
     let(:citation) { FactoryBot.create(:citation, publication: publication) }
@@ -20,10 +22,19 @@ RSpec.describe Citation, type: :model do
     end
     context "missing url" do
       it "doesn't do anything" do
-        expect(Citation.find_or_create_by_params(nil)).to be_blank
-        expect(Citation.find_or_create_by_params({})).to be_blank
-        expect(Citation.find_or_create_by_params({title: "party"})).to be_blank
+        expect(Citation.find_or_create_by_params(nil)).to_not be_valid
+        expect(Citation.find_or_create_by_params({})).to_not be_valid
+        expect(Citation.find_or_create_by_params({title: "party"})).to_not be_valid
       end
+    end
+  end
+
+  describe "very basic" do
+    let(:citation) { Citation.create(url: "example.com") }
+    it "is what we expect" do
+      expect(citation).to be_valid
+      expect(citation.url).to eq "http://example.com"
+      expect(citation.title).to eq "example.com"
     end
   end
 
@@ -178,17 +189,30 @@ RSpec.describe Citation, type: :model do
 
   describe "add_to_github_content" do
     let(:citation) { FactoryBot.build(:citation) }
-    it "enqueues job" do
+    it "enqueues only when add_to_github and not already added" do
       expect {
         citation.save
+      }.to change(AddCitationToGithubContentJob.jobs, :count).by 0
+
+      expect {
+        citation.update(add_to_github: true)
+        citation.update(add_to_github: true)
       }.to change(AddCitationToGithubContentJob.jobs, :count).by 1
+
+      expect {
+        citation.update(add_to_github: true, pull_request_number: 12)
+      }.to change(AddCitationToGithubContentJob.jobs, :count).by 0
+
+      expect {
+        citation.update(add_to_github: true, pull_request_number: nil, approved_at: Time.current)
+      }.to change(AddCitationToGithubContentJob.jobs, :count).by 0
     end
-    context "with skip_add_citation_to_github" do
-      let(:citation) { FactoryBot.build(:citation, skip_add_citation_to_github: true) }
-      it "does not enqueue job" do
+    context "create with add_to_github" do
+      let(:citation) { FactoryBot.build(:citation, add_to_github: true) }
+      it "enqueues job" do
         expect {
           citation.save
-        }.to change(AddCitationToGithubContentJob.jobs, :count).by 0
+        }.to change(AddCitationToGithubContentJob.jobs, :count).by 1
       end
     end
     context "via hypothesis creation" do
@@ -200,8 +224,8 @@ RSpec.describe Citation, type: :model do
         expect(Hypothesis.count).to eq 0
         expect(Citation.count).to eq 0
         expect {
-          hypothesis.save
-        }.to change(AddCitationToGithubContentJob.jobs, :count).by 1
+          hypothesis.update(add_to_github: true)
+        }.to change(AddCitationToGithubContentJob.jobs, :count).by 0
         expect(AddHypothesisToGithubContentJob.jobs.count).to eq 1
         expect(Hypothesis.count).to eq 1
         expect(Citation.count).to eq 1

@@ -6,8 +6,8 @@ RSpec.describe HypothesisQuote, type: :model do
     it "has a valid factory" do
       expect(hypothesis_quote).to be_valid
       expect(hypothesis_quote.hypothesis.quotes.pluck(:id)).to eq([hypothesis_quote.quote_id])
-      expect(hypothesis_quote.importance).to eq 5
-      expect(hypothesis_quote.score).to eq 5
+      expect(hypothesis_quote.importance).to eq 50
+      expect(hypothesis_quote.score).to eq 50
     end
   end
 
@@ -16,8 +16,8 @@ RSpec.describe HypothesisQuote, type: :model do
     context "nil importance" do
       let(:hypothesis_quote) { HypothesisQuote.new(importance: nil) }
       it "sets importance to default" do
-        expect(hypothesis_quote.importance).to eq 5
-        expect(hypothesis_quote.score).to eq 5
+        expect(hypothesis_quote.importance).to eq 50
+        expect(hypothesis_quote.score).to eq 50
       end
     end
     context "-1 importance" do
@@ -28,10 +28,10 @@ RSpec.describe HypothesisQuote, type: :model do
       end
     end
     context "20 importance" do
-      let(:hypothesis_quote) { HypothesisQuote.new(importance: 20) }
+      let(:hypothesis_quote) { HypothesisQuote.new(importance: 200) }
       it "sets importance to max" do
-        expect(hypothesis_quote.importance).to eq 10
-        expect(hypothesis_quote.score).to eq 10
+        expect(hypothesis_quote.importance).to eq 100
+        expect(hypothesis_quote.score).to eq 100
       end
     end
   end
@@ -46,16 +46,17 @@ RSpec.describe HypothesisQuote, type: :model do
       it "sets closed_access" do
         expect(citation.badges).to eq({open_access_research: 10})
         expect(citation.calculated_score).to eq 10
-        expect(hypothesis_quote.importance).to eq 5
-        expect(hypothesis_quote.score).to eq 15
+        expect(hypothesis_quote.importance).to eq 50
+        expect(hypothesis_quote.score).to eq 150
       end
     end
     context "citation randomized_controlled_trial" do
       let(:citation) { Citation.new(randomized_controlled_trial: true) }
-      let(:importance) { 7 }
+      let(:importance) { 70 }
       it "returns calculated_score with importance" do
         expect(citation.calculated_score).to eq 2
-        expect(hypothesis_quote.score).to eq 9
+        expect(hypothesis_quote.importance).to eq 70
+        expect(hypothesis_quote.score).to eq 90
       end
     end
   end
