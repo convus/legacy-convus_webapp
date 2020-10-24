@@ -37,8 +37,13 @@ class HypothesesController < ApplicationController
 
   def update
     if @hypothesis.update(permitted_params)
+      pp "Hypothesis-github: #{@hypothesis.add_to_github}"
       citation = Citation.find_or_create_by_params(permitted_citation_params)
-      @hypothesis.hypothesis_citations.create(citation: citation, quotes_text: citation&.quotes_text)
+      hypothesis_citation = @hypothesis.hypothesis_citations.where(citation_id: citation.id).first
+      hypothesis_citation ||= @hypothesis.hypothesis_citations.build(citation: citation)
+      hypothesis_citation.update(quotes_text: citation&.quotes_text)
+      # pp "citation errors: #{citation.errors.full_messages}, hypothesis_citations errors: #{hypothesis_citation.errors.full_messages}"
+      # pp "Hypothesis: #{@hypothesis.errors_full_messages}"
       if @hypothesis.submitted_to_github?
         flash[:success] = "Hypothesis submitted for review"
         redirect_to hypothesis_path(@hypothesis.id)

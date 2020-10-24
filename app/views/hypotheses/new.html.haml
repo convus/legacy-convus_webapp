@@ -1,11 +1,12 @@
 %h1 New Hypothesis
 
-.row.mt-4.mb-4
-  .col-md-8.col-xl-6
-    - if @hypothesis.errors.any?
-      = render partial: "/shared/errors", locals: { name: "Hypothesis", obj: @hypothesis }
+= form_for @hypothesis, url: hypotheses_path, method: "POST", html: { class: "form", id: "hypothesisForm" } do |f|
+  .row.mt-4.mb-4
+    .col-md-8.col-xl-6
+      - if @hypothesis.errors.any?
+        = render partial: "/shared/errors", locals: { name: "Hypothesis", obj: @hypothesis }
 
-    = form_for @hypothesis, url: hypotheses_path, method: "POST", html: { class: "form" } do |f|
+
       .form-group
         = f.label :title do
           Hypothesis text

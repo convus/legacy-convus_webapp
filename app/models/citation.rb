@@ -84,7 +84,9 @@ class Citation < ApplicationRecord
 
   def self.find_or_create_by_params(attrs)
     existing = friendly_find(attrs[:url]) if (attrs || {}).dig(:url).present?
-    existing || create(attrs)
+    return create(attrs) if existing.blank?
+    existing.quotes_text = attrs[:quotes_text]
+    existing
   end
 
   def to_param
@@ -179,7 +181,7 @@ class Citation < ApplicationRecord
 
   def add_to_github_content
     return true if submitted_to_github? || GithubIntegration::SKIP_GITHUB_UPDATE
-    return false unless add_to_github
+    return false unless ParamsNormalizer.boolean(add_to_github)
     AddCitationToGithubContentJob.perform_async(id)
     # Because we've enqueued, and we want the fact that it is submitted to be reflected instantly
     update(submitting_to_github: true)

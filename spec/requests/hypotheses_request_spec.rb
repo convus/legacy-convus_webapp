@@ -14,7 +14,8 @@ RSpec.describe "/hypotheses", type: :request do
       authors_str: "\nZack\n George\n",
       published_date_str: "1990-12-2",
       url_is_not_publisher: false,
-      url: "https://example.com/something-of-interest"
+      url: "https://example.com/something-of-interest",
+      quotes_text: "First quote from this literature\nSecond quote, which is cool\nThird"
     }
   end
   let(:subject) { FactoryBot.create(:hypothesis, creator_id: current_user&.id) }
@@ -195,7 +196,7 @@ RSpec.describe "/hypotheses", type: :request do
           # citations_attributes: { Time.current.to_i.to_s => full_citation_params }
         }
       end
-      let(:hypothesis_add_to_github_params) { {hypothesis: hypothesis_params.merge(add_to_github: true)} }
+      let(:hypothesis_add_to_github_params) { {hypothesis: hypothesis_params.merge(add_to_github: "1")} }
       it "updates" do
         expect(subject.citations.count).to eq 0
         Sidekiq::Worker.clear_all
@@ -221,6 +222,17 @@ RSpec.describe "/hypotheses", type: :request do
         expect(citation.published_date_str).to eq "1990-12-02"
         expect(citation.url_is_direct_link_to_full_text).to be_falsey
         expect(citation.creator_id).to eq current_user.id
+
+        expect(subject.hypothesis_quotes.count).to eq 3
+        hypothesis_quote1 = subject.hypothesis_quotes.first
+        hypothesis_quote2 = subject.hypothesis_quotes.second
+        hypothesis_quote3 = subject.hypothesis_quotes.last
+        expect(hypothesis_quote1.quote_text).to eq "First quote from this literature"
+        expect(hypothesis_quote1.citation_id).to eq citation.id
+        expect(hypothesis_quote2.quote_text).to eq "Second quote, which is cool"
+        expect(hypothesis_quote2.citation_id).to eq citation.id
+        expect(hypothesis_quote1.score).to be > hypothesis_quote2.score
+        expect(hypothesis_quote3.quote_text).to eq "Third"
       end
       context "other persons hypothesis" do
         let(:subject) { FactoryBot.create(:hypothesis) }
@@ -254,7 +266,10 @@ RSpec.describe "/hypotheses", type: :request do
           rendered_hypothesis = assigns(:hypothesis)
           expect(rendered_hypothesis.title).to eq " "
           expect(rendered_hypothesis.tags_string).to eq "economy, parties"
-          expect(rendered_hypothesis.citations.map(&:title)).to eq([full_citation_params[:title]])
+          expect(rendered_hypothesis.citations.map(&:title).count).to eq 1
+          rendered_citation = rendered_hypothesis.citations.first
+          expect(rendered_citation.title).to eq full_citation_params[:title]
+          expect(rendered_citation.quotes_text).to eq full_citation_params[:quotes_text]
         end
       end
       context "add_to_github" do
@@ -295,7 +310,6 @@ RSpec.describe "/hypotheses", type: :request do
           expect(citation.creator_id).to eq current_user.id
         end
       end
-
       context "citation already exists" do
         let!(:citation) { Citation.create(url: full_citation_params[:url], creator: FactoryBot.create(:user), pull_request_number: 12) }
         it "does not create a new citation" do
@@ -325,6 +339,24 @@ RSpec.describe "/hypotheses", type: :request do
             citation.reload
             expect(citation.title).to eq "something-of-interest"
             expect(citation.pull_request_number).to eq 12
+          end
+        end
+        context "2 quotes already exist" do
+          it "does not duplicate existing quotes" do
+            subject.hypothesis_citations.create(citation: citation, quotes_text: "Third\n   First quote from this literature")
+            expect(subject.hypothesis_quotes.count).to eq 2
+            expect(subject.hypothesis_quotes.score_ordered.map(&:quote_text)).to eq(["Third", "First quote from this literature"])
+            put "#{base_url}/#{subject.to_param}", params: {hypothesis: hypothesis_params}
+            expect(response).to redirect_to edit_hypothesis_path(subject.id)
+            expect(flash[:success]).to be_present
+            subject.reload
+            expect(subject.title).to eq hypothesis_params[:title]
+            expect(subject.citations.count).to eq 1
+            expect(subject.citations.pluck(:id)).to eq([citation.id])
+            expect(subject.submitting_to_github).to be_falsey
+
+            expect(subject.hypothesis_quotes.count).to eq 3
+            expect(subject.hypothesis_quotes.score_ordered.map(&:quote_text)).to eq(["First quote from this literature", "Second quote, which is cool", "Third"])
           end
         end
       end

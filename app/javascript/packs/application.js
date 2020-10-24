@@ -18,3 +18,6 @@ require("channels");
 
 // This is where all the actual JS is.
 import "../scripts/main";
+
+// Because it's nice to be able to access jQuery in the console, attach it ;)
+window.$ = window.jQuery = jQuery;

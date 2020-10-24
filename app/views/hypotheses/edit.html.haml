@@ -1,11 +1,13 @@
 %h1 Edit Hypothesis
 
-.row.mt-4.mb-4
-  .col-md-8.col-xl-6
-    - if @hypothesis.errors_full_messages.any?
-      = render partial: "/shared/errors", locals: { name: "Hypothesis", obj: @hypothesis, error_messages: @hypothesis.errors_full_messages }
+= form_for @hypothesis, url: { action: "update" }, html: { class: "form", id: "hypothesisForm" } do |f|
+  = f.hidden_field :add_to_github
 
-    = form_for @hypothesis, url: hypotheses_path, method: "POST", html: { class: "form" } do |f|
+  .row.mt-4.mb-4
+    .col-md-8.col-xl-6
+      - if @hypothesis.errors_full_messages.any?
+        = render partial: "/shared/errors", locals: { name: "Hypothesis", obj: @hypothesis, error_messages: @hypothesis.errors_full_messages }
+
       .form-group
         = f.label :title do
           Hypothesis text
@@ -30,9 +32,16 @@
           = render partial: "/citations/fields", locals: {form: nested_form}
 
           -# TODO: add published_date_str fields
-
+  .row
+    .col-6.col-md-4.col-xl-3
       .form-group
-        = submit_tag "Save", class: "btn btn-primary"
+        = submit_tag "Save", class: "btn btn-primary submit-input"
+    .col-6.col-md-4.col-xl-3
+      .form-group.text-right
+        %a#submitForApproval.btn.btn-outline-success.submit-input{ href: "#" }
+          Submit for approval
+          %span.loadingSpinner.spinner-border.spinner-border-sm.collapse.ml-2
+            %span.sr-only Loading...
 %hr.mt-4
 %small.less-strong
   Content submitted to Convus is licensed under the
