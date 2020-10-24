@@ -15,6 +15,8 @@ RSpec.describe "/hypotheses", type: :request do
       url: "https://example.com/something-of-interest"
     }
   end
+  let(:subject) { FactoryBot.create(:hypothesis, creator_id: current_user&.id) }
+  let(:current_user) { nil }
 
   describe "index" do
     let!(:hypothesis) { FactoryBot.create(:hypothesis) }
@@ -32,30 +34,29 @@ RSpec.describe "/hypotheses", type: :request do
   end
 
   describe "show" do
-    let(:subject) { FactoryBot.create(:hypothesis_approved) }
     it "renders" do
-      expect(subject.approved?).to be_truthy
+      expect(subject.approved?).to be_falsey
       get "#{base_url}/#{subject.to_param}"
       expect(response.code).to eq "200"
       expect(response).to render_template("hypotheses/show")
-
-      get "/#{subject.file_path}"
-      expect(response.code).to eq "200"
-      expect(response).to render_template("hypotheses/show")
-      expect(assigns(:hypothesis)).to eq subject
-
-      get "#{base_url}/#{subject.id}"
-      expect(response.code).to eq "200"
-      expect(response).to render_template("hypotheses/show")
-      expect(assigns(:hypothesis)).to eq subject
     end
-    context "unapproved" do
-      let(:subject) { FactoryBot.create(:hypothesis) }
+    context "approved" do
+      let(:subject) { FactoryBot.create(:hypothesis_approved) }
       it "renders" do
-        expect(subject.approved?).to be_falsey
+        expect(subject.approved?).to be_truthy
         get "#{base_url}/#{subject.to_param}"
         expect(response.code).to eq "200"
         expect(response).to render_template("hypotheses/show")
+
+        get "/#{subject.file_path}"
+        expect(response.code).to eq "200"
+        expect(response).to render_template("hypotheses/show")
+        expect(assigns(:hypothesis)).to eq subject
+
+        get "#{base_url}/#{subject.id}"
+        expect(response.code).to eq "200"
+        expect(response).to render_template("hypotheses/show")
+        expect(assigns(:hypothesis)).to eq subject
       end
     end
   end
@@ -63,8 +64,16 @@ RSpec.describe "/hypotheses", type: :request do
   describe "new" do
     it "redirects" do
       get "#{base_url}/new"
-      expect(response).to redirect_to user_github_omniauth_authorize_path
+      expect(response).to redirect_to new_user_session_path
       expect(session[:user_return_to]).to eq "/hypotheses/new"
+    end
+  end
+
+  describe "edit" do
+    it "redirects" do
+      get "#{base_url}/#{subject.to_param}/edit"
+      expect(response).to redirect_to new_user_session_path
+      expect(session[:user_return_to]).to eq "/hypotheses/#{subject.to_param}/edit"
     end
   end
 
@@ -128,7 +137,6 @@ RSpec.describe "/hypotheses", type: :request do
         expect(hypothesis_quote1.score).to be > hypothesis_quote2.score
       end
       context "invalid params" do
-        # TODO: test that this deals with multiple citations
         let(:invalid_hypothesis_params) { simple_hypothesis_params.merge(title: "", citations_attributes: citation_params.merge(url: " ")) }
         it "does not create, does not explode" do
           expect {
@@ -146,7 +154,48 @@ RSpec.describe "/hypotheses", type: :request do
           expect(errored_citation.quotes_text).to eq("a quote from this article\n\nand another quote from it")
         end
       end
+    end
 
+    describe "edit" do
+      it "renders" do
+        expect(subject.creator_id).to eq current_user.id
+        get "#{base_url}/#{subject.to_param}/edit"
+        expect(response.code).to eq "200"
+        expect(flash).to be_blank
+        expect(response).to render_template("hypotheses/edit")
+        expect(assigns(:hypothesis)).to eq subject
+      end
+      context "other persons hypothesis" do
+        let(:subject) { FactoryBot.create(:hypothesis) }
+        it "redirects" do
+          expect(subject.creator_id).to_not eq current_user.id
+          get "#{base_url}/#{subject.to_param}/edit"
+          expect(response.code).to redirect_to root_url
+          expect(flash[:error]).to be_present
+        end
+      end
+      context "approved hypothesis" do
+        let(:subject) { FactoryBot.create(:hypothesis_approved, creator_id: current_user.id) }
+        it "redirects" do
+          expect(subject.creator_id).to eq current_user.id
+          get "#{base_url}/#{subject.to_param}/edit"
+          expect(response.code).to redirect_to assigns(:user_root_path)
+          expect(flash[:error]).to be_present
+        end
+      end
+    end
+
+    describe "update" do
+      let(:hypothesis) { FactoryBot.create(:hypothesis) }
+      it "updates" do
+      end
+      context "other persons hypothesis" do
+        it "does not update" do
+        end
+      end
+      context "unapproved hypothesis" do
+        it "does not update"
+      end
       # NOTE: IRL hypotheses will be created before they are add_to_github, but this is illustrative
       # context "full_citation_params and add_to_github" do
       #   let!(:tag) { FactoryBot.create(:tag_approved, title: "Economy") }

@@ -2,6 +2,7 @@ class Hypothesis < ApplicationRecord
   include TitleSluggable
   include FlatFileSerializable
   include ApprovedAtable
+  include GithubSubmittable
 
   belongs_to :creator, class_name: "User"
 
@@ -118,7 +119,7 @@ class Hypothesis < ApplicationRecord
   end
 
   def add_to_github_content
-    return true if approved? || pull_request_number.present? || GithubIntegration::SKIP_GITHUB_UPDATE
+    return true if submitted_to_github? || GithubIntegration::SKIP_GITHUB_UPDATE
     return false unless add_to_github
     AddHypothesisToGithubContentJob.perform_async(id)
   end

@@ -13,7 +13,7 @@ RSpec.describe "/citations", type: :request do
   describe "new" do
     it "redirects" do
       get "#{base_url}/new"
-      expect(response).to redirect_to user_github_omniauth_authorize_path
+      expect(response).to redirect_to new_user_session_path
       expect(session[:user_return_to]).to eq "/citations/new"
     end
   end

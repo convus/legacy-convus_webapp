@@ -2,6 +2,7 @@ class Citation < ApplicationRecord
   include FriendlyFindable
   include FlatFileSerializable
   include ApprovedAtable
+  include GithubSubmittable
 
   # NOTE: Kind is deprecated, and can be removed sometime soon
   KIND_ENUM = {
@@ -177,7 +178,7 @@ class Citation < ApplicationRecord
   end
 
   def add_to_github_content
-    return true if approved? || pull_request_number.present? || GithubIntegration::SKIP_GITHUB_UPDATE
+    return true if submitted_to_github? || GithubIntegration::SKIP_GITHUB_UPDATE
     return false unless add_to_github
     AddCitationToGithubContentJob.perform_async(id)
   end

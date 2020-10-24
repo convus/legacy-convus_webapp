@@ -1,6 +1,7 @@
 class HypothesesController < ApplicationController
   before_action :redirect_to_signup_unless_user_present!, except: %i[index show]
   before_action :find_hypothesis, except: %i[index new create]
+  before_action :ensure_user_can_edit!, only: %i[edit update]
   before_action :set_permitted_format
 
   def index
@@ -46,6 +47,17 @@ class HypothesesController < ApplicationController
   def find_hypothesis
     @hypothesis = Hypothesis.friendly_find!(params[:id])
     @citations = @hypothesis.citations
+  end
+
+  def ensure_user_can_edit!
+    if @hypothesis.not_submitted_to_github?
+      return true if @hypothesis.creator == current_user
+      flash[:error] = "You can't edit that hypothesis because you didn't create it"
+    else
+      flash[:error] = "You can't edit hypotheses that have been submitted"
+    end
+    redirect_to user_root_path
+    nil
   end
 
   def matching_hypotheses
