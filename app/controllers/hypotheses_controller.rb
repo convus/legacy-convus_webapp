@@ -106,7 +106,7 @@ class HypothesesController < ApplicationController
     cparams = params.require(:hypothesis).permit(citations_attributes: permitted_citation_attrs)
       .dig(:citations_attributes)
     return cparams if cparams.blank? # NOTE: This shouldn't really happen because the HTML fields are required
-    cparams.merge(creator: current_user)
+    cparams.merge(creator: current_user, submitting_to_github: @hypothesis.submitting_to_github)
   end
 
   def permitted_citation_attrs

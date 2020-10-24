@@ -123,6 +123,8 @@ class Hypothesis < ApplicationRecord
     return true if submitted_to_github? || GithubIntegration::SKIP_GITHUB_UPDATE
     return false unless add_to_github
     AddHypothesisToGithubContentJob.perform_async(id)
+    # Because we've enqueued, and we want the fact that it is submitted to be reflected instantly
+    update(submitting_to_github: true)
   end
 
   def set_calculated_attributes
