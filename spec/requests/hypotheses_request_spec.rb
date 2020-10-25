@@ -171,7 +171,7 @@ RSpec.describe "/hypotheses", type: :request do
         it "redirects" do
           expect(subject.creator_id).to_not eq current_user.id
           get "#{base_url}/#{subject.to_param}/edit"
-          expect(response.code).to redirect_to root_url
+          expect(response.code).to redirect_to account_path
           expect(flash[:error]).to be_present
         end
       end

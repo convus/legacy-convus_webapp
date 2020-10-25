@@ -1,1 +1,11 @@
-This is your account page
+%h3
+  %strong= @hypotheses_not_submitted.count
+  = "unsubmitted hypotheses".pluralize(@hypotheses_not_submitted.count)
+
+= render partial: "/hypotheses/table", locals: { hypotheses: @hypotheses_not_submitted, link_to_edit: true }
+
+%h3.mt-4.pt-4
+  %strong= @hypotheses_submitted.count
+  = "submitted hypotheses".pluralize(@hypotheses_submitted.count)
+
+= render partial: "/hypotheses/table", locals: { hypotheses: @hypotheses_submitted }

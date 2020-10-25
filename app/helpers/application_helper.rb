@@ -63,6 +63,13 @@ module ApplicationHelper
     end
   end
 
+  def main_container_class
+    if controller_name == "hypotheses" && action_name == "index"
+      return "container"
+    end
+    "container-fluid"
+  end
+
   # Refactor and remove this!
   def bootstrap_devise_error_messages!
     return "" if resource.errors.empty?
