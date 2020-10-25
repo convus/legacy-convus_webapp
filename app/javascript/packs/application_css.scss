@@ -7,6 +7,12 @@ $max-width-text: 900px;
   max-width: $max-width-text;
 }
 
+.max-width-text-container-centered {
+  @extend .max-width-text-container;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 // Add a little padding to the bottom
 .main-content-container {
   padding-bottom: 2rem;

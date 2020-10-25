@@ -42,7 +42,7 @@ class ApplicationController < ActionController::Base
   def user_root_path
     return @user_root_path if defined?(@user_root_path)
     return @user_root_path = new_user_session_path if current_user.blank?
-    @user_root_path = root_url
+    @user_root_path = account_path
   end
 
   def redirect_to_signup_unless_user_present!
