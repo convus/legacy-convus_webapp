@@ -37,7 +37,7 @@ class Hypothesis < ApplicationRecord
   def errors_full_messages
     # autosave: true makes this slightly less annoying
     messages = hypothesis_citations.map { |hc|
-      next ["Citation URL can't be blank"] if hc.citation&.errors&.full_messages&.include?("Url can't be blank")
+      next ["Citation URL can't be blank"] if hc.errors&.full_messages&.include?("Url can't be blank")
       next [] unless hc.errors.full_messages.any?
       if hc.errors.full_messages.include?("Citation can't be blank")
         ["Citation URL can't be blank"]
@@ -45,7 +45,7 @@ class Hypothesis < ApplicationRecord
         hc.errors.full_messages
       end
     }.flatten
-    ignored_messages = ["Hypothesis citations citation can't be blank"]
+    ignored_messages = ["Hypothesis citations url can't be blank"]
     (messages + errors.full_messages).compact.uniq - ignored_messages
   end
 

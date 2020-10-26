@@ -25,8 +25,6 @@ class HypothesesController < ApplicationController
   def create
     @hypothesis = Hypothesis.new(permitted_params)
     @hypothesis.creator_id = current_user.id
-    citation = Citation.find_or_create_by_params(permitted_citation_params)
-    @hypothesis.hypothesis_citations.build(citation: citation, quotes_text: citation&.quotes_text)
     if @hypothesis.save
       flash[:success] = "Hypothesis created!"
       redirect_to edit_hypothesis_path(@hypothesis.id)
@@ -89,7 +87,8 @@ class HypothesesController < ApplicationController
   end
 
   def permitted_params
-    params.require(:hypothesis).permit(:title, :add_to_github, :tags_string)
+    params.require(:hypothesis).permit(:title, :add_to_github, :tags_string,
+      hypothesis_citations_attributes: [:url, :quotes_text])
   end
 
   def create_or_update_citations

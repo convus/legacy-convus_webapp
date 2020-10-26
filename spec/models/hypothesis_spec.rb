@@ -24,23 +24,24 @@ RSpec.describe Hypothesis, type: :model do
     end
   end
 
-  describe "errors_full_messages" do
-    let(:hypothesis) { Hypothesis.new }
-    it "returns errors full_messages" do
-      expect(hypothesis.errors_full_messages).to be_blank
-      hypothesis.save
-      expect(hypothesis.errors_full_messages).to eq(["Title can't be blank"])
-    end
-    context "with hypothesis_citation" do
-      let(:hypothesis_citation) { hypothesis.hypothesis_citations.build(quotes_text: " ") }
-      it "returns hypothesis_citation errors as well" do
-        expect(hypothesis.errors_full_messages).to be_blank
-        expect(hypothesis_citation.errors.full_messages).to be_blank
-        hypothesis.save
-        expect(hypothesis.errors_full_messages).to eq(["Citation URL can't be blank", "Title can't be blank"])
-      end
-    end
-  end
+  # Commenting out for now, because it's not relevant - but it may be soon
+  # describe "errors_full_messages" do
+  #   let(:hypothesis) { Hypothesis.new }
+  #   it "returns errors full_messages" do
+  #     expect(hypothesis.errors_full_messages).to be_blank
+  #     hypothesis.save
+  #     expect(hypothesis.errors_full_messages).to eq(["Title can't be blank"])
+  #   end
+  #   context "with hypothesis_citation" do
+  #     let(:hypothesis_citation) { hypothesis.hypothesis_citations.build(quotes_text: " ") }
+  #     it "returns hypothesis_citation errors as well" do
+  #       expect(hypothesis.errors_full_messages).to be_blank
+  #       expect(hypothesis_citation.errors.full_messages).to be_blank
+  #       hypothesis.save
+  #       expect(hypothesis.errors_full_messages).to eq(["Citation URL can't be blank", "Title can't be blank"])
+  #     end
+  #   end
+  # end
 
   describe "tags_string" do
     let(:hypothesis) { FactoryBot.create(:hypothesis) }
@@ -142,7 +143,8 @@ RSpec.describe Hypothesis, type: :model do
     end
     context "direct_quote, peer_reviewed" do
       let(:citation) { FactoryBot.create(:citation_approved, peer_reviewed: true, url_is_direct_link_to_full_text: true) }
-      let(:hypothesis) { FactoryBot.create(:hypothesis, citation_urls: [citation.url]) }
+      let(:hypothesis) { FactoryBot.create(:hypothesis) }
+      let!(:hypothesis_citation) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: citation.url) }
       it "sets the score" do
         expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
         expect(hypothesis.score).to eq 0

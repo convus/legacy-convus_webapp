@@ -17,17 +17,9 @@
     .col-12
       %h3.mb-1 Citation(s)
 
-    -#- @hypothesis.hypothesis_citations.build unless @hypothesis.hypothesis_citations.count > 0
-    -#- @hypothesis.hypothesis_citations.each do |hypothesis_citation|
-    -#  - hypothesis_citation.citation ||= Citation.new
-    -#  - hypothesis_citation.citation.quotes_text = hypothesis_citation.quotes_text
-    -#  -# quotes_text: hypothesis_citation.quotes_text
-    -#  = f.fields_for :citations_attributes do |nested_form|
-    -#    = render partial: "/citations/fields", locals: {f: nested_form}
-
     - @hypothesis.hypothesis_citations.build unless @hypothesis.hypothesis_citations.count > 0
-    = f.fields_for :hypothesis_citations_attributes do |nested_form|
-      = render partial: "/hypotheses/hypothesis_citation_fields", locals: {f: nested_form, initially_show: true}
+    = f.fields_for :hypothesis_citations_attributes do |builder|
+      = render partial: "/hypotheses/hypothesis_citation_fields", locals: {f: builder, initially_show: true}
 
   .row
     .col-6.col-md-4.col-xl-3
