@@ -14,7 +14,7 @@ class Hypothesis < ApplicationRecord
   has_many :hypothesis_quotes, -> { score_ordered }
   has_many :quotes, through: :hypothesis_quotes
 
-  accepts_nested_attributes_for :citations
+  accepts_nested_attributes_for :hypothesis_citations, allow_destroy: true, reject_if: :all_blank
 
   before_validation :set_calculated_attributes
   after_commit :add_to_github_content

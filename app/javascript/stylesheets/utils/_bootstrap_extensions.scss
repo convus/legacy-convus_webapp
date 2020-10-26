@@ -9,6 +9,7 @@
 }
 
 .less-strong {
+  opacity: 0.65;
   // Couldn't get & + input to work, so manually specifying the applicable element classes
   a:hover,
   & + a:hover,
