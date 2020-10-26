@@ -69,7 +69,7 @@ class HypothesesController < ApplicationController
   end
 
   def ensure_user_can_edit!
-    return true if if @hypothesis.editable_by?(user)
+    return true if @hypothesis.editable_by?(current_user)
     if @hypothesis.not_submitted_to_github?
       flash[:error] = "You can't edit that hypothesis because you didn't create it"
     else
