@@ -156,7 +156,10 @@ RSpec.describe "/hypotheses", type: :request do
         end
       end
       context "multiple citations" do
-        it "creates all of them"
+        let(:citation1) { {url: "https://example.com/something-else", quotes_text: "whooooo"} }
+        let(:hypothesis_params) { simple_hypothesis_params.merge(citations_attributes: citations_params) }
+        it "creates the things of them" do
+        end
       end
     end
 

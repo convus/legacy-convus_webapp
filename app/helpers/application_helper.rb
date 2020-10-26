@@ -75,6 +75,7 @@ module ApplicationHelper
     html_options[:class] = html_options[:class] + " add-fields"
     html_options[:data] ||= {}
     html_options[:data].merge!(id: id, fields: fields.delete("\n"))
+    # Use button, so that pressing spacebar when focused on it works
     content_tag(:button, name, html_options)
   end
 
