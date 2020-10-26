@@ -1,4 +1,5 @@
 import log from "../utils/log";
+import KeyboardOrClick from "../utils/keyboard_or_click.js";
 
 export class HypothesisForm {
   init() {
@@ -10,8 +11,11 @@ export class HypothesisForm {
       $("#hypothesisForm").submit();
     });
 
-    $("form").on("click", ".add-fields", function(event) {
+    $("form").on("click keyboard", ".add-fields", function(event) {
       event.preventDefault();
+      if (!KeyboardOrClick(event)) {
+        return false;
+      }
       log.debug("add fields");
       const $target = $(".add-fields");
       const time = new Date().getTime();

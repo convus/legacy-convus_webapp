@@ -18,11 +18,12 @@
       %h3.mb-1 Citation(s)
 
     - @hypothesis.hypothesis_citations.build unless @hypothesis.hypothesis_citations.count > 0
-    -#- @hypothesis.hypothesis_citations.each do |hypothesis_citation|
-    -#  - hypothesis_citation.citation ||= Citation.new
-    -#  - hypothesis_citation.citation.quotes_text = hypothesis_citation.quotes_text
-    = f.fields_for :citations_attributes do |nested_form|
-      = render partial: "/citations/fields", locals: {f: nested_form, quotes_text: hypothesis_citation.quotes_text}
+    - @hypothesis.hypothesis_citations.each do |hypothesis_citation|
+      - hypothesis_citation.citation ||= Citation.new
+      - hypothesis_citation.citation.quotes_text = hypothesis_citation.quotes_text
+      -# quotes_text: hypothesis_citation.quotes_text
+      = f.fields_for :citations_attributes do |nested_form|
+        = render partial: "/citations/fields", locals: {f: nested_form}
 
   .row
     .col-6.col-md-4.col-xl-3
@@ -30,7 +31,9 @@
         = submit_tag "Save", class: "btn btn-primary"
     .col-6.col-md-4.col-xl-3
       .form-group.text-right
-        = link_to_add_fields "Add a citation", f, :citations, {class: "btn btn-outline-primary"}, filename: "/citations/fields"
+        -# Dummy button - just submits an extra
+        = submit_tag "Add a citation", class: "btn btn-outline-primary"
+        -#= link_to_add_fields "Add a citation", f, :hypothesis_citations, {class: "btn btn-outline-primary"}, filename: "/citations/fields"
 
 %hr.mt-4
 %small.less-strong
