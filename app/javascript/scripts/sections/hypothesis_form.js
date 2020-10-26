@@ -9,5 +9,16 @@ export class HypothesisForm {
       $("#hypothesis_add_to_github").val("1");
       $("#hypothesisForm").submit();
     });
+
+    $("form").on("click", ".add-fields", function(event) {
+      event.preventDefault();
+      log.debug("add fields");
+      const $target = $(".add-fields");
+      const time = new Date().getTime();
+      const regexp = new RegExp($target.data("id"), "g");
+      // Potentially could use classnames to determine placement of new field
+      $("#citationsBlock").append($target.data("fields").replace(regexp, time));
+      // Need to re-load fancy selects here, if we ever add forms with fancy selects
+    });
   }
 }

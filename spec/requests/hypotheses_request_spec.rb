@@ -155,6 +155,9 @@ RSpec.describe "/hypotheses", type: :request do
           expect(errored_citation.quotes_text).to eq("a quote from this article\n\nand another quote from it")
         end
       end
+      context "multiple citations" do
+        it "creates all of them"
+      end
     end
 
     describe "edit" do
@@ -200,7 +203,7 @@ RSpec.describe "/hypotheses", type: :request do
       it "updates" do
         expect(subject.citations.count).to eq 0
         Sidekiq::Worker.clear_all
-        put "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_params}
+        put "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_params.merge(add_to_github: "")}
         expect(flash[:success]).to be_present
         expect(response).to redirect_to edit_hypothesis_path(subject.id)
         expect(assigns(:hypothesis)&.id).to eq subject.id

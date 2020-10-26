@@ -63,6 +63,21 @@ module ApplicationHelper
     end
   end
 
+  def link_to_add_fields(name, f, association, html_options = {}, obj_attrs: {}, filename: nil, &block)
+    new_object = f.object.send(association).klass.new(obj_attrs)
+    id = new_object.object_id
+    filename ||= association.to_s.singularize + "_fields"
+    fields = f.fields_for(association, new_object, child_index: id) { |builder|
+      render(filename, f: builder)
+    }
+    # And then set the html options we need
+    html_options[:class] ||= ""
+    html_options[:class] = html_options[:class] + " add-fields"
+    html_options[:data] ||= {}
+    html_options[:data].merge!(id: id, fields: fields.delete("\n"))
+    link_to name, "#", html_options
+  end
+
   # Refactor and remove this!
   def bootstrap_devise_error_messages!
     return "" if resource.errors.empty?
