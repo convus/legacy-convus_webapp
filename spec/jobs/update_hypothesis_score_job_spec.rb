@@ -23,7 +23,8 @@ RSpec.describe UpdateHypothesisScoreJob do
     end
     context "with citation" do
       let(:citation) { FactoryBot.create(:citation_approved, randomized_controlled_trial: true) }
-      let!(:hypothesis) { FactoryBot.create(:hypothesis_approved, citations: [citation]) }
+      let(:hypothesis) { FactoryBot.create(:hypothesis_approved) }
+      let!(:hypothesis_citation) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: citation.url) }
       it "does not bump" do
         hypothesis.reload
         expect(citation.calculated_score).to eq 2

@@ -40,6 +40,7 @@ RSpec.describe UrlCleaner do
   describe "pretty_url" do
     it "returns without the protocol and trailing stuff" do
       expect(subject.pretty_url("https://en.wikipedia.org/wiki/John_von_Neumann/")).to eq "en.wikipedia.org/wiki/John_von_Neumann"
+      expect(subject.pretty_url("http://en.wikipedia.org/wiki/John_von_Neumann?")).to eq "en.wikipedia.org/wiki/John_von_Neumann"
       expect(subject.pretty_url("http://en.wikipedia.org/wiki/John_von_Neumann/?")).to eq "en.wikipedia.org/wiki/John_von_Neumann"
     end
     it "returns without UTM parameters" do

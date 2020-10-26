@@ -18,6 +18,7 @@ class HypothesisCitation < ApplicationRecord
   end
 
   def update_hypothesis_quotes(text_array)
+    return true unless citation.present?
     ids_for_removal = hypothesis_quotes.map(&:id).reject(&:blank?)
 
     text_array.each_with_index do |quote_text, indx|
@@ -37,6 +38,8 @@ class HypothesisCitation < ApplicationRecord
   def set_calculated_attributes
     self.quotes_text = quotes_text_array.join("\n\n")
     self.quotes_text = nil if quotes_text.blank?
+    self.url = UrlCleaner.with_http(UrlCleaner.without_utm(url))
+    self.citation_id = Citation.find_or_create_by_params({url: url, creator_id: hypothesis.creator_id})&.id
     update_hypothesis_quotes(quotes_text_array)
   end
 

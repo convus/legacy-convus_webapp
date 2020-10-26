@@ -5,10 +5,49 @@ RSpec.describe HypothesisCitation, type: :model do
     expect(FactoryBot.create(:hypothesis_citation)).to be_valid
   end
 
+  describe "url" do
+    let(:url) { "https://example.com/stuff?utm_things=asdfasdf" }
+    let(:hypothesis) { FactoryBot.create(:hypothesis, creator: FactoryBot.create(:user)) }
+    let!(:hypothesis_citation) { FactoryBot.build(:hypothesis_citation, hypothesis: hypothesis, citation: nil, url: url) }
+    it "creates the citation" do
+      expect {
+        hypothesis_citation.save
+      }.to change(Citation, :count).by 1
+      expect(hypothesis_citation.url).to eq "https://example.com/stuff"
+      expect(hypothesis_citation.hypothesis.creator).to be_present
+      citation = hypothesis_citation.citation
+      expect(citation.url).to eq hypothesis_citation.url
+      expect(citation.creator_id).to eq hypothesis_citation.hypothesis.creator_id
+    end
+    context "citation already exists" do
+      let!(:citation) { FactoryBot.create(:citation, url: url, creator: nil) }
+      it "associates with the existing citation" do
+        expect(citation).to be_valid
+        expect(citation.creator_id).to be_blank
+        expect {
+          hypothesis_citation.save
+        }.to change(Citation, :count).by 0
+        expect(hypothesis_citation.citation_id).to eq citation.id
+        expect(citation.creator_id).to be_blank
+      end
+    end
+    context "citation changed" do
+      it "updates to a new citation" do
+        hypothesis_citation.save
+        citation1 = hypothesis_citation.citation
+        expect(citation1).to be_valid
+        hypothesis_citation.update(url: "https://example.com/other-stuff")
+        expect(hypothesis_citation.citation.id).to_not eq citation1.id
+        citation1.reload
+        expect(citation1).to be_valid
+      end
+    end
+  end
+
   describe "quotes_text" do
     let(:citation) { FactoryBot.create(:citation) }
     let(:hypothesis) { FactoryBot.create(:hypothesis) }
-    let(:hypothesis_citation) { HypothesisCitation.new(citation: citation, hypothesis: hypothesis, quotes_text: quotes_text) }
+    let(:hypothesis_citation) { HypothesisCitation.new(url: citation.url, hypothesis: hypothesis, quotes_text: quotes_text) }
     let(:quotes_text) { " " }
     it "is ok if blank" do
       expect {

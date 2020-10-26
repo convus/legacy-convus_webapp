@@ -44,7 +44,8 @@ unless ENV["CIRCLECI"]
 
     describe "write_approved_hypotheses" do
       let!(:citation) { FactoryBot.create(:citation_approved, title: "Pelosi digs in as pressure builds for COVID-19 deal", publication: publication) }
-      let(:hypothesis) { FactoryBot.create(:hypothesis_approved, title: "US waiting for updated COVID-19 relief package", tags_string: "some tag", citations: [citation]) }
+      let(:hypothesis) { FactoryBot.create(:hypothesis_approved, title: "US waiting for updated COVID-19 relief package", tags_string: "some tag") }
+      let!(:hypothesis_citation) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: citation.url) }
       let(:target_filename) { "hypotheses/us-waiting-for-updated-covid-19-relief-package.yml" }
       it "writes the files" do
         hypothesis.reload

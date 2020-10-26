@@ -88,19 +88,6 @@ class Hypothesis < ApplicationRecord
     citations.pluck(:url)
   end
 
-  def citation_urls=(val)
-    new_citations = (val.is_a?(Array) ? val : val.to_s.split(/,|\n/)).reject(&:blank?)
-    new_ids = new_citations.map { |string|
-      citation_id = Citation.find_or_create_by_params({url: string})&.id
-      unless hypothesis_citations.find_by_citation_id(citation_id).present?
-        hypothesis_citations.build(citation_id: citation_id)
-      end
-      citation_id
-    }
-    hypothesis_citations.where.not(citation_id: new_ids).destroy_all
-    citations
-  end
-
   def badges
     HypothesisScorer.hypothesis_badges(self, citation_for_score)
   end

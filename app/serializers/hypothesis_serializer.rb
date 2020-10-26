@@ -1,5 +1,5 @@
 class HypothesisSerializer < ApplicationSerializer
-  attributes :title, :id, :direct_quotation, :citation_urls, :topics
+  attributes :title, :id, :cited_urls, :topics
 
   def direct_quotation
     object.has_direct_quotation
@@ -7,5 +7,14 @@ class HypothesisSerializer < ApplicationSerializer
 
   def topics
     object.tag_titles
+  end
+
+  def cited_urls
+    object.hypothesis_citations.map do |hypothesis_citation|
+      {
+        url: hypothesis_citation.citation.url,
+        quotes: hypothesis_citation.hypothesis_quotes.map(&:quote_text)
+      }
+    end
   end
 end
