@@ -34,11 +34,8 @@ class HypothesesController < ApplicationController
   end
 
   def update
+    pp permitted_params
     if @hypothesis.update(permitted_params)
-      citation = Citation.find_or_create_by_params(permitted_citation_params)
-      hypothesis_citation = @hypothesis.hypothesis_citations.where(citation_id: citation.id).first
-      hypothesis_citation ||= @hypothesis.hypothesis_citations.build(citation: citation)
-      hypothesis_citation.update(quotes_text: citation&.quotes_text)
       if @hypothesis.submitted_to_github?
         flash[:success] = "Hypothesis submitted for review"
         redirect_to hypothesis_path(@hypothesis.id)
@@ -88,30 +85,11 @@ class HypothesesController < ApplicationController
 
   def permitted_params
     params.require(:hypothesis).permit(:title, :add_to_github, :tags_string,
-      hypothesis_citations_attributes: [:url, :quotes_text])
-  end
-
-  def create_or_update_citations
-    # Something like:
-    # permitted_citations_params.dig(:citations_attributes).each do |key, citation_params|
-    #   Citation.find_or_create_by_params citation_params
-    # end
-  end
-
-  def permitted_citations_params
-    params.require(:hypothesis).permit(citations_attributes: permitted_citation_attrs)
-  end
-
-  # TODO: remove, always use multiple
-  def permitted_citation_params
-    cparams = params.require(:hypothesis).permit(citations_attributes: permitted_citation_attrs)
-      .dig(:citations_attributes)
-    return cparams if cparams.blank? # NOTE: This shouldn't really happen because the HTML fields are required
-    cparams.merge(creator: current_user, submitting_to_github: @hypothesis.submitting_to_github)
+      hypothesis_citations_attributes: [:url, :quotes_text, citation_attributes: permitted_citation_attrs])
   end
 
   def permitted_citation_attrs
     %w[title authors_str assignable_kind url url_is_direct_link_to_full_text published_date_str
-      url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial quotes_text]
+      url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial]
   end
 end

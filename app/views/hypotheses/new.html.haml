@@ -12,13 +12,14 @@
           Hypothesis text
           %span.small.less-strong
             must be falsifiable
-        = f.text_area :title,  required: true, class: "form-control"
+        -#= f.text_area :title, required: true, class: "form-control"
+        = f.text_area :title, class: "form-control"
   .row.mt-4#citationsBlock
     .col-12
       %h3.mb-1 Citation(s)
 
     - @hypothesis.hypothesis_citations.build unless @hypothesis.hypothesis_citations.count > 0
-    = f.fields_for :hypothesis_citations_attributes do |builder|
+    = f.fields_for :hypothesis_citations do |builder|
       = render partial: "/hypotheses/hypothesis_citation_fields", locals: {f: builder, initially_show: true}
 
   .row
