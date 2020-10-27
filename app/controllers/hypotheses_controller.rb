@@ -34,8 +34,8 @@ class HypothesesController < ApplicationController
   end
 
   def update
-    pp permitted_params
     if @hypothesis.update(permitted_params)
+      @hypothesis.hypothesis_citations.each { |hc| update_citation(hc) }
       if @hypothesis.submitted_to_github?
         flash[:success] = "Hypothesis submitted for review"
         redirect_to hypothesis_path(@hypothesis.id)
@@ -64,11 +64,11 @@ class HypothesesController < ApplicationController
   end
 
   def ensure_user_can_edit!
-    return true if @hypothesis.editable_by?(current_user)
-    flash[:error] = if @hypothesis.not_submitted_to_github?
-      "You can't edit that hypothesis because you didn't create it"
+    if @hypothesis.not_submitted_to_github?
+      return true if @hypothesis.creator == current_user
+      flash[:error] = "You can't edit that hypothesis because you didn't create it"
     else
-      "You can't edit hypotheses that have been submitted"
+      flash[:error] = "You can't edit hypotheses that have been submitted"
     end
     redirect_to user_root_path
     nil
@@ -85,11 +85,35 @@ class HypothesesController < ApplicationController
 
   def permitted_params
     params.require(:hypothesis).permit(:title, :add_to_github, :tags_string,
-      hypothesis_citations_attributes: [:url, :quotes_text, citation_attributes: permitted_citation_attrs])
+      hypothesis_citations_attributes: [:url, :quotes_text])
   end
+
+  def update_citation(hypothesis_citation)
+    return false unless hypothesis_citation.citation.editable_by?(current_user)
+    citation_params = permitted_citations_params.find { |params| params.present? && params[:url] == hypothesis_citation.url }
+    if citation_params.present?
+      hypothesis_citation.citation.update(citation_params)
+    end
+    hypothesis_citation.citation
+  end
+
+  # Get each set of permitted citation attributes. We're going to update them individually
+  def permitted_citations_params
+    params.require(:hypothesis).permit(hypothesis_citations_attributes: {citation_attributes: permitted_citation_attrs})
+      .dig(:hypothesis_citations_attributes)
+      .values.map { |v| v[:citation_attributes] }
+  end
+
+  # # TODO: remove, always use multiple
+  # def permitted_citation_params
+  #   cparams = params.require(:hypothesis).permit(citations_attributes: permitted_citation_attrs)
+  #     .dig(:citations_attributes)
+  #   return cparams if cparams.blank? # NOTE: This shouldn't really happen because the HTML fields are required
+  #   cparams.merge(creator: current_user, submitting_to_github: @hypothesis.submitting_to_github)
+  # end
 
   def permitted_citation_attrs
     %w[title authors_str assignable_kind url url_is_direct_link_to_full_text published_date_str
-      url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial]
+      url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial quotes_text]
   end
 end

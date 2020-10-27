@@ -21,39 +21,46 @@
     = f.text_area :quotes_text, required: true, rows: 4, class: "form-control"
 
   - if f.object.id.present?
-    = f.fields_for :citation do |nested|
-      .form-group.mt-0
-        .form-check
-          %label.form-check-label
-            = nested.check_box :url_is_direct_link_to_full_text, class: "form-check-input"
-            URL is a direct link to the full text of the citation
-      .form-group.mt-0
-        .form-check
-          %label.form-check-label
-            = nested.check_box :peer_reviewed, class: "form-check-input"
-            Citation was peer reviewed before publication
-      .form-group.mt-0
-        .form-check
-          %label.form-check-label
-            = nested.check_box :randomized_controlled_trial, class: "form-check-input"
-            Citation is about a randomized controlled trial
-        -# Once we have a lot of publications, we may want to show/hide this based on the publication.
-        -# For now, just assigning meta_publication to publications is easier to deal with
-        -# %label.form-check-label.small
-        -#   = nested.check_box :url_is_not_publisher, class: "form-check-input"
-        -#   URL is not the publisher (e.g. jstor)
-      .form-group
-        = nested.label :title do
-          -# TODO: Make this update and change based on the assignable_kind
-          %span
-            Article
-          title
-        = nested.text_field :title, placeholder: "optional", class: "form-control"
-      .form-group
-        = nested.label :publication_title
-        = nested.text_field :publication_title, placeholder: "optional", disabled: nested.object&.publication&.title_url?, class: "form-control"
-      .form-group
-        = nested.label :authors_str do
-          Authors
-          %small.less-strong new line delineated
-        = nested.text_area :authors_str, placeholder: "optional", class: "form-control"
+    - if f.object.citation.editable_by?(current_user)
+      = f.fields_for :citation do |nested|
+        .form-group.mt-0
+          .form-check
+            %label.form-check-label
+              = nested.check_box :url_is_direct_link_to_full_text, class: "form-check-input"
+              URL is a direct link to the full text of the citation
+        .form-group.mt-0
+          .form-check
+            %label.form-check-label
+              = nested.check_box :peer_reviewed, class: "form-check-input"
+              Citation was peer reviewed before publication
+        .form-group.mt-0
+          .form-check
+            %label.form-check-label
+              = nested.check_box :randomized_controlled_trial, class: "form-check-input"
+              Citation is about a randomized controlled trial
+          -# Once we have a lot of publications, we may want to show/hide this based on the publication.
+          -# For now, just assigning meta_publication to publications is easier to deal with
+          -# %label.form-check-label.small
+          -#   = nested.check_box :url_is_not_publisher, class: "form-check-input"
+          -#   URL is not the publisher (e.g. jstor)
+        .form-group
+          = nested.label :title do
+            -# TODO: Make this update and change based on the assignable_kind
+            %span
+              Article
+            title
+          = nested.text_field :title, placeholder: "optional", class: "form-control"
+
+        -# Only show the publication title field if it hasn't been previously set
+        - if nested.object&.publication&.title_url?
+          .form-group
+            = nested.label :publication_title
+            = nested.text_field :publication_title, placeholder: "optional", class: "form-control"
+        .form-group
+          = nested.label :authors_str do
+            Authors
+            %small.less-strong new line delineated
+          = nested.text_area :authors_str, placeholder: "optional", class: "form-control"
+    - else
+      %span.text-warning
+        You can't edit this citation

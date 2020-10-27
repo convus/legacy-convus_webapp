@@ -221,14 +221,19 @@ RSpec.describe "/hypotheses", type: :request do
     end
 
     describe "update" do
+      let!(:citation) { FactoryBot.create(:citation, url: "https://example.com/something-of-interest", authors_str: "george", creator: current_user) }
       let(:hypothesis_params) do
         {
           title: "This seems like the truth",
           tags_string: "economy\nparties",
           hypothesis_citations_attributes: {
             Time.current.to_i.to_s => {
-              url: "https://example.com/something-of-interest",
-              quotes_text: "First quote from this literature\nSecond quote, which is cool",
+              url: "https://something-of.org/interest-asdfasdf",
+              quotes_text: "First quote from this literature\nSecond quote, which is cool"
+            },
+            "1" => {
+              url: citation.url,
+              quotes_text: "This is a thing",
               citation_attributes: full_citation_params
             }
           }
@@ -238,8 +243,10 @@ RSpec.describe "/hypotheses", type: :request do
       it "updates" do
         expect(subject.citations.count).to eq 0
         Sidekiq::Worker.clear_all
+        expect(Citation.count).to eq 1
         put "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_params.merge(add_to_github: "")}
         expect(flash[:success]).to be_present
+        expect(Citation.count).to eq 2
         expect(response).to redirect_to edit_hypothesis_path(subject.id)
         expect(assigns(:hypothesis)&.id).to eq subject.id
         expect(assigns(:hypothesis).submitted_to_github?).to be_falsey
@@ -248,9 +255,9 @@ RSpec.describe "/hypotheses", type: :request do
         expect(subject.title).to eq hypothesis_params[:title]
         expect(subject.submitted_to_github?).to be_falsey
         expect(subject.tags_string).to eq "economy, parties"
-        expect(subject.citations.count).to eq 1
+        expect(subject.citations.count).to eq 2
 
-        citation = subject.citations.last
+        citation.reload
         expect(citation.title).to eq full_citation_params[:title]
         expect(citation.url).to eq full_citation_params[:url]
         expect(citation.submitted_to_github?).to be_falsey
@@ -260,17 +267,11 @@ RSpec.describe "/hypotheses", type: :request do
         expect(citation.published_date_str).to eq "1990-12-02"
         expect(citation.url_is_direct_link_to_full_text).to be_falsey
         expect(citation.creator_id).to eq current_user.id
+        expect(citation.hypothesis_citations.first.quotes_text).to eq "This is a thing"
 
-        expect(subject.hypothesis_quotes.count).to eq 3
-        hypothesis_quote1 = subject.hypothesis_quotes.first
-        hypothesis_quote2 = subject.hypothesis_quotes.second
-        hypothesis_quote3 = subject.hypothesis_quotes.last
-        expect(hypothesis_quote1.quote_text).to eq "First quote from this literature"
-        expect(hypothesis_quote1.citation_id).to eq citation.id
-        expect(hypothesis_quote2.quote_text).to eq "Second quote, which is cool"
-        expect(hypothesis_quote2.citation_id).to eq citation.id
-        expect(hypothesis_quote1.score).to be > hypothesis_quote2.score
-        expect(hypothesis_quote3.quote_text).to eq "Third"
+        citation2 = subject.citations.order(:created_at).last
+        expect(citation2.url).to eq "https://something-of.org/interest-asdfasdf"
+        expect(citation2.hypothesis_citations.first.quotes_text).to eq "First quote from this literature\n\nSecond quote, which is cool"
       end
     #   context "other persons hypothesis" do
     #     let(:subject) { FactoryBot.create(:hypothesis) }

@@ -1,10 +1,5 @@
 %h1
   Edit Hypothesis
-  %small.ml-4
-    %a#submitForApproval.btn.btn-outline-success.submit-input{ href: "#" }
-      submit for approval
-      %span.loadingSpinner.spinner-border.spinner-border-sm.collapse.ml-2
-        %span.sr-only Loading...
 
 = form_for @hypothesis, url: { action: "update" }, html: { class: "form", id: "hypothesisForm" } do |f|
   = f.hidden_field :add_to_github
@@ -42,6 +37,11 @@
     .col-6.col-md-4.col-xl-3
       .form-group.text-right
         = link_to_add_fields "Add a citation", f, :citations, {class: "btn btn-outline-primary"}, filename: "/hypotheses/hypothesis_citation_fields"
+  .text-right
+    %a#submitForApproval.btn.btn-success.submit-input{ href: "#" }
+      Submit for Approval
+      %span.loadingSpinner.spinner-border.spinner-border-sm.collapse.ml-2
+        %span.sr-only Loading...
 %hr.mt-4
 %small.less-strong
   Content submitted to Convus is licensed under the

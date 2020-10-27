@@ -37,7 +37,6 @@ class HypothesisCitation < ApplicationRecord
   end
 
   def set_calculated_attributes
-    pp citation_attributes
     self.quotes_text = quotes_text_array.join("\n\n")
     self.quotes_text = nil if quotes_text.blank?
     self.url = UrlCleaner.with_http(UrlCleaner.without_utm(url))
