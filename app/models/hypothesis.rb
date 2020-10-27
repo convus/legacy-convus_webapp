@@ -33,7 +33,7 @@ class Hypothesis < ApplicationRecord
   end
 
   # We're saving hypothesis with a bunch of associations, make it easier to override the errors
-  # So that association errors are less annoying.
+  # So that association errors are clearer
   def errors_full_messages
     # autosave: true makes this slightly less annoying
     messages = hypothesis_citations.map { |hc|
@@ -45,7 +45,7 @@ class Hypothesis < ApplicationRecord
         hc.errors.full_messages
       end
     }.flatten
-    ignored_messages = ["Hypothesis citations url can't be blank"]
+    ignored_messages = ["Hypothesis citations url can't be blank", "Hypothesis quotes is invalid", "Hypothesis citations hypothesis has already been taken"]
     (messages + errors.full_messages).compact.uniq - ignored_messages
   end
 

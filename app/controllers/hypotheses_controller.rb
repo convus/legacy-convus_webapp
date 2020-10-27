@@ -44,7 +44,6 @@ class HypothesesController < ApplicationController
         redirect_to edit_hypothesis_path(@hypothesis.id)
       end
     else
-      @hypothesis.citations_attributes = permitted_citations_params
       render :edit
     end
   end
@@ -103,14 +102,6 @@ class HypothesesController < ApplicationController
       .dig(:hypothesis_citations_attributes)
       .values.map { |v| v[:citation_attributes] }
   end
-
-  # # TODO: remove, always use multiple
-  # def permitted_citation_params
-  #   cparams = params.require(:hypothesis).permit(citations_attributes: permitted_citation_attrs)
-  #     .dig(:citations_attributes)
-  #   return cparams if cparams.blank? # NOTE: This shouldn't really happen because the HTML fields are required
-  #   cparams.merge(creator: current_user, submitting_to_github: @hypothesis.submitting_to_github)
-  # end
 
   def permitted_citation_attrs
     %w[title authors_str assignable_kind url url_is_direct_link_to_full_text published_date_str

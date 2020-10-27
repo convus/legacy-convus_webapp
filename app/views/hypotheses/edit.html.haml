@@ -14,7 +14,8 @@
           Hypothesis text
           %span.small.less-strong
             must be falsifiable
-        = f.text_area :title,  required: true, class: "form-control"
+        -#= f.text_area :title, required: true, class: "form-control"
+        = f.text_area :title, class: "form-control"
       .form-group
         = f.label :tags_string do
           Topics
@@ -37,7 +38,7 @@
     .col-6.col-md-4.col-xl-3
       .form-group.text-right
         = link_to_add_fields "Add a citation", f, :citations, {class: "btn btn-outline-primary"}, filename: "/hypotheses/hypothesis_citation_fields"
-  .text-right
+  .mt-4
     %a#submitForApproval.btn.btn-success.submit-input{ href: "#" }
       Submit for Approval
       %span.loadingSpinner.spinner-border.spinner-border-sm.collapse.ml-2

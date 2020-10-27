@@ -8,7 +8,7 @@
         = f.label :url, "URL"
       .col.text-right
         .remove-fields-button
-          = f.label :_destroy, class: "remove-fields text-warning" do
+          = f.label :_destroy, class: "remove-fields text-warning less-strong" do
             = f.check_box :_destroy
             remove
     = f.text_field :url, required: true, class: "form-control"
@@ -62,5 +62,6 @@
             %small.less-strong new line delineated
           = nested.text_area :authors_str, placeholder: "optional", class: "form-control"
     - else
-      %span.text-warning
-        You can't edit this citation
+      %em.less-strong
+        You can't edit this citation, it's already been added by someone. Suggest changes to
+        = link_to "the file on GitHub", f.object.citation.github_html_url
