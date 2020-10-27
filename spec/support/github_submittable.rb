@@ -40,4 +40,25 @@ RSpec.shared_examples "GithubSubmittable" do
       end
     end
   end
+
+  describe "editable_by?" do
+    let(:user) { FactoryBot.create(:user) }
+    let(:instance) { FactoryBot.build model_sym }
+    it "is false" do
+      expect(instance.editable_by?).to be_falsey
+      expect(instance.editable_by?(user)).to be_falsey
+    end
+    context "user creator" do
+      let(:instance) { FactoryBot.build(model_sym, creator: user) }
+      it "is truthy" do
+        expect(instance.editable_by?(user)).to be_truthy
+      end
+      context "submitting_to_github" do
+        let(:instance) { FactoryBot.build(model_sym, creator: user, submitting_to_github: true) }
+        it "is falsey" do
+          expect(instance.editable_by?(user)).to be_falsey
+        end
+      end
+    end
+  end
 end

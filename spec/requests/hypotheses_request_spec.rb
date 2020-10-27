@@ -190,6 +190,7 @@ RSpec.describe "/hypotheses", type: :request do
 
     describe "edit" do
       it "renders" do
+        expect(subject.editable_by?(current_user)).to be_truthy
         expect(subject.creator_id).to eq current_user.id
         get "#{base_url}/#{subject.to_param}/edit"
         expect(response.code).to eq "200"
@@ -200,6 +201,7 @@ RSpec.describe "/hypotheses", type: :request do
       context "other persons hypothesis" do
         let(:subject) { FactoryBot.create(:hypothesis) }
         it "redirects" do
+          expect(subject.editable_by?(current_user)).to be_falsey
           expect(subject.creator_id).to_not eq current_user.id
           get "#{base_url}/#{subject.to_param}/edit"
           expect(response.code).to redirect_to account_path
@@ -209,6 +211,7 @@ RSpec.describe "/hypotheses", type: :request do
       context "approved hypothesis" do
         let(:subject) { FactoryBot.create(:hypothesis_approved, creator_id: current_user.id) }
         it "redirects" do
+          expect(subject.editable_by?(current_user)).to be_falsey
           expect(subject.creator_id).to eq current_user.id
           get "#{base_url}/#{subject.to_param}/edit"
           expect(response.code).to redirect_to assigns(:user_root_path)

@@ -14,4 +14,9 @@ module GithubSubmittable
   def not_submitted_to_github?
     !submitted_to_github?
   end
+
+  def editable_by?(user = nil)
+    return false unless user.present? && not_submitted_to_github?
+    creator == user
+  end
 end
