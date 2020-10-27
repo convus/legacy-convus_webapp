@@ -19,7 +19,9 @@ class Publication < ApplicationRecord
     where("base_domains @> ?", [UrlCleaner.base_domain_without_www(str)].to_json)
   end
 
-  # TODO: Re-factor, because this is confusing. This is well tested, so have at it!
+  # TODO: Make meta_publication work again - now that citations are initially created, then updated before approval,
+  # this method doesn't work correctly anymore
+  # Also - this is confusing. This is well tested, so have at it!
   # IN REALITY this method is find_or_create_by_citation_params
   def self.find_or_create_by_params(title: nil, url: nil, url_is_not_publisher: false)
     meta_publication = title.blank? && url_is_not_publisher

@@ -216,15 +216,15 @@ RSpec.describe Citation, type: :model do
       end
     end
     context "via hypothesis creation" do
-      let(:hypothesis) { FactoryBot.build(:hypothesis, citation_urls: "https://something.com") }
+      let!(:hypothesis_citation) { FactoryBot.build(:hypothesis_citation, url: "https://something.com") }
       it "enqueues job" do
         # This might not be how it should work, but it is how it works right now, so document it.
         # ... via HypothesesController, it does not enqueue the citation job
         Sidekiq::Worker.clear_all
-        expect(Hypothesis.count).to eq 0
         expect(Citation.count).to eq 0
         expect {
-          hypothesis.update(add_to_github: true)
+          hypothesis_citation.save
+          hypothesis_citation.hypothesis.update(add_to_github: true)
         }.to change(AddCitationToGithubContentJob.jobs, :count).by 0
         expect(AddHypothesisToGithubContentJob.jobs.count).to eq 1
         expect(Hypothesis.count).to eq 1

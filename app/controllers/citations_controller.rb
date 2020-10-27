@@ -15,20 +15,6 @@ class CitationsController < ApplicationController
     @hypotheses = @citation.hypotheses
   end
 
-  def new
-    @citation ||= Citation.new
-  end
-
-  def create
-    @citation = Citation.new(permitted_citation_params)
-    if @citation.save
-      flash[:success] = "Citation created"
-      redirect_to citation_path(@citation)
-    else
-      render :new
-    end
-  end
-
   private
 
   # To make it possible to use the file path from a citation directly

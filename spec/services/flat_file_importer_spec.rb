@@ -26,7 +26,8 @@ unless ENV["CIRCLECI"]
       delete_existing_files
       publication = FactoryBot.create(:publication, title: "The Hill")
       citation = FactoryBot.create(:citation_approved, title: "some citation", publication: publication)
-      FactoryBot.create(:hypothesis_approved, title: "hypothesis-1", citation_urls: "#{citation.url},")
+      hypothesis = FactoryBot.create(:hypothesis_approved, title: "hypothesis-1")
+      FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: citation.url)
       FactoryBot.create(:tag, title: "Health & Wellness", taxonomy: "family_rank")
       FlatFileSerializer.write_all_files
     end
@@ -101,9 +102,10 @@ unless ENV["CIRCLECI"]
       {
         title: "Purple air sensors are less accurate than EPA sensors. By turning on the conversion \"AQandU\" the data will more closely align with EPA readings",
         id: 2115,
-        direct_quotation: false,
         topics: ["environment ", "Air quality"],
-        citation_urls: ["https://www.kqed.org/science/1969271/making-sense-of-purple-air-vs-airnow-and-a-new-map-to-rule-them-all"]
+        cited_urls: [
+          {url: "https://www.kqed.org/science/1969271/making-sense-of-purple-air-vs-airnow-and-a-new-map-to-rule-them-all", quotes: []}
+        ]
       }
     end
     let!(:tag) { Tag.find_or_create_for_title("Environment") }

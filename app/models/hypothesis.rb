@@ -14,7 +14,7 @@ class Hypothesis < ApplicationRecord
   has_many :hypothesis_quotes, -> { score_ordered }
   has_many :quotes, through: :hypothesis_quotes
 
-  accepts_nested_attributes_for :citations
+  accepts_nested_attributes_for :hypothesis_citations, allow_destroy: true, reject_if: :all_blank
 
   before_validation :set_calculated_attributes
   after_commit :add_to_github_content
@@ -33,11 +33,11 @@ class Hypothesis < ApplicationRecord
   end
 
   # We're saving hypothesis with a bunch of associations, make it easier to override the errors
-  # So that association errors are less annoying.
+  # So that association errors are clearer
   def errors_full_messages
     # autosave: true makes this slightly less annoying
     messages = hypothesis_citations.map { |hc|
-      next ["Citation URL can't be blank"] if hc.citation&.errors&.full_messages&.include?("Url can't be blank")
+      next ["Citation URL can't be blank"] if hc.errors&.full_messages&.include?("Url can't be blank")
       next [] unless hc.errors.full_messages.any?
       if hc.errors.full_messages.include?("Citation can't be blank")
         ["Citation URL can't be blank"]
@@ -45,7 +45,7 @@ class Hypothesis < ApplicationRecord
         hc.errors.full_messages
       end
     }.flatten
-    ignored_messages = ["Hypothesis citations citation can't be blank"]
+    ignored_messages = ["Hypothesis citations url can't be blank", "Hypothesis quotes is invalid", "Hypothesis citations hypothesis has already been taken"]
     (messages + errors.full_messages).compact.uniq - ignored_messages
   end
 
@@ -88,19 +88,6 @@ class Hypothesis < ApplicationRecord
     citations.pluck(:url)
   end
 
-  def citation_urls=(val)
-    new_citations = (val.is_a?(Array) ? val : val.to_s.split(/,|\n/)).reject(&:blank?)
-    new_ids = new_citations.map { |string|
-      citation_id = Citation.find_or_create_by_params({url: string})&.id
-      unless hypothesis_citations.find_by_citation_id(citation_id).present?
-        hypothesis_citations.build(citation_id: citation_id)
-      end
-      citation_id
-    }
-    hypothesis_citations.where.not(citation_id: new_ids).destroy_all
-    citations
-  end
-
   def badges
     HypothesisScorer.hypothesis_badges(self, citation_for_score)
   end
@@ -121,7 +108,7 @@ class Hypothesis < ApplicationRecord
 
   def add_to_github_content
     return true if submitted_to_github? || GithubIntegration::SKIP_GITHUB_UPDATE
-    return false unless add_to_github
+    return false unless ParamsNormalizer.boolean(add_to_github)
     AddHypothesisToGithubContentJob.perform_async(id)
     # Because we've enqueued, and we want the fact that it is submitted to be reflected instantly
     update(submitting_to_github: true)

@@ -47,13 +47,18 @@ class FlatFileImporter
     def import_hypothesis(hypothesis_attrs)
       hypothesis = Hypothesis.where(id: hypothesis_attrs[:id]).first || Hypothesis.new
       hypothesis.approved_at ||= Time.current # If it's in the flat files, it's approved
-      hypothesis.update(title: hypothesis_attrs[:title], has_direct_quotation: hypothesis_attrs[:direct_quotation])
+      hypothesis.update(title: hypothesis_attrs[:title])
       # We need to save first, so we can update the columns if necessary, before creating associations
       unless hypothesis.id == hypothesis_attrs[:id]
         hypothesis.update_columns(id: hypothesis_attrs[:id])
       end
-      hypothesis.update(tags_string: hypothesis_attrs[:topics], citation_urls: hypothesis_attrs[:citation_urls])
+      hypothesis.update(tags_string: hypothesis_attrs[:topics])
       hypothesis.tags.unapproved.update_all(approved_at: Time.current)
+      hypothesis_attrs[:cited_urls]&.map do |cited_url|
+        hypothesis_citation = hypothesis.hypothesis_citations.where(url: cited_url[:url]).first
+        hypothesis_citation ||= hypothesis.hypothesis_citations.build(url: cited_url[:url])
+        hypothesis_citation.update(quotes_text: cited_url[:quotes].join("\n"))
+      end
       hypothesis
     end
 

@@ -1,4 +1,5 @@
-%h1 Edit Hypothesis
+%h1
+  Edit Hypothesis
 
 = form_for @hypothesis, url: { action: "update" }, html: { class: "form", id: "hypothesisForm" } do |f|
   = f.hidden_field :add_to_github
@@ -13,7 +14,8 @@
           Hypothesis text
           %span.small.less-strong
             must be falsifiable
-        = f.text_area :title,  required: true, class: "form-control"
+        -#= f.text_area :title, required: true, class: "form-control"
+        = f.text_area :title, class: "form-control"
       .form-group
         = f.label :tags_string do
           Topics
@@ -21,27 +23,26 @@
             at least 2, comma delineated
         = f.text_field :tags_string, required: true, class: "form-control"
 
-      %h3.mt-4.mb-1
-        = "Citation".pluralize(@hypothesis.hypothesis_citations.count)
+  .row.mt-4#citationsBlock
+    .col-12
+      %h3.mb-1 Citation(s)
 
-      - @hypothesis.hypothesis_citations.build unless @hypothesis.hypothesis_citations.count > 0
-      - @hypothesis.hypothesis_citations.each do |hypothesis_citation|
-        - hypothesis_citation.citation ||= Citation.new
-        - hypothesis_citation.citation.quotes_text = hypothesis_citation.quotes_text
-        = f.fields_for :citations_attributes, hypothesis_citation.citation do |nested_form|
-          = render partial: "/citations/fields", locals: {form: nested_form}
+    - @hypothesis.hypothesis_citations.build unless @hypothesis.hypothesis_citations.count > 0
+    = f.fields_for :hypothesis_citations do |builder|
+      = render partial: "/hypotheses/hypothesis_citation_fields", locals: {f: builder, initially_show: true}
 
-          -# TODO: add published_date_str fields
   .row
     .col-6.col-md-4.col-xl-3
       .form-group
         = submit_tag "Save", class: "btn btn-primary submit-input"
     .col-6.col-md-4.col-xl-3
       .form-group.text-right
-        %a#submitForApproval.btn.btn-outline-success.submit-input{ href: "#" }
-          Submit for approval
-          %span.loadingSpinner.spinner-border.spinner-border-sm.collapse.ml-2
-            %span.sr-only Loading...
+        = link_to_add_fields "Add a citation", f, :citations, {class: "btn btn-outline-primary"}, filename: "/hypotheses/hypothesis_citation_fields"
+  .mt-4
+    %a#submitForApproval.btn.btn-success.submit-input{ href: "#" }
+      Submit for Approval
+      %span.loadingSpinner.spinner-border.spinner-border-sm.collapse.ml-2
+        %span.sr-only Loading...
 %hr.mt-4
 %small.less-strong
   Content submitted to Convus is licensed under the

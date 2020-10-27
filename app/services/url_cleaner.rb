@@ -27,7 +27,7 @@ class UrlCleaner
       return str unless str.present?
       str.strip
         .gsub(/&?utm_.+?(&|$)/i, "") # Remove UTM parameters
-        .gsub(/\/\??\z/, "") # Remove trailing slash and ?
+        .gsub(/\/?\??\z/, "") # Remove trailing slash and ?
     end
 
     def with_http(str)

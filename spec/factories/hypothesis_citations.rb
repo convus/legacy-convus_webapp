@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :hypothesis_citation do
     hypothesis { FactoryBot.create(:hypothesis) }
-    citation { FactoryBot.create(:citation) }
+    sequence(:url) { |n| "https://example.com/hypothesis_citation-#{n}" }
   end
 end
