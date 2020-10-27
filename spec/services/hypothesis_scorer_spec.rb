@@ -28,7 +28,8 @@ RSpec.describe HypothesisScorer do
           url_is_direct_link_to_full_text: true,
           publication: publication)
       end
-      let!(:hypothesis) { FactoryBot.create(:hypothesis, citations: [citation], has_direct_quotation: true, tags_string: "A first tag, a second tag") }
+      let(:hypothesis) { FactoryBot.create(:hypothesis, has_direct_quotation: true, tags_string: "A first tag, a second tag") }
+      let!(:hypothesis_citation) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: citation.url) }
       let(:target_badges) { {direct_quotation: 1, has_at_least_two_topics: 1, randomized_controlled_trial: 2, open_access_research: 10, peer_reviewed_medium_impact_factor: 6} }
       it "returns with citation and publication" do
         expect(hypothesis.publications.pluck(:id)).to eq([publication.id])

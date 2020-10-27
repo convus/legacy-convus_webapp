@@ -403,6 +403,7 @@ RSpec.describe "/hypotheses", type: :request do
       #     end
       #   end
       end
+      # NOTE: this test is shitty, feel free to revamp aggressively. It was sloppily fixed after adding multiple citation support
       context "citation with matching title but different publisher exists" do
         let!(:citation_existing) { Citation.create(title: full_citation_params[:title], url: "https://www.foxnews.com/politics/trump-bahrain-israel-mideast-deal-peace", creator: FactoryBot.create(:user)) }
         it "creates a new citation" do
@@ -434,6 +435,7 @@ RSpec.describe "/hypotheses", type: :request do
           expect(citation.creator).to eq current_user
         end
       end
+      # NOTE: this test is shitty, feel free to revamp aggressively. It was sloppily fixed after adding multiple citation support
       context "citation with url_is_not_publisher" do
         let(:citation_params) { full_citation_params.merge(url_is_not_publisher: true) }
         it "creates" do
@@ -471,6 +473,7 @@ RSpec.describe "/hypotheses", type: :request do
           # expect(publication.meta_publication).to be_truthy
         end
       end
+      # NOTE: this test is shitty, feel free to revamp aggressively. It was sloppily fixed after adding multiple citation support
       context "with publication_title" do
         let(:citation_params) { full_citation_params.merge(url_is_not_publisher: true, publication_title: "Some other title") }
         it "creates with publication title" do
