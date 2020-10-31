@@ -9,15 +9,15 @@
   %p.mt-4
     %span{ style: "font-size: 125%;" }
       = @hypothesis.title
-  %p
-    %em
-      - citation = @hypothesis.approved? ? @hypothesis.citation_for_score : @hypothesis.citations.first
-      - if citation.present?
-        #{citation.publication.title}: #{link_to citation.title, citation.url}
-      - else
-        No citation!
-
-
+  - @hypothesis.quotes.each do |quote|
+    %p
+      = quote.text
+      %br
+      %em.small
+        - if quote.citation.present?
+          #{quote.citation.publication.title}: #{link_to quote.citation.title, quote.citation.url}
+        - else
+          No citation!
 
   - if @hypothesis.approved?
     - badges = @hypothesis.badges

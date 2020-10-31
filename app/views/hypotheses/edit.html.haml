@@ -14,7 +14,6 @@
           Hypothesis text
           %span.small.less-strong
             must be falsifiable
-        -#= f.text_area :title, required: true, class: "form-control"
         = f.text_area :title, class: "form-control"
       .form-group
         = f.label :tags_string do
@@ -29,7 +28,7 @@
 
     - @hypothesis.hypothesis_citations.build unless @hypothesis.hypothesis_citations.count > 0
     = f.fields_for :hypothesis_citations do |builder|
-      = render partial: "/hypotheses/hypothesis_citation_fields", locals: {f: builder, initially_show: true}
+      = render partial: "/hypotheses/hypothesis_citation_fields", locals: {f: builder, initially_show: true, render_full_fields: true}
 
   .row
     .col-6.col-md-4.col-xl-3
@@ -37,7 +36,7 @@
         = submit_tag "Save", class: "btn btn-primary submit-input"
     .col-6.col-md-4.col-xl-3
       .form-group.text-right
-        = link_to_add_fields "Add a citation", f, :citations, {class: "btn btn-outline-primary"}, filename: "/hypotheses/hypothesis_citation_fields"
+        = link_to_add_fields "Add a citation", f, :hypothesis_citations, {class: "btn btn-outline-primary"}, filename: "/hypotheses/hypothesis_citation_fields"
   .mt-4
     %a#submitForApproval.btn.btn-success.submit-input{ href: "#" }
       Submit for Approval

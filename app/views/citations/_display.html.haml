@@ -74,3 +74,10 @@
       %tr
         %td Hypotheses
         %td= citation.hypotheses.count
+      %tr
+        %td Quotes
+        %td
+          %ul.small
+            - citation.quotes.pluck(:text).each do |text|
+              %li= text
+

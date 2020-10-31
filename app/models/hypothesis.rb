@@ -17,11 +17,11 @@ class Hypothesis < ApplicationRecord
   accepts_nested_attributes_for :hypothesis_citations, allow_destroy: true, reject_if: :all_blank
 
   before_validation :set_calculated_attributes
-  after_commit :add_to_github_content
+  after_commit :run_associated_tasks
 
   scope :direct_quotation, -> { where(has_direct_quotation: true) }
 
-  attr_accessor :add_to_github
+  attr_accessor :add_to_github, :skip_associated_tasks
 
   def self.with_tags(string_or_array)
     with_tag_ids(Tag.matching_tags(string_or_array).pluck(:id))
@@ -45,7 +45,11 @@ class Hypothesis < ApplicationRecord
         hc.errors.full_messages
       end
     }.flatten
-    ignored_messages = ["Hypothesis citations url can't be blank", "Hypothesis quotes is invalid", "Hypothesis citations hypothesis has already been taken"]
+    ignored_messages = [
+      "Hypothesis citations url can't be blank",
+      "Hypothesis quotes is invalid",
+      "Hypothesis citations hypothesis has already been taken",
+    ]
     (messages + errors.full_messages).compact.uniq - ignored_messages
   end
 
@@ -104,6 +108,12 @@ class Hypothesis < ApplicationRecord
   # Required for FlatFileSerializable
   def flat_file_serialized
     HypothesisSerializer.new(self, root: false).as_json
+  end
+
+  def run_associated_tasks
+    return false if skip_associated_tasks
+    citations.pluck(:id).each { |i| UpdateCitationQuotesJob.perform_async(i) }
+    add_to_github_content
   end
 
   def add_to_github_content

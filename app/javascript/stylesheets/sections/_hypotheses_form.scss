@@ -1,4 +1,10 @@
+.remove-fields-wrap {
+  position: relative;
+}
 .remove-fields {
+  position: absolute;
+  top: 0;
+  right: 0;
   input {
     display: none;
   }
