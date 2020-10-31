@@ -19,7 +19,7 @@
       Relevant quotes<small class="less-strong ml-1">new line delineated</small>
     = f.text_area :quotes_text, required: true, rows: 4, class: "form-control hasRequired"
 
-  - if render_full_fields
+  - if render_full_fields && f.object.citation.present?
     - if f.object.citation.editable_by?(current_user)
       -# NOTE: if we're trying to render these on JS form expansion, we'll have to handle the overlapping ID problem here
       - full_fields_id = "fullCitationFields-#{f.object.citation.id.presence || (Time.current.to_i)}"
@@ -70,4 +70,4 @@
       .text-center{style: "margin: -1em 0 1em;"}
         %em.less-strong
           You can't edit this citation, it's already been added by someone. Suggest changes to
-          = link_to "the file on GitHub", f.object.citation.github_html_url
+          = link_to "the file on GitHub", f.object.citation.github_html_url, target: "_blank"

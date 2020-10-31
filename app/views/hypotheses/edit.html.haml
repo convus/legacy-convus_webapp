@@ -37,7 +37,7 @@
         = submit_tag "Save", class: "btn btn-primary submit-input"
     .col-6.col-md-4.col-xl-3
       .form-group.text-right
-        = link_to_add_fields "Add a citation", f, :citations, {class: "btn btn-outline-primary"}, filename: "/hypotheses/hypothesis_citation_fields"
+        = link_to_add_fields "Add a citation", f, :hypothesis_citations, {class: "btn btn-outline-primary"}, filename: "/hypotheses/hypothesis_citation_fields"
   .mt-4
     %a#submitForApproval.btn.btn-success.submit-input{ href: "#" }
       Submit for Approval
