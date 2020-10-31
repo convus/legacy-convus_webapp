@@ -555,23 +555,17 @@ RSpec.describe "/hypotheses", type: :request do
           citation.reload
           expect(citation).to be_valid
         end
-        it "does not destroy a hypothesis_citation for a different hypothesis" do
+        context "hypothesis_citation id for a different hypothesis" do
           let!(:hypothesis_citation1) { FactoryBot.create(:hypothesis_citation, citation: citation, quotes_text: "This is a thing") }
           it "ignores" do
             subject.reload
             expect(subject.quotes.pluck(:text)).to eq([])
             Sidekiq::Worker.clear_all
-            Sidekiq::Testing.inline! do
+            expect {
               expect {
                 patch "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_citation_destroy_params}
-              }.to change(HypothesisCitation, :count).by 1 # Adds one, doesn't removes one
-            end
-            expect(flash[:success]).to be_present
-            subject.reload
-
-            expect(subject.quotes.pluck(:text)).to eq(["First quote from this literature", "Second quote, which is cool"])
-            hypothesis_citation1.reload
-            expect(hypothesis_citation1).to be_valid
+              }.to_not change(HypothesisCitation, :count)
+            }.to raise_error(/find/)
           end
         end
       end

@@ -48,6 +48,6 @@ class HypothesisCitation < ApplicationRecord
 
   def update_hypothesis
     return false if skip_associated_tasks
-    hypothesis&.update(updated_at: Time.current, skip_associated_tasks: true)
+    hypothesis&.update(updated_at: Time.current)
   end
 end

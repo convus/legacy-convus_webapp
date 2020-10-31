@@ -46,12 +46,10 @@ class Hypothesis < ApplicationRecord
       end
     }.flatten
     ignored_messages = [
-      # "Hypothesis citations url can't be blank",
-      # "Hypothesis quotes is invalid",
-      # "Hypothesis citations hypothesis has already been taken",
-      # "Hypothesis citations url has already been taken" # Because there is already a Url has been taken message - and this shouldn't show up anyway :/
+      "Hypothesis citations url can't be blank",
+      "Hypothesis quotes is invalid",
+      "Hypothesis citations hypothesis has already been taken",
     ]
-
     (messages + errors.full_messages).compact.uniq - ignored_messages
   end
 
