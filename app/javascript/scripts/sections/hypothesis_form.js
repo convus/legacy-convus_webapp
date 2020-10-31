@@ -25,7 +25,7 @@ export class HypothesisForm {
       $("#citationsBlock").append(newFields.replace(regexp, time));
       $("#citationsBlock .initially-hidden").collapse("show");
       $("#citationsBlock .initially-hidden").removeClass("initially-hidden");
-      // Need to re-load fancy selects here, if we ever add forms with fancy selects
+      // Need to re-load fancy selects here, if we add fields with fancy selects
     });
 
     $("#citationsBlock").on("click keyboard", ".remove-fields", function(
@@ -38,19 +38,12 @@ export class HypothesisForm {
       const $eventTarget = $(event.target)
         .parents(".nested-field")
         .first();
-      log.debug($eventTarget);
+      // TODO: There is an issue in Firefox where this will collapse multiple if they were added close together
+      // slideUp() didn't fix the problem, and I got tired of trying to fix it, so ignoring
+      // log.debug($eventTarget);
+
       $eventTarget.find(".hasRequired").removeAttr("required");
-      // $eventTarget.first().collapse("hide");
-      // Trying slideUp because bootstrap collapse was breaking things - making multiple blocks collapse
-      $eventTarget.first().slideUp();
-
-      // const targetId = $(event.target)
-      //   .parents(".nested-field")
-      //   .attr("id");
-
-      // log.debug(targetId);
-      // $(`#${targetId} .hasRequired`).removeAttr("required");
-      // $(`#${targetId}`).collapse("hide");
+      $eventTarget.first().collapse("hide");
     });
   }
 }
