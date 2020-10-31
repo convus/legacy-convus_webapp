@@ -28,6 +28,7 @@
       %h3.mb-1 Citation(s)
 
     - @hypothesis.hypothesis_citations.build unless @hypothesis.hypothesis_citations.count > 0
+
     = f.fields_for :hypothesis_citations do |builder|
       = render partial: "/hypotheses/hypothesis_citation_fields", locals: {f: builder, initially_show: true}
 

@@ -245,7 +245,7 @@ RSpec.describe "/hypotheses", type: :request do
         expect(subject.citations.count).to eq 0
         Sidekiq::Worker.clear_all
         expect(Citation.count).to eq 1
-        put "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_params.merge(add_to_github: "")}
+        patch "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_params.merge(add_to_github: "")}
         expect(flash[:success]).to be_present
         expect(Citation.count).to eq 2
         expect(response).to redirect_to edit_hypothesis_path(subject.id)
@@ -273,12 +273,16 @@ RSpec.describe "/hypotheses", type: :request do
         citation2 = subject.citations.order(:created_at).last
         expect(citation2.url).to eq "https://something-of.org/interest-asdfasdf"
         expect(citation2.hypothesis_citations.first.quotes_text).to eq "First quote from this literature\n\nSecond quote, which is cool"
+        # updating with the exact same thing again shouldn't
+        expect {
+          patch "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_params.merge(add_to_github: "")}
+        }.to_not change(HypothesisCitation, :count)
       end
       context "other persons hypothesis" do
         let(:subject) { FactoryBot.create(:hypothesis) }
         it "does not update" do
           expect(subject.creator_id).to_not eq current_user.id
-          put "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_params}
+          patch "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_params}
           expect(response.code).to redirect_to assigns(:user_root_path)
           expect(flash[:error]).to be_present
           subject.reload
@@ -290,7 +294,7 @@ RSpec.describe "/hypotheses", type: :request do
         let(:subject) { FactoryBot.create(:hypothesis_approved, creator_id: current_user.id) }
         it "does not update" do
           expect(subject.creator_id).to eq current_user.id
-          put "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_params}
+          patch "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_params}
           expect(response.code).to redirect_to assigns(:user_root_path)
           expect(flash[:error]).to be_present
           subject.reload
@@ -300,7 +304,7 @@ RSpec.describe "/hypotheses", type: :request do
       end
       context "failed update" do
         it "renders with passed things" do
-          put "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_params.merge(title: " ")}
+          patch "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_params.merge(title: " ")}
           expect(response.code).to render_template("hypotheses/edit")
           expect(flash).to be_blank
           rendered_hypothesis = assigns(:hypothesis)
@@ -316,7 +320,7 @@ RSpec.describe "/hypotheses", type: :request do
           subject.update(title: hypothesis_add_to_github_params[:title])
           expect(subject.citations.count).to eq 0
           Sidekiq::Worker.clear_all
-          put "#{base_url}/#{subject.id}", params: hypothesis_add_to_github_params
+          patch "#{base_url}/#{subject.id}", params: hypothesis_add_to_github_params
           expect(flash[:success]).to be_present
           expect(response).to redirect_to hypothesis_path(subject.id)
           expect(assigns(:hypothesis)&.id).to eq subject.id
@@ -359,7 +363,7 @@ RSpec.describe "/hypotheses", type: :request do
             expect(citation.approved?).to be_falsey
             Sidekiq::Worker.clear_all
             Sidekiq::Testing.inline! do
-              put "#{base_url}/#{subject.to_param}", params: hypothesis_add_to_github_params
+              patch "#{base_url}/#{subject.to_param}", params: hypothesis_add_to_github_params
             end
             expect(response).to redirect_to hypothesis_path(subject.id)
             expect(flash[:success]).to be_present
@@ -388,7 +392,7 @@ RSpec.describe "/hypotheses", type: :request do
       #       expect(subject.hypothesis_quotes.score_ordered.map(&:quote_text)).to eq(["Third", "First quote from this literature"])
       #       Sidekiq::Worker.clear_all
       #       Sidekiq::Testing.inline! do
-      #         put "#{base_url}/#{subject.to_param}", params: {hypothesis: hypothesis_params}
+      #         patch "#{base_url}/#{subject.to_param}", params: {hypothesis: hypothesis_params}
       #       end
       #       expect(response).to redirect_to edit_hypothesis_path(subject.id)
       #       expect(flash[:success]).to be_present
@@ -409,7 +413,7 @@ RSpec.describe "/hypotheses", type: :request do
         it "creates a new citation" do
           expect(Citation.count).to eq 2
           Sidekiq::Worker.clear_all
-          put "#{base_url}/#{subject.to_param}", params: hypothesis_add_to_github_params
+          patch "#{base_url}/#{subject.to_param}", params: hypothesis_add_to_github_params
           expect(AddHypothesisToGithubContentJob.jobs.count).to eq 1
           expect(AddCitationToGithubContentJob.jobs.count).to eq 0
           expect(response).to redirect_to hypothesis_path(subject.id)
@@ -440,7 +444,7 @@ RSpec.describe "/hypotheses", type: :request do
         let(:citation_params) { full_citation_params.merge(url_is_not_publisher: true) }
         it "creates" do
           Sidekiq::Worker.clear_all
-          put "#{base_url}/#{subject.to_param}", params: {hypothesis: hypothesis_params}
+          patch "#{base_url}/#{subject.to_param}", params: {hypothesis: hypothesis_params}
           expect(AddHypothesisToGithubContentJob.jobs.count).to eq 0
           expect(response).to redirect_to edit_hypothesis_path(subject.id)
           expect(flash[:success]).to be_present
@@ -478,7 +482,7 @@ RSpec.describe "/hypotheses", type: :request do
         let(:citation_params) { full_citation_params.merge(url_is_not_publisher: true, publication_title: "Some other title") }
         it "creates with publication title" do
           Sidekiq::Worker.clear_all
-          put "#{base_url}/#{subject.to_param}", params: {hypothesis: hypothesis_params}
+          patch "#{base_url}/#{subject.to_param}", params: {hypothesis: hypothesis_params}
           expect(AddHypothesisToGithubContentJob.jobs.count).to eq 0
           expect(AddCitationToGithubContentJob.jobs.count).to eq 0
           expect(response).to redirect_to edit_hypothesis_path(subject.id)

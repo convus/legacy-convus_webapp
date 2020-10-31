@@ -7,8 +7,8 @@ class HypothesisCitation < ApplicationRecord
 
   accepts_nested_attributes_for :citation
 
-  validates :url, presence: true
-  validates :hypothesis, presence: true, uniqueness: {scope: [:url]}
+  validates :url, presence: true, uniqueness: {scope: [:hypothesis_id]}
+  validates :hypothesis, presence: true
 
   before_validation :set_calculated_attributes
   after_commit :enqueue_update_citation_quotes_job

@@ -2,15 +2,16 @@
 - initially_show ||= false
 
 .col-md-6.mb-4.collapse.nested-field{class: (initially_show ? "show" : "initially-hidden")}
-  .form-group
-    .row
-      .col
-        = f.label :url, "URL"
-      .col.text-right
-        .remove-fields-button
-          = f.label :_destroy, class: "remove-fields text-warning less-strong" do
-            = f.check_box :_destroy
-            remove
+  .form-group.remove-fields-wrap
+    = f.label :url do
+      URL
+      - if render_full_fields && f.object.id.present? && !f.object.citation.editable_by?(current_user)
+        %em.less-strong
+          You can't edit this citation, it's already been added by someone. Suggest changes to
+          = link_to "the file on GitHub", f.object.citation.github_html_url
+    = f.label :_destroy, class: "remove-fields text-warning less-strong" do
+      = f.check_box :_destroy
+      remove
     = f.text_field :url, required: true, class: "form-control"
   -# .form-group
   -#   = f.label :assignable_kind, "Source kind"
@@ -61,7 +62,4 @@
             Authors
             %small.less-strong new line delineated
           = nested.text_area :authors_str, placeholder: "optional", class: "form-control"
-    - else
-      %em.less-strong
-        You can't edit this citation, it's already been added by someone. Suggest changes to
-        = link_to "the file on GitHub", f.object.citation.github_html_url
+
