@@ -229,12 +229,14 @@ RSpec.describe "/hypotheses", type: :request do
           hypothesis_citations_attributes: {
             Time.current.to_i.to_s => {
               url: "https://something-of.org/interest-asdfasdf",
-              quotes_text: "First quote from this literature\nSecond quote, which is cool"
+              quotes_text: "First quote from this literature\nSecond quote, which is cool",
+              _destroy: "0"
             },
             "1" => {
               url: citation.url,
               quotes_text: "This is a thing",
-              citation_attributes: citation_params
+              citation_attributes: citation_params,
+              _destroy: "0"
             }
           }
         }
@@ -277,6 +279,7 @@ RSpec.describe "/hypotheses", type: :request do
         expect {
           patch "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_params.merge(add_to_github: "")}
         }.to_not change(HypothesisCitation, :count)
+        expect(flash[:success]).to be_present
       end
       context "other persons hypothesis" do
         let(:subject) { FactoryBot.create(:hypothesis) }
@@ -510,6 +513,66 @@ RSpec.describe "/hypotheses", type: :request do
           # TODO: Make meta_publication work again
           # expect(publication.home_url).to be_blank
           # expect(publication.meta_publication).to be_falsey
+        end
+      end
+      context "destroying an existing hypothesis_citation" do
+        let!(:hypothesis_citation1) { FactoryBot.create(:hypothesis_citation, hypothesis: subject, citation: citation, url: citation.url, quotes_text: "This is a thing") }
+        let(:hypothesis_citation_destroy_params) do
+          {
+            title: "This seems like the truth",
+            tags_string: "economy, parties",
+            hypothesis_citations_attributes: {
+              "0" => {
+                _destroy: "0",
+                url: "https://something-of.org/interest-asdfasdf",
+                quotes_text: "First quote from this literature\nSecond quote, which is cool",
+                id: nil,
+              },
+              "1" => {
+                url: citation.url,
+                quotes_text: "This is a thing",
+                citation_attributes: citation_params,
+                id: hypothesis_citation1.id,
+                _destroy: "1"
+              }
+            }
+          }
+        end
+        it "destroys the hypothesis citation" do
+          subject.reload
+          expect(subject.quotes.pluck(:text)).to eq(["This is a thing"])
+          expect(subject.citations.pluck(:url)).to eq([citation.url])
+          Sidekiq::Worker.clear_all
+          Sidekiq::Testing.inline! do
+            expect {
+              patch "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_citation_destroy_params}
+            }.to change(HypothesisCitation, :count).by 0 # Adds one, removes one
+          end
+          expect(flash[:success]).to be_present
+          subject.reload
+          expect(subject.citations.pluck(:url)).to eq(["https://something-of.org/interest-asdfasdf"])
+          expect(subject.quotes.pluck(:text)).to eq(["First quote from this literature", "Second quote, which is cool"])
+          citation.reload
+          expect(citation).to be_valid
+        end
+        it "does not destroy a hypothesis_citation for a different hypothesis" do
+          let!(:hypothesis_citation1) { FactoryBot.create(:hypothesis_citation, citation: citation, quotes_text: "This is a thing") }
+          it "ignores" do
+            subject.reload
+            expect(subject.quotes.pluck(:text)).to eq([])
+            Sidekiq::Worker.clear_all
+            Sidekiq::Testing.inline! do
+              expect {
+                patch "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_citation_destroy_params}
+              }.to change(HypothesisCitation, :count).by 1 # Adds one, doesn't removes one
+            end
+            expect(flash[:success]).to be_present
+            subject.reload
+
+            expect(subject.quotes.pluck(:text)).to eq(["First quote from this literature", "Second quote, which is cool"])
+            hypothesis_citation1.reload
+            expect(hypothesis_citation1).to be_valid
+          end
         end
       end
     end

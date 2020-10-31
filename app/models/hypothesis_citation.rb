@@ -2,7 +2,7 @@ class HypothesisCitation < ApplicationRecord
   belongs_to :hypothesis
   belongs_to :citation
 
-  has_many :hypothesis_quotes, -> { score_ordered }
+  has_many :hypothesis_quotes, -> { score_ordered }, dependent: :destroy
   has_many :quotes, through: :hypothesis_quotes
 
   accepts_nested_attributes_for :citation
@@ -11,7 +11,9 @@ class HypothesisCitation < ApplicationRecord
   validates :hypothesis, presence: true
 
   before_validation :set_calculated_attributes
-  after_commit :enqueue_update_citation_quotes_job
+  after_commit :update_hypothesis
+
+  attr_accessor :skip_update
 
   def quotes_text_array
     return [] unless quotes_text.present?
@@ -44,7 +46,8 @@ class HypothesisCitation < ApplicationRecord
     update_hypothesis_quotes(quotes_text_array)
   end
 
-  def enqueue_update_citation_quotes_job
-    UpdateCitationQuotesJob.perform_async(citation_id)
+  def update_hypothesis
+    return false if skip_update
+    hypothesis&.update(updated_at: Time.current, skip_update: true)
   end
 end
