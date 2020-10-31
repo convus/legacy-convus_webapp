@@ -21,7 +21,7 @@ class Hypothesis < ApplicationRecord
 
   scope :direct_quotation, -> { where(has_direct_quotation: true) }
 
-  attr_accessor :add_to_github, :skip_update
+  attr_accessor :add_to_github, :skip_associated_tasks
 
   def self.with_tags(string_or_array)
     with_tag_ids(Tag.matching_tags(string_or_array).pluck(:id))
@@ -113,7 +113,7 @@ class Hypothesis < ApplicationRecord
   end
 
   def run_associated_tasks
-    return false if skip_update
+    return false if skip_associated_tasks
     citations.pluck(:id).each { |i| UpdateCitationQuotesJob.perform_async(i) }
     add_to_github_content
   end

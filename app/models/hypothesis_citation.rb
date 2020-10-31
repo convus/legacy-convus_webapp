@@ -13,7 +13,7 @@ class HypothesisCitation < ApplicationRecord
   before_validation :set_calculated_attributes
   after_commit :update_hypothesis
 
-  attr_accessor :skip_update
+  attr_accessor :skip_associated_tasks
 
   def quotes_text_array
     return [] unless quotes_text.present?
@@ -47,7 +47,7 @@ class HypothesisCitation < ApplicationRecord
   end
 
   def update_hypothesis
-    return false if skip_update
-    hypothesis&.update(updated_at: Time.current, skip_update: true)
+    return false if skip_associated_tasks
+    hypothesis&.update(updated_at: Time.current, skip_associated_tasks: true)
   end
 end
