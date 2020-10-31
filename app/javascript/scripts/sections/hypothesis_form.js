@@ -11,30 +11,46 @@ export class HypothesisForm {
       $("#hypothesisForm").submit();
     });
 
-    $("form").on("click keyboard", ".add-fields", function(event) {
+    $(".add-fields").on("click keyboard", function(event) {
       event.preventDefault();
       if (!KeyboardOrClick(event)) {
         return false;
       }
       log.debug("add fields");
-      const $target = $(".add-fields");
+      const $target = $(".add-fields").clone();
       const time = new Date().getTime();
       const regexp = new RegExp($target.data("id"), "g");
       // Potentially could use classnames to determine placement of new field
-      $("#citationsBlock").append($target.data("fields").replace(regexp, time));
+      let newFields = $target.data("fields");
+      $("#citationsBlock").append(newFields.replace(regexp, time));
       $("#citationsBlock .initially-hidden").collapse("show");
       $("#citationsBlock .initially-hidden").removeClass("initially-hidden");
       // Need to re-load fancy selects here, if we ever add forms with fancy selects
     });
 
-    $("form").on("click keyboard", ".remove-fields", function(event) {
+    $("#citationsBlock").on("click keyboard", ".remove-fields", function(
+      event
+    ) {
       if (!KeyboardOrClick(event)) {
         return false;
       }
       // For this to work, the top level element in the nested fields needs to have the class "nested-field"
-      $(this)
+      const $eventTarget = $(event.target)
         .parents(".nested-field")
-        .collapse("hide");
+        .first();
+      log.debug($eventTarget);
+      $eventTarget.find(".hasRequired").removeAttr("required");
+      // $eventTarget.first().collapse("hide");
+      // Trying slideUp because bootstrap collapse was breaking things - making multiple blocks collapse
+      $eventTarget.first().slideUp();
+
+      // const targetId = $(event.target)
+      //   .parents(".nested-field")
+      //   .attr("id");
+
+      // log.debug(targetId);
+      // $(`#${targetId} .hasRequired`).removeAttr("required");
+      // $(`#${targetId}`).collapse("hide");
     });
   }
 }
