@@ -1,6 +1,8 @@
 - render_full_fields ||= false
 - initially_show ||= false
 
+= f.hidden_field :id # necessary to do manually, or else it isn't included for new objects
+
 .col-md-6.mb-4.collapse.nested-field{class: (initially_show ? "show" : "initially-hidden")}
   .form-group.remove-fields-wrap
     = f.label :url do
@@ -21,8 +23,12 @@
       Relevant quotes<small class="less-strong ml-1">new line delineated</small>
     = f.text_area :quotes_text, required: true, rows: 4, class: "form-control"
 
-  - if f.object.id.present?
-    - if f.object.citation.editable_by?(current_user)
+  - if render_full_fields && f.object.citation.editable_by?(current_user)
+    - full_fields_id = "fullCitationFields-" + (f.object.citation_id || Time.current.to_i).to_s
+    .text-center{style: "margin: -1em 0 1em;"}
+      %a.small.less-strong{ href: "##{full_fields_id}", "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse" }
+        %em show extended citation attributes
+    .collapse{ id: full_fields_id }
       = f.fields_for :citation do |nested|
         .form-group.mt-0
           .form-check
@@ -62,4 +68,3 @@
             Authors
             %small.less-strong new line delineated
           = nested.text_area :authors_str, placeholder: "optional", class: "form-control"
-
