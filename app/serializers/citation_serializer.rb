@@ -8,9 +8,14 @@ class CitationSerializer < ApplicationSerializer
     :url,
     :publication_title,
     :published_date,
-    :authors
+    :authors,
+    :quotes
 
   def published_date
     object.published_date_str
+  end
+
+  def quotes
+    object.quotes.map(&:text)
   end
 end
