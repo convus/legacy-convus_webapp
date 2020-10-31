@@ -46,7 +46,7 @@ RSpec.describe HypothesisCitation, type: :model do
 
   describe "quotes_text" do
     let(:citation) { FactoryBot.create(:citation) }
-    let(:hypothesis) { FactoryBot.create(:hypothesis) }
+    let(:hypothesis) { FactoryBot.create(:hypothesis, created_at: Time.current - 5.minutes) }
     let(:hypothesis_citation) { HypothesisCitation.new(url: citation.url, hypothesis: hypothesis, quotes_text: quotes_text) }
     let(:quotes_text) { " " }
     it "is ok if blank" do
