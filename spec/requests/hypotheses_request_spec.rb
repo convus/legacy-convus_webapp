@@ -275,7 +275,7 @@ RSpec.describe "/hypotheses", type: :request do
         citation2 = subject.citations.order(:created_at).last
         expect(citation2.url).to eq "https://something-of.org/interest-asdfasdf"
         expect(citation2.hypothesis_citations.first.quotes_text).to eq "First quote from this literature\n\nSecond quote, which is cool"
-        # updating with the exact same thing again shouldn't
+        # updating with the exact same thing again shouldn't make a change
         expect {
           patch "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_params.merge(add_to_github: "")}
         }.to_not change(HypothesisCitation, :count)
