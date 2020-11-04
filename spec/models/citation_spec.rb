@@ -48,14 +48,14 @@ RSpec.describe Citation, type: :model do
     end
     context "2017-03-3" do
       let(:published_date_str) { "2017-03-3" }
-      let(:target) { Time.current.to_date }
+      let(:target) { Date.parse("2017-03-03") }
       it "is date" do
         expect(citation.published_at.to_date).to eq target
       end
     end
     context "1995-03" do
       let(:published_date_str) { "1995-03" }
-      let(:target) { Time.current.to_date }
+      let(:target) { Date.parse("1995-03-01") }
       it "is date" do
         expect(citation.published_at.to_date).to eq target
       end

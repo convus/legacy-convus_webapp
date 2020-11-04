@@ -40,7 +40,7 @@ class ApplicationController < ActionController::Base
     user_github_omniauth_authorize_path
   end
 
-  helper_method :user_root_path, :github_link, :tag_titles
+  helper_method :display_dev_info?, :user_root_path, :github_link, :tag_titles
 
   def tag_titles
     @tag_titles ||= Tag.approved.pluck(:title)
