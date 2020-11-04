@@ -16,7 +16,7 @@
           %blockquote
             = quote.text
         .text-right.less-strong.mt-1
-          %small
+          %em.small
             - citation = hypothesis_citation.citation
             - if citation.present?
               #{citation.publication.title}: #{link_to citation.title, citation.url}
