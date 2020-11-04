@@ -53,6 +53,7 @@ RSpec.describe TimeParser do
       let(:target_date) { Date.parse("2017-03-01") }
       it "parses out the beginning of the month" do
         expect(subject.parse("2017-3").to_date).to eq target_date
+        expect(subject.parse("2017-3", "Europe/London").to_date).to eq target_date
         expect(subject.parse("2017-03").to_date).to eq target_date
         expect(subject.parse("2017-03-").to_date).to eq target_date
         expect(subject.parse("2017/03").to_date).to eq target_date
