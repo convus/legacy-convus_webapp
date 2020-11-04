@@ -89,9 +89,9 @@ class HypothesesController < ApplicationController
 
   def update_citation(hypothesis_citation)
     return false unless hypothesis_citation.citation.editable_by?(current_user)
-    hypothesis_citations_params = permitted_citations_params.values.find do |params|
+    hypothesis_citations_params = permitted_citations_params.values.find { |params|
       params.present? && params[:url] == hypothesis_citation.url
-    end
+    }
     citation_params = hypothesis_citations_params&.dig(:citation_attributes)
     hypothesis_citation.citation.update(citation_params) if citation_params.present?
     hypothesis_citation.citation
