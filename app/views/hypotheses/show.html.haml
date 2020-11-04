@@ -55,14 +55,14 @@
           %td
             %span.convertTime.preciseTime
               = l @hypothesis.created_at, format: :convert_time
-        - if current_user&.developer?
+        - if display_dev_info?
           %tr.only-dev-visible
             %td ID
             %td
               = @hypothesis.id
-          -# %tr.only-dev-visible
-          -#   %td slug
-          -#   %td= @hypothesis.to_param
+          %tr.only-dev-visible
+            %td slug
+            %td= @hypothesis.to_param
         %tr
           %td Score
           %td

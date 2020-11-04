@@ -21,6 +21,13 @@ class ApplicationController < ActionController::Base
     Rack::MiniProfiler.authorize_request unless Rails.env.test?
   end
 
+  def display_dev_info?
+    return @display_dev_info if defined?(@display_dev_info)
+    # Tie display_dev_info to the rack mini profiler display
+    @display_dev_info = !Rails.env.test? && current_user&.developer? &&
+      Rack::MiniProfiler.current.present?
+  end
+
   def after_sign_in_path_for(resource)
     stored_location_for(resource) || user_root_path
   end
