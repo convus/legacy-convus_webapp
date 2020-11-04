@@ -32,7 +32,7 @@
             = check_mark if publication.has_peer_reviewed_articles
           %td
             = publication.home_url
-            - if current_user&.developer?
+            - if display_dev_info?
               %small
                 = safe_join(publication.base_domains.map { |d| content_tag(:code, d, class: "only-dev-visible") }, ", ")
           %td

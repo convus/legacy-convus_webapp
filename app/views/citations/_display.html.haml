@@ -20,7 +20,7 @@
         %td Citation URL
         %td
           - if citation.url.present?
-            = link_to UrlCleaner.pretty_url(citation.url), citation.url
+            = link_to citation.url, citation.url
       %tr
         %td Title
         %td
@@ -37,7 +37,7 @@
               %em.small.less-strong.mt-2.d-block
                 Approved by
                 = link_to "PR#{citation.pull_request_number}", citation.pull_request_url
-      - if current_user&.developer?
+      - if display_dev_info?
         %tr.only-dev-visible
           %td ID
           %td= citation.id

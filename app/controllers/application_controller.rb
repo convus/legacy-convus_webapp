@@ -21,6 +21,13 @@ class ApplicationController < ActionController::Base
     Rack::MiniProfiler.authorize_request unless Rails.env.test?
   end
 
+  def display_dev_info?
+    return @display_dev_info if defined?(@display_dev_info)
+    # Tie display_dev_info to the rack mini profiler display
+    @display_dev_info = !Rails.env.test? && current_user&.developer? &&
+      Rack::MiniProfiler.current.present?
+  end
+
   def after_sign_in_path_for(resource)
     stored_location_for(resource) || user_root_path
   end
@@ -33,7 +40,7 @@ class ApplicationController < ActionController::Base
     user_github_omniauth_authorize_path
   end
 
-  helper_method :user_root_path, :github_link, :tag_titles
+  helper_method :display_dev_info?, :user_root_path, :github_link, :tag_titles
 
   def tag_titles
     @tag_titles ||= Tag.approved.pluck(:title)

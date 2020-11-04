@@ -15,18 +15,24 @@ class TimeParser
       time
     end
   rescue ArgumentError => e
-    # Try to parse some other, unexpected formats - for now, just one
+    # Try to parse some other, unexpected formats -
     ie11_formatted = %r{(?<month>\d+)/(?<day>\d+)/(?<year>\d+)}.match(time_str)
-    raise e unless ie11_formatted
+    just_date = %r{(?<year>\d{4})[^\d](?<month>\d\d?)}.match(time_str)
+    just_date_backward = %r{(?<month>\d\d?)[^\d](?<year>\d{4})}.match(time_str)
+    raise e unless ie11_formatted || just_date || just_date_backward
 
     # Time zones are hell
     Time.zone = parse_timezone(timezone_str)
 
-    time_str =
-      %i[year month day]
-        .map { |component| ie11_formatted[component] }
-        .join("-")
+    # Get the successful matching regex group, and then reformat it in an expected way
+    regex_match = [ie11_formatted, just_date, just_date_backward].compact.first
+    time_str = %w[year month day]
+      .map { |component| regex_match[component] if regex_match.names.include?(component) }
+      .compact
+      .join("-")
 
+    # Add the day, if there isn't one
+    time_str += "-01" unless regex_match.names.include?("day")
     time = Time.zone.parse(time_str)
       .in_time_zone(parse_timezone(timezone_str))
       .beginning_of_day

@@ -7,7 +7,7 @@
         %tr
           %td Title
           %td= @publication.title
-        - if current_user&.developer?
+        - if display_dev_info?
           %tr.only-dev-visible
             %td ID
             %td= @publication.id

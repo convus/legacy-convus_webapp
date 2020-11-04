@@ -89,22 +89,22 @@ class HypothesesController < ApplicationController
 
   def update_citation(hypothesis_citation)
     return false unless hypothesis_citation.citation.editable_by?(current_user)
-    citation_params = permitted_citations_params.find { |params| params.present? && params[:url] == hypothesis_citation.url }
-    if citation_params.present?
-      hypothesis_citation.citation.update(citation_params)
-    end
+    hypothesis_citations_params = permitted_citations_params.values.find { |params|
+      params.present? && params[:url] == hypothesis_citation.url
+    }
+    citation_params = hypothesis_citations_params&.dig(:citation_attributes)
+    hypothesis_citation.citation.update(citation_params) if citation_params.present?
     hypothesis_citation.citation
   end
 
-  # Get each set of permitted citation attributes. We're going to update them individually
+  # Get each set of permitted citation attributes. We're updating them individually
   def permitted_citations_params
-    params.require(:hypothesis).permit(hypothesis_citations_attributes: {citation_attributes: permitted_citation_attrs})
+    params.require(:hypothesis).permit(hypothesis_citations_attributes: [:url, {citation_attributes: permitted_citation_attrs}])
       .dig(:hypothesis_citations_attributes)
-      .values.map { |v| v[:citation_attributes] }
   end
 
   def permitted_citation_attrs
-    %w[title authors_str assignable_kind url url_is_direct_link_to_full_text published_date_str
+    %w[title authors_str assignable_kind url_is_direct_link_to_full_text published_date_str
       url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial quotes_text]
   end
 end

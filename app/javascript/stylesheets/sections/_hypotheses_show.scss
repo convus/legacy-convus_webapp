@@ -1,0 +1,25 @@
+.hypothesis-quotes-block {
+  font-size: 90%;
+  padding: 0 0.5rem 0.25em 0.5rem;
+  background: $gray-100;
+  border: 1px solid $gray-300;
+  margin-top: 1em;
+  blockquote {
+    margin: 0.75em 0 0 0;
+    &:before {
+      content: ">";
+      opacity: 0.3;
+      font-size: 80%;
+      margin-left: -0.25em;
+      display: inline-block;
+    }
+  }
+
+  @include media-breakpoint-down(sm) {
+    background: none;
+    border-left: none;
+    border-right: none;
+    margin-top: -1px; // to collapse/cover the above border
+    padding: 0;
+  }
+}

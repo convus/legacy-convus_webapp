@@ -1,5 +1,7 @@
 %h1
   Edit Hypothesis
+  %em.small.less-strong.ml-2
+    = link_to "preview", hypothesis_path(@hypothesis.id), target: "blank", class: "small"
 
 = form_for @hypothesis, url: { action: "update" }, html: { class: "form", id: "hypothesisForm" } do |f|
   = f.hidden_field :add_to_github

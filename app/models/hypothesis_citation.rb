@@ -48,7 +48,7 @@ class HypothesisCitation < ApplicationRecord
 
   def update_hypothesis
     # Ensure we don't call this in a loop, or during creation
-    return false if skip_associated_tasks || hypothesis&.created_at > Time.current - 5.seconds
+    return false if skip_associated_tasks || (hypothesis.present? && hypothesis.created_at > Time.current - 5.seconds)
     hypothesis&.update(updated_at: Time.current)
   end
 end

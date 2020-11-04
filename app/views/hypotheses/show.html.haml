@@ -1,39 +1,39 @@
-.max-width-text-container.mt-big
+.max-width-text-container.mt-4.mb-4
   %h1{ style: "font-size: 1.5rem" }
     Hypothesis
     - if @hypothesis.editable_by?(current_user)
-      %small
-        = link_to "edit", edit_hypothesis_path(@hypothesis.id), class: "btn btn-outline-primary"
-
-
+      %small.ml-2
+        = link_to "edit", edit_hypothesis_path(@hypothesis.id), class: "btn btn-outline-primary btn-sm"
   %p.mt-4
     %span{ style: "font-size: 125%;" }
       = @hypothesis.title
-  - @hypothesis.quotes.each do |quote|
-    %p
-      = quote.text
-      %br
-      %em.small
-        - if quote.citation.present?
-          #{quote.citation.publication.title}: #{link_to quote.citation.title, quote.citation.url}
-        - else
-          No citation!
+.row
+  - @hypothesis.hypothesis_citations.each do |hypothesis_citation|
+    - next unless hypothesis_citation.quotes.any?
+    .col-lg-6
+      .hypothesis-quotes-block.max-width-text-container-centered
+        - hypothesis_citation.quotes.each do |quote|
+          %blockquote
+            = quote.text
+        .text-right.less-strong.mt-1
+          %em.small
+            - citation = hypothesis_citation.citation
+            - if citation.present?
+              #{citation.publication.title}: #{link_to citation.title, citation.url}
 
-  - if @hypothesis.approved?
-    - badges = @hypothesis.badges
-    %hr.mt-big
-  - else
-    %hr.mt-big
-    - badges = @hypothesis.unapproved_badges
-    %p.mt-4
-      %span.text-warning This Hypothesis hasn't been approved
-      \- the score is if the hypothesis and citation are approved as they were originally submitted
+.row
+  .col-lg-6
+    - if @hypothesis.approved?
+      - badges = @hypothesis.badges
+      %hr.mt-big
+    - else
+      %hr.mt-big
+      - badges = @hypothesis.unapproved_badges
+      %p.mt-4
+        %span.text-warning This Hypothesis hasn't been approved
+        \- the score is if the hypothesis and citation are approved as they were originally submitted
 
-  - if @hypothesis.unapproved?
-    -# Skip rendering waiting for approval if hypothesis is over a minute old (something broke?) or SKIP_GITHUB_UPDATE
-    -# ... but definitely render it if pull_request_number
-    - render_waiting_for_approval = @hypothesis.pull_request_number.present? || !GithubIntegration::SKIP_GITHUB_UPDATE && @hypothesis.created_at > Time.current - 1.minute
-    - if render_waiting_for_approval
+    - if @hypothesis.waiting_on_github?
       .alert.alert-info.mt-4
         - if @hypothesis.pull_request_number.present?
           %h4
@@ -41,31 +41,29 @@
             = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
         - else
           Waiting for pull request to be created, page will reload.
-          -# NOTE: This will reload endlessly, which may not be what we want
-          :javascript
-            window.setTimeout(() => {location.reload();}, 2000);
+          -# if hypothesis hasn't been updated recently, skip this (something broke?)
+          - if @hypothesis.updated_at > Time.current - 2.minutes
+            :javascript
+              window.setTimeout(() => {location.reload();}, 2000);
 
 %h2.mt-big Details
 .row.mt-4
   .col-md-6
     %table.table-list
       %tbody
-        -# %tr
-        -#   %td Title
-        -#   %td= @hypothesis.title
         %tr
           %td Created
           %td
             %span.convertTime.preciseTime
               = l @hypothesis.created_at, format: :convert_time
-        - if current_user&.developer?
+        - if display_dev_info?
           %tr.only-dev-visible
             %td ID
             %td
               = @hypothesis.id
-          -# %tr.only-dev-visible
-          -#   %td slug
-          -#   %td= @hypothesis.to_param
+          %tr.only-dev-visible
+            %td slug
+            %td= @hypothesis.to_param
         %tr
           %td Score
           %td

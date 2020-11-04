@@ -15,6 +15,13 @@ module GithubSubmittable
     !submitted_to_github?
   end
 
+  # Currently only used in hypothesis#show - I think this can be refactored, and combined with add_to_github_content
+  # ... but I'm sleepy
+  def waiting_on_github?
+    return false if approved? || GithubIntegration::SKIP_GITHUB_UPDATE
+    submitted_to_github?
+  end
+
   def editable_by?(user = nil)
     return false unless user.present? && not_submitted_to_github?
     creator == user

@@ -38,6 +38,30 @@ RSpec.describe Citation, type: :model do
     end
   end
 
+  describe "published_date_str" do
+    let(:citation) { Citation.new(published_date_str: published_date_str) }
+    context "blank" do
+      let(:published_date_str) { " " }
+      it "is nil if blank" do
+        expect(citation.published_at).to be_blank
+      end
+    end
+    context "2017-03-3" do
+      let(:published_date_str) { "2017-03-3" }
+      let(:target) { Date.parse("2017-03-03") }
+      it "is date" do
+        expect(citation.published_at.to_date).to eq target
+      end
+    end
+    context "1995-03" do
+      let(:published_date_str) { "1995-03" }
+      let(:target) { Date.parse("1995-03-01") }
+      it "is date" do
+        expect(citation.published_at.to_date).to eq target
+      end
+    end
+  end
+
   describe "slugging" do
     let(:url) { "https://www.nationalreview.com/2020/09/joe-bidens-money-misadventures/" }
     let(:citation) { FactoryBot.create(:citation, url: url, title: nil) }
