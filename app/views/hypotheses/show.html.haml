@@ -7,7 +7,7 @@
   %p.mt-4
     %span{ style: "font-size: 125%;" }
       = @hypothesis.title
-.row
+.row.hypothesis-quotes-block-wrapper
   - @hypothesis.hypothesis_citations.each do |hypothesis_citation|
     - next unless hypothesis_citation.quotes.any?
     .col-lg-6

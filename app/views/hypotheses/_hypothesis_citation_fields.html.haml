@@ -65,7 +65,13 @@
             = nested.label :authors_str do
               Authors
               %small.less-strong new line delineated
-            = nested.text_area :authors_str, placeholder: "optional", class: "form-control"
+            = nested.text_area :authors_str, value: nested.object.authors.join("\n"), placeholder: "optional", class: "form-control"
+
+          .form-group
+            = nested.label :published_date_str do
+              Published date
+              %small.less-strong YYYY-MM(-DD)
+            = nested.text_field :published_date_str, placeholder: "optional", class: "form-control"
     - else
       .text-center{style: "margin: -1em 0 1em;"}
         %em.less-strong
