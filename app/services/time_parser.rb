@@ -21,24 +21,17 @@ class TimeParser
     just_date_backward = %r{(?<month>\d\d?)[^\d](?<year>\d{4})}.match(time_str)
     raise e unless ie11_formatted || just_date || just_date_backward
 
-    # Time zones are hell
-    Time.zone = parse_timezone(timezone_str)
-
     # Get the successful matching regex group, and then reformat it in an expected way
     regex_match = [ie11_formatted, just_date, just_date_backward].compact.first
-    time_str = %w[year month day]
+    new_str = %w[year month day]
       .map { |component| regex_match[component] if regex_match.names.include?(component) }
       .compact
       .join("-")
 
     # Add the day, if there isn't one
-    time_str += "-01" unless regex_match.names.include?("day")
-    time = Time.zone.parse(time_str)
-      .in_time_zone(parse_timezone(timezone_str))
-      .beginning_of_day
-
-    Time.zone = DEFAULT_TIMEZONE
-    time
+    new_str += "-01" unless regex_match.names.include?("day")
+    # Run it through TimeParser again
+    parse(new_str, timezone_str)
   end
 
   def self.parse_timezone(timezone_str)
