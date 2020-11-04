@@ -14,10 +14,10 @@ RSpec.describe "/hypotheses", type: :request do
       authors_str: "\nZack\n George\n",
       published_date_str: "1990-12-2",
       url_is_not_publisher: false,
-      url: "https://example.com/something-of-interest",
       quotes_text: "First quote from this literature\nSecond quote, which is cool\nThird"
     }
   end
+  let(:full_citation_url) { "https://example.com/something-of-interest" }
   let(:subject) { FactoryBot.create(:hypothesis, creator_id: current_user&.id) }
   let(:current_user) { nil }
 
@@ -221,7 +221,7 @@ RSpec.describe "/hypotheses", type: :request do
     end
 
     describe "update" do
-      let!(:citation) { FactoryBot.create(:citation, url: "https://example.com/something-of-interest", authors_str: "george", creator: current_user) }
+      let!(:citation) { FactoryBot.create(:citation, title: nil, url: "https://example.com/something-of-interest", authors_str: "george", creator: current_user) }
       let(:hypothesis_params) do
         {
           title: "This seems like the truth",
@@ -233,7 +233,7 @@ RSpec.describe "/hypotheses", type: :request do
               _destroy: "0"
             },
             "1" => {
-              url: citation.url,
+              url: full_citation_url,
               quotes_text: "This is a thing",
               citation_attributes: citation_params,
               _destroy: "0"
@@ -245,6 +245,8 @@ RSpec.describe "/hypotheses", type: :request do
       let(:hypothesis_add_to_github_params) { {hypothesis: hypothesis_params.merge(add_to_github: "1")} }
       it "updates" do
         expect(subject.citations.count).to eq 0
+        citation.reload
+        expect(citation.title_url?).to be_truthy
         Sidekiq::Worker.clear_all
         expect(Citation.count).to eq 1
         patch "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_params.merge(add_to_github: "")}
@@ -262,7 +264,7 @@ RSpec.describe "/hypotheses", type: :request do
 
         citation.reload
         expect(citation.title).to eq full_citation_params[:title]
-        expect(citation.url).to eq full_citation_params[:url]
+        expect(citation.url).to eq full_citation_url
         expect(citation.submitted_to_github?).to be_falsey
         expect(citation.publication).to be_present
         expect(citation.publication_title).to eq "example.com"
@@ -341,7 +343,7 @@ RSpec.describe "/hypotheses", type: :request do
 
           citation.reload
           expect(citation.title).to eq full_citation_params[:title]
-          expect(citation.url).to eq full_citation_params[:url]
+          expect(citation.url).to eq full_citation_url
           # expect(citation.submitted_to_github?).to be_truthy # Doesn't seem important. Job takes care of this, so ignore
           expect(citation.pull_request_number).to be_blank
           expect(citation.approved_at).to be_blank
@@ -432,7 +434,7 @@ RSpec.describe "/hypotheses", type: :request do
           expect(Citation.count).to eq 3
           citation.reload
           expect(citation.title).to eq full_citation_params[:title]
-          expect(citation.url).to eq full_citation_params[:url]
+          expect(citation.url).to eq full_citation_url
 
           expect(citation.publication).to be_present
           expect(citation.publication_title).to eq "example.com"
@@ -462,7 +464,7 @@ RSpec.describe "/hypotheses", type: :request do
           expect(Citation.count).to eq 2
           citation.reload
           expect(citation.title).to eq full_citation_params[:title]
-          expect(citation.url).to eq full_citation_params[:url]
+          expect(citation.url).to eq full_citation_url
           expect(citation.url_is_not_publisher).to be_truthy
           expect(subject.citations.pluck(:id)).to include(citation.id)
 
@@ -497,7 +499,7 @@ RSpec.describe "/hypotheses", type: :request do
           expect(Citation.count).to eq 2
           citation.reload
           expect(citation.title).to eq full_citation_params[:title]
-          expect(citation.url).to eq full_citation_params[:url]
+          expect(citation.url).to eq full_citation_url
           expect(citation.url_is_not_publisher).to be_truthy
           expect(subject.citations.pluck(:id)).to include(citation.id)
 

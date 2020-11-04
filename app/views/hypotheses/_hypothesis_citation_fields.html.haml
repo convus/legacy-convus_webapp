@@ -25,7 +25,7 @@
       - full_fields_id = "fullCitationFields-#{f.object.citation.id.presence || (Time.current.to_i)}"
       .text-center{style: "margin: -1em 0 1em;"}
         %a.small.less-strong{ href: "##{full_fields_id}", "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse" }
-          %em show extended citation attributes
+          %em toggle extended citation attributes
       .collapse{ id: full_fields_id }
         = f.fields_for :citation do |nested|
           .form-group.mt-0
