@@ -29,19 +29,16 @@
       %span.text-warning This Hypothesis hasn't been approved
       \- the score is if the hypothesis and citation are approved as they were originally submitted
 
-  - if @hypothesis.unapproved?
-    -# Skip rendering waiting for approval if hypothesis is over a minute old (something broke?) or SKIP_GITHUB_UPDATE
-    -# ... but definitely render it if pull_request_number
-    - render_waiting_for_approval = @hypothesis.pull_request_number.present? || !GithubIntegration::SKIP_GITHUB_UPDATE && @hypothesis.submitted_to_github?
-    - if render_waiting_for_approval
-      .alert.alert-info.mt-4
-        - if @hypothesis.pull_request_number.present?
-          %h4
-            Hypothesis waiting on approval,
-            = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
-        - else
-          Waiting for pull request to be created, page will reload.
-          -# NOTE: This will reload endlessly, which may not be what we want
+  - if @hypothesis.waiting_on_github?
+    .alert.alert-info.mt-4
+      - if @hypothesis.pull_request_number.present?
+        %h4
+          Hypothesis waiting on approval,
+          = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
+      - else
+        Waiting for pull request to be created, page will reload.
+        -# if hypothesis hasn't been updated recently, skip this (something broke?)
+        - if @hypothesis.updated_at > Time.current - 2.minutes
           :javascript
             window.setTimeout(() => {location.reload();}, 2000);
 

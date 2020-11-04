@@ -48,7 +48,7 @@ class Hypothesis < ApplicationRecord
     ignored_messages = [
       "Hypothesis citations url can't be blank",
       "Hypothesis quotes is invalid",
-      "Hypothesis citations hypothesis has already been taken",
+      "Hypothesis citations hypothesis has already been taken"
     ]
     (messages + errors.full_messages).compact.uniq - ignored_messages
   end

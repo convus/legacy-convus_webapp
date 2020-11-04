@@ -387,28 +387,28 @@ RSpec.describe "/hypotheses", type: :request do
             expect(citation2.pull_request_number).to eq subject.pull_request_number
           end
         end
-      # TODO: permit using the same quote in multiple places
-      #   context "2 quotes already exist" do
-      #     it "does not duplicate existing quotes" do
-      #       subject.hypothesis_citations.create(url: citation.url, quotes_text: "Third\n   First quote from this literature")
-      #       expect(subject.hypothesis_quotes.count).to eq 2
-      #       expect(subject.hypothesis_quotes.score_ordered.map(&:quote_text)).to eq(["Third", "First quote from this literature"])
-      #       Sidekiq::Worker.clear_all
-      #       Sidekiq::Testing.inline! do
-      #         patch "#{base_url}/#{subject.to_param}", params: {hypothesis: hypothesis_params}
-      #       end
-      #       expect(response).to redirect_to edit_hypothesis_path(subject.id)
-      #       expect(flash[:success]).to be_present
-      #       subject.reload
-      #       expect(subject.title).to eq hypothesis_params[:title]
-      #       expect(subject.citations.count).to eq 1
-      #       expect(subject.citations.pluck(:id)).to eq([citation.id])
-      #       expect(subject.submitting_to_github).to be_falsey
+        # TODO: permit using the same quote in multiple places
+        #   context "2 quotes already exist" do
+        #     it "does not duplicate existing quotes" do
+        #       subject.hypothesis_citations.create(url: citation.url, quotes_text: "Third\n   First quote from this literature")
+        #       expect(subject.hypothesis_quotes.count).to eq 2
+        #       expect(subject.hypothesis_quotes.score_ordered.map(&:quote_text)).to eq(["Third", "First quote from this literature"])
+        #       Sidekiq::Worker.clear_all
+        #       Sidekiq::Testing.inline! do
+        #         patch "#{base_url}/#{subject.to_param}", params: {hypothesis: hypothesis_params}
+        #       end
+        #       expect(response).to redirect_to edit_hypothesis_path(subject.id)
+        #       expect(flash[:success]).to be_present
+        #       subject.reload
+        #       expect(subject.title).to eq hypothesis_params[:title]
+        #       expect(subject.citations.count).to eq 1
+        #       expect(subject.citations.pluck(:id)).to eq([citation.id])
+        #       expect(subject.submitting_to_github).to be_falsey
 
-      #       expect(subject.hypothesis_quotes.count).to eq 3
-      #       expect(subject.hypothesis_quotes.score_ordered.map(&:quote_text)).to eq(["First quote from this literature", "Second quote, which is cool", "Third"])
-      #     end
-      #   end
+        #       expect(subject.hypothesis_quotes.count).to eq 3
+        #       expect(subject.hypothesis_quotes.score_ordered.map(&:quote_text)).to eq(["First quote from this literature", "Second quote, which is cool", "Third"])
+        #     end
+        #   end
       end
       # NOTE: this test is shitty, feel free to revamp aggressively. It was sloppily fixed after adding multiple citation support
       context "citation with matching title but different publisher exists" do
@@ -531,7 +531,7 @@ RSpec.describe "/hypotheses", type: :request do
             url: "https://something-of.org/interest-asdfasdf",
             quotes_text: "First quote from this literature\nSecond quote, which is cool",
             id: "",
-            _destroy: "false",
+            _destroy: "false"
           }
         end
         let(:hypothesis_params) do

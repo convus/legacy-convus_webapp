@@ -10,6 +10,7 @@ RSpec.shared_examples "GithubSubmittable" do
       let!(:instance) { FactoryBot.create model_sym }
       it "is false" do
         expect(instance.submitted_to_github?).to be_falsey
+        expect(instance.waiting_on_github?).to be_falsey
         expect(instance.not_submitted_to_github?).to be_truthy
         expect(instance.class.submitted_to_github.pluck(:id)).to eq([])
         expect(instance.class.not_submitted_to_github.pluck(:id)).to eq([instance.id])
@@ -19,6 +20,7 @@ RSpec.shared_examples "GithubSubmittable" do
       let!(:instance) { FactoryBot.create(model_sym, approved_at: Time.current) }
       it "is truthy" do
         expect(instance.submitted_to_github?).to be_truthy
+        expect(instance.waiting_on_github?).to be_falsey
         expect(instance.not_submitted_to_github?).to be_falsey
         expect(instance.class.submitted_to_github.pluck(:id)).to eq([instance.id])
       end
@@ -27,6 +29,7 @@ RSpec.shared_examples "GithubSubmittable" do
       let!(:instance) { FactoryBot.create(model_sym, pull_request_number: 12) }
       it "is truthy" do
         expect(instance.submitted_to_github?).to be_truthy
+        expect(instance.waiting_on_github?).to be_truthy
         expect(instance.not_submitted_to_github?).to be_falsey
         expect(instance.class.submitted_to_github.pluck(:id)).to eq([instance.id])
       end
@@ -35,6 +38,7 @@ RSpec.shared_examples "GithubSubmittable" do
       let!(:instance) { FactoryBot.create(model_sym, submitting_to_github: true) }
       it "is truthy" do
         expect(instance.submitted_to_github?).to be_truthy
+        expect(instance.waiting_on_github?).to be_truthy
         expect(instance.not_submitted_to_github?).to be_falsey
         expect(instance.class.submitted_to_github.pluck(:id)).to eq([instance.id])
       end
