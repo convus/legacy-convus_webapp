@@ -29,6 +29,30 @@ task reconcile_flat_file_database: :environment do
   end
 end
 
+# THIS IS DANGEROUS and generally should NOT be used
+# There are some problems that need to be fixed from the early hypotheses
+# It's the same as reconcile_flat_file_database, but without the import
+task update_flat_file_database_without_import: :environment do
+  Dir.chdir FlatFileSerializer::FILES_PATH
+  output = ""
+  output += `git config user.email admin-bot@convus.org`
+  output += `git config user.name convus-admin-bot`
+  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git reset --hard origin/main 2>&1`
+  FileUtils.rm_rf("hypotheses")
+  FileUtils.rm_rf("citations")
+  FlatFileSerializer.write_all_files
+  output += `git add -A`
+  commit_message = "Reconciliation: #{Time.now.utc.to_date.iso8601}"
+  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git commit -m"#{commit_message}" 2>&1`
+  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git push origin main 2>&1`
+
+  puts "(Output start) " + output + " (output end)"
+
+  if ReconcileTaskOutputChecker.success?(output)
+    raise output
+  end
+end
+
 task dev_update_from_git: :environment do
   Dir.chdir FlatFileSerializer::FILES_PATH
   output = `git reset --hard origin/main 2>&1`
