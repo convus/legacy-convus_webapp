@@ -56,6 +56,7 @@ class HypothesisCitation < ApplicationRecord
   def update_hypothesis
     # Ensure we don't call this in a loop, or during creation
     return false if skip_associated_tasks || (hypothesis.present? && hypothesis.created_at > Time.current - 5.seconds)
-    hypothesis&.update(updated_at: Time.current)
+    # Only update the hypothesis if it isn't destroyed
+    hypothesis&.update(updated_at: Time.current) if !hypothesis.destroyed?
   end
 end
