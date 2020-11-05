@@ -61,7 +61,7 @@ RSpec.describe TimeParser do
         expect(subject.parse("3-2017").to_date).to eq target_date
         expect(subject.parse("3/2017").to_date).to eq target_date
         expect(subject.parse("03/2017").to_date).to eq target_date
-        # TODO: make this work - currently, it interprets without an ArgumentError and don't hit special formatting
+        # TODO: make this work - currently, it interprets without an ArgumentError and doesn't hit special formatting
         # expect(subject.parse("03-2017").to_date).to eq target_date
       end
     end
