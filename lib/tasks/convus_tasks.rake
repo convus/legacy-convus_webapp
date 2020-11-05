@@ -29,6 +29,34 @@ task reconcile_flat_file_database: :environment do
   end
 end
 
+# This generally should NOT be used. It does not import the updates from git before pushing up the current data
+# It pushes a branch up named "override-#{timestamp}", which needs to be manually merged
+# This CAN OVERWRITE THINGS IN THE CONTENT REPOSITORY. It's for fixing broken stuff, YMMV
+task update_flat_file_database_without_import: :environment do
+  Dir.chdir FlatFileSerializer::FILES_PATH
+  output = ""
+  output += `git config user.email admin-bot@convus.org`
+  output += `git config user.name convus-admin-bot`
+  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git reset --hard origin/main 2>&1`
+  branch_name = "override-#{Time.current.to_i}"
+  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git checkout -b #{branch_name} 2>&1`
+  FileUtils.rm_rf("hypotheses")
+  FileUtils.rm_rf("citations")
+  FlatFileSerializer.write_all_files
+  output += `git add -A`
+  commit_message = "Reconciliation: #{Time.now.utc.to_date.iso8601}"
+  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git commit -m"#{commit_message}" 2>&1`
+  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git push origin #{branch_name} 2>&1`
+  # Get back on main so future commands don't error
+  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git checkout main 2>&1`
+
+  puts "(Output start) " + output + " (output end)"
+
+  if ReconcileTaskOutputChecker.success?(output)
+    raise output
+  end
+end
+
 task dev_update_from_git: :environment do
   Dir.chdir FlatFileSerializer::FILES_PATH
   output = `git reset --hard origin/main 2>&1`
