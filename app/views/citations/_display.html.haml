@@ -1,4 +1,5 @@
 - render_waiting_for_approval ||= false
+- hypothesis_citation_id ||= nil
 
 .col-md-6
 
@@ -17,7 +18,7 @@
   %table.table-list
     %tbody
       %tr
-        %td Citation URL
+        %td URL
         %td
           - if citation.url.present?
             = link_to citation.url, citation.url
@@ -41,6 +42,11 @@
         %tr.only-dev-visible
           %td ID
           %td= citation.id
+        - if hypothesis_citation_id.present?
+          %tr.only-dev-visible
+            %td
+              %small Hypothesis Citation ID
+            %td= hypothesis_citation_id
       %tr
         %td URL direct link?
         %td= display_true_or_false(citation.url_is_direct_link_to_full_text)

@@ -15,8 +15,8 @@ class HypothesisCitation < ApplicationRecord
 
   attr_accessor :skip_associated_tasks
 
-  # I've been running into this issue for a little while, so adding this method
-  # BUT! I think once the data is fixed and update_flat_file_database_without_import is run, it won't be a problem anymore
+  # There were some issues with legacy hypothesis_citations having duplicates
+  # leaving method around until certain they're resolved
   def duplicates
     HypothesisCitation.where(citation_id: citation_id, hypothesis_id: hypothesis_id)
       .where.not(id: id)
