@@ -3,6 +3,9 @@
 .full-screen-table
   %table.table.table-striped.table-sm.table-bordered
     %thead
+      - if display_dev_info?
+        %th.only-dev-visible.small
+          ID
       %th
         Title
       %th
@@ -16,6 +19,9 @@
     %tbody
       - citations.each do |citation|
         %tr
+          - if display_dev_info?
+            %td.only-dev-visible.small
+              = citation.id
           %td
             = citation.title
             = link_to internal_link_text, citation_path(citation.to_param), class: "internal-link"

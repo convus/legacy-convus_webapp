@@ -12,7 +12,7 @@ class CitationsController < ApplicationController
   def show
     slug = [params[:publication_id], params[:id]].reject(&:blank?).join("-")
     @citation = Citation.friendly_find!(slug)
-    @hypotheses = @citation.hypotheses
+    @hypotheses = @citation.hypotheses.reorder(created_at: :desc)
   end
 
   private
