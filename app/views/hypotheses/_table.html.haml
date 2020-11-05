@@ -6,16 +6,22 @@
 .full-screen-table
   %table.table.table-striped.table-sm.table-bordered
     %thead
+      - if display_dev_info?
+        %th.only-dev-visible.small
+          ID
       %th
         Hypothesis
       %th.d-none.d-md-table-cell
-        Citation
+        Citations
       %th.d-none.d-md-table-cell
         Created
     %tbody
       - search_tags = @search_tags || []
       - hypotheses.each do |hypothesis|
         %tr
+          - if display_dev_info?
+            %td.only-dev-visible.small
+              = hypothesis.id
           %td
             = hypothesis.title
             .score-bubble.small{ class: hypothesis_score_class(hypothesis.score) }
