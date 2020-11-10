@@ -6,6 +6,7 @@ class User < ApplicationRecord
 
   has_many :created_hypotheses, class_name: "Hypothesis", foreign_key: :creator_id
   has_many :created_citations, class_name: "Citation", foreign_key: :creator_id
+  has_many :user_scores
 
   enum role: ROLE_ENUM
 
