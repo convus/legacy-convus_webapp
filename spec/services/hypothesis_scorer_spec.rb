@@ -38,7 +38,7 @@ RSpec.describe HypothesisScorer do
         expect(subject.hypothesis_badges(hypothesis)).to eq target_badges
         expect(hypothesis.calculated_score).to eq 19
         hypothesis.update(approved_at: Time.current)
-        expect(hypothesis.score).to eq 20
+        expect(hypothesis.score).to eq 19
       end
     end
   end
