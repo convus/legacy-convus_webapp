@@ -87,9 +87,6 @@
                   Approved by
                   = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
         %tr
-          %td Direct quotation?
-          %td= display_true_or_false(@hypothesis.has_direct_quotation)
-        %tr
           %td Topics
           %td
             - if @hypothesis.tags.any?

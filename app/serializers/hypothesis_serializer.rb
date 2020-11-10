@@ -1,10 +1,6 @@
 class HypothesisSerializer < ApplicationSerializer
   attributes :title, :id, :cited_urls, :topics
 
-  def direct_quotation
-    object.has_direct_quotation
-  end
-
   def topics
     object.tag_titles
   end
