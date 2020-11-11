@@ -2,6 +2,7 @@ require "sidekiq/web"
 
 Rails.application.routes.draw do
   devise_for :users, controllers: {omniauth_callbacks: "users/omniauth_callbacks"}
+
   devise_scope :user do
     get "users/sign_out" => "devise/sessions#destroy"
   end
@@ -11,6 +12,8 @@ Rails.application.routes.draw do
   get :about, to: "landing#about"
 
   resources :citations, :publications, :hypotheses
+
+  resources :user_scores, only: [:create]
 
   get "/citations/:publication_id/:citation_id", to: "citations#show"
 

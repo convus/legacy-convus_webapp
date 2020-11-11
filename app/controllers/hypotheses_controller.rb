@@ -1,5 +1,6 @@
 class HypothesesController < ApplicationController
   before_action :redirect_to_signup_unless_user_present!, except: %i[index show]
+  before_action :process_user_score
   before_action :find_hypothesis, except: %i[index new create]
   before_action :ensure_user_can_edit!, only: %i[edit update]
   before_action :set_permitted_format
@@ -60,6 +61,18 @@ class HypothesesController < ApplicationController
   def find_hypothesis
     @hypothesis = Hypothesis.friendly_find!(params[:id])
     @citations = @hypothesis.citations
+  end
+
+  def process_user_score
+    return true if session[:after_sign_in_score].blank? || current_user.blank?
+    new_score_data = session.delete(:after_sign_in_score)
+    hypothesis_id, score, kind = new_score_data.split(",")
+    return true if [hypothesis_id, score, kind].compact.count < 3
+    new_score = current_user.user_scores.new(hypothesis_id: hypothesis_id, kind: kind, score: score)
+    new_score.set_calculated_attributes
+    most_recent_score = current_user.user_scores.current.where(hypothesis_id: hypothesis_id, kind: kind).last
+    return true if most_recent_score&.score == new_score.score
+    new_score.save
   end
 
   def ensure_user_can_edit!
