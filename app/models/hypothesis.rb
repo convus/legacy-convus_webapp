@@ -13,6 +13,7 @@ class Hypothesis < ApplicationRecord
   has_many :tags, through: :hypothesis_tags
   has_many :hypothesis_quotes, -> { score_ordered }
   has_many :quotes, through: :hypothesis_quotes
+  has_many :user_scores
 
   accepts_nested_attributes_for :hypothesis_citations, allow_destroy: true, reject_if: :all_blank
 

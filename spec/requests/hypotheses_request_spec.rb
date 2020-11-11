@@ -38,10 +38,14 @@ RSpec.describe "/hypotheses", type: :request do
 
   describe "show" do
     it "renders" do
+      post "/user_scores", params: { hypothesis_id: subject.id, kind: "quality", score: 12 }
+      expect(session[:after_sign_in_score]).to eq "#{subject.id},12,quality"
       expect(subject.approved?).to be_falsey
       get "#{base_url}/#{subject.to_param}"
       expect(response.code).to eq "200"
       expect(response).to render_template("hypotheses/show")
+      expect(UserScore.count).to eq 0
+      expect(session[:after_sign_in_score]).to eq "#{subject.id},12,quality"
     end
     context "approved" do
       let(:subject) { FactoryBot.create(:hypothesis_approved) }
@@ -60,6 +64,58 @@ RSpec.describe "/hypotheses", type: :request do
         expect(response.code).to eq "200"
         expect(response).to render_template("hypotheses/show")
         expect(assigns(:hypothesis)&.id).to eq subject.id
+      end
+    end
+    context "after_sign_in_score and user signed in" do
+      let(:current_user) { FactoryBot.create(:user) }
+      before do
+        post "/user_scores", params: { hypothesis_id: subject.id, kind: "quality", score: 12 }
+        expect(session[:after_sign_in_score]).to eq "#{subject.id},12,quality"
+        sign_in current_user
+      end
+      it "renders, creates user score only once" do
+        expect do
+          get "#{base_url}/#{subject.to_param}"
+        end.to change(UserScore, :count).by 1
+        expect(response.code).to eq "200"
+        expect(response).to render_template("hypotheses/show")
+        expect(session[:after_sign_in_score]).to be_blank
+        user_score = current_user.user_scores.current.last
+        expect(user_score.hypothesis_id).to eq subject.id
+        expect(user_score.kind).to eq "quality"
+        expect(user_score.score).to eq 9
+      end
+      context "with existing score" do
+        let!(:user_score1) { FactoryBot.create(:user_score, user: current_user, hypothesis: subject, score: score) }
+        let(:score) { 2 }
+        it "creates a new score" do
+          expect(user_score1.expired?).to be_falsey
+          expect do
+            get "#{base_url}/#{subject.to_param}"
+          end.to change(UserScore, :count).by 1
+          expect(response.code).to eq "200"
+          expect(response).to render_template("hypotheses/show")
+          expect(session[:after_sign_in_score]).to be_blank
+          expect(current_user.user_scores.count).to eq 2
+          user_score = current_user.user_scores.current.last
+          expect(user_score.hypothesis_id).to eq subject.id
+          expect(user_score.kind).to eq "quality"
+          expect(user_score.score).to eq 9
+          user_score1.reload
+          expect(user_score1.expired?).to be_truthy
+        end
+        context "score is the same" do
+          let(:score) { 9 }
+          it "does not create a new user score" do
+            expect do
+              get "#{base_url}/#{subject.to_param}"
+            end.to_not change(UserScore, :count)
+            expect(response.code).to eq "200"
+            expect(response).to render_template("hypotheses/show")
+            expect(session[:after_sign_in_score]).to be_blank
+            expect(current_user.user_scores.count).to eq 1
+          end
+        end
       end
     end
   end
