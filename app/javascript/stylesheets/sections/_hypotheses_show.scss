@@ -31,6 +31,12 @@
   .btn {
     font-size: 80%;
     padding: 0.25em;
+    margin-right: 0;
+    color: #212529 !important;
+    &.active {
+      font-weight: bold;
+      text-decoration: underline;
+    }
   }
   .current-avg {
     display: inline-block;

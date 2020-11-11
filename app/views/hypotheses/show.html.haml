@@ -1,4 +1,4 @@
-.max-width-text-container.mt-4.mb-4
+.mt-4.mb-4
   .row.mt-4
     .col-md-4
       %h1.mb-2{ style: "font-size: 1.5rem" }
@@ -13,25 +13,25 @@
             - quality_score = UserScore.current.quality.where(user_id: current_user&.id).first
             - if quality_score.present?
               quality
-              (<div class="current-avg less-strong"><span>avg</span> #{@hypothesis.user_scores.current_score}</div>):
+              <div class="current-avg less-strong">(<span>avg</span> #{@hypothesis.user_scores.quality.current_score})</div>:
             - else
               quality:
             - Array(UserScore::MIN_SCORE..UserScore::MAX_SCORE).each do |score|
               - active = quality_score&.score == score
-              = button_to score, user_scores_path, { action: "create", params: {score: score, hypothesis_id: @hypothesis.id, kind: "quality"}, class: "btn btn-sm btn-outline-secondary #{active ? 'active' : ''}" }
+              = button_to score, user_scores_path, { action: "create", params: {score: score, hypothesis_id: @hypothesis.id, kind: "quality"}, class: "btn btn-link #{active ? 'active' : ''}" }
 
           .hypothesis-score.mt-2
             - controversy_score = UserScore.current.controversy.where(user_id: current_user&.id).first
             - if controversy_score.present?
               controversy
-              (<div class="current-avg less-strong"><span>avg</span> #{@hypothesis.user_scores.current_score}</div>):
+              <div class="current-avg less-strong">(<span>avg</span> #{@hypothesis.user_scores.controversy.current_score})</div>:
             - else
               controversy:
             - Array(UserScore::MIN_SCORE..UserScore::MAX_SCORE).each do |score|
               - active = controversy_score&.score == score
-              = button_to score, user_scores_path, { action: "create", params: {score: score, hypothesis_id: @hypothesis.id, kind: "controversy"}, class: "btn btn-sm btn-outline-secondary #{active ? 'active' : ''}" }
+              = button_to score, user_scores_path, { action: "create", params: {score: score, hypothesis_id: @hypothesis.id, kind: "controversy"}, class: "btn btn-link #{active ? 'active' : ''}" }
 
-
+.max-width-text-container
   %p.mt-4
     %span{ style: "font-size: 125%;" }
       = @hypothesis.title
