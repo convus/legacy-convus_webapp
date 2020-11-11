@@ -10,7 +10,7 @@
       .col-md-8.mb-2{ style: "margin-top: -1em;"}
         .text-right
           .hypothesis-score
-            - quality_score = UserScore.current.quality.where(user_id: current_user&.id).first
+            - quality_score = @hypothesis.user_scores.current.quality.where(user_id: current_user&.id).first
             - if quality_score.present?
               quality
               <div class="current-avg less-strong">(<span>avg</span> #{@hypothesis.user_scores.quality.current_score})</div>:
@@ -21,7 +21,7 @@
               = button_to score, user_scores_path, { action: "create", params: {score: score, hypothesis_id: @hypothesis.id, kind: "quality"}, class: "btn btn-link #{active ? 'active' : ''}" }
 
           .hypothesis-score.mt-2
-            - controversy_score = UserScore.current.controversy.where(user_id: current_user&.id).first
+            - controversy_score = @hypothesis.user_scores.current.controversy.where(user_id: current_user&.id).first
             - if controversy_score.present?
               controversy
               <div class="current-avg less-strong">(<span>avg</span> #{@hypothesis.user_scores.controversy.current_score})</div>:
