@@ -87,9 +87,6 @@
                   Approved by
                   = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
         %tr
-          %td Direct quotation?
-          %td= display_true_or_false(@hypothesis.has_direct_quotation)
-        %tr
           %td Topics
           %td
             - if @hypothesis.tags.any?
@@ -130,5 +127,5 @@
   = "Citation".pluralize(@hypothesis.citations.count)
 
 .row.mt-2
-  - @citations.each do |citation|
-    = render partial: "/citations/display", locals: { citation: citation }
+  - @hypothesis.hypothesis_citations.each do |hypothesis_citation|
+    = render partial: "/citations/display", locals: { citation: hypothesis_citation.citation, hypothesis_citation_id: hypothesis_citation.id }

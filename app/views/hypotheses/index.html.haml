@@ -19,4 +19,7 @@
     = paginate @hypotheses
   .mt-4
 
-= render partial: "/hypotheses/list", locals: { hypotheses: @hypotheses }
+- if ParamsNormalizer.boolean(params[:render_table])
+  = render partial: "/hypotheses/table", locals: { hypotheses: @hypotheses }
+- else
+  = render partial: "/hypotheses/list", locals: { hypotheses: @hypotheses }

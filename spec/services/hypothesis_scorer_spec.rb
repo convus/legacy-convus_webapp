@@ -13,10 +13,11 @@ RSpec.describe HypothesisScorer do
     it "returns" do
       expect(subject.hypothesis_badges(Hypothesis.new)).to eq({})
     end
-    context "with direct quotation" do
-      let(:hypothesis) { Hypothesis.new(has_direct_quotation: true) }
+    context "with quote quotation" do
+      let(:hypothesis_quote) { FactoryBot.create(:hypothesis_quote) }
+      let(:hypothesis) { hypothesis_quote.hypothesis }
       it "returns with direct quote" do
-        expect(subject.hypothesis_badges(hypothesis)).to eq({direct_quotation: 1})
+        expect(subject.hypothesis_badges(hypothesis)).to eq({has_quote: 1})
       end
     end
     context "with citation" do
@@ -28,16 +29,16 @@ RSpec.describe HypothesisScorer do
           url_is_direct_link_to_full_text: true,
           publication: publication)
       end
-      let(:hypothesis) { FactoryBot.create(:hypothesis, has_direct_quotation: true, tags_string: "A first tag, a second tag") }
+      let(:hypothesis) { FactoryBot.create(:hypothesis, tags_string: "A first tag, a second tag") }
       let!(:hypothesis_citation) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: citation.url) }
-      let(:target_badges) { {direct_quotation: 1, has_at_least_two_topics: 1, randomized_controlled_trial: 2, open_access_research: 10, peer_reviewed_medium_impact_factor: 6} }
+      let(:target_badges) { {has_at_least_two_topics: 1, randomized_controlled_trial: 2, open_access_research: 10, peer_reviewed_medium_impact_factor: 6} }
       it "returns with citation and publication" do
         expect(hypothesis.publications.pluck(:id)).to eq([publication.id])
         expect(hypothesis.citation_for_score&.id).to eq citation.id
         expect(subject.hypothesis_badges(hypothesis)).to eq target_badges
-        expect(hypothesis.calculated_score).to eq 20
+        expect(hypothesis.calculated_score).to eq 19
         hypothesis.update(approved_at: Time.current)
-        expect(hypothesis.score).to eq 20
+        expect(hypothesis.score).to eq 19
       end
     end
   end

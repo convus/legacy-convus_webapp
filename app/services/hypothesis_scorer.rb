@@ -1,7 +1,7 @@
 class HypothesisScorer
   BADGES = {
     hypothesis: {
-      direct_quotation: 1,
+      has_quote: 1,
       has_at_least_two_topics: 1
     },
 
@@ -32,7 +32,7 @@ class HypothesisScorer
     badges = {}
     return badges unless hypothesis.present?
     hy_badges = BADGES[:hypothesis]
-    badges.merge!(hy_badges.slice(:direct_quotation)) if hypothesis.direct_quotation?
+    badges.merge!(hy_badges.slice(:has_quote)) if hypothesis.quotes.count > 0
     badges.merge!(hy_badges.slice(:has_at_least_two_topics)) if hypothesis.tags.count > 1
     citation ||= hypothesis.citation_for_score
     badges.merge(citation_badges(citation))

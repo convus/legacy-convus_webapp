@@ -15,6 +15,10 @@
   }
   tr td:last-child {
     width: 85%; // This is effectively min-width for table cells, which means that the definition max-width is 15%
+    ul {
+      padding-left: 1.5em;
+      margin-bottom: 0;
+    }
   }
   tr.active-row {
     background-color: #ebf5fb !important;
