@@ -1,6 +1,6 @@
 class UserScore < ApplicationRecord
   MIN_SCORE = 0
-  MAX_SCORE = 10
+  MAX_SCORE = 9
   KIND_ENUM = {quality: 0, controversy: 1}
 
   belongs_to :user
@@ -8,6 +8,8 @@ class UserScore < ApplicationRecord
 
   before_validation :set_calculated_attributes
   after_commit :expire_previous_scores, only: [:create]
+
+  validates :user_id, presence: true
 
   enum kind: KIND_ENUM
 
@@ -27,7 +29,7 @@ class UserScore < ApplicationRecord
 
   def expire_previous_scores
     return false if expired?
-    UserScore.where(user_id: user_id, hypothesis_id: hypothesis_id, expired: false)
+    UserScore.where(user_id: user_id, hypothesis_id: hypothesis_id, kind: kind, expired: false)
       .where("id < ?", id)
       .update_all(expired: true)
   end

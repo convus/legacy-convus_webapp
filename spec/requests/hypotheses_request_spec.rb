@@ -83,7 +83,7 @@ RSpec.describe "/hypotheses", type: :request do
         user_score = current_user.user_scores.current.last
         expect(user_score.hypothesis_id).to eq subject.id
         expect(user_score.kind).to eq "quality"
-        expect(user_score.score).to eq 10
+        expect(user_score.score).to eq 9
       end
       context "with existing score" do
         let!(:user_score1) { FactoryBot.create(:user_score, user: current_user, hypothesis: subject, score: score) }
@@ -100,12 +100,12 @@ RSpec.describe "/hypotheses", type: :request do
           user_score = current_user.user_scores.current.last
           expect(user_score.hypothesis_id).to eq subject.id
           expect(user_score.kind).to eq "quality"
-          expect(user_score.score).to eq 10
+          expect(user_score.score).to eq 9
           user_score1.reload
           expect(user_score1.expired?).to be_truthy
         end
         context "score is the same" do
-          let(:score) { 10 }
+          let(:score) { 9 }
           it "does not create a new user score" do
             expect do
               get "#{base_url}/#{subject.to_param}"
