@@ -1,8 +1,10 @@
-class AccountsController < ApplicationController
-  before_action :redirect_to_signup_unless_user_present!
-  def show
-    @hypotheses = current_user.created_hypotheses
-    @hypotheses_submitted = @hypotheses.submitted_to_github
-    @hypotheses_not_submitted = @hypotheses.not_submitted_to_github
+class WebhooksController < ApplicationController
+  def reconcile_content
+    if params[:webhook_token] == ContentRedeployer::WEBHOOK_TOKEN
+      result = ContentRedeployer.new.run_content_job
+      render json: {success: result.dig("response", "started_at").present?}
+    else
+      render json: {error: "Incorrect token"}, status: 401
+    end
   end
 end

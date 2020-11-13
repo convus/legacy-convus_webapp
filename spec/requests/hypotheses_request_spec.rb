@@ -38,7 +38,7 @@ RSpec.describe "/hypotheses", type: :request do
 
   describe "show" do
     it "renders" do
-      post "/user_scores", params: { hypothesis_id: subject.id, kind: "quality", score: 12 }
+      post "/user_scores", params: {hypothesis_id: subject.id, kind: "quality", score: 12}
       expect(session[:after_sign_in_score]).to eq "#{subject.id},12,quality"
       expect(subject.approved?).to be_falsey
       get "#{base_url}/#{subject.to_param}"
@@ -74,9 +74,9 @@ RSpec.describe "/hypotheses", type: :request do
         sign_in current_user
       end
       it "renders, creates user score only once" do
-        expect do
+        expect {
           get "#{base_url}/#{subject.to_param}"
-        end.to change(UserScore, :count).by 1
+        }.to change(UserScore, :count).by 1
         expect(response.code).to eq "200"
         expect(response).to render_template("hypotheses/show")
         expect(session[:after_sign_in_score]).to be_blank
@@ -90,9 +90,9 @@ RSpec.describe "/hypotheses", type: :request do
         let(:score) { 2 }
         it "creates a new score" do
           expect(user_score1.expired?).to be_falsey
-          expect do
+          expect {
             get "#{base_url}/#{subject.to_param}"
-          end.to change(UserScore, :count).by 1
+          }.to change(UserScore, :count).by 1
           expect(response.code).to eq "200"
           expect(response).to render_template("hypotheses/show")
           expect(session[:after_sign_in_score]).to be_blank
@@ -107,9 +107,9 @@ RSpec.describe "/hypotheses", type: :request do
         context "score is the same" do
           let(:score) { 9 }
           it "does not create a new user score" do
-            expect do
+            expect {
               get "#{base_url}/#{subject.to_param}"
-            end.to_not change(UserScore, :count)
+            }.to_not change(UserScore, :count)
             expect(response.code).to eq "200"
             expect(response).to render_template("hypotheses/show")
             expect(session[:after_sign_in_score]).to be_blank

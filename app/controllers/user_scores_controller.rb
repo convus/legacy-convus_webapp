@@ -3,8 +3,8 @@ class UserScoresController < ApplicationController
   def create
     @hypothesis = Hypothesis.friendly_find!(params[:hypothesis_id])
     current_user.user_scores.create(hypothesis_id: params[:hypothesis_id],
-      score: params[:score],
-      kind: params[:kind])
+                                    score: params[:score],
+                                    kind: params[:kind])
     redirect_back(fallback_location: hypothesis_path(@hypothesis.to_param))
   end
 end

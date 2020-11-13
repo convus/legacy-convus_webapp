@@ -17,9 +17,9 @@ RSpec.describe "/user_scores", type: :request do
     include_context :logged_in_as_user
     describe "creates the user_score" do
       it "renders" do
-        expect do
+        expect {
           post base_url, params: { hypothesis_id: hypothesis.id, kind: "quality", score: 8 }
-        end.to change(UserScore, :count).by 1
+        }.to change(UserScore, :count).by 1
         expect(flash).to be_blank
         expect(response).to redirect_to(hypothesis_path(hypothesis.to_param))
 

@@ -1,18 +1,20 @@
 ---
 http_interactions:
   - request:
-      method: get
-      uri: https://app.cloud66.com/api/3/stacks/yyyyyyy/jobs
+      method: post
+      uri: https://app.cloud66.com/api/3/stacks/xxxxx/jobs/yyyyyyy/run_now
       body:
-        encoding: US-ASCII
+        encoding: UTF-8
         string: ""
       headers:
         Content-Type:
           - application/json
         Authorization:
-          - Bearer xxxxxxxxx
+          - Bearer xxxxxxx
         User-Agent:
           - Faraday v1.0.1
+        Content-Length:
+          - "0"
         Accept-Encoding:
           - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
         Accept:
@@ -25,7 +27,7 @@ http_interactions:
         Server:
           - nginx/1.13.12
         Date:
-          - Fri, 13 Nov 2020 18:49:17 GMT
+          - Fri, 13 Nov 2020 19:06:11 GMT
         Content-Type:
           - application/json; charset=utf-8
         Transfer-Encoding:
@@ -35,19 +37,17 @@ http_interactions:
         Vary:
           - Accept-Encoding
         Etag:
-          - W/"064a2a36688ff94a134fa415148d79a1"
+          - W/"e79be906b7248d3398a727e2ecbf73db"
         Cache-Control:
           - max-age=0, private, must-revalidate
         X-Request-Id:
-          - 35a31a8d00fdb678c7759594fb2be4eb
+          - 560f3fd823615853f229bbe6493170b3
         X-Runtime:
-          - "0.074037"
+          - "0.099189"
         Strict-Transport-Security:
           - max-age=15724800; includeSubDomains
       body:
         encoding: ASCII-8BIT
-        string: '{"response":[{"uid":"xxxxxxxx","name":"Reconcile
-          Flat file database","type":"RakeJob","cron":null,"status":2,"params":{"task":"reconcile_flat_file_database"},"created_at":"2020-09-22
-          23:35:19 UTC","updated_at":"2020-09-22 23:35:19 UTC"}],"count":1,"pagination":{"previous":null,"next":null,"current":1,"per_page":30,"count":1,"pages":1}}'
-    recorded_at: Fri, 13 Nov 2020 18:49:16 GMT
+        string: '{"response":{"id":999,"user":"fffff","resource_type":"stack","action":"job_run_now","resource_id":"65956","started_via":"api","started_at":"2020-11-13T19:06:11Z","finished_at":null,"finished_success":null,"finished_message":null,"finished_result":null}}'
+    recorded_at: Fri, 13 Nov 2020 19:06:11 GMT
 recorded_with: VCR 6.0.0
