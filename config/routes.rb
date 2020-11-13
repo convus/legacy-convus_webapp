@@ -17,6 +17,8 @@ Rails.application.routes.draw do
 
   get "/citations/:publication_id/:citation_id", to: "citations#show"
 
+  post "/webhooks/redeploy_content", to: "webhooks#redeploy_content"
+
   authenticate :user, lambda { |u| u.developer? } do
     mount Sidekiq::Web, at: "/sidekiq"
   end
