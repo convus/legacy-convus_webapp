@@ -7,7 +7,6 @@ class CreateUserScores < ActiveRecord::Migration[6.0]
       t.integer :kind
       t.boolean :expired, default: false
 
-
       t.timestamps
     end
   end

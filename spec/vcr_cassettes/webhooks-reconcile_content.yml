@@ -1,0 +1,53 @@
+---
+http_interactions:
+  - request:
+      method: post
+      uri: https://app.cloud66.com/api/3/stacks/xxxxx/jobs/yyyyyyy/run_now
+      body:
+        encoding: UTF-8
+        string: ""
+      headers:
+        Content-Type:
+          - application/json
+        Authorization:
+          - Bearer xxxxxxx
+        User-Agent:
+          - Faraday v1.0.1
+        Content-Length:
+          - "0"
+        Accept-Encoding:
+          - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+        Accept:
+          - "*/*"
+    response:
+      status:
+        code: 200
+        message: OK
+      headers:
+        Server:
+          - nginx/1.13.12
+        Date:
+          - Fri, 13 Nov 2020 19:06:11 GMT
+        Content-Type:
+          - application/json; charset=utf-8
+        Transfer-Encoding:
+          - chunked
+        Connection:
+          - keep-alive
+        Vary:
+          - Accept-Encoding
+        Etag:
+          - W/"e79be906b7248d3398a727e2ecbf73db"
+        Cache-Control:
+          - max-age=0, private, must-revalidate
+        X-Request-Id:
+          - 560f3fd823615853f229bbe6493170b3
+        X-Runtime:
+          - "0.099189"
+        Strict-Transport-Security:
+          - max-age=15724800; includeSubDomains
+      body:
+        encoding: ASCII-8BIT
+        string: '{"response":{"id":999,"user":"fffff","resource_type":"stack","action":"job_run_now","resource_id":"65956","started_via":"api","started_at":"2020-11-13T19:06:11Z","finished_at":null,"finished_success":null,"finished_message":null,"finished_result":null}}'
+    recorded_at: Fri, 13 Nov 2020 19:06:11 GMT
+recorded_with: VCR 6.0.0
