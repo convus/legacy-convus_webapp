@@ -1,8 +1,8 @@
 class ContentRedeployer
-  WEBHOOK_TOKEN = ENV["REDEPLOYER_WEBHOOK_TOKEN"]
-  CLOUD66_API_KEY = ENV["CLOUD66_API_TOKEN"]
+  GITHUB_WEBHOOK_SECRET = ENV["GITHUB_WEBHOOK_SECRET"]
+  CLOUD66_API_KEY = ENV["C66_API_TOKEN"]
   STACK_ID = ENV["C66_STACK_UUID"]
-  JOB_ID = ENV["CLOUD66_REDEPLOY_JOB_ID"]
+  JOB_ID = ENV["C66_REDEPLOY_JOB_ID"]
 
   def connection
     @connection ||= Faraday.new(url: "https://app.cloud66.com") { |conn|

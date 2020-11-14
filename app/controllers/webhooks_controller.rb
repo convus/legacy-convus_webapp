@@ -1,6 +1,6 @@
 class WebhooksController < ApplicationController
   def reconcile_content
-    if params[:webhook_token] == ContentRedeployer::WEBHOOK_TOKEN
+    if request.headers["X-Hub-Signature"] == ContentRedeployer::WEBHOOK_TOKEN
       result = ContentRedeployer.new.run_content_job
       render json: {success: result.dig("response", "started_at").present?}
     else
