@@ -16,6 +16,9 @@ class WebhooksController < ApplicationController
 
   def signature_verified?
     return false unless request.headers["X-Hub-Signature-256"].present?
+    puts "\nyyyy-yyyy\n"
+    puts request.body.read
+    puts "\nxxxx-xxxx\n"
     signature = "sha256=" + OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), ContentRedeployer::WEBHOOK_SECRET, request.body.read)
     Rack::Utils.secure_compare(signature, request.headers["X-Hub-Signature-256"])
   end
