@@ -22,8 +22,16 @@ class GithubIntegration
     client.refs(CONTENT_REPO)
   end
 
+  def commit(sha)
+    client.commit(CONTENT_REPO, sha)
+  end
+
   def pull_requests(state: "open")
     client.pull_requests(CONTENT_REPO, state: state)
+  end
+
+  def last_main_commit
+    commit(main_branch_sha).to_h.as_json
   end
 
   def main_branch_sha

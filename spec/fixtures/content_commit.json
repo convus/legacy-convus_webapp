@@ -1,0 +1,98 @@
+{
+  "sha": "475b8e07ec1c4373f077b4bb7b2e6fa6bea341e0",
+  "node_id": "MDY6Q29tbWl0Mjk1ODQzNjEwOjQ3NWI4ZTA3ZWMxYzQzNzNmMDc3YjRiYjdiMmU2ZmE2YmVhMzQxZTA=",
+  "commit": {
+    "author": {
+      "name": "Seth Herr",
+      "email": "seth.william.herr@gmail.com",
+      "date": "2020-11-19T02:38:19.000Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2020-11-19T02:38:19.000Z"
+    },
+    "message": "Update publications with retractions",
+    "tree": {
+      "sha": "0318ee1386bc6982dd45f52a73595a546bd53873",
+      "url": "https://api.github.com/repos/convus/convus_content/git/trees/0318ee1386bc6982dd45f52a73595a546bd53873"
+    },
+    "url": "https://api.github.com/repos/convus/convus_content/git/commits/475b8e07ec1c4373f077b4bb7b2e6fa6bea341e0",
+    "comment_count": 0,
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsBcBAABCAAQBQJftdqbCRBK7hj4Ov3rIwAAdHIIAIjXhdq9XSaN1ThlJg30bV7F\nVuO83KUkzgcnz7YDIoFN6s+XF/GAuyBD7MIUqwnen0Ep+UBu9+pSX6AUZKpwiqJU\n4+KZir7WakSohJfTDNNHK4TVyWhq1UCcTuPCdHpLqNY02VEGiCXikbAe2RvGgobL\nXB25ULJ4P2pDeHwkDsWLoXgNB3c8DFseHFxcM5+8BiqASZ7wlZH5tHZZapzJsD4R\nNhaAe4M7mSAloX1Jwg3tnuzXDZxv/ov2/8bcUBFDXUWF4RjxjpC7JcCsbRpv1oIR\nlbMcF4bV2NXVRIxY35xuWKLQKrIdhPVIL94aeX+TNnvRqFfWrpl3tdox5DDrMR8=\n=dt8/\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree 0318ee1386bc6982dd45f52a73595a546bd53873\nparent df11e5b3abc02939becc893861bf9934a96b8f59\nauthor Seth Herr <seth.william.herr@gmail.com> 1605753499 -0800\ncommitter GitHub <noreply@github.com> 1605753499 -0800\n\nUpdate publications with retractions"
+    }
+  },
+  "url": "https://api.github.com/repos/convus/convus_content/commits/475b8e07ec1c4373f077b4bb7b2e6fa6bea341e0",
+  "html_url": "https://github.com/convus/convus_content/commit/475b8e07ec1c4373f077b4bb7b2e6fa6bea341e0",
+  "comments_url": "https://api.github.com/repos/convus/convus_content/commits/475b8e07ec1c4373f077b4bb7b2e6fa6bea341e0/comments",
+  "author": {
+    "login": "sethherr",
+    "id": 1235441,
+    "node_id": "MDQ6VXNlcjEyMzU0NDE=",
+    "avatar_url": "https://avatars2.githubusercontent.com/u/1235441?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/sethherr",
+    "html_url": "https://github.com/sethherr",
+    "followers_url": "https://api.github.com/users/sethherr/followers",
+    "following_url": "https://api.github.com/users/sethherr/following{/other_user}",
+    "gists_url": "https://api.github.com/users/sethherr/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/sethherr/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/sethherr/subscriptions",
+    "organizations_url": "https://api.github.com/users/sethherr/orgs",
+    "repos_url": "https://api.github.com/users/sethherr/repos",
+    "events_url": "https://api.github.com/users/sethherr/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/sethherr/received_events",
+    "type": "User",
+    "site_admin": false
+  },
+  "committer": {
+    "login": "web-flow",
+    "id": 19864447,
+    "node_id": "MDQ6VXNlcjE5ODY0NDQ3",
+    "avatar_url": "https://avatars3.githubusercontent.com/u/19864447?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/web-flow",
+    "html_url": "https://github.com/web-flow",
+    "followers_url": "https://api.github.com/users/web-flow/followers",
+    "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+    "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+    "organizations_url": "https://api.github.com/users/web-flow/orgs",
+    "repos_url": "https://api.github.com/users/web-flow/repos",
+    "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/web-flow/received_events",
+    "type": "User",
+    "site_admin": false
+  },
+  "parents": [
+    {
+      "sha": "df11e5b3abc02939becc893861bf9934a96b8f59",
+      "url": "https://api.github.com/repos/convus/convus_content/commits/df11e5b3abc02939becc893861bf9934a96b8f59",
+      "html_url": "https://github.com/convus/convus_content/commit/df11e5b3abc02939becc893861bf9934a96b8f59"
+    }
+  ],
+  "stats": {
+    "total": 8,
+    "additions": 4,
+    "deletions": 4
+  },
+  "files": [
+    {
+      "sha": "87e73a38e3c8b3d05b77481066debefb5f2d2235",
+      "filename": "publications.csv",
+      "status": "modified",
+      "additions": 4,
+      "deletions": 4,
+      "changes": 8,
+      "blob_url": "https://github.com/convus/convus_content/blob/475b8e07ec1c4373f077b4bb7b2e6fa6bea341e0/publications.csv",
+      "raw_url": "https://github.com/convus/convus_content/raw/475b8e07ec1c4373f077b4bb7b2e6fa6bea341e0/publications.csv",
+      "contents_url": "https://api.github.com/repos/convus/convus_content/contents/publications.csv?ref=475b8e07ec1c4373f077b4bb7b2e6fa6bea341e0",
+      "patch": "@@ -1,5 +1,5 @@\n title,id,meta_publication,has_published_retractions,has_peer_reviewed_articles,impact_factor,home_url\n-AAP News,1937,false,false,false,,https://www.aappublications.org\n+AAP News,1937,false,true,true,,https://www.aappublications.org\n Aeon,1513,false,false,false,,https://aeon.co\n Apple,1515,false,true,false,,https://www.apple.com\n Beall's List,1939,false,false,false,,https://beallslist.net\n@@ -14,11 +14,11 @@ Journal of the Association for Consumer Research,1920,false,false,true,,https://\n JSTOR,1514,true,false,true,,https://www.jstor.org\n KQED,1512,false,true,false,,https://www.kqed.org\n Lyme Science,1936,false,false,false,,https://lymescience.org\n-Mother Jones,1924,false,false,false,,https://www.motherjones.com\n+Mother Jones,1924,false,true,false,,https://www.motherjones.com\n National Bureau of Economic Research,1934,false,false,false,,https://www.nber.org\n National Center for Biotechnology Information,1917,false,false,true,,https://www.ncbi.nlm.nih.gov\n-Nature,1915,false,false,true,,https://www.nature.com\n-New York Times,1933,false,false,false,,https://www.nytimes.com\n+Nature,1915,false,true,true,,https://www.nature.com\n+New York Times,1933,false,true,false,,https://www.nytimes.com\n NYPD,1929,false,false,false,,https://www1.nyc.gov\n Personality and Individual Differences,1926,false,false,false,,http://eprints.hud.ac.uk\n Reporting by Matt Taibbi,1911,false,false,false,,https://taibbi.substack.com"
+    }
+  ]
+}

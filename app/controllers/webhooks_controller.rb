@@ -1,14 +1,14 @@
 class WebhooksController < ApplicationController
   skip_before_action :verify_authenticity_token
 
-  def reconcile_content
+  def github
     # if signature_verified?
-    if params[:ref] == "refs/heads/main"
-      result = ContentRedeployer.new.run_content_job
-      render json: {success: result.dig("response", "started_at").present?}
-    else
-      render json: {skipped: "not master, no update run"}
-    end
+      if params[:ref] == "refs/heads/main"
+        result = ContentRedeployer.new.run_content_job
+        render json: {success: result.dig("response", "started_at").present?}
+      else
+        render json: {skipped: "not master, no update run"}
+      end
     # else
     #   render json: {error: "Incorrect token"}, status: 401
     # end

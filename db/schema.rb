@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_10_230411) do
+ActiveRecord::Schema.define(version: 2020_11_19_173836) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -38,6 +38,13 @@ ActiveRecord::Schema.define(version: 2020_11_10_230411) do
     t.boolean "submitting_to_github", default: false
     t.index ["creator_id"], name: "index_citations_on_creator_id"
     t.index ["publication_id"], name: "index_citations_on_publication_id"
+  end
+
+  create_table "content_commits", force: :cascade do |t|
+    t.string "sha"
+    t.json "github_data"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "hypotheses", force: :cascade do |t|

@@ -9,6 +9,8 @@ Rails.application.routes.draw do
 
   root "hypotheses#index"
 
+  resource :account, only: %i[show edit update]
+
   get :about, to: "landing#about"
 
   resources :citations, :publications, :hypotheses
@@ -17,13 +19,14 @@ Rails.application.routes.draw do
 
   get "/citations/:publication_id/:citation_id", to: "citations#show"
 
+  post "/webhooks/github", to: "webhooks#github"
 
-  post "/githook", to: "webhooks#reconcile_content"
-  # match "/webhooks/reconcile_content", to: "webhooks#reconcile_content", via: :all
+  namespace :admin do
+    root to: "users#index"
+    resources :content_commits
+  end
 
   authenticate :user, lambda { |u| u.developer? } do
     mount Sidekiq::Web, at: "/sidekiq"
   end
-
-  resource :account, only: %i[show edit update]
 end

@@ -16,7 +16,7 @@ RSpec.describe "/webhooks", type: :request do
     # It doesn't require a signature right now, because I can't get that to work and there isn't a big security implication right now
     # let(:signature) { "blah-blah-blah" }
     # it "401s without correct password" do
-    #   post "/githook", headers: headers, params: post_body.to_json
+    #   post "/webhooks/github", headers: headers, params: post_body.to_json
     #   expect(response.code).to eq "401"
     # end
     context "correct API token" do
@@ -24,7 +24,7 @@ RSpec.describe "/webhooks", type: :request do
       it "triggers ContentRedeployer request" do
         VCR.use_cassette("webhooks-reconcile_content", match_requests_on: [:method]) do
           # Should be post, but whatever github
-          post "/githook", headers: headers, params: post_body.to_json
+          post "/webhooks/github", headers: headers, params: post_body.to_json
           expect(response.code).to eq "200"
           expect(json_result["success"]).to be_truthy
         end

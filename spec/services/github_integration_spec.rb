@@ -20,6 +20,17 @@ RSpec.describe GithubIntegration do
     end
   end
 
+  describe "get most recent main branch commit" do
+    let(:target) { JSON.parse(File.read(Rails.root.join("spec", "fixtures", "content_commit.json"))).with_indifferent_access }
+    it "gets the main branch sha" do
+      VCR.use_cassette("github_integration-last_main_commit", match_requests_on: [:method]) do
+        last_main_commit = subject.last_main_commit
+        expect_hashes_to_match(last_main_commit.except("files"), target.except("files"))
+        expect(last_main_commit["files"]).to eq target["files"]
+      end
+    end
+  end
+
   describe "create_hypothesis_pull_request" do
     let(:hypothesis) do
       hy = Hypothesis.create(title: "Testing GitHub integration")

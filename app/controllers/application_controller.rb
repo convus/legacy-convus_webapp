@@ -60,7 +60,7 @@ class ApplicationController < ActionController::Base
   end
 
   def store_return_to
-    return if not_stored_paths.include?(request.path) || request.xhr?
+    return if request.xhr? || not_stored_paths.include?(request.path)
     if request.path == "/user_scores" && params[:hypothesis_id].present?
       session[:after_sign_in_score] = "#{params[:hypothesis_id]},#{params[:score]},#{params[:kind]}"
       session[:user_return_to] = hypothesis_path(params[:hypothesis_id])
