@@ -4,14 +4,26 @@ require "rails_helper"
 
 RSpec.describe "/webhooks", type: :request do
   describe "reconcile_content" do
+    let(:headers) { {"X-Hub-Signature-256" => signature, "CONTENT_TYPE" => "application/json", "ACCEPT" => "application/json"} }
+    let(:signature) { "blah-blah-blah" }
+    let(:post_body) do
+      {
+        ref: "refs/heads/main",
+        before: "df11e5b3abc02939becc893861bf9934a96b8f59",
+        after: "475b8e07ec1c4373f077b4bb7b2e6fa6bea341e0",
+        repository: {id: 295843610}
+      }
+    end
     it "401s without correct password" do
-      post "/webhooks/reconcile_content", headers: {"X-Hub-Signature" => "blah-blah-blah" }
+      post "/webhooks/reconcile_content", headers: headers, params: post_body.to_json
       expect(response.code).to eq "401"
     end
     context "correct API token" do
+      let(:signature) { "xxxxxxxx" }
+
       it "triggers ContentRedeployer request" do
         VCR.use_cassette("webhooks-reconcile_content", match_requests_on: [:method]) do
-          post "/webhooks/reconcile_content", headers: { "X-Hub-Signature" => "xxxxxxxx" }
+          post "/webhooks/reconcile_content", headers: headers, params: post_body.to_json
           expect(response.code).to eq "200"
           expect(json_result["success"]).to be_truthy
         end

@@ -1,7 +1,6 @@
 class WebhooksController < ApplicationController
   def reconcile_content
-    pp params
-    if request.headers["X-Hub-Signature"] == ContentRedeployer::WEBHOOK_SECRET
+    if signature_verified?
       if params[:ref] == "refs/heads/main"
         result = ContentRedeployer.new.run_content_job
         render json: {success: result.dig("response", "started_at").present?}
@@ -11,5 +10,13 @@ class WebhooksController < ApplicationController
     else
       render json: {error: "Incorrect token"}, status: 401
     end
+  end
+
+  private
+
+  def signature_verified?
+    return false unless request.headers["X-Hub-Signature-256"].present?
+    signature = "sha256=" + OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), ContentRedeployer::WEBHOOK_SECRET, request.body.read)
+    Rack::Utils.secure_compare(signature, request.headers["X-Hub-Signature-256"])
   end
 end
