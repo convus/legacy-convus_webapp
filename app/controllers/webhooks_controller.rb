@@ -1,4 +1,6 @@
 class WebhooksController < ApplicationController
+  skip_before_action :verify_authenticity_token
+
   def reconcile_content
     # if signature_verified?
     if params[:ref] == "refs/heads/main"
