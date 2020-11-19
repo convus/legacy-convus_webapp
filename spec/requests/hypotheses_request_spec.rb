@@ -69,7 +69,7 @@ RSpec.describe "/hypotheses", type: :request do
     context "after_sign_in_score and user signed in" do
       let(:current_user) { FactoryBot.create(:user) }
       before do
-        post "/user_scores", params: { hypothesis_id: subject.id, kind: "quality", score: 12 }
+        post "/user_scores", params: {hypothesis_id: subject.id, kind: "quality", score: 12}
         expect(session[:after_sign_in_score]).to eq "#{subject.id},12,quality"
         sign_in current_user
       end

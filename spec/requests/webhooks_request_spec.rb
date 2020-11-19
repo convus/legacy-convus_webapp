@@ -19,9 +19,10 @@ RSpec.describe "/webhooks", type: :request do
       expect(response.code).to eq "401"
     end
     context "correct API token" do
-      let(:signature) { "xxxxxxxx" }
+      let(:signature) { "sha256=5fe6637f8134c73032ba87b04441e8b8aa21a4c0473c21ec2b5e68c54eff4489" }
 
       it "triggers ContentRedeployer request" do
+        post_body
         VCR.use_cassette("webhooks-reconcile_content", match_requests_on: [:method]) do
           post "/webhooks/reconcile_content", headers: headers, params: post_body.to_json
           expect(response.code).to eq "200"
