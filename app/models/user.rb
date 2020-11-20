@@ -27,6 +27,10 @@ class User < ApplicationRecord
     User.create(github_id: uid, password: Devise.friendly_token[0, 20], github_auth: auth)
   end
 
+  def admin_access?
+    developer?
+  end
+
   # Maybe someday, involves more sophisticated things
   def github?
     github_auth.present?

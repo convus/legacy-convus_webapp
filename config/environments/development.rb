@@ -37,6 +37,9 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = false
   config.action_mailer.default_url_options = {host: "localhost", port: 4242}
 
+  # Permit requests from anywhere (because development, and ngrok)
+  config.hosts.clear
+
   config.action_mailer.perform_caching = false
 
   # Print deprecation notices to the Rails logger.

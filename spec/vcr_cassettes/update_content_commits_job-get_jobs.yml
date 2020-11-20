@@ -2,7 +2,7 @@
 http_interactions:
   - request:
       method: get
-      uri: https://app.cloud66.com/api/3/stacks/yyyyyyy/jobs
+      uri: https://app.cloud66.com/api/3/stacks/xxxxxxxxxxxxxxxxx/jobs
       body:
         encoding: US-ASCII
         string: ""
@@ -10,7 +10,7 @@ http_interactions:
         Content-Type:
           - application/json
         Authorization:
-          - Bearer xxxxxxxxx
+          - Bearer yyyyyyyyyyyyyyyyyyyy
         User-Agent:
           - Faraday v1.0.1
         Accept-Encoding:
@@ -25,7 +25,7 @@ http_interactions:
         Server:
           - nginx/1.13.12
         Date:
-          - Fri, 13 Nov 2020 18:49:17 GMT
+          - Fri, 20 Nov 2020 17:43:05 GMT
         Content-Type:
           - application/json; charset=utf-8
         Transfer-Encoding:
@@ -35,19 +35,19 @@ http_interactions:
         Vary:
           - Accept-Encoding
         Etag:
-          - W/"064a2a36688ff94a134fa415148d79a1"
+          - W/"a5559b8e6ab926aa0665c7c7ad176a23"
         Cache-Control:
           - max-age=0, private, must-revalidate
         X-Request-Id:
-          - 35a31a8d00fdb678c7759594fb2be4eb
+          - 67e5e0611f8294903cc77bd3dc39c8eb
         X-Runtime:
-          - "0.074037"
+          - "0.081345"
         Strict-Transport-Security:
           - max-age=15724800; includeSubDomains
       body:
         encoding: ASCII-8BIT
-        string: '{"response":[{"uid":"xxxxxxxx","name":"Reconcile
-          Flat file database","type":"RakeJob","cron":null,"status":2,"params":{"task":"reconcile_flat_file_database"},"created_at":"2020-09-22
+        string: '{"response":[{"uid":"zzzzzzzzzzzzzzzzz","name":"Reconcile
+          Flat file database","type":"RakeJob","cron":null,"status":3,"params":{"task":"reconcile_flat_file_database"},"created_at":"2020-09-22
           23:35:19 UTC","updated_at":"2020-09-22 23:35:19 UTC"}],"count":1,"pagination":{"previous":null,"next":null,"current":1,"per_page":30,"count":1,"pages":1}}'
-    recorded_at: Fri, 13 Nov 2020 18:49:16 GMT
+    recorded_at: Fri, 20 Nov 2020 17:43:05 GMT
 recorded_with: VCR 6.0.0

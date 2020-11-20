@@ -26,5 +26,24 @@ RSpec.describe ReconcileTaskOutputChecker do
         expect(described_class.success?(multiline)).to be_truthy
       end
     end
+    context "and another" do
+      let(:multiline) do
+        "HEAD is now at 5566055 Reconciliation: 2020-11-12\n" \
+          "From github.com:convus/convus_content\n" \
+          "5566055..d201524 main -> origin/main\n" \
+          "Updating 5566055..d201524\n" \
+          "Fast-forward\n" \
+          "...larly-and-can-be-hard-to-differentiate-from-journals-which-do.yml | 5 ++---\n" \
+          "1 file changed, 2 insertions(+), 3 deletions(-)\n" \
+          "[main df11e5b] Reconciliation: 2020-11-13\n" \
+          "2 files changed, 4 insertions(+), 2 deletions(-)\n" \
+          "rename hypotheses/{journals-that-do-not-practice-peer-review-are-not-scholarly-and-can-be-hard-to-differentiate-from-journals-which-do.yml => publications-that-charge-to-publish-articles-and-don-t-have-peer-review-or-issue-retractions-are-the-least-reputable-source-for-information.yml} (89%)\n" \
+          "To github.com:convus/convus_content.git\n" \
+          "d201524..df11e5b main -> main \n"
+      end
+      it "returns truthy" do
+        expect(described_class.failed?(multiline)).to be_falsey
+      end
+    end
   end
 end

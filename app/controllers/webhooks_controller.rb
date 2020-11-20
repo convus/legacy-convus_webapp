@@ -1,10 +1,10 @@
 class WebhooksController < ApplicationController
-  def reconcile_content
-    if params[:webhook_token] == ContentRedeployer::WEBHOOK_TOKEN
-      result = ContentRedeployer.new.run_content_job
-      render json: {success: result.dig("response", "started_at").present?}
-    else
-      render json: {error: "Incorrect token"}, status: 401
-    end
+  skip_before_action :verify_authenticity_token
+
+  def github
+    # We don't care about validating the payload, we just run the job
+    # (there were some issues with the request being a GET not a POST, so skipping it for now)
+    UpdateContentCommitsJob.perform_async
+    render json: {success: "Running update content commits job"}
   end
 end

@@ -24,11 +24,16 @@ $max-width-text: 900px;
 @import "../stylesheets/utils/selectize";
 @import "../stylesheets/utils/full_screen_table";
 @import "../stylesheets/utils/table_list";
+@import "../stylesheets/utils/period_select";
 
 @import "../stylesheets/sections/hypotheses_search";
 @import "../stylesheets/sections/hypotheses_list";
 @import "../stylesheets/sections/hypotheses_form";
 @import "../stylesheets/sections/hypotheses_show";
+
+// Admin stuff
+@import "../stylesheets/sections/admin/pagination";
+@import "../stylesheets/sections/admin/header";
 
 .internal-link {
   text-decoration: underline;
