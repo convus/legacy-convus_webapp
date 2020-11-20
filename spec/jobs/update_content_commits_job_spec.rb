@@ -5,7 +5,7 @@ RSpec.describe UpdateContentCommitsJob do
 
   describe "perform" do
     it "creates a content commit, redeploys" do
-      expect_any_instance_of(ContentRedeployer).to receive(:run_content_job) { true }
+      expect(instance).to receive(:trigger_reconcile_flat_file_database) { true }
       VCR.use_cassette("update_content_commits_job", match_requests_on: [:method]) do
         expect {
           instance.perform
@@ -21,7 +21,7 @@ RSpec.describe UpdateContentCommitsJob do
     end
     context "reconciler_update? commit" do
       it "creates, does not redeploy" do
-        expect_any_instance_of(ContentRedeployer).to_not receive(:run_content_job)
+        expect(instance).to_not receive(:trigger_reconcile_flat_file_database)
         expect_any_instance_of(GithubIntegration).to receive(:main_branch_sha) { "df11e5b3abc02939becc893861bf9934a96b8f59" }
         VCR.use_cassette("update_content_commits_job-reconciler", match_requests_on: [:method]) do
           expect {
@@ -31,6 +31,24 @@ RSpec.describe UpdateContentCommitsJob do
           expect(content_commit.github_data).to be_present
           expect(content_commit.reconciler_update?).to be_truthy
         end
+      end
+    end
+  end
+
+  describe "get_jobs" do
+    it "gets the list of jobs" do
+      VCR.use_cassette("update_content_commits_job-get_jobs", match_requests_on: [:method]) do
+        result = instance.get_jobs
+        expect(result["count"]).to be > 0
+      end
+    end
+  end
+
+  describe "trigger_reconcile_flat_file_database" do
+    it "makes a request to the correct URL to trigger cloud66 job" do
+      VCR.use_cassette("update_content_commits_job-trigger_reconcile_flat_file_database", match_requests_on: [:method]) do
+        result = instance.trigger_reconcile_flat_file_database
+        expect(result.dig("response", "started_at")).to be_present
       end
     end
   end

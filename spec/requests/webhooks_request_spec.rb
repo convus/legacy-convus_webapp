@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe "/webhooks", type: :request do
-  describe "reconcile_content" do
+  describe "github" do
     let(:post_body) do
       {
         ref: "refs/heads/main",
@@ -19,25 +19,24 @@ RSpec.describe "/webhooks", type: :request do
       end.to change(UpdateContentCommitsJob.jobs, :count).by 1
       expect(response.code).to eq "200"
     end
-    context "running jobs" do
-      # it "triggers ContentRedeployer request" do
-      #   VCR.use_cassette("webhooks-reconcile_content", match_requests_on: [:method]) do
-      #     expect_any_instance_of(ContentRedeployer).to receive(:run_content_job)
-      #     Sidekiq::Worker.clear_all
-      #     Sidekiq::Testing.inline! do
-      #       expect do
-      #         post "/webhooks/github", headers: json_headers, params: post_body.to_json
-      #       end.to change(ContentCommit, :count).by 1
-      #       expect(response.code).to eq "200"
-      #       expect(json_result["success"]).to be_present
-      #     end
-      #     content_commit = ContentCommit.last
-      #     expect(content_commit.github_data).to be_present
-      #     expect(content_commit.sha).to be_present
-      #     # This is probably truthy? whatever
-      #     expect(content_commit.reconciler_update?).to be_falsey
-      #   end
-      # end
+    context "inline job" do
+      it "creates a content_commit, runs job" do
+        VCR.use_cassette("webhooks-reconcile_content", match_requests_on: [:method]) do
+          Sidekiq::Worker.clear_all
+          Sidekiq::Testing.inline! do
+            expect do
+              post "/webhooks/github", headers: json_headers, params: post_body.to_json
+            end.to change(ContentCommit, :count).by 1
+            expect(response.code).to eq "200"
+            expect(json_result["success"]).to be_present
+          end
+          content_commit = ContentCommit.last
+          expect(content_commit.github_data).to be_present
+          expect(content_commit.sha).to be_present
+          # If cassette is blown out after a reconcilliation this will fail. Oh well :/
+          expect(content_commit.reconciler_update?).to be_falsey
+        end
+      end
     end
   end
 end

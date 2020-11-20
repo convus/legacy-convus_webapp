@@ -22,11 +22,9 @@ task reconcile_flat_file_database: :environment do
   output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git commit -m"#{commit_message}" 2>&1`
   output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git push origin main 2>&1`
 
-  puts "(Output start) " + output + " (output end)"
+  puts "(Output start) " + output + " (output end)\n\n"
 
-  if ReconcileTaskOutputChecker.success?(output)
-    raise output
-  end
+  raise output if ReconcileTaskOutputChecker.failed?(output)
 end
 
 # This generally should NOT be used. It does not import the updates from git before pushing up the current data
@@ -52,9 +50,7 @@ task update_flat_file_database_without_import: :environment do
 
   puts "(Output start) " + output + " (output end)"
 
-  if ReconcileTaskOutputChecker.success?(output)
-    raise output
-  end
+  raise output if ReconcileTaskOutputChecker.failed?(output)
 end
 
 task dev_update_from_git: :environment do
