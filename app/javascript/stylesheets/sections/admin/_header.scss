@@ -1,0 +1,66 @@
+.admin-header,
+.admin-subheader {
+  @extend .mt-4;
+  @extend .mb-2;
+  @extend .clearfix;
+  .btn {
+    @extend .header-sublink;
+  }
+  h1 {
+    font-size: 2rem;
+  }
+  h1,
+  h2,
+  h3 {
+    @include media-breakpoint-down(sm) {
+      font-size: 1.5rem;
+    }
+  }
+  ul {
+    @extend .nav;
+    @extend .nav-pills;
+    @extend .justify-content-end;
+  }
+  .nav-item {
+    @extend .small;
+    margin-left: 0.25rem;
+    a {
+      padding: 0.25rem 0.5rem;
+    }
+  }
+  .subtitle {
+    @extend .mt-4;
+    @extend .col-12;
+  }
+}
+
+.admin-header {
+  @extend .mb-4;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid $gray-300;
+}
+
+.header-link {
+  // color: $text-color;
+  text-decoration: underline;
+}
+
+// Because we want it to break on small screens
+.header-sublink {
+  @extend .float-md-right;
+}
+
+// Because otherwise they overflow the right side of the screen
+.right-dropdown-overflown {
+  .dropdown-menu.show {
+    left: -75% !important;
+  }
+}
+
+.right-dropdown-overflown-lg {
+  @include media-breakpoint-up(lg) {
+    .dropdown-menu.show {
+      left: -75%;
+    }
+  }
+}

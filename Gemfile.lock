@@ -74,6 +74,7 @@ GEM
     bootsnap (1.4.8)
       msgpack (~> 1.0)
     builder (3.2.4)
+    chartkick (3.4.2)
     coderay (1.1.3)
     concurrent-ruby (1.1.7)
     connection_pool (2.2.3)
@@ -106,6 +107,8 @@ GEM
     formatador (0.2.5)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
+    groupdate (5.2.1)
+      activesupport (>= 5)
     guard (2.16.2)
       formatador (>= 0.2.4)
       listen (>= 2.7, < 4.0)
@@ -360,6 +363,7 @@ PLATFORMS
 DEPENDENCIES
   active_model_serializers (~> 0.8.3)
   bootsnap (>= 1.1.0)
+  chartkick
   coderay
   devise
   dotenv-rails
@@ -367,6 +371,7 @@ DEPENDENCIES
   fast_blank
   flamegraph
   foreman
+  groupdate
   guard
   guard-rspec
   hamlit

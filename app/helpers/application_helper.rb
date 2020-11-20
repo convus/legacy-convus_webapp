@@ -93,6 +93,10 @@ module ApplicationHelper
     content_tag(:button, name, html_options)
   end
 
+  def in_admin?
+    controller_namespace == "admin"
+  end
+
   # Refactor and remove this!
   def bootstrap_devise_error_messages!
     return "" if resource.errors.empty?

@@ -23,7 +23,7 @@ class GithubIntegration
   end
 
   def commit(sha)
-    client.commit(CONTENT_REPO, sha)
+    client.commit(CONTENT_REPO, sha).to_h.as_json
   end
 
   def pull_requests(state: "open")
@@ -31,7 +31,7 @@ class GithubIntegration
   end
 
   def last_main_commit
-    commit(main_branch_sha).to_h.as_json
+    commit(main_branch_sha)
   end
 
   def main_branch_sha

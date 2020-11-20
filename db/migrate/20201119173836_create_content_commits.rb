@@ -4,6 +4,9 @@ class CreateContentCommits < ActiveRecord::Migration[6.0]
       t.string :sha
       t.json :github_data
 
+      t.string :author
+      t.datetime :committed_at
+
       t.timestamps
     end
   end

@@ -14,8 +14,7 @@ RSpec.describe "/webhooks", type: :request do
     end
     it "enqueues job" do
       expect do
-        # Somehow, this comes in as a get request on production - just deal with it
-        get "/webhooks/github", headers: json_headers, params: post_body.to_json
+        post "/webhooks/github", headers: json_headers, params: post_body.to_json
       end.to change(UpdateContentCommitsJob.jobs, :count).by 1
       expect(response.code).to eq "200"
     end

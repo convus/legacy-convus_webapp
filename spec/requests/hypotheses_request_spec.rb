@@ -33,6 +33,7 @@ RSpec.describe "/hypotheses", type: :request do
       expect(response).to render_template("hypotheses/index")
       expect(assigns(:hypotheses).pluck(:id)).to eq([hypothesis_approved.id])
       expect(assigns(:search_tags).pluck(:id)).to eq([tag.id])
+      expect(assigns(:controller_namespace)).to be_blank
     end
   end
 

@@ -23,6 +23,8 @@ gem "webpacker", "~> 4.0"
 gem "turbolinks", "~> 5"
 gem "hamlit" # Faster haml templates
 gem "coderay" # For pretty printing JSON
+gem "chartkick" # Display charts
+gem "groupdate" # Required for charts
 
 # Redis stuff
 gem "hiredis"

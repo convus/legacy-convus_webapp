@@ -43,6 +43,8 @@ ActiveRecord::Schema.define(version: 2020_11_19_173836) do
   create_table "content_commits", force: :cascade do |t|
     t.string "sha"
     t.json "github_data"
+    t.string "author"
+    t.datetime "committed_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end

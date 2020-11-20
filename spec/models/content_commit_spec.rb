@@ -3,9 +3,12 @@ require "rails_helper"
 RSpec.describe ContentCommit, type: :model do
   describe "factory" do
     let(:content_commit) { FactoryBot.create(:content_commit) }
+    let(:committed_at) { Time.at(1605753499) }
     it "is valid" do
       expect(content_commit).to be_valid
+      expect(content_commit.committed_at).to be_within(1).of committed_at
       expect(content_commit.reconciler_update?).to be_falsey
+      expect(content_commit.author).to eq "sethherr"
     end
   end
 

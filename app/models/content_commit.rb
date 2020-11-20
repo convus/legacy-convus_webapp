@@ -5,10 +5,6 @@ class ContentCommit < ApplicationRecord
 
   before_validation :set_calculated_attributes
 
-  def author
-    github_data.dig("author", "login")
-  end
-
   def message
     github_data.dig("commit", "message")
   end
@@ -19,5 +15,15 @@ class ContentCommit < ApplicationRecord
 
   def set_calculated_attributes
     self.sha ||= github_data&.dig("sha")
+    self.committed_at ||= TimeParser.parse(github_data_committed_at)
+    self.author ||= github_data_author
+  end
+
+  def github_data_author
+    github_data.dig("author", "login")
+  end
+
+  def github_data_committed_at
+    github_data&.dig("commit", "committer", "date")
   end
 end

@@ -33,6 +33,26 @@ RSpec.describe UpdateContentCommitsJob do
         end
       end
     end
+
+    context "passed commit" do
+      let(:sha) { "d2015248d0ed910dd5533ed14f2020daf15d931a" }
+      it "loads the given commit" do
+        expect(instance).to_not receive(:trigger_reconcile_flat_file_database)
+        VCR.use_cassette("update_content_commits_job-passed_sha", match_requests_on: [:method]) do
+          expect {
+            instance.perform(sha, true)
+          }.to change(ContentCommit, :count).by 1
+          content_commit = ContentCommit.last
+          expect(content_commit.github_data).to be_present
+          expect(content_commit.reconciler_update?).to be_falsey
+          expect(content_commit.github_data["sha"]).to eq sha
+          # And even passed a sha, it doesn't duplicate
+          expect {
+            instance.perform(sha)
+          }.to_not change(ContentCommit, :count)
+        end
+      end
+    end
   end
 
   describe "get_jobs" do

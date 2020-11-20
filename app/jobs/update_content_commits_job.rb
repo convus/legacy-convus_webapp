@@ -1,10 +1,17 @@
 class UpdateContentCommitsJob < ApplicationJob
-  def perform
-    commit = GithubIntegration.new.last_main_commit
-    sha = commit["sha"]
+  def perform(sha = nil, skip_triggering_reconcile = false)
+    github_integration = GithubIntegration.new
+    if sha.present?
+      commit = github_integration.commit(sha)
+    else
+      commit = github_integration.last_main_commit
+      sha = commit["sha"]
+    end
     return true if ContentCommit.find_by_sha(sha).present?
     content_commit = ContentCommit.create!(sha: sha, github_data: commit)
-    trigger_reconcile_flat_file_database unless content_commit.reconciler_update?
+    if !skip_triggering_reconcile && !content_commit.reconciler_update?
+      trigger_reconcile_flat_file_database
+    end
     content_commit
   end
 
