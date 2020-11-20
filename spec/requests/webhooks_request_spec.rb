@@ -13,9 +13,9 @@ RSpec.describe "/webhooks", type: :request do
       }
     end
     it "enqueues job" do
-      expect do
+      expect {
         post "/webhooks/github", headers: json_headers, params: post_body.to_json
-      end.to change(UpdateContentCommitsJob.jobs, :count).by 1
+      }.to change(UpdateContentCommitsJob.jobs, :count).by 1
       expect(response.code).to eq "200"
     end
     context "inline job" do
@@ -23,9 +23,9 @@ RSpec.describe "/webhooks", type: :request do
         VCR.use_cassette("webhooks-reconcile_content", match_requests_on: [:method]) do
           Sidekiq::Worker.clear_all
           Sidekiq::Testing.inline! do
-            expect do
+            expect {
               post "/webhooks/github", headers: json_headers, params: post_body.to_json
-            end.to change(ContentCommit, :count).by 1
+            }.to change(ContentCommit, :count).by 1
             expect(response.code).to eq "200"
             expect(json_result["success"]).to be_present
           end

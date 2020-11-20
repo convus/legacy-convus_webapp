@@ -102,7 +102,7 @@ class ApplicationController < ActionController::Base
     ["/users/sign_in", "/users/sign_up", "/users/password", "/users/sign_out"]
   end
 
-    def set_time_range_from_period
+  def set_time_range_from_period
     @period = default_period unless %w[hour day month year week all next_week next_month].include?(@period)
     case @period
     when "hour"
