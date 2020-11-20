@@ -19,7 +19,8 @@ Rails.application.routes.draw do
 
   get "/citations/:publication_id/:citation_id", to: "citations#show"
 
-  post "/webhooks/github", to: "webhooks#github"
+  # somehow, this comes in as a get (it should be a post), just let it happen
+  match "/webhooks/github", to: "webhooks#github", via: :all
 
   namespace :admin do
     root to: "users#index"

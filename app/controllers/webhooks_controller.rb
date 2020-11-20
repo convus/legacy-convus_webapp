@@ -2,23 +2,8 @@ class WebhooksController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def github
-    # if signature_verified?
-      if params[:ref] == "refs/heads/main"
-        result = ContentRedeployer.new.run_content_job
-        render json: {success: result.dig("response", "started_at").present?}
-      else
-        render json: {skipped: "not master, no update run"}
-      end
-    # else
-    #   render json: {error: "Incorrect token"}, status: 401
-    # end
-  end
-
-  private
-
-  def signature_verified?
-    return false unless request.headers["X-Hub-Signature-256"].present?
-    signature = "sha256=" + OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), ContentRedeployer::WEBHOOK_SECRET, request.body.read)
-    Rack::Utils.secure_compare(signature, request.headers["X-Hub-Signature-256"])
+    # We don't care about validating the signature, because we just run the job against the API instead
+    UpdateContentCommitsJob.perform_async
+    render json: {success: "Running update content commits job"}
   end
 end

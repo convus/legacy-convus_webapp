@@ -31,6 +31,20 @@ module ApplicationHelper
     false
   end
 
+  def sortable(column, title = nil, html_options = {})
+    title ||= column.gsub(/_(id|at)\z/, "").titleize
+    html_options[:class] = "#{html_options[:class]} sortable-link"
+    direction = column == sort_column && sort_direction == "desc" ? "asc" : "desc"
+    if column == sort_column
+      html_options[:class] += " active"
+      span_content = direction == "asc" ? "\u2193" : "\u2191"
+    end
+    link_to(sortable_search_params.merge(sort: column, direction: direction, query: params[:query], user_id: params[:user_id]), html_options) do
+      concat(title.html_safe)
+      concat(content_tag(:span, span_content, class: "sortable-direction"))
+    end
+  end
+
   def sortable_search_params
     search_param_keys = params.keys.select { |k| k.to_s.start_with?(/search_/i) }
     # NOTE: with permitted params, to permit an array, you have to pass it with special syntax
@@ -101,6 +115,11 @@ module ApplicationHelper
     HTML
 
     html.html_safe
+  end
+
+  def pretty_print_json(data)
+    require "coderay"
+    CodeRay.scan(JSON.pretty_generate(data), :json).div.html_safe
   end
 
   private

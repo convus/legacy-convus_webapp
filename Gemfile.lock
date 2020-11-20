@@ -360,6 +360,7 @@ PLATFORMS
 DEPENDENCIES
   active_model_serializers (~> 0.8.3)
   bootsnap (>= 1.1.0)
+  coderay
   devise
   dotenv-rails
   factory_bot_rails
