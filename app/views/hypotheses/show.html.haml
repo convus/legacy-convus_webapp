@@ -43,22 +43,24 @@
 .row.mt-4
   - @hypothesis.hypothesis_citations.each do |hypothesis_citation|
     - next unless hypothesis_citation.quotes.any?
-    .col-lg-6
-      .hypothesis-quotes-block.max-width-text-container-centered
-        - hypothesis_citation.quotes.each do |quote|
-          %blockquote
-            = quote.text
-        .text-right.less-strong.mt-1
-          %em.small
-            - citation = hypothesis_citation.citation
-            - if citation.present?
-              #{citation.publication.title}: #{link_to citation.title, citation.url}
+    - citation = hypothesis_citation.citation
+    .hypothesis-quotes-block.max-width-text-container-centered.col
+      - hypothesis_citation.quotes.each do |quote|
+        %blockquote
+          = quote.text
+      .text-right.less-strong.mt-1
+        %em.small
+          - if citation.present?
+            #{citation.publication.title}: #{link_to citation.title, citation.url}
+      .citation-score-panel
+        .citation-score{style: "left: #{citation.percentage_score}%;"}
+          = citation.score
 
-.row
-  .col-lg-6
-    - if @hypothesis.approved?
-      - badges = @hypothesis.badges
-    - else
+- if @hypothesis.approved?
+  - badges = @hypothesis.badges
+- else
+  .row
+    .col-lg-6
       - badges = @hypothesis.unapproved_badges
       %p.mt-4
         %span.text-warning This Hypothesis hasn't been approved
@@ -79,7 +81,7 @@
 
 
 %p.mt-big
-  %a.less-strong.addQueryParam{href: "#rawData", "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "show_raw", "data-queryvalue" => "true" }
+  %a.less-strong.addQueryParam{href: "#rawData", "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "show_raw", "data-queryvalue" => "true"}
     show raw data
 
 #rawData.collapse{class: (ParamsNormalizer.boolean(params[:show_raw]) ? "show" : "")}

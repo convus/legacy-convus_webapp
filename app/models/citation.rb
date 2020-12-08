@@ -151,6 +151,12 @@ class Citation < ApplicationRecord
     badges.values.sum
   end
 
+  def score_percentage
+    score_f = score.to_f
+    score_f = 10 if score_f > 10
+    score_f * 10
+  end
+
   # Required for FlatFileSerializable
   def file_pathnames
     ["citations", publication&.slug, "#{slug}.yml"].compact
