@@ -1,0 +1,10 @@
+.main-navbar .navbar-nav {
+  .nav-link.active {
+    color: rgba(0, 0, 0, 0.5); // normal color for nav-link
+    text-decoration: underline;
+    &:hover,
+    &:active {
+      color: rgba(0, 0, 0, 0.9); // normal active color for nav-link
+    }
+  }
+}

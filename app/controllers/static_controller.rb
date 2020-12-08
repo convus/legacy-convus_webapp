@@ -6,5 +6,6 @@ class StaticController < ApplicationController
   end
 
   def citation_scoring
+    @page_title = "Citation scoring"
   end
 end
