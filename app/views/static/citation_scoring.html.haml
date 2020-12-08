@@ -1,0 +1,103 @@
+.max-width-text-container
+  %h1
+    Citation scoring
+
+  .alert.alert-info.mt-4
+    %h4 This is a work in process!
+    This was written to clarify what things <em>should</em> look like
+    %br
+    The examples don't match the scores that they should.
+
+  %p.mt-4
+    %strong
+      Citations receive a 1-10 number reflecting their status on Convus.
+
+    Hypotheses have the score of their highest status citation.
+
+  %p
+    This score reflects how well the citation supports Convuses intentions:
+
+  %ul
+    %Li
+      Publicly accessible, readable by everyone
+    %li
+      Reviewed by experts from the applicable field of study
+    %li
+      results defined by evidence and outcomes
+    %li
+      Published by a trustworthy source
+
+  %p
+    The highest score articles are ones that have been peer reviewed prior to publication. Judging the quality of the peer review is difficult, but impact factor is an easily accessible proxy (#{link_to "supporting hypothesis", hypothesis_path(17)}). For now, we're using the impact factor of the journal to sort publications into high, medium and low status.
+
+  %p.mt-4
+    Here are some examples of articles and what they are scored
+
+  %table.table.table-sm.table-striped.table-bordered
+    %thead
+      %th Source
+      %th Score
+      %th Examples
+
+    %tbody
+      %tr
+        %td A webpage
+        %td 1
+        %td ... (include a non-peer reviewed journal)
+      %tr
+        %td Wall Street Journal article
+        %td 2
+        %td ...
+      %tr
+        %td New York Times article
+        %td 2
+        %td ...
+      %tr
+        %td Wikipedia entry
+        %td 2
+        %td ...
+      %tr
+        %td Staista
+        %td 4
+        %td ...
+      %tr
+        %td Peer reviewed, Low status publication
+        %td 3
+        %td ...
+      %tr
+        %td Peer reviewed, Medium status publication
+        %td 4
+        %td ...
+      %tr
+        %td Peer reviewed, High status publication
+        %td 5
+        %td ...
+      %tr
+        %td Peer reviewed, Medium status publication, Open access
+        %td 6
+        %td ...
+      %tr
+        %td Randomized controlled trial, Peer reviewed, High status publication, Open access
+        %td 9
+        %td ...
+
+  %p.mt-4
+    Here is the actual scoring rubric:
+  %table.table.table-sm.table-striped.table-bordered
+    %thead
+      %th Scoring rubric
+      %th Value
+    %tbody
+      - HypothesisScorer::BADGES.each do |section_key, section_badges|
+        - section_badges.each do |badge_key, value|
+          %tr
+            %td
+              <span class="less-strong">#{section_key.to_s.titleize}:</span> #{HypothesisScorer.badge_humanized(badge_key)}
+            %td
+              %span.less-strong= value
+
+
+  %hr.mt-big
+
+  %p
+    If you have a suggestion for how this can be done better, please open #{link_to "an issue", "https://github.com/convus/convus_webapp/issues/new"} or a #{link_to "pull request", "https://github.com/convus/convus_webapp/pulls"}.
