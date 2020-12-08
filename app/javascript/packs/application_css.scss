@@ -4,7 +4,12 @@
 
 $max-width-text: 900px;
 .max-width-text-container {
+  flex: 0 0 $max-width-text;
   max-width: $max-width-text;
+  &.col {
+    flex: 0 0 $max-width-text + 30px;
+    max-width: $max-width-text + 30px;
+  }
 }
 
 .max-width-text-container-centered {
