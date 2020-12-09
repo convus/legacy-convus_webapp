@@ -44,18 +44,44 @@
   - @hypothesis.hypothesis_citations.each do |hypothesis_citation|
     - next unless hypothesis_citation.quotes.any?
     - citation = hypothesis_citation.citation
-    .hypothesis-quotes-block.max-width-text-container-centered.col
-      - hypothesis_citation.quotes.each do |quote|
-        %blockquote
-          = quote.text
-      .text-right.less-strong.mt-1
-        %em.small
-          - if citation.present?
-            #{citation.publication.title}: #{link_to citation.title, citation.url}
+    .max-width-text-container.col
+      .hypothesis-quotes-block
+        - hypothesis_citation.quotes.each do |quote|
+          %blockquote
+            = quote.text
+        .text-right.less-strong.mt-1
+          %em.small
+            - if citation.present?
+              #{citation.publication.title}: #{link_to citation.title, citation.url}
       .citation-score-panel
-        .citation-score{style: "left: #{citation.percentage_score}%;"}
-          = citation.score
-
+        .score-text.text-center
+          %a{href: "#CitationId#{hypothesis_citation.id}", "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "show_raw", "data-queryvalue" => "true"}
+            citation score
+        - score_display = (citation.score_percentage/10).round
+        - offset = score_display.to_s.length/2
+        .citation-score{style: "left: #{citation.score_percentage}%; margin-left: -#{offset}rem;"}
+          %span.score-pointer
+          = score_display
+        - 7.times do |n|
+          %span.score-tick
+        %hr
+        .score-explanation.mt-4.p-1.collapse{id: "CitationId#{hypothesis_citation.id}"}
+          - citation_badges = citation.badges.merge(citation.publication.badges)
+          %table.table.table-sm.table-striped.table-bordered.scoring-table.mb-0
+            %thead
+              %th
+              %th Value
+            %tbody
+              - HypothesisScorer::BADGES.each do |section_key, section_badges|
+                - section_badges.each do |badge_key, value|
+                  - next unless citation_badges.include?(badge_key)
+                  %tr
+                    %td
+                      <span class="less-strong">#{section_key.to_s.titleize}:</span> #{HypothesisScorer.badge_humanized(badge_key)}
+                    %td
+                      %span.less-strong= value
+          .text-right.less-strong.mt-1
+            #{link_to "read about citation scoring", citation_scoring_path, class: "small"}
 - if @hypothesis.approved?
   - badges = @hypothesis.badges
 - else

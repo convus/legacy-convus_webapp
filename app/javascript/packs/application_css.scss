@@ -2,6 +2,8 @@
 
 @import "../stylesheets/fonts";
 
+$text-color: #212529; // just copied from the actual rendered value
+
 $max-width-text: 900px;
 .max-width-text-container {
   flex: 0 0 $max-width-text;
