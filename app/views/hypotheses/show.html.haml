@@ -1,67 +1,91 @@
 .mt-4.mb-4
-  .row.mt-4
-    .col-md-4
-      %h1.mb-2.d-none.d-md-block{ style: "font-size: 1.5rem" }
-        Hypothesis
-      - if @hypothesis.editable_by?(current_user)
-        %small.ml-2
-          = link_to "edit", edit_hypothesis_path(@hypothesis.id), class: "btn btn-outline-primary btn-sm"
-    - if @hypothesis.approved?
-      .col-md-8.mb-2{ style: "margin-top: -1em;"}
-        .text-right
-          .hypothesis-score
-            - quality_score = @hypothesis.user_scores.current.quality.where(user_id: current_user&.id).first
-            - if quality_score.present?
-              quality
-              <div class="current-avg less-strong">(<span>avg</span> #{@hypothesis.user_scores.quality.current_score})</div>:
+  %h1.mb-2.d-none.d-md-block{ style: "font-size: 1.5rem" }
+    Hypothesis
+    - if @hypothesis.editable_by?(current_user)
+      %small.ml-2
+        = link_to "edit", edit_hypothesis_path(@hypothesis.id), class: "btn btn-outline-primary btn-sm"
+.row.mt-4
+  .max-width-text-container.col
+    %p.mt-4
+      %span{ style: "font-size: 125%;" }
+        = @hypothesis.title
+  - if @hypothesis.approved?
+    .col-xl.mt-4.mb-2{ style: "margin-top: -1em;"}
+      .text-right
+        .hypothesis-score
+          - quality_score = @hypothesis.user_scores.current.quality.where(user_id: current_user&.id).first
+          - if quality_score.present?
+            quality
+            <div class="current-avg less-strong">(<span>avg</span> #{@hypothesis.user_scores.quality.current_score})</div>:
+          - else
+            quality:
+          - Array(UserScore::MIN_SCORE..UserScore::MAX_SCORE).each do |score|
+            - active = quality_score&.score == score
+            - if quality_score.present? # Yah, I know, you could still make the form request manually, but who cares that much?
+              %span.score-item{ class: (active ? "active" : "") }= score
             - else
-              quality:
-            - Array(UserScore::MIN_SCORE..UserScore::MAX_SCORE).each do |score|
-              - active = quality_score&.score == score
-              - if quality_score.present? # Yah, I know, you could still make the form request manually, but who cares that much?
-                %span.score-item{ class: (active ? "active" : "") }= score
-              - else
-                = button_to score, user_scores_path, { action: "create", params: {score: score, hypothesis_id: @hypothesis.id, kind: "quality"}, class: "score-item btn btn-link #{active ? 'active' : ''}" }
+              = button_to score, user_scores_path, { action: "create", params: {score: score, hypothesis_id: @hypothesis.id, kind: "quality"}, class: "score-item btn btn-link #{active ? 'active' : ''}" }
 
-          .hypothesis-score.mt-2
-            - controversy_score = @hypothesis.user_scores.current.controversy.where(user_id: current_user&.id).first
+        .hypothesis-score.mt-2
+          - controversy_score = @hypothesis.user_scores.current.controversy.where(user_id: current_user&.id).first
+          - if controversy_score.present?
+            controversy
+            <div class="current-avg less-strong">(<span>avg</span> #{@hypothesis.user_scores.controversy.current_score})</div>:
+          - else
+            controversy:
+          - Array(UserScore::MIN_SCORE..UserScore::MAX_SCORE).each do |score|
+            - active = controversy_score&.score == score
             - if controversy_score.present?
-              controversy
-              <div class="current-avg less-strong">(<span>avg</span> #{@hypothesis.user_scores.controversy.current_score})</div>:
+              %span.score-item{ class: (active ? "active" : "") }= score
             - else
-              controversy:
-            - Array(UserScore::MIN_SCORE..UserScore::MAX_SCORE).each do |score|
-              - active = controversy_score&.score == score
-              - if controversy_score.present?
-                %span.score-item{ class: (active ? "active" : "") }= score
-              - else
-                = button_to score, user_scores_path, { action: "create", params: {score: score, hypothesis_id: @hypothesis.id, kind: "controversy"}, class: "score-item btn btn-link #{active ? 'active' : ''}" }
+              = button_to score, user_scores_path, { action: "create", params: {score: score, hypothesis_id: @hypothesis.id, kind: "controversy"}, class: "score-item btn btn-link #{active ? 'active' : ''}" }
 
-.max-width-text-container
-  %p.mt-4
-    %span{ style: "font-size: 125%;" }
-      = @hypothesis.title
-.row.hypothesis-quotes-block-wrapper
+.row.mt-4
   - @hypothesis.hypothesis_citations.each do |hypothesis_citation|
     - next unless hypothesis_citation.quotes.any?
-    .col-lg-6
-      .hypothesis-quotes-block.max-width-text-container-centered
+    - citation = hypothesis_citation.citation
+    .max-width-text-container.col
+      .hypothesis-quotes-block
         - hypothesis_citation.quotes.each do |quote|
           %blockquote
             = quote.text
         .text-right.less-strong.mt-1
           %em.small
-            - citation = hypothesis_citation.citation
             - if citation.present?
               #{citation.publication.title}: #{link_to citation.title, citation.url}
-
-.row
-  .col-lg-6
-    - if @hypothesis.approved?
-      - badges = @hypothesis.badges
-      %hr.mt-big
-    - else
-      %hr.mt-big
+      .citation-score-panel
+        %a.score-text.text-center{href: "#CitationId#{hypothesis_citation.id}", "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "show_raw", "data-queryvalue" => "true"}
+          citation score
+        - score_display = (citation.score_percentage/10).round
+        - offset = score_display.to_s.length/2
+        .citation-score{style: "left: #{citation.score_percentage}%; margin-left: -#{offset}rem;"}
+          %span.score-pointer
+          = score_display
+        - 7.times do |n|
+          %span.score-tick
+        %hr
+        .score-explanation.mt-4.collapse{id: "CitationId#{hypothesis_citation.id}"}
+          - citation_badges = citation.badges.merge(citation.publication.badges)
+          %table.table.table-sm.table-striped.table-bordered.scoring-table.mb-0
+            %thead
+              %th
+              %th Value
+            %tbody
+              - HypothesisScorer::BADGES.each do |section_key, section_badges|
+                - section_badges.each do |badge_key, value|
+                  - next unless citation_badges.include?(badge_key)
+                  %tr
+                    %td
+                      <span class="less-strong">#{section_key.to_s.titleize}:</span> #{HypothesisScorer.badge_humanized(badge_key)}
+                    %td
+                      %span.less-strong= value
+          .text-right.less-strong.mt-1
+            #{link_to "read about citation scoring", citation_scoring_path, class: "small"}
+- if @hypothesis.approved?
+  - badges = @hypothesis.badges
+- else
+  .row
+    .col-lg-6
       - badges = @hypothesis.unapproved_badges
       %p.mt-4
         %span.text-warning This Hypothesis hasn't been approved
@@ -80,86 +104,92 @@
             :javascript
               window.setTimeout(() => {location.reload();}, 2000);
 
-%h2.mt-big Details
-.row.mt-4
-  .col-md-6
-    %table.table-list
-      %tbody
-        %tr
-          %td Created
-          %td
-            %span.convertTime.preciseTime
-              = l @hypothesis.created_at, format: :convert_time
-        - if display_dev_info?
-          %tr.only-dev-visible
-            %td ID
+
+%p.mt-big
+  %a.less-strong.gray-link.addQueryParam{href: "#rawData", "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "show_raw", "data-queryvalue" => "true"}
+    show raw data
+
+#rawData.collapse{class: (ParamsNormalizer.boolean(params[:show_raw]) ? "show" : "")}
+  %hr
+  .row.mt-4
+    .col-md-6
+      %table.table-list
+        %tbody
+          %tr
+            %td Created
             %td
-              = @hypothesis.id
-          %tr.only-dev-visible
-            %td slug
-            %td= @hypothesis.to_param
-        %tr
-          %td Score
-          %td
-            - if @hypothesis.approved?
-              %strong.score-bubble{ class: hypothesis_score_class(@hypothesis.score) }
-                = @hypothesis.score
-            - unapproved_score = @hypothesis.unapproved_score
-            - if @hypothesis.unapproved? || @hypothesis.score < unapproved_score
-              %em.less-strong
-                when approved:
-              %span.score-bubble.small.less-strong{ class: hypothesis_score_class(unapproved_score) }
-                = unapproved_score
-
-        %tr
-          %td GitHub
-          %td
-            - if @hypothesis.approved?
-              = link_to @hypothesis.file_path.truncate(75), @hypothesis.github_html_url, title: @hypothesis.file_path
-              - if @hypothesis.pull_request_number.present?
-                %em.small.less-strong.d-block.mt-2
-                  Approved by
-                  = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
-        %tr
-          %td Topics
-          %td
-            - if @hypothesis.tags.any?
-              %ul
-                - @hypothesis.tags.each do |tag|
-                  %li
-                    = tag.title
-
-  .col-md-6
-    %table.table.table-sm.table-striped.table-bordered.scoring-table
-      %thead
-        %th Scoring rubric
-        %th Potential
-        %th Received
-      %tbody
-        - total_potential = 0
-        - HypothesisScorer::BADGES.each do |section_key, section_badges|
-          - section_badges.each do |badge_key, value|
-            %tr
+              %span.convertTime.preciseTime
+                = l @hypothesis.created_at, format: :convert_time
+          - if display_dev_info?
+            %tr.only-dev-visible
+              %td ID
               %td
-                <span class="less-strong">#{section_key.to_s.titleize}:</span> #{HypothesisScorer.badge_humanized(badge_key)}
-              %td
-                %span.less-strong= value
-              %td
-                - if badges.include?(badge_key)
-                  %strong= value
-                - else
-                  %span.less-strong 0
-        %tr
-          %td
-            %strong Total
-          %td
-            %span.less-strong= HypothesisScorer.total_potential_score
-          %td
-            %strong= badges.values.sum
+                = @hypothesis.id
+            %tr.only-dev-visible
+              %td slug
+              %td= @hypothesis.to_param
+          %tr
+            %td Score
+            %td
+              - if @hypothesis.approved?
+                %strong.score-bubble{ class: hypothesis_score_class(@hypothesis.score) }
+                  = @hypothesis.score
+              - unapproved_score = @hypothesis.unapproved_score
+              - if @hypothesis.unapproved? || @hypothesis.score < unapproved_score
+                %em.less-strong
+                  when approved:
+                %span.score-bubble.small.less-strong{ class: hypothesis_score_class(unapproved_score) }
+                  = unapproved_score
 
-%h2.mt-4.mb-0
-  = "Citation".pluralize(@hypothesis.citations.count)
+          %tr
+            %td GitHub
+            %td
+              - if @hypothesis.approved?
+                = link_to @hypothesis.file_path.truncate(75), @hypothesis.github_html_url, title: @hypothesis.file_path
+                - if @hypothesis.pull_request_number.present?
+                  %em.small.less-strong.d-block.mt-2
+                    Approved by
+                    = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
+          %tr
+            %td Topics
+            %td
+              - if @hypothesis.tags.any?
+                %ul
+                  - @hypothesis.tags.each do |tag|
+                    %li
+                      = tag.title
 
-.row.mt-2
-  - @hypothesis.hypothesis_citations.each do |hypothesis_citation|
-    = render partial: "/citations/display", locals: { citation: hypothesis_citation.citation, hypothesis_citation_id: hypothesis_citation.id }
+    .col-md-6
+      %table.table.table-sm.table-striped.table-bordered.scoring-table
+        %thead
+          %th Scoring rubric
+          %th Potential
+          %th Received
+        %tbody
+          - total_potential = 0
+          - HypothesisScorer::BADGES.each do |section_key, section_badges|
+            - section_badges.each do |badge_key, value|
+              %tr
+                %td
+                  <span class="less-strong">#{section_key.to_s.titleize}:</span> #{HypothesisScorer.badge_humanized(badge_key)}
+                %td
+                  %span.less-strong= value
+                %td
+                  - if badges.include?(badge_key)
+                    %strong= value
+                  - else
+                    %span.less-strong 0
+          %tr
+            %td
+              %strong Total
+            %td
+              %span.less-strong= HypothesisScorer.total_potential_score
+            %td
+              %strong= badges.values.sum
+
+  %h2.mt-4.mb-0
+    = "Citation".pluralize(@hypothesis.citations.count)
+
+  .row.mt-2
+    - @hypothesis.hypothesis_citations.each do |hypothesis_citation|
+      = render partial: "/citations/display", locals: { citation: hypothesis_citation.citation, hypothesis_citation_id: hypothesis_citation.id }

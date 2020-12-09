@@ -30,6 +30,13 @@ $(document).on("turbolinks:load", function() {
     hypothesisForm.init();
   }
 
+  // TODO: add this functionality, where we add things to the query params
+  // $(".addQueryParam").on("click", (e) => {
+  //   const $target = $(e.target);
+  //   const key = $target.attr("data-querykey");
+  //   const value = $target.attr("data-queryvalue");
+  // });
+
   // And load fancy selects after everything, in case something added more fancy selects
   LoadFancySelects();
 });

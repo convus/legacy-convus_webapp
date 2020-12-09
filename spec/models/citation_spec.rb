@@ -196,6 +196,21 @@ RSpec.describe Citation, type: :model do
     end
   end
 
+  describe "score_percentage" do
+    let(:citation) { Citation.new }
+    it "returns score_percentage" do
+      allow(citation).to receive(:score) { 5 }
+      expect(citation.score).to eq 5
+      expect(citation.score_percentage).to eq 50
+    end
+    context "over 10 score" do
+      it "returns 10" do
+        allow(citation).to receive(:score) { 15 }
+        expect(citation.score_percentage).to eq 100
+      end
+    end
+  end
+
   describe "authors_str" do
     let(:citation) { Citation.new(authors_str: "george stanley") }
     it "does one" do

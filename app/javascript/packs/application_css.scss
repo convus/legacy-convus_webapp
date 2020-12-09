@@ -2,9 +2,15 @@
 
 @import "../stylesheets/fonts";
 
+$text-color: #212529; // just copied from the actual rendered value
+
 $max-width-text: 900px;
 .max-width-text-container {
-  max-width: $max-width-text;
+  flex: 0 0 $max-width-text;
+  max-width: 100%;
+  &.col {
+    flex: 0 0 $max-width-text + 30px;
+  }
 }
 
 .max-width-text-container-centered {
