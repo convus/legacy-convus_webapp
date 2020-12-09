@@ -105,6 +105,10 @@ class Citation < ApplicationRecord
     publication&.title || @publication_title
   end
 
+  def display_title
+    [publication_title, title].uniq.join(": ")
+  end
+
   def authors_str=(val)
     self.authors = val.split(/\n/).map(&:strip).reject(&:blank?)
   end

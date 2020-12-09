@@ -35,6 +35,7 @@ RSpec.describe Citation, type: :model do
       expect(citation).to be_valid
       expect(citation.url).to eq "http://example.com"
       expect(citation.title).to eq "example.com"
+      expect(citation.display_title).to eq "example.com"
     end
   end
 
@@ -72,6 +73,7 @@ RSpec.describe Citation, type: :model do
       expect(citation.slug).to eq("2020-09-joe-bidens-money-misadventures")
       expect(citation.file_path).to eq("citations/nationalreview-com/2020-09-joe-bidens-money-misadventures.yml")
       expect(citation.title_url?).to be_truthy
+      expect(citation.display_title).to eq "nationalreview.com: 2020/09/joe-bidens-money-misadventures"
     end
     context "really long URL" do
       let(:url) { "https://www.researchgate.net//profile/Mark_Greenberg2/publication/312233343_Promoting_Healthy_Transition_to_College_through_Mindfulness_Training_with_1st_year_College_Students_Pilot_Randomized_Controlled_Trial/links/5ce8706f299bf14d95b76a58/Promoting-Healthy-Transition-to-College-through-Mindfulness-Training-with-1st-year-College-Students-Pilot-Randomized-Controlled-Trial.pdf" }
@@ -111,6 +113,7 @@ RSpec.describe Citation, type: :model do
         expect(citation.url).to eq "https://www.nationalreview.com/2020/09/joe-bidens-money-misadventures"
         expect(Citation.friendly_find("Joe Biden’s Money Misadventures")).to eq citation
         expect(Citation.friendly_find(url)).to eq citation
+        expect(citation.display_title).to eq "National Review: Joe Biden’s Money Misadventures"
       end
     end
     context "collision of slugs" do

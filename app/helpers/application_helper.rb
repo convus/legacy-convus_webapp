@@ -27,11 +27,25 @@ module ApplicationHelper
       html_options = args[1]
       concat(hypothesis_link_to(capture(&block), options, html_options))
     else
-      hypothesis_id = args[1]
+      obj_id = args[1]
       html_options = args[2] || {}
-      hypothesis = Hypothesis.friendly_find(hypothesis_id)
+      hypothesis = Hypothesis.friendly_find(obj_id)
       html_options[:title] = hypothesis.title if hypothesis.present?
-      link_to args[0], hypothesis_path(hypothesis_id), html_options
+      link_to args[0], hypothesis_path(obj_id), html_options
+    end
+  end
+
+  def citation_link_to(*args, &block)
+    if block_given?
+      options = args.first || {}
+      html_options = args[1]
+      concat(citation_link_to(capture(&block), options, html_options))
+    else
+      obj_id = args[1]
+      html_options = args[2] || {}
+      citation = Citation.friendly_find(obj_id)
+      html_options[:title] = citation.display_title if citation.present?
+      link_to args[0], citation_path(obj_id), html_options
     end
   end
 

@@ -14,9 +14,11 @@ class HypothesesController < ApplicationController
   end
 
   def show
+    @page_title = @hypothesis.title
   end
 
   def edit
+    @page_title = "Edit - #{@hypothesis.title}"
   end
 
   def new
