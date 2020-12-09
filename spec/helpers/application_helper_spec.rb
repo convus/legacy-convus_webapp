@@ -60,7 +60,6 @@ RSpec.describe ApplicationHelper, type: :helper do
     end
   end
 
-
   describe "citation_link_to" do
     let(:target) { '<a class="a-class" id="something" href="/citations/12">Citation Link</a>' }
     it "links without citation existing" do
