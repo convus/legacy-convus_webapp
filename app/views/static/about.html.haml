@@ -1,37 +1,38 @@
-.max-width-text-container
-  %h1
-    About Convus
+.row
+  .max-width-text-container.col
+    %h1
+      About Convus
 
-  %p.mt-4
-    A website to improve collective knowledge
+    %p.mt-4
+      Working to improve our collective knowledge
 
-  %h4.mt-big General process
+    %h4.mt-big General process
 
-  %ul
-    %li
-      When a hypothesis is submitted, moderators review and approve it (if the hypothesis is valid, ie falsifiable)
-    %li
-      Hypotheses are given a score based on the quality of their citations
-      (#{link_to "read about citation scoring", citation_scoring_path})
-    %li
-      Disagree with a hypothesis? Submit a hypothesis with a better citation to refute it
+    %ul
+      %li
+        When a hypothesis is submitted, moderators review and approve it (if the hypothesis is valid, ie falsifiable)
+      %li
+        Hypotheses are given a score based on the quality of their citations
+        (#{link_to "read about citation scoring", citation_scoring_path})
+      %li
+        Disagree with a hypothesis? Submit a hypothesis with a better citation to refute it
 
-  / %hr.mt-big
+    / %hr.mt-big
 
-  %h4.mt-big Objectives
-  %ul
-    %li
-      Provide a platform for scientific communication and public consideration of science
-    %li
-      Encourage discussion based on evidence and outcomes
-    %li
-      Offer a place to learn about other viewpoints and challenge your own opinions
-    %li
-      Reward quality over novelty and improvement over perfection
+    %h4.mt-big Objectives
+    %ul
+      %li
+        Provide a platform for scientific communication and public consideration of science
+      %li
+        Encourage discussion based on evidence and outcomes
+      %li
+        Offer a place to learn about other viewpoints and challenge your own opinions
+      %li
+        Reward quality over novelty and improvement over perfection
 
-  %hr.mt-big
+    %hr.mt-big
 
-  %p.mt-4
-    %strong
-      Convus is open source.
-    Check out #{link_to "the web app repository", "https://github.com/convus/convus_webapp"} and #{link_to "the content repository", "https://github.com/convus/convus_content"}.
+    %p.mt-4
+      %strong
+        Convus is open source.
+      Check out #{link_to "the web app repository", "https://github.com/convus/convus_webapp"} and #{link_to "the content repository", "https://github.com/convus/convus_content"}.
