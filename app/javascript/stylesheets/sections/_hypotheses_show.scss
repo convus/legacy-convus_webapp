@@ -108,9 +108,7 @@
   .score-tick:nth-of-type(7) {
     left: 87.5%;
   }
-  .score-tick:nth-of-type(2),
-  .score-tick:nth-of-type(4),
-  .score-tick:nth-of-type(6) {
+  .score-tick:nth-of-type(2n) {
     height: 6px;
     margin-top: -2px;
   }
