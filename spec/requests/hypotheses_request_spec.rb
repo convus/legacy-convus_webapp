@@ -47,6 +47,9 @@ RSpec.describe "/hypotheses", type: :request do
       expect(response).to render_template("hypotheses/show")
       expect(UserScore.count).to eq 0
       expect(session[:after_sign_in_score]).to eq "#{subject.id},12,quality"
+      # Test that it sets the right title
+      title_tag = response.body[/<title.*<\/title>/]
+      expect(title_tag).to eq "<title>#{subject.title}</title>"
     end
     context "approved" do
       let(:subject) { FactoryBot.create(:hypothesis_approved) }
@@ -254,6 +257,9 @@ RSpec.describe "/hypotheses", type: :request do
         expect(flash).to be_blank
         expect(response).to render_template("hypotheses/edit")
         expect(assigns(:hypothesis)&.id).to eq subject.id
+        # Test that it sets the right title
+        title_tag = response.body[/<title.*<\/title>/]
+        expect(title_tag).to eq "<title>Edit - #{subject.title}</title>"
       end
       context "other persons hypothesis" do
         let(:subject) { FactoryBot.create(:hypothesis) }

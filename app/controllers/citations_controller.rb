@@ -13,6 +13,7 @@ class CitationsController < ApplicationController
     slug = [params[:publication_id], params[:id]].reject(&:blank?).join("-")
     @citation = Citation.friendly_find!(slug)
     @hypotheses = @citation.hypotheses.reorder(created_at: :desc)
+    @page_title = @citation.display_title
   end
 
   private

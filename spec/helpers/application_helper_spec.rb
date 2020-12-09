@@ -37,4 +37,49 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
   end
+
+  describe "hypothesis_link_to" do
+    let(:target) { '<a class="a-class" id="something" href="/hypotheses/12">Hypothesis Link</a>' }
+    it "links without hypothesis existing" do
+      expect(hypothesis_link_to("Hypothesis Link", 12, class: "a-class", id: "something")).to eq target
+    end
+    context "with block" do
+      it "works" do
+        result = hypothesis_link_to 12, class: "a-class", id: "something" do
+          "Hypothesis Link"
+        end
+        expect(result).to eq target
+      end
+    end
+    context "with hypothesis existing" do
+      let!(:hypothesis) { FactoryBot.create(:hypothesis, title: "this hypothesis is important") }
+      let(:target) { '<a data-thing="whatever" title="this hypothesis is important" href="/hypotheses/this-hypothesis-is-important">1</a>' }
+      it "links with hypothesis title" do
+        expect(hypothesis_link_to("1", "this-hypothesis-is-important", "data-thing" => "whatever")).to eq target
+      end
+    end
+  end
+
+  describe "citation_link_to" do
+    let(:target) { '<a class="a-class" id="something" href="/citations/12">Citation Link</a>' }
+    it "links without citation existing" do
+      expect(citation_link_to("Citation Link", 12, class: "a-class", id: "something")).to eq target
+    end
+    context "with block" do
+      it "works" do
+        result = citation_link_to 12, class: "a-class", id: "something" do
+          "Citation Link"
+        end
+        expect(result).to eq target
+      end
+    end
+    context "with citation existing" do
+      let(:publication) { FactoryBot.create(:publication, title: "Some publication") }
+      let!(:citation) { FactoryBot.create(:citation, title: "this citation is important", publication: publication) }
+      let(:target) { '<a target="_blank" title="Some publication: this citation is important" href="/citations/' + citation.id.to_s + '">1</a>' }
+      it "links with citation title" do
+        expect(citation_link_to("1", citation.id, "target" => "_blank")).to eq target
+      end
+    end
+  end
 end

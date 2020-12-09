@@ -18,6 +18,9 @@ RSpec.describe "/citations", type: :request do
       expect(response.code).to eq "200"
       expect(response).to render_template("citations/show")
       expect(assigns(:citation)).to eq subject
+      # Test that it sets the right title
+      title_tag = response.body[/<title.*<\/title>/]
+      expect(title_tag).to eq "<title>#{subject.publication_title}: #{subject.title}</title>"
 
       get "#{base_url}/#{subject.path_slug}"
       expect(response.code).to eq "200"

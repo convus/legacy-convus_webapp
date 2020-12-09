@@ -1,0 +1,27 @@
+- skip_citation_link ||= false
+- citation_badges ||= citation.badges.merge(citation.publication.badges)
+
+%table.table.table-sm.table-striped.table-bordered.scoring-table.mb-0
+  %thead
+    %th
+    %th Value
+  %tbody
+    - if citation_badges.any?
+      - HypothesisScorer::BADGES.each do |section_key, section_badges|
+        - section_badges.each do |badge_key, value|
+          - next unless citation_badges.include?(badge_key)
+          %tr
+            %td
+              <span class="less-strong">#{section_key.to_s.titleize}:</span> #{HypothesisScorer.badge_humanized(badge_key)}
+            %td
+              %span.less-strong= value
+    - else
+      %tr
+        %td{ colspan: 2 }
+          no score
+.row.no-gutters.mt-1
+  .col-5
+    - unless skip_citation_link
+      = link_to "view citation", citation_path(citation)
+  .col-7.text-right.less-strong
+    = link_to "about citation scoring", citation_scoring_path, class: "gray-link"

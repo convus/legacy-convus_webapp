@@ -29,7 +29,7 @@
         Published by a trustworthy source
 
     %p
-      The highest score articles are ones that have been peer reviewed prior to publication. Judging the quality of the peer review is difficult, but impact factor is an easily accessible proxy (#{link_to "supporting hypothesis", hypothesis_path(17)}). For now, we're using the impact factor of the journal to sort publications into high, medium and low status.
+      The highest score articles are ones that have been peer reviewed prior to publication. Judging the quality of the peer review is difficult, but impact factor is an easily accessible proxy (#{hypothesis_link_to "supporting hypothesis", 2253}). For now, we're using the impact factor of the journal to sort publications into high, medium and low status.
 
     %p.mt-4
       Here are some examples of articles and what they are scored
@@ -56,11 +56,13 @@
         %tr
           %td Wikipedia entry
           %td 2
-          %td ...
+          %td
+            #{citation_link_to "1", 1645},...
         %tr
-          %td Staista
+          %td Government Statistics
           %td 4
-          %td ...
+          %td
+            #{citation_link_to "1", 1642}, #{citation_link_to "2", 1627}, #{citation_link_to "3", 1640}
         %tr
           %td Peer reviewed, Low status publication
           %td 3
@@ -79,6 +81,10 @@
           %td ...
         %tr
           %td Randomized controlled trial, Peer reviewed, High status publication, Open access
+          %td 9
+          %td ...
+        %tr
+          %td Legal citation
           %td 9
           %td ...
 

@@ -21,6 +21,34 @@ module ApplicationHelper
     link_to(raw(link_text), link_path, html_options).html_safe
   end
 
+  def hypothesis_link_to(*args, &block)
+    if block_given?
+      options = args.first || {}
+      html_options = args[1]
+      concat(hypothesis_link_to(capture(&block), options, html_options))
+    else
+      obj_id = args[1]
+      html_options = args[2] || {}
+      hypothesis = Hypothesis.friendly_find(obj_id)
+      html_options[:title] = hypothesis.title if hypothesis.present?
+      link_to args[0], hypothesis_path(obj_id), html_options
+    end
+  end
+
+  def citation_link_to(*args, &block)
+    if block_given?
+      options = args.first || {}
+      html_options = args[1]
+      concat(citation_link_to(capture(&block), options, html_options))
+    else
+      obj_id = args[1]
+      html_options = args[2] || {}
+      citation = Citation.friendly_find(obj_id)
+      html_options[:title] = citation.display_title if citation.present?
+      link_to args[0], citation_path(obj_id), html_options
+    end
+  end
+
   def current_page_active?(link_path, match_controller = false)
     link_path = Rails.application.routes.recognize_path(link_path)
     active_path = Rails.application.routes.recognize_path(request.url)
