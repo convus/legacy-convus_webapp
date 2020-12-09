@@ -41,6 +41,7 @@ $(document).on("turbolinks:load", function() {
     newUrl.search = urlParams;
     // Only add the query string (and modify the browser history) if it's different
     if (window.location.href !== newUrl.href) {
+      // Maybe should be replaceState rather than pushState (to not add to the browser history) - but it breaks turbolinks
       window.history.pushState(null, "", newUrl.href);
     }
   });
