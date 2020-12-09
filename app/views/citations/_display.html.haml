@@ -2,7 +2,6 @@
 - hypothesis_citation_id ||= nil
 
 .col-md-6
-
   - if render_waiting_for_approval && citation.waiting_on_github?
     .alert.alert-info
       - if citation.pull_request_number.present?

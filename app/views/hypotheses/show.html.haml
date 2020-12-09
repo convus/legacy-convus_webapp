@@ -65,30 +65,7 @@
           %span.score-tick
         %hr
         .score-explanation.mt-4.collapse{id: "CitationId#{hypothesis_citation.id}"}
-          - citation_badges = citation.badges.merge(citation.publication.badges)
-          %table.table.table-sm.table-striped.table-bordered.scoring-table.mb-0
-            %thead
-              %th
-              %th Value
-            %tbody
-              - if citation_badges.any?
-                - HypothesisScorer::BADGES.each do |section_key, section_badges|
-                  - section_badges.each do |badge_key, value|
-                    - next unless citation_badges.include?(badge_key)
-                    %tr
-                      %td
-                        <span class="less-strong">#{section_key.to_s.titleize}:</span> #{HypothesisScorer.badge_humanized(badge_key)}
-                      %td
-                        %span.less-strong= value
-              - else
-                %tr
-                  %td{ colspan: 2 }
-                    no scores
-          .row.mt-1
-            .col-6
-              = link_to "view citation", citation_path(citation)
-            .col-6.text-right.less-strong
-              = link_to "read about citation scoring", citation_scoring_path, class: "gray-link"
+          = render partial: "/citations/score", locals: { citation: citation }
 - if @hypothesis.approved?
   - badges = @hypothesis.badges
 - else
