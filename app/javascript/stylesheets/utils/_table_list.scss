@@ -15,6 +15,7 @@
   }
   tr td:last-child {
     width: 85%; // This is effectively min-width for table cells, which means that the definition max-width is 15%
+    word-break: break-word; // Fix issue caused by overflow - particularly from links
     ul {
       padding-left: 1.5em;
       margin-bottom: 0;

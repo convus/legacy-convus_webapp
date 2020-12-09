@@ -30,12 +30,21 @@ $(document).on("turbolinks:load", function() {
     hypothesisForm.init();
   }
 
-  // TODO: add this functionality, where we add things to the query params
-  // $(".addQueryParam").on("click", (e) => {
-  //   const $target = $(e.target);
-  //   const key = $target.attr("data-querykey");
-  //   const value = $target.attr("data-queryvalue");
-  // });
+  $(".addQueryParam").on("click", (e) => {
+    const $target = $(e.target);
+    const key = $target.attr("data-querykey");
+    const value = $target.attr("data-queryvalue");
+
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set(key, value);
+    const newUrl = new URL(window.location.href);
+    newUrl.search = urlParams;
+    // Only add the query string (and modify the browser history) if it's different
+    if (window.location.href !== newUrl.href) {
+      // Maybe should be replaceState rather than pushState (to not add to the browser history) - but it breaks turbolinks
+      window.history.pushState(null, "", newUrl.href);
+    }
+  });
 
   // And load fancy selects after everything, in case something added more fancy selects
   LoadFancySelects();

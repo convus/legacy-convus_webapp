@@ -11,7 +11,7 @@
         = @hypothesis.title
   - if @hypothesis.approved?
     .col-xl.mt-4.mb-2{ style: "margin-top: -1em;"}
-      .text-right
+      .text-right.less-strong
         .hypothesis-score
           - quality_score = @hypothesis.user_scores.current.quality.where(user_id: current_user&.id).first
           - if quality_score.present?
@@ -71,16 +71,24 @@
               %th
               %th Value
             %tbody
-              - HypothesisScorer::BADGES.each do |section_key, section_badges|
-                - section_badges.each do |badge_key, value|
-                  - next unless citation_badges.include?(badge_key)
-                  %tr
-                    %td
-                      <span class="less-strong">#{section_key.to_s.titleize}:</span> #{HypothesisScorer.badge_humanized(badge_key)}
-                    %td
-                      %span.less-strong= value
-          .text-right.less-strong.mt-1
-            #{link_to "read about citation scoring", citation_scoring_path, class: "small"}
+              - if citation_badges.any?
+                - HypothesisScorer::BADGES.each do |section_key, section_badges|
+                  - section_badges.each do |badge_key, value|
+                    - next unless citation_badges.include?(badge_key)
+                    %tr
+                      %td
+                        <span class="less-strong">#{section_key.to_s.titleize}:</span> #{HypothesisScorer.badge_humanized(badge_key)}
+                      %td
+                        %span.less-strong= value
+              - else
+                %tr
+                  %td{ colspan: 2 }
+                    no scores
+          .row.mt-1
+            .col-6
+              = link_to "view citation", citation_path(citation)
+            .col-6.text-right.less-strong
+              = link_to "read about citation scoring", citation_scoring_path, class: "gray-link"
 - if @hypothesis.approved?
   - badges = @hypothesis.badges
 - else
@@ -105,12 +113,11 @@
               window.setTimeout(() => {location.reload();}, 2000);
 
 
-%p.mt-big
-  %a.less-strong.gray-link.addQueryParam{href: "#rawData", "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "show_raw", "data-queryvalue" => "true"}
+%p.mt-big.less-strong
+  %a.small.gray-link.addQueryParam{href: "#rawData", "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "show_raw", "data-queryvalue" => "true"}
     show raw data
 
 #rawData.collapse{class: (ParamsNormalizer.boolean(params[:show_raw]) ? "show" : "")}
-  %hr
   .row.mt-4
     .col-md-6
       %table.table-list
@@ -158,34 +165,6 @@
                   - @hypothesis.tags.each do |tag|
                     %li
                       = tag.title
-
-    .col-md-6
-      %table.table.table-sm.table-striped.table-bordered.scoring-table
-        %thead
-          %th Scoring rubric
-          %th Potential
-          %th Received
-        %tbody
-          - total_potential = 0
-          - HypothesisScorer::BADGES.each do |section_key, section_badges|
-            - section_badges.each do |badge_key, value|
-              %tr
-                %td
-                  <span class="less-strong">#{section_key.to_s.titleize}:</span> #{HypothesisScorer.badge_humanized(badge_key)}
-                %td
-                  %span.less-strong= value
-                %td
-                  - if badges.include?(badge_key)
-                    %strong= value
-                  - else
-                    %span.less-strong 0
-          %tr
-            %td
-              %strong Total
-            %td
-              %span.less-strong= HypothesisScorer.total_potential_score
-            %td
-              %strong= badges.values.sum
 
   %h2.mt-4.mb-0
     = "Citation".pluralize(@hypothesis.citations.count)
