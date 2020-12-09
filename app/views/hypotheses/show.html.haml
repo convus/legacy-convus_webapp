@@ -54,9 +54,8 @@
             - if citation.present?
               #{citation.publication.title}: #{link_to citation.title, citation.url}
       .citation-score-panel
-        .score-text.text-center
-          %a{href: "#CitationId#{hypothesis_citation.id}", "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "show_raw", "data-queryvalue" => "true"}
-            citation score
+        %a.score-text.text-center{href: "#CitationId#{hypothesis_citation.id}", "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "show_raw", "data-queryvalue" => "true"}
+          citation score
         - score_display = (citation.score_percentage/10).round
         - offset = score_display.to_s.length/2
         .citation-score{style: "left: #{citation.score_percentage}%; margin-left: -#{offset}rem;"}
@@ -65,7 +64,7 @@
         - 7.times do |n|
           %span.score-tick
         %hr
-        .score-explanation.mt-4.p-1.collapse{id: "CitationId#{hypothesis_citation.id}"}
+        .score-explanation.mt-4.collapse{id: "CitationId#{hypothesis_citation.id}"}
           - citation_badges = citation.badges.merge(citation.publication.badges)
           %table.table.table-sm.table-striped.table-bordered.scoring-table.mb-0
             %thead
@@ -107,7 +106,7 @@
 
 
 %p.mt-big
-  %a.less-strong.addQueryParam{href: "#rawData", "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "show_raw", "data-queryvalue" => "true"}
+  %a.less-strong.gray-link.addQueryParam{href: "#rawData", "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "show_raw", "data-queryvalue" => "true"}
     show raw data
 
 #rawData.collapse{class: (ParamsNormalizer.boolean(params[:show_raw]) ? "show" : "")}
