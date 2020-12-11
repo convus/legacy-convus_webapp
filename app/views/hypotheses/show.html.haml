@@ -1,6 +1,6 @@
 .mt-4.mb-4
   %h1.mb-2.d-none.d-md-block{ style: "font-size: 1.5rem" }
-    Hypothesis
+    Hypothesis:
     - if @hypothesis.editable_by?(current_user)
       %small.ml-2
         = link_to "edit", edit_hypothesis_path(@hypothesis.id), class: "btn btn-outline-primary btn-sm"
@@ -10,7 +10,8 @@
       %span{ style: "font-size: 125%;" }
         = @hypothesis.title
   - if @hypothesis.approved?
-    .col-xl.mt-4.mb-2{ style: "margin-top: -1em;"}
+    -# TODO: this is hacked to make sure it doesn't split into multiple lines. It would be great to handle that better
+    .col-xl.mt-4.mb-2{ style: "min-width: 330px;" }
       .text-right.less-strong
         .hypothesis-score
           - quality_score = @hypothesis.user_scores.current.quality.where(user_id: current_user&.id).first
