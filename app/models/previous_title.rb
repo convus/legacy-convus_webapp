@@ -1,8 +1,9 @@
 class PreviousTitle < ApplicationRecord
-  include TitleSluggable
   belongs_to :hypothesis
 
-  validate :stored_title_update
+  before_validation :set_slug # We don't want to validate uniqueness, so handle separately from TitleSluggable
+
+  validate :stored_title_updates
 
   scope :id_ordered, -> { reorder(:id) }
 
@@ -11,10 +12,10 @@ class PreviousTitle < ApplicationRecord
   end
 
   # non-singular duplicate of #friendly_find_slug
-  def self.matching_slug(str = nil)
-    full_slug_match = where(slug: Slugifyer.slugify(str))
-    if full_slug_match.any?
-      full_slug_match
+  def self.friendly_matching(str = nil)
+    full_title_match = where("title ILIKE ?", str)
+    if full_title_match.any?
+      full_title_match
     else
       where(slug: Slugifyer.filename_slugify(str))
     end.id_ordered
@@ -28,9 +29,15 @@ class PreviousTitle < ApplicationRecord
     hypothesis_previous_titles.last
   end
 
-  def stored_title_update
+  def set_slug
+    self.slug = Slugifyer.filename_slugify(title)
+  end
+
+  def stored_title_updates
     return true if id.present?
-    if last_previous_title&.slug == slug || hypothesis.slug == slug
+    if title.blank?
+      errors.add(:title, "Can't be blank")
+    elsif last_previous_title&.slug == slug || hypothesis.slug == slug
       errors.add(:title, "Slug didn't change from previous title")
     end
   end

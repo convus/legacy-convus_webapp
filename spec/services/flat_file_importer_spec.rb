@@ -128,15 +128,18 @@ unless ENV["CIRCLECI"]
       expect(hypothesis.flat_file_serialized.except(:topics)).to eq(hypothesis_attrs.except(:topics))
     end
     context "hypothesis already exists" do
-      let(:old_attrs) { hypothesis_attrs.merge(title: "Purple air sensors are less accurate than EPA sensors", direct_quotation: true, topics: ["Environment"]) }
+      let(:og_title) { "Purple air sensors are less accurate than EPA sensors" }
+      let(:old_attrs) { hypothesis_attrs.merge(title: og_title, direct_quotation: true, topics: ["Environment"]) }
       let(:hypothesis) { FlatFileImporter.import_hypothesis(old_attrs) }
       it "imports as expected" do
         og_slug = hypothesis.slug
         expect(hypothesis.title).to_not eq hypothesis_attrs[:title]
         expect(hypothesis.tag_titles).to eq(["Environment"])
         expect(hypothesis.tags.pluck(:id)).to eq([tag.id])
+        expect(hypothesis.previous_titles.pluck(:title)).to eq([])
         expect(Tag.count).to eq 1
         expect(tag.approved?).to be_falsey
+        Sidekiq::Worker.clear_all
 
         FlatFileImporter.import_hypothesis(hypothesis_attrs)
         hypothesis.reload
@@ -153,6 +156,9 @@ unless ENV["CIRCLECI"]
 
         expect(hypothesis.citations.count).to eq 1
         expect(hypothesis.flat_file_serialized.except(:topics)).to eq(hypothesis_attrs.except(:topics))
+
+        StorePreviousHypothesisTitleJob.drain
+        expect(hypothesis.previous_titles.pluck(:title)).to eq([og_title])
       end
     end
   end

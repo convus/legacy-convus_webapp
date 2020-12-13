@@ -4,14 +4,8 @@ module TitleSluggable
 
   included do
     before_validation :set_slug
-    validates :title, presence: true, uniqueness: validate_title_uniqueness
-    validates :slug, uniqueness: validate_title_uniqueness
-  end
-
-  module ClassMethods
-    def validate_title_uniqueness
-      true
-    end
+    validates :title, presence: true, uniqueness: true
+    validates :slug, uniqueness: true
   end
 
   def set_slug

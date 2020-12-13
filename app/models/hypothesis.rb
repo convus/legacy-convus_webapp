@@ -35,7 +35,7 @@ class Hypothesis < ApplicationRecord
   end
 
   def self.matching_previous_titles(str)
-    PreviousTitle.matching_slug(str)
+    PreviousTitle.friendly_matching(str)
   end
 
   def self.friendly_find(str)
@@ -123,9 +123,7 @@ class Hypothesis < ApplicationRecord
   def run_associated_tasks
     # Always try to create previous titles - even if skip_associated_tasks
     if approved? && title_previous_change.present?
-      pt = previous_titles.build(title: title_previous_change.first)
-      # If invalid, destroy - or else it blocks save
-      pt.valid? ? pt.save : pt.destroy
+      StorePreviousHypothesisTitleJob.perform_async(id, title_previous_change.first)
     end
     return false if skip_associated_tasks
     citations.pluck(:id).each { |i| UpdateCitationQuotesJob.perform_async(i) }
