@@ -1,3 +1,17 @@
+- if @hypothesis.refuted?
+  .row.mt-4.mb-4
+    .col-lg-6.offset-lg-3
+      .alert.alert-danger
+        %h4
+          This hypothesis was refuted!
+        %p.mt-4
+          Refuted by:
+        %ul
+          - @hypothesis.refuted_by_hypotheses.each do |refuter|
+            %li
+              = refuter.title
+              = link_to internal_link_text, hypothesis_path(refuter.to_param), class: "internal-link"
+
 .mt-4.mb-4
   %h1.mb-2.d-none.d-md-block{ style: "font-size: 1.5rem" }
     Hypothesis:
