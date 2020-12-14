@@ -8,9 +8,16 @@
     - hypotheses.each do |hypothesis|
       %li
         .d-block
-          = hypothesis.title
-          = link_to internal_link_text, hypothesis_path(hypothesis.to_param), class: "internal-link"
-
+          - h_styling = hypothesis.unrefuted? ? {} : {class: "text-danger", style: "text-decoration: line-through;"}
+          %span{ h_styling }
+            = hypothesis.title
+            = link_to internal_link_text, hypothesis_path(hypothesis.to_param), class: "internal-link"
+          - if hypothesis.refuted?
+            %em
+              Refuted by:
+            - hypothesis.refuted_by_hypotheses.each do |h|
+              = h.title
+              = link_to internal_link_text, hypothesis_path(h.to_param), class: "internal-link"
         .hypothesis-info
           -# Score hidden for now, because it's inaccurate
           -# .score-bubble.small{ class: hypothesis_score_class(hypothesis.score) }

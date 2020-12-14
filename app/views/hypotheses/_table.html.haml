@@ -23,15 +23,25 @@
             %td.only-dev-visible.small
               = hypothesis.id
           %td
-            = hypothesis.title
-            .score-bubble.small{ class: hypothesis_score_class(hypothesis.score) }
-              = hypothesis.score
-            - if link_to_edit
-              = link_to "edit", edit_hypothesis_path(hypothesis.id), class: "internal-link"
-            - else
-              = link_to internal_link_text, hypothesis_path(hypothesis.to_param), class: "internal-link"
+            - h_styling = hypothesis.unrefuted? ? {} : {class: "text-danger", style: "text-decoration: line-through;"}
+            %span{ h_styling }
+              = hypothesis.title
+              .score-bubble.small{ class: hypothesis_score_class(hypothesis.score) }
+                = hypothesis.score
+              - if link_to_edit
+                = link_to "edit", edit_hypothesis_path(hypothesis.id), class: "internal-link"
+              - else
+                = link_to internal_link_text, hypothesis_path(hypothesis.to_param), class: "internal-link"
             - hypothesis.tags.each do |tag|
               = link_to tag.title, hypotheses_path(sortable_search_params.merge(search_array: (search_tags + [tag.title]))), class: "tag-bubble small"
+            - if hypothesis.refuted?
+              %em.d-block
+                Refuted by:
+              %ul.small.mb-0
+                - hypothesis.refuted_by_hypotheses.each do |h|
+                  %li
+                    = h.title
+                    = link_to internal_link_text, hypothesis_path(h.to_param), class: "internal-link"
 
           %td.d-none.d-md-table-cell
             %ul
