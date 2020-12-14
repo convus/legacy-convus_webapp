@@ -15,10 +15,8 @@ class Hypothesis < ApplicationRecord
   has_many :hypothesis_quotes, -> { score_ordered }
   has_many :quotes, through: :hypothesis_quotes
   has_many :user_scores
-
   has_many :refuting_refutations, class_name: "Refutation", foreign_key: :refuted_hypothesis_id
   has_many :refuted_by_hypotheses, through: :refuting_refutations, source: :refuter_hypothesis
-
   has_many :refuter_refutations, class_name: "Refutation", foreign_key: :refuter_hypothesis_id
   has_many :refutes_hypotheses, through: :refuter_refutations, source: :refuted_hypothesis
 
@@ -76,6 +74,21 @@ class Hypothesis < ApplicationRecord
 
   def unrefuted?
     !refuted?
+  end
+
+  def refuted_by_hypotheses_str=(val)
+    # Hypothesis titles can have commas and line breaks - so we can't actually split the string
+    refuted_arr = val.is_a?(Array) ? val : [val.to_s]
+    new_ids = refuted_arr.map { |string|
+      refuting_hypothesis = Hypothesis.friendly_find(string)
+      next if refuting_hypothesis.blank?
+      if refuting_refutations.where(refuter_hypothesis_id: refuting_hypothesis.id).blank?
+        refuting_refutations.build(refuter_hypothesis: refuting_hypothesis)
+      end
+      refuting_hypothesis.id
+    }
+    refuting_refutations.where.not(refuter_hypothesis_id: new_ids).destroy_all
+    refuting_refutations
   end
 
   def tag_titles
