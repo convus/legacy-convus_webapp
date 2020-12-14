@@ -13,7 +13,7 @@ class PreviousTitle < ApplicationRecord
 
   # non-singular duplicate of #friendly_find_slug
   def self.friendly_matching(str = nil)
-    full_title_match = where("title ILIKE ?", str)
+    full_title_match = where("title ILIKE ?", str.to_s)
     if full_title_match.any?
       full_title_match
     else

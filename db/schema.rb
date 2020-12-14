@@ -100,8 +100,8 @@ ActiveRecord::Schema.define(version: 2020_12_13_164125) do
 
   create_table "previous_titles", force: :cascade do |t|
     t.bigint "hypothesis_id"
-    t.string "title"
-    t.string "slug"
+    t.text "title"
+    t.text "slug"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["hypothesis_id"], name: "index_previous_titles_on_hypothesis_id"
