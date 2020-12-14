@@ -118,7 +118,6 @@ unless ENV["CIRCLECI"]
       expect(hypothesis.title).to eq hypothesis_attrs[:title]
       expect(hypothesis.id).to eq hypothesis_attrs[:id]
 
-      expect(hypothesis.direct_quotation?).to be_falsey
       expect(hypothesis.tags.approved.count).to eq 2
       expect(hypothesis.tags.pluck(:title)).to match_array(["Environment", "Air quality"])
       tag.reload
@@ -129,7 +128,7 @@ unless ENV["CIRCLECI"]
     end
     context "hypothesis already exists" do
       let(:og_title) { "Purple air sensors are less accurate than EPA sensors" }
-      let(:old_attrs) { hypothesis_attrs.merge(title: og_title, direct_quotation: true, topics: ["Environment"]) }
+      let(:old_attrs) { hypothesis_attrs.merge(title: og_title, topics: ["Environment"]) }
       let(:hypothesis) { FlatFileImporter.import_hypothesis(old_attrs) }
       it "imports as expected" do
         og_slug = hypothesis.slug
@@ -147,7 +146,6 @@ unless ENV["CIRCLECI"]
         expect(hypothesis.id).to eq hypothesis_attrs[:id]
         expect(hypothesis.slug).to_not eq og_slug
 
-        expect(hypothesis.direct_quotation?).to be_falsey
         expect(hypothesis.tags.approved.count).to eq 2
         expect(hypothesis.tags.pluck(:title)).to match_array(["Environment", "Air quality"])
         tag.reload

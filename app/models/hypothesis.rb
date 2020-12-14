@@ -16,12 +16,19 @@ class Hypothesis < ApplicationRecord
   has_many :quotes, through: :hypothesis_quotes
   has_many :user_scores
 
+  has_many :refuting_refutations, class_name: "Refutation", foreign_key: :refuted_hypothesis_id
+  has_many :refuted_by_hypotheses, through: :refuting_refutations, source: :refuter_hypothesis
+
+  has_many :refuter_refutations, class_name: "Refutation", foreign_key: :refuter_hypothesis_id
+  has_many :refutes_hypotheses, through: :refuter_refutations, source: :refuted_hypothesis
+
   accepts_nested_attributes_for :hypothesis_citations, allow_destroy: true, reject_if: :all_blank
 
   before_validation :set_calculated_attributes
   after_commit :run_associated_tasks
 
-  scope :direct_quotation, -> { where(has_direct_quotation: true) }
+  scope :unrefuted, -> { where(refuted_at: nil) }
+  scope :refuted, -> { where.not(refuted_at: nil) }
 
   attr_accessor :add_to_github, :skip_associated_tasks
 
@@ -63,8 +70,12 @@ class Hypothesis < ApplicationRecord
     (messages + errors.full_messages).compact.uniq - ignored_messages
   end
 
-  def direct_quotation?
-    has_direct_quotation
+  def refuted?
+    refuted_at.present?
+  end
+
+  def unrefuted?
+    !refuted?
   end
 
   def tag_titles
@@ -140,6 +151,11 @@ class Hypothesis < ApplicationRecord
 
   def set_calculated_attributes
     self.score = calculated_score
+    if refuted_at.present?
+      self.refuted_at = nil if refuted_by_hypotheses.none?
+    else
+      self.refuted_at = Time.current if refuted_by_hypotheses.any?
+    end
   end
 
   def calculated_score
