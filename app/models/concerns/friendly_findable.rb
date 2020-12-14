@@ -7,8 +7,11 @@ module FriendlyFindable
       o.present? ? o.id : nil
     end
 
+    # Similar method in previous_title#matching_slug - update that if updating this
     def friendly_find_slug(str = nil)
-      find_by_slug(Slugifyer.slugify(str)) || find_by_slug(Slugifyer.filename_slugify(str))
+      where("title ILIKE ?", str).first ||
+        find_by_slug(Slugifyer.slugify(str)) ||
+        find_by_slug(Slugifyer.filename_slugify(str))
     end
 
     def friendly_find(str = nil)

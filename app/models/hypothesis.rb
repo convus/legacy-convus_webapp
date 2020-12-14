@@ -6,6 +6,7 @@ class Hypothesis < ApplicationRecord
 
   belongs_to :creator, class_name: "User"
 
+  has_many :previous_titles
   has_many :hypothesis_citations, autosave: true, dependent: :destroy
   has_many :citations, through: :hypothesis_citations
   has_many :publications, through: :citations
@@ -31,6 +32,14 @@ class Hypothesis < ApplicationRecord
   def self.with_tag_ids(tag_ids_array)
     joins(:hypothesis_tags).distinct.where(hypothesis_tags: {tag_id: tag_ids_array})
       .group("hypotheses.id").having("count(*) = ?", tag_ids_array.count)
+  end
+
+  def self.matching_previous_titles(str)
+    PreviousTitle.friendly_matching(str)
+  end
+
+  def self.friendly_find(str)
+    super || matching_previous_titles(str).last&.hypothesis
   end
 
   # We're saving hypothesis with a bunch of associations, make it easier to override the errors
@@ -112,6 +121,10 @@ class Hypothesis < ApplicationRecord
   end
 
   def run_associated_tasks
+    # Always try to create previous titles - even if skip_associated_tasks
+    if approved? && title_previous_change.present?
+      StorePreviousHypothesisTitleJob.perform_async(id, title_previous_change.first)
+    end
     return false if skip_associated_tasks
     citations.pluck(:id).each { |i| UpdateCitationQuotesJob.perform_async(i) }
     add_to_github_content
