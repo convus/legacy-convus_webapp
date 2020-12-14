@@ -43,7 +43,6 @@ class FlatFileImporter
       end
     end
 
-    # TODO: This method isn't tested in detail, and should be
     def import_hypothesis(hypothesis_attrs)
       hypothesis = Hypothesis.where(id: hypothesis_attrs[:id]).first || Hypothesis.new
       hypothesis.approved_at ||= Time.current # If it's in the flat files, it's approved
@@ -52,7 +51,7 @@ class FlatFileImporter
       unless hypothesis.id == hypothesis_attrs[:id]
         hypothesis.update_columns(id: hypothesis_attrs[:id])
       end
-      hypothesis.update(tags_string: hypothesis_attrs[:topics])
+      hypothesis.update(tags_string: hypothesis_attrs[:topics], refuted_by_hypotheses_str: hypothesis_attrs[:refuted_by_hypotheses])
       hypothesis.tags.unapproved.update_all(approved_at: Time.current)
       hypothesis_attrs[:cited_urls]&.map do |cited_url|
         hypothesis_citation = hypothesis.hypothesis_citations.where(url: cited_url[:url]).first

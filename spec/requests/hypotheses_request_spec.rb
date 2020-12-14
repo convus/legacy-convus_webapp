@@ -24,6 +24,7 @@ RSpec.describe "/hypotheses", type: :request do
   describe "index" do
     let!(:hypothesis) { FactoryBot.create(:hypothesis) }
     let!(:hypothesis_approved) { FactoryBot.create(:hypothesis_approved, tags_string: "something of interest") }
+    let!(:hypothesis_refuted) { FactoryBot.create(:hypothesis_refuted, hypothesis_refuting: hypothesis_approved) }
     let(:tag) { hypothesis_approved.tags.first }
     it "renders only the approved" do
       get base_url
@@ -34,6 +35,10 @@ RSpec.describe "/hypotheses", type: :request do
       expect(assigns(:hypotheses).pluck(:id)).to eq([hypothesis_approved.id])
       expect(assigns(:search_tags).pluck(:id)).to eq([tag.id])
       expect(assigns(:controller_namespace)).to be_blank
+      get base_url, params: {search_unapproved: true}
+      expect(assigns(:hypotheses).pluck(:id)).to eq([hypothesis.id])
+      get base_url, params: {search_unapproved: true, search_refuted: true}
+      expect(assigns(:hypotheses).pluck(:id)).to eq([hypothesis_refuted.id])
     end
   end
 

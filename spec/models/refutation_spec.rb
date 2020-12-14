@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe Refutation, type: :model do
   describe "factory" do
@@ -12,7 +12,7 @@ RSpec.describe Refutation, type: :model do
     end
     context "passed refuter" do
       let(:hypothesis_refuter) { FactoryBot.create(:hypothesis) }
-      let(:hypothesis_refuted) { FactoryBot.create(:hypothesis_refuted, refuting_hypothesis: hypothesis_refuter) }
+      let(:hypothesis_refuted) { FactoryBot.create(:hypothesis_refuted, hypothesis_refuting: hypothesis_refuter) }
       it "creates a refuted hypothesis" do
         hypothesis_refuted.reload
         expect(hypothesis_refuted.refuted?).to be_truthy

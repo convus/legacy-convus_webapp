@@ -7,10 +7,10 @@ FactoryBot.define do
     end
     factory :hypothesis_refuted do
       transient do
-        refuting_hypothesis { FactoryBot.create(:hypothesis) }
+        hypothesis_refuting { FactoryBot.create(:hypothesis) }
       end
       after(:create) do |hypothesis, evaluator|
-        hypothesis.refuting_refutations.create(refuter_hypothesis: evaluator.refuting_hypothesis)
+        hypothesis.refuting_refutations.create(refuter_hypothesis: evaluator.hypothesis_refuting)
       end
     end
   end

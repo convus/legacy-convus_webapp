@@ -77,7 +77,7 @@ class Hypothesis < ApplicationRecord
   end
 
   def refuted_by_hypotheses_str=(val)
-    # Hypothesis titles can have commas and line breaks - so we can't actually split the string
+    # Hypothesis titles can have commas and line breaks - so we can't actually split the string. Really should pass an array
     refuted_arr = val.is_a?(Array) ? val : [val.to_s]
     new_ids = refuted_arr.map { |string|
       refuting_hypothesis = Hypothesis.friendly_find(string)
@@ -166,8 +166,8 @@ class Hypothesis < ApplicationRecord
     self.score = calculated_score
     if refuted_at.present?
       self.refuted_at = nil if refuted_by_hypotheses.none?
-    else
-      self.refuted_at = Time.current if refuted_by_hypotheses.any?
+    elsif refuted_by_hypotheses.any?
+      self.refuted_at = Time.current
     end
   end
 
