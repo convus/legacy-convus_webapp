@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_13_164125) do
+ActiveRecord::Schema.define(version: 2020_12_14_183757) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -53,13 +53,13 @@ ActiveRecord::Schema.define(version: 2020_12_13_164125) do
     t.text "title"
     t.text "slug"
     t.bigint "creator_id"
-    t.boolean "has_direct_quotation", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "approved_at"
     t.integer "pull_request_number"
     t.integer "score"
     t.boolean "submitting_to_github", default: false
+    t.datetime "refuted_at"
     t.index ["creator_id"], name: "index_hypotheses_on_creator_id"
   end
 
@@ -126,6 +126,15 @@ ActiveRecord::Schema.define(version: 2020_12_13_164125) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["citation_id"], name: "index_quotes_on_citation_id"
+  end
+
+  create_table "refutations", force: :cascade do |t|
+    t.bigint "refuted_hypothesis_id"
+    t.bigint "refuter_hypothesis_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["refuted_hypothesis_id"], name: "index_refutations_on_refuted_hypothesis_id"
+    t.index ["refuter_hypothesis_id"], name: "index_refutations_on_refuter_hypothesis_id"
   end
 
   create_table "tags", force: :cascade do |t|

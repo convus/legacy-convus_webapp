@@ -102,6 +102,7 @@ unless ENV["CIRCLECI"]
       {
         title: "Purple air sensors are less accurate than EPA sensors. By turning on the conversion \"AQandU\" the data will more closely align with EPA readings",
         id: 2115,
+        refuted_by_hypotheses: [],
         topics: ["environment ", "Air quality"],
         cited_urls: [
           {url: "https://www.kqed.org/science/1969271/making-sense-of-purple-air-vs-airnow-and-a-new-map-to-rule-them-all", quotes: []}
@@ -118,7 +119,6 @@ unless ENV["CIRCLECI"]
       expect(hypothesis.title).to eq hypothesis_attrs[:title]
       expect(hypothesis.id).to eq hypothesis_attrs[:id]
 
-      expect(hypothesis.direct_quotation?).to be_falsey
       expect(hypothesis.tags.approved.count).to eq 2
       expect(hypothesis.tags.pluck(:title)).to match_array(["Environment", "Air quality"])
       tag.reload
@@ -129,7 +129,7 @@ unless ENV["CIRCLECI"]
     end
     context "hypothesis already exists" do
       let(:og_title) { "Purple air sensors are less accurate than EPA sensors" }
-      let(:old_attrs) { hypothesis_attrs.merge(title: og_title, direct_quotation: true, topics: ["Environment"]) }
+      let(:old_attrs) { hypothesis_attrs.merge(title: og_title, topics: ["Environment"]) }
       let(:hypothesis) { FlatFileImporter.import_hypothesis(old_attrs) }
       it "imports as expected" do
         og_slug = hypothesis.slug
@@ -147,7 +147,6 @@ unless ENV["CIRCLECI"]
         expect(hypothesis.id).to eq hypothesis_attrs[:id]
         expect(hypothesis.slug).to_not eq og_slug
 
-        expect(hypothesis.direct_quotation?).to be_falsey
         expect(hypothesis.tags.approved.count).to eq 2
         expect(hypothesis.tags.pluck(:title)).to match_array(["Environment", "Air quality"])
         tag.reload
@@ -159,6 +158,21 @@ unless ENV["CIRCLECI"]
 
         StorePreviousHypothesisTitleJob.drain
         expect(hypothesis.previous_titles.pluck(:title)).to eq([og_title])
+      end
+    end
+    context "refuting hypothesis" do
+      let!(:hypothesis_refuting) { FactoryBot.create(:hypothesis) }
+      let(:hypothesis_attrs_refuted) { hypothesis_attrs.merge(refuted_by_hypotheses: [hypothesis_refuting.title]) }
+      let(:hypothesis) { FlatFileImporter.import_hypothesis(hypothesis_attrs) }
+      it "imports and adds refuting" do
+        hypothesis.reload
+        expect(hypothesis.refuted?).to be_falsey
+        FlatFileImporter.import_hypothesis(hypothesis_attrs_refuted)
+
+        hypothesis.reload
+        expect(hypothesis.refuted?).to be_truthy
+        expect(hypothesis.refuted_at).to be_within(1).of Time.current
+        expect(hypothesis.refuted_by_hypotheses.pluck(:id)).to eq([hypothesis_refuting.id])
       end
     end
   end

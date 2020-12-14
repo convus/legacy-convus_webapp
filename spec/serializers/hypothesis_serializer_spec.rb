@@ -14,6 +14,7 @@ describe HypothesisSerializer, type: :lib do
         title: obj.title,
         id: obj.id,
         topics: [],
+        refuted_by_hypotheses: [],
         cited_urls: [
           {
             url: "http://example.com",
@@ -26,7 +27,15 @@ describe HypothesisSerializer, type: :lib do
       }
     end
     it "returns the expected output" do
-      expect(serializer.as_json).to eq target
+      expect_hashes_to_match(serializer.as_json, target)
+    end
+    context "refuted_hypothesis" do
+      let(:obj) { FactoryBot.create(:hypothesis_refuted, hypothesis_refuting: refuting_hypothesis) }
+      let(:refuting_hypothesis) { FactoryBot.create(:hypothesis, title: "I refute this hypothesis because of things") }
+      let(:refuted_target) { target.merge(refuted_by_hypotheses: ["I refute this hypothesis because of things"]) }
+      it "returns target" do
+        expect_hashes_to_match(serializer.as_json, refuted_target)
+      end
     end
   end
 end

@@ -1,8 +1,12 @@
 class HypothesisSerializer < ApplicationSerializer
-  attributes :title, :id, :cited_urls, :topics
+  attributes :title, :id, :cited_urls, :refuted_by_hypotheses, :topics
 
   def topics
     object.tag_titles
+  end
+
+  def refuted_by_hypotheses
+    object.refuted_by_hypotheses.map(&:title)
   end
 
   def cited_urls
