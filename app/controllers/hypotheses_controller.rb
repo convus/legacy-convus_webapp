@@ -15,6 +15,7 @@ class HypothesesController < ApplicationController
 
   def show
     @page_title = @hypothesis.title
+    @page_title = "REFUTED: #{@page_title}" if @hypothesis.refuted?
   end
 
   def edit

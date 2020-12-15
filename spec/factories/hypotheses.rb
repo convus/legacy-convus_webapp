@@ -2,9 +2,13 @@ FactoryBot.define do
   factory :hypothesis do
     creator { FactoryBot.create(:user) }
     sequence(:title) { |n| "Citation Title #{n}" }
-    factory :hypothesis_approved do
+
+    trait :approved do
       approved_at { Time.current - 2.hours }
     end
+
+    factory :hypothesis_approved, traits: [:approved]
+
     factory :hypothesis_refuted do
       transient do
         hypothesis_refuting { FactoryBot.create(:hypothesis) }
