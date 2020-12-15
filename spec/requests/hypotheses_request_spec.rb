@@ -73,6 +73,21 @@ RSpec.describe "/hypotheses", type: :request do
         expect(response.code).to eq "200"
         expect(response).to render_template("hypotheses/show")
         expect(assigns(:hypothesis)&.id).to eq subject.id
+        # Test that it sets the right title
+        title_tag = response.body[/<title.*<\/title>/]
+        expect(title_tag).to eq "<title>#{subject.title}</title>"
+      end
+      context "refuted" do
+        let(:subject) { FactoryBot.create(:hypothesis_refuted, :approved) }
+        it "renders" do
+          get "#{base_url}/#{subject.id}"
+          expect(response.code).to eq "200"
+          expect(response).to render_template("hypotheses/show")
+          expect(assigns(:hypothesis)&.id).to eq subject.id
+          # Test that it sets the right title
+          title_tag = response.body[/<title.*<\/title>/]
+          expect(title_tag).to eq "<title>REFUTED: #{subject.title}</title>"
+        end
       end
     end
     context "after_sign_in_score and user signed in" do
