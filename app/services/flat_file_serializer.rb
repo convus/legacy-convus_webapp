@@ -38,9 +38,10 @@ class FlatFileSerializer
     end
 
     def write_approved_tags
-      File.open(tags_file, "w") { |f|
-        f.puts Tag.serialized_attrs.join(",") # Skip price of initializing serializer for csv, instead use pluck
-        Tag.alphabetical.pluck(*Tag.serialized_attrs).each { |attrs| f.puts attrs.join(",") }
+      CSV.open(tags_file, "w") { |csv|
+        csv << Tag.serialized_attrs
+        # Skip price of initializing serializer for csv, instead use pluck because it works (at least for now)
+        Tag.alphabetical.pluck(*Tag.serialized_attrs).each { |attrs| csv << attrs }
       }
     end
 
@@ -53,10 +54,11 @@ class FlatFileSerializer
     end
 
     def write_all_publications
-      File.open(publications_file, "w") { |f|
-        f.puts Publication.serialized_attrs.join(",")
+      CSV.open(publications_file, "w") { |csv|
+        csv << Publication.serialized_attrs
+        # Skip price of initializing serializer for csv, instead use pluck because it works (at least for now)
         Publication.alphabetical.pluck(*Publication.serialized_attrs)
-          .each { |attrs| f.puts attrs.join(",") }
+          .each { |attrs| csv << attrs }
       }
     end
   end
