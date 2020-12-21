@@ -6,7 +6,7 @@ unless ENV["CIRCLECI"]
   RSpec.describe FlatFileSerializer do
     let(:subject) { described_class }
     let(:base_dir) { FlatFileSerializer::FILES_PATH }
-    let(:publication) { FactoryBot.create(:publication, title: "The Hill") }
+    let(:publication) { FactoryBot.create(:publication, title: "The Hill, etc") }
 
     def delete_existing_files
       FileUtils.rm_rf(base_dir)
@@ -30,7 +30,7 @@ unless ENV["CIRCLECI"]
       let!(:hypothesis) { FactoryBot.create(:hypothesis_approved, title: "hypothesis-1") }
       let(:target_filenames) do
         [
-          "citations/the-hill/some-citation.yml",
+          "citations/the-hill-etc/some-citation.yml",
           "hypotheses/hypothesis-1.yml",
           "publications.csv",
           "tags.csv"
@@ -61,7 +61,7 @@ unless ENV["CIRCLECI"]
 
     describe "write_all_citations" do
       let!(:citation) { FactoryBot.create(:citation_approved, title: "Pelosi digs in as pressure builds for COVID-19 deal", publication: publication) }
-      let(:target_filename) { "citations/the-hill/pelosi-digs-in-as-pressure-builds-for-covid-19-deal.yml" }
+      let(:target_filename) { "citations/the-hill-etc/pelosi-digs-in-as-pressure-builds-for-covid-19-deal.yml" }
       it "writes the files" do
         expect(list_of_files).to eq([])
         citation.flat_file_name(base_dir)
@@ -83,6 +83,8 @@ unless ENV["CIRCLECI"]
     end
 
     describe "write_all_publications" do
+      let(:target) { ["The Hill, etc", publication.id.to_s, "false", "false", "false", nil, nil] }
+      require "csv"
       it "writes the csv file" do
         expect(publication).to be_present
         expect(list_of_files).to eq([])
@@ -90,6 +92,8 @@ unless ENV["CIRCLECI"]
         expect(list_of_files).to eq(["publications.csv"])
         output = File.read(subject.publications_file)
         expect(output.split("\n").count).to eq 2
+        lines = CSV.parse(output)
+        expect(lines.last).to eq target
       end
     end
   end

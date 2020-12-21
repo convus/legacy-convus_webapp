@@ -53,10 +53,10 @@ class FlatFileSerializer
     end
 
     def write_all_publications
-      File.open(publications_file, "w") { |f|
-        f.puts Publication.serialized_attrs.join(",")
+      CSV.open(publications_file, "w") { |csv|
+        csv << Publication.serialized_attrs
         Publication.alphabetical.pluck(*Publication.serialized_attrs)
-          .each { |attrs| f.puts attrs.join(",") }
+          .each { |r| csv << r }
       }
     end
   end
