@@ -158,6 +158,10 @@ class Citation < ApplicationRecord
     kind_data[:score]
   end
 
+  def kind_selectable?
+    return true # Should be false for wikipedia, probably some others too
+  end
+
   def badges
     CitationScorer.citation_badges(self)
   end

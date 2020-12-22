@@ -29,11 +29,16 @@
       .collapse{ id: full_fields_id, class: (initially_toggled ? "show" : "initially-hidden") }
         = f.fields_for :citation do |nested|
           .form-group.mt-0
-            = nested.label :kind, "Source kind"
-            - citation_kind_opts = options_for_select(Citation.kinds, nested.object.kind)
-            = nested.select :kind, citation_kind_opts, {}, { class: "form-control kindSelect" }
+            = nested.label :title, "Article title"
+            = nested.text_field :title, placeholder: "optional", class: "form-control"
 
-          .form-group.mt-0.kindResearchField
+          - if nested.object.kind_selectable?
+            .form-group
+              = nested.label :kind, "Citation type"
+              - citation_kind_opts = options_for_select(Citation.kinds, nested.object.kind)
+              = nested.select :kind, citation_kind_opts, {}, { class: "form-control kindSelect" }
+
+          .form-group.mt-0.collapse.kindResearchField
             .form-check
               %label.form-check-label
                 = nested.check_box :peer_reviewed, class: "form-check-input"
@@ -54,14 +59,6 @@
           -# %label.form-check-label.small
           -#   = nested.check_box :url_is_not_publisher, class: "form-check-input"
           -#   URL is not the publisher (e.g. jstor)
-          .form-group
-            = nested.label :title do
-              -# TODO: Make this update and change based on the assignable_kind
-              %span.kindDisplayText
-                Article
-              title
-            = nested.text_field :title, placeholder: "optional", class: "form-control"
-
           -# Only show the publication title field if it hasn't been previously set
           - if nested.object&.publication&.title_url?
             .form-group
