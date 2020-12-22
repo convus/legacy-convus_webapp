@@ -31,7 +31,7 @@ class Hypothesis < ApplicationRecord
 
   attr_accessor :add_to_github, :skip_associated_tasks
 
-  pg_search_scope :text_search, against: :title
+  pg_search_scope :text_search, against: :title # TODO: Create tsvector indexes for performance (issues/92)
 
   def self.with_tags(string_or_array)
     with_tag_ids(Tag.matching_tags(string_or_array).pluck(:id))

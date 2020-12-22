@@ -23,22 +23,41 @@ RSpec.describe "/hypotheses", type: :request do
 
   describe "index" do
     let!(:hypothesis) { FactoryBot.create(:hypothesis) }
-    let!(:hypothesis_approved) { FactoryBot.create(:hypothesis_approved, tags_string: "something of interest") }
-    let!(:hypothesis_refuted) { FactoryBot.create(:hypothesis_refuted, hypothesis_refuting: hypothesis_approved) }
-    let(:tag) { hypothesis_approved.tags.first }
+    let!(:hypothesis_approved1) { FactoryBot.create(:hypothesis_approved, title: "Here are dogs", tags_string: "animals, Something of Interest") }
+    let!(:hypothesis_approved2) { FactoryBot.create(:hypothesis_approved, title: "Here be dragons", tags_string: "animals") }
+    let!(:hypothesis_refuted) { FactoryBot.create(:hypothesis_refuted, hypothesis_refuting: hypothesis_approved1) }
+    let(:tag1) { hypothesis_approved1.tags.first }
+    let(:tag2) { hypothesis_approved1.tags.last }
     it "renders only the approved" do
+      expect(tag1.title).to eq "animals"
+      expect(tag2.title).to eq "Something of Interest"
+      expect(Hypothesis.with_tag_ids([tag1.id]).pluck(:id)).to match_array([hypothesis_approved1.id, hypothesis_approved2.id])
+      expect(Hypothesis.with_tag_ids([tag1.id, tag2.id]).pluck(:id)).to eq([hypothesis_approved1.id])
       get base_url
       expect(response).to render_template("hypotheses/index")
-      expect(assigns(:hypotheses).pluck(:id)).to eq([hypothesis_approved.id])
-      get base_url, params: {search_array: "something of interest,,"}
-      expect(response).to render_template("hypotheses/index")
-      expect(assigns(:hypotheses).pluck(:id)).to eq([hypothesis_approved.id])
-      expect(assigns(:search_tags).pluck(:id)).to eq([tag.id])
+      expect(assigns(:hypotheses).pluck(:id)).to match_array([hypothesis_approved1.id, hypothesis_approved2.id])
       expect(assigns(:controller_namespace)).to be_blank
+      # Unapproved
       get base_url, params: {search_unapproved: true}
       expect(assigns(:hypotheses).pluck(:id)).to eq([hypothesis.id])
+      # Unapproved & refuted
       get base_url, params: {search_unapproved: true, search_refuted: true}
       expect(assigns(:hypotheses).pluck(:id)).to eq([hypothesis_refuted.id])
+      # Tags
+      get base_url, params: {search_array: "something of interest,,"}
+      expect(assigns(:search_tags).pluck(:id)).to eq([tag2.id])
+      expect(assigns(:search_items)).to eq(["Something of Interest"])
+      expect(assigns(:hypotheses).pluck(:id)).to eq([hypothesis_approved1.id])
+      # text search
+      get base_url, params: {search_array: "Animals, HERE"}
+      expect(assigns(:search_tags).pluck(:id)).to eq([tag1.id])
+      expect(assigns(:search_items)).to eq(["animals", "HERE"])
+      expect(assigns(:hypotheses).pluck(:id)).to match_array([hypothesis_approved1.id, hypothesis_approved2.id])
+      # text search
+      get base_url, params: {search_array: "DOgs  "}
+      expect(assigns(:search_tags).pluck(:id)).to eq([])
+      expect(assigns(:search_items)).to eq(["DOgs"])
+      expect(assigns(:hypotheses).pluck(:id)).to eq([hypothesis_approved1.id])
     end
   end
 

@@ -1,6 +1,7 @@
 class Tag < ApplicationRecord
   include TitleSluggable
   include ApprovedAtable
+  include PgSearch::Model
 
   TAXONOMY_ENUM = {
     domain_rank: 0,

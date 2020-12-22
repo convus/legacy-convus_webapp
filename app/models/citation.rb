@@ -3,6 +3,7 @@ class Citation < ApplicationRecord
   include FlatFileSerializable
   include ApprovedAtable
   include GithubSubmittable
+  include PgSearch::Model
 
   KIND_ENUM = {
     article: 0,
@@ -35,6 +36,8 @@ class Citation < ApplicationRecord
   scope :by_creation, -> { reorder(:created_at) }
 
   attr_accessor :assignable_kind, :add_to_github, :quotes_text
+
+  pg_search_scope :text_search, against: %i[title slug]  # TODO: Create tsvector indexes for performance (issues/92)
 
   def self.kinds
     KIND_ENUM.keys.map(&:to_s)

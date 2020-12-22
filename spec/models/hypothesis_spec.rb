@@ -103,6 +103,7 @@ RSpec.describe Hypothesis, type: :model do
       expect(Hypothesis.text_search("are NEAT").pluck(:id)).to match_array([hypothesis1.id, hypothesis2.id])
       expect(Hypothesis.text_search("Bears").pluck(:id)).to match_array([hypothesis1.id])
       expect(Hypothesis.text_search("Dragons neat").pluck(:id)).to match_array([hypothesis2.id])
+      expect(Hypothesis.text_search(["Dragons", "neat"]).pluck(:id)).to match_array([hypothesis2.id])
     end
   end
 
