@@ -123,11 +123,10 @@ module ApplicationHelper
 
   # This is required by both hypothesis#new and edit, so make it consistent
   def citations_block_attributes
-    { id: "citationsBlock",
-      "data-ckinds" => Citation.kinds.join(","),
-      "data-cresearchkinds" => Citation.kinds_research.join(",") }
+    {:id => "citationsBlock",
+     "data-ckinds" => Citation.kinds.join(","),
+     "data-cresearchkinds" => Citation.kinds_research.join(",")}
   end
-
 
   def in_admin?
     controller_namespace == "admin"
