@@ -7,12 +7,12 @@
     %th Value
   %tbody
     - if citation_badges.any?
-      - ScorerCitation::BADGES.each do |section_key, section_badges|
+      - CitationScorer::BADGES.each do |section_key, section_badges|
         - section_badges.each do |badge_key, value|
           - next unless citation_badges.include?(badge_key)
           %tr
             %td
-              <span class="less-strong">#{section_key.to_s.titleize}:</span> #{ScorerCitation.badge_humanized(badge_key)}
+              <span class="less-strong">#{section_key.to_s.titleize}:</span> #{CitationScorer.badge_humanized(badge_key)}
             %td
               %span.less-strong= value
     - else

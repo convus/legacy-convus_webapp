@@ -127,11 +127,11 @@ class Hypothesis < ApplicationRecord
   end
 
   def badges
-    ScorerCitation.hypothesis_badges(self, citation_for_score)
+    CitationScorer.hypothesis_badges(self, citation_for_score)
   end
 
   def unapproved_badges
-    ScorerCitation.hypothesis_badges(self, citations.order(:score).last)
+    CitationScorer.hypothesis_badges(self, citations.order(:score).last)
   end
 
   # Required for FlatFileSerializable

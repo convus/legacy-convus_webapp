@@ -4,13 +4,13 @@ class Citation < ApplicationRecord
   include ApprovedAtable
   include GithubSubmittable
 
-  # NOTE: Kind is deprecated, and can be removed sometime soon
   KIND_ENUM = {
     article: 0,
     closed_access_peer_reviewed: 1,
     article_by_publication_with_retractions: 2,
     quote_from_involved_party: 3,
     open_access_peer_reviewed: 4
+
   }.freeze
 
   FETCH_WAYBACK_URL = false # TODO: make this actually work
@@ -39,6 +39,23 @@ class Citation < ApplicationRecord
 
   def self.kinds
     KIND_ENUM.keys.map(&:to_s)
+  end
+
+  PROPOSED_KINDS = {
+    article: 0,
+    research_comment: 1,
+    review: 3,
+    meta_analysis: 4,
+    research: 5,
+    research_with_randomized_controlled_trial: 6
+  }
+
+  def self.kinds_review
+    %w[narrative_review systemic_review meta_analysis]
+  end
+
+  def self.kinds_original_research
+    %w[randomized_controlled_trial] # maybe case_study
   end
 
   def self.kinds_data
@@ -148,7 +165,7 @@ class Citation < ApplicationRecord
   end
 
   def badges
-    ScorerCitation.citation_badges(self)
+    CitationScorer.citation_badges(self)
   end
 
   def calculated_score
