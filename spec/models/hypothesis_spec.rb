@@ -95,6 +95,18 @@ RSpec.describe Hypothesis, type: :model do
     end
   end
 
+  describe "text_search" do
+    let!(:hypothesis1) { FactoryBot.create(:hypothesis, title: "bears are neat") }
+    let!(:hypothesis2) { FactoryBot.create(:hypothesis, title: "dragons are neat") }
+    it "finds" do
+      expect(Hypothesis.text_search("are neat").pluck(:id)).to match_array([hypothesis1.id, hypothesis2.id])
+      expect(Hypothesis.text_search("are NEAT").pluck(:id)).to match_array([hypothesis1.id, hypothesis2.id])
+      expect(Hypothesis.text_search("Bears").pluck(:id)).to match_array([hypothesis1.id])
+      expect(Hypothesis.text_search("Dragons neat").pluck(:id)).to match_array([hypothesis2.id])
+      expect(Hypothesis.text_search(["Dragons", "neat"]).pluck(:id)).to match_array([hypothesis2.id])
+    end
+  end
+
   describe "github_html_url" do
     let(:hypothesis) { FactoryBot.create(:hypothesis, pull_request_number: 2) }
     it "is pull_request if unapproved, file_path if approved" do

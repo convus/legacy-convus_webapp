@@ -3,6 +3,7 @@ class Hypothesis < ApplicationRecord
   include FlatFileSerializable
   include ApprovedAtable
   include GithubSubmittable
+  include PgSearch::Model
 
   belongs_to :creator, class_name: "User"
 
@@ -29,6 +30,8 @@ class Hypothesis < ApplicationRecord
   scope :refuted, -> { where.not(refuted_at: nil) }
 
   attr_accessor :add_to_github, :skip_associated_tasks
+
+  pg_search_scope :text_search, against: :title # TODO: Create tsvector indexes for performance (issues/92)
 
   def self.with_tags(string_or_array)
     with_tag_ids(Tag.matching_tags(string_or_array).pluck(:id))

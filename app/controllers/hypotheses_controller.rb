@@ -90,13 +90,21 @@ class HypothesesController < ApplicationController
   end
 
   def matching_hypotheses
+    return @matching_hypotheses if defined?(@matching_hypotheses)
     hypotheses = ParamsNormalizer.boolean(params[:search_unapproved]) ? Hypothesis.unapproved : Hypothesis.approved
     hypotheses = ParamsNormalizer.boolean(params[:search_refuted]) ? hypotheses.refuted : hypotheses.unrefuted
+
     if params[:search_array].present?
-      @search_tags = Tag.matching_tags(params[:search_array])
-      hypotheses = hypotheses.with_tag_ids(@search_tags.pluck(:id))
+      matches = Tag.matching_tag_ids_and_non_tags(params[:search_array])
+      @search_tags = Tag.where(id: matches[:tag_ids])
+      hypotheses = hypotheses.with_tag_ids(@search_tags.pluck(:id)) if @search_tags.any?
+      hypotheses = hypotheses.text_search(matches[:non_tags]) if matches[:non_tags].any?
+      @search_items = @search_tags.pluck(:title) + matches[:non_tags]
+    else
+      @search_items = []
     end
-    hypotheses
+
+    @matching_hypotheses = hypotheses
   end
 
   def permitted_params

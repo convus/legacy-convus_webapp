@@ -3,6 +3,16 @@ require "rails_helper"
 RSpec.describe Citation, type: :model do
   it_behaves_like "GithubSubmittable"
 
+  describe "text_search" do
+    let!(:citation1) { FactoryBot.create(:citation, title: "bears are neat", url: "http://example.com/something") }
+    let!(:citation2) { FactoryBot.create(:citation, title: "dragons are neat", url: "http://example.com/else") }
+    it "finds" do
+      expect(Citation.text_search("are neat").pluck(:id)).to match_array([citation1.id, citation2.id])
+      expect(Citation.text_search("are NEAT").pluck(:id)).to match_array([citation1.id, citation2.id])
+      expect(Citation.text_search("Bears").pluck(:id)).to match_array([citation1.id])
+    end
+  end
+
   describe "factory" do
     let(:publication) { FactoryBot.create(:publication) }
     let(:citation) { FactoryBot.create(:citation, publication: publication) }
