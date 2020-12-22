@@ -7,10 +7,18 @@ class Citation < ApplicationRecord
 
   KIND_ENUM = {
     article: 0,
-    closed_access_peer_reviewed: 1,
-    article_by_publication_with_retractions: 2,
-    quote_from_involved_party: 3,
-    open_access_peer_reviewed: 4
+    research_comment: 1,
+    research_review: 3,
+    meta_analysis: 4,
+    original_research: 5,
+    original_research_with_randomized_controlled_trial: 6
+    # maybe case_study?
+
+    # article: 0,
+    # closed_access_peer_reviewed: 1,
+    # article_by_publication_with_retractions: 2,
+    # quote_from_involved_party: 3,
+    # open_access_peer_reviewed: 4
   }.freeze
 
   FETCH_WAYBACK_URL = false # TODO: make this actually work
@@ -35,12 +43,17 @@ class Citation < ApplicationRecord
 
   scope :by_creation, -> { reorder(:created_at) }
 
-  attr_accessor :assignable_kind, :add_to_github, :quotes_text
+  attr_accessor :add_to_github, :quotes_text
 
   pg_search_scope :text_search, against: %i[title slug] # TODO: Create tsvector indexes for performance (issues/92)
 
   def self.kinds
     KIND_ENUM.keys.map(&:to_s)
+  end
+
+  def self.kinds_research
+    # Probably put this into CitationScorer
+    %w[research_comment research_review meta_analysis original_research original_research_with_randomized_controlled_trial]
   end
 
   def self.kinds_data
@@ -51,10 +64,6 @@ class Citation < ApplicationRecord
       quote_from_involved_party: {score: 5, humanized: "Online accessible quote from applicable person (e.g. personal website, tweet, or video)"},
       open_access_peer_reviewed: {score: 20, humanized: "Peer reviewed open access study"}
     }.freeze
-  end
-
-  def self.assignable_kinds
-    %w[article peer_reviewed quote_from_involved_party]
   end
 
   def self.find_by_slug_or_path_slug(str)
@@ -184,7 +193,6 @@ class Citation < ApplicationRecord
     self.title = UrlCleaner.without_base_domain(url) unless title.present?
     self.slug = Slugifyer.filename_slugify(title)
     self.path_slug = [publication&.slug, slug].compact.join("-")
-    self.kind ||= calculated_kind(assignable_kind)
     self.score = calculated_score
     if FETCH_WAYBACK_URL && url_is_direct_link_to_full_text
       self.wayback_machine_url ||= WaybackMachineIntegration.fetch_current_url(url)
@@ -197,18 +205,5 @@ class Citation < ApplicationRecord
     AddCitationToGithubContentJob.perform_async(id)
     # Because we've enqueued, and we want the fact that it is submitted to be reflected instantly
     update(submitting_to_github: true)
-  end
-
-  private
-
-  def calculated_kind(kind_val = nil)
-    kind_val = "article" unless self.class.assignable_kinds.include?(kind_val)
-    if kind_val == "article"
-      publication&.published_retractions? ? "article_by_publication_with_retractions" : "article"
-    elsif kind_val == "peer_reviewed"
-      url_is_direct_link_to_full_text ? "open_access_peer_reviewed" : "closed_access_peer_reviewed"
-    else
-      kind_val
-    end
   end
 end

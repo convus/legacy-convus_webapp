@@ -2,6 +2,13 @@ import log from "../utils/log";
 import KeyboardOrClick from "../utils/keyboard_or_click.js";
 
 export class HypothesisForm {
+  constructor() {
+    const kinds = $("#citationsBlock").attr("data-ckinds") || "";
+    const research = $("#citationsBlock").attr("data-cresearchkinds") || "";
+    this.citationKinds = kinds.split(",");
+    this.researchKinds = research.split(",");
+  }
+
   init() {
     $("#submitForApproval").on("click", (e) => {
       e.preventDefault();
@@ -45,5 +52,27 @@ export class HypothesisForm {
       $eventTarget.find(".hasRequired").removeAttr("required");
       $eventTarget.first().collapse("hide");
     });
+
+    // Update all the citation fields
+    Array.from(
+      document.getElementsByClassName("citationFields")
+    ).forEach((el) => this.updateCitationFields($(el)));
+    // On citation kind change, update citation
+    $("#citationsBlock").on("change", ".kindSelect", (event) => {
+      this.updateCitationFields($(event.target).parents(".citationFields"));
+    });
+  }
+
+  updateCitationFields($fields) {
+    const kind = $fields.find(".kindSelect").val();
+    const researchKind = this.researchKinds.includes(kind);
+    const kindDisplay = kind; // Will be more sophisticated
+    log.debug(kind, researchKind);
+    // Toggle the kind
+    $fields.find(".kindResearchField").collapse(researchKind ? "show" : "hide");
+    // Update the places it should show kind
+    $fields
+      .find(".kindDisplayText")
+      .text(researchKind ? "Research" : kindDisplay);
   }
 }

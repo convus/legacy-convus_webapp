@@ -4,6 +4,7 @@
     = link_to "preview", hypothesis_path(@hypothesis.id), target: "blank", class: "small"
 
 = form_for @hypothesis, url: { action: "update" }, html: { class: "form", id: "hypothesisForm" } do |f|
+  = hidden_field_tag :initially_toggled, params[:initially_toggled]
   = f.hidden_field :add_to_github
 
   .row.mt-4.mb-4
@@ -24,13 +25,15 @@
             at least 2, comma delineated
         = f.text_field :tags_string, required: true, class: "form-control"
 
-  .row.mt-4#citationsBlock
+  .row.mt-4{ citations_block_attributes }
     .col-12
       %h3.mb-1 Citation(s)
 
     - @hypothesis.hypothesis_citations.build unless @hypothesis.hypothesis_citations.count > 0
+    -# For working on the view, make it possible to start with the extended citation attributes toggled
+    - initially_toggled = ParamsNormalizer.boolean(params[:initially_toggled])
     = f.fields_for :hypothesis_citations do |builder|
-      = render partial: "/hypotheses/hypothesis_citation_fields", locals: {f: builder, initially_show: true, render_full_fields: true}
+      = render partial: "/hypotheses/hypothesis_citation_fields", locals: {f: builder, initially_show: true, render_full_fields: true, initially_toggled: initially_toggled}
 
   .row
     .col-6.col-md-4.col-xl-3

@@ -7,7 +7,7 @@ RSpec.describe "/hypotheses", type: :request do
   let(:full_citation_params) do
     {
       title: "Testing hypothesis creation is very important",
-      assignable_kind: "article",
+      kind: "research_review",
       peer_reviewed: true,
       randomized_controlled_trial: true,
       url_is_direct_link_to_full_text: "0",
@@ -198,7 +198,12 @@ RSpec.describe "/hypotheses", type: :request do
     end
 
     describe "create" do
-      let(:hc_params) { {Time.current.to_i.to_s => {url: "https://example.com/something-of-interest", quotes_text: "a quote from this article\n and another quote from it\n"}} }
+      let(:hc_params) do
+        {Time.current.to_i.to_s => {
+          url: "https://example.com/something-of-interest",
+          quotes_text: "a quote from this article\n and another quote from it\n"
+        }}
+      end
       let(:simple_hypothesis_params) do
         {
           title: "This seems like the truth",
@@ -375,6 +380,7 @@ RSpec.describe "/hypotheses", type: :request do
         expect(citation.url_is_direct_link_to_full_text).to be_falsey
         expect(citation.creator_id).to eq current_user.id
         expect(citation.hypothesis_citations.first.quotes_text).to eq "This is a thing"
+        expect(citation.kind).to eq full_citation_params[:kind]
 
         citation2 = subject.citations.order(:created_at).last
         expect(citation2.url).to eq "https://something-of.org/interest-asdfasdf"
@@ -470,9 +476,9 @@ RSpec.describe "/hypotheses", type: :request do
             expect(citation.approved?).to be_falsey
             Sidekiq::Worker.clear_all
             Sidekiq::Testing.inline! do
-              patch "#{base_url}/#{subject.to_param}", params: hypothesis_add_to_github_params
+              patch "#{base_url}/#{subject.to_param}", params: hypothesis_add_to_github_params.merge(initially_toggled: true)
             end
-            expect(response).to redirect_to hypothesis_path(subject.id)
+            expect(response).to redirect_to hypothesis_path(subject.id, initially_toggled: true)
             expect(flash[:success]).to be_present
 
             subject.reload
