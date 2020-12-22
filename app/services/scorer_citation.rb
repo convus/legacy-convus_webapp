@@ -1,4 +1,4 @@
-class HypothesisScorer
+class ScorerCitation
   BADGES = {
     hypothesis: {
       has_quote: 1,

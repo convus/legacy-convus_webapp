@@ -1,11 +1,11 @@
 require "rails_helper"
 
-RSpec.describe HypothesisScorer do
-  let(:subject) { HypothesisScorer }
+RSpec.describe ScorerCitation do
+  let(:subject) { ScorerCitation }
 
   describe "total_potential_value" do
     it "is the sum of everything, but only highest value publication" do
-      expect(HypothesisScorer.total_potential_score).to eq 26
+      expect(ScorerCitation.total_potential_score).to eq 26
     end
   end
 

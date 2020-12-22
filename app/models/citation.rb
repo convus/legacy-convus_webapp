@@ -148,7 +148,7 @@ class Citation < ApplicationRecord
   end
 
   def badges
-    HypothesisScorer.citation_badges(self)
+    ScorerCitation.citation_badges(self)
   end
 
   def calculated_score
