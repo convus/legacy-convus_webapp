@@ -58,7 +58,7 @@ class Publication < ApplicationRecord
   end
 
   def badges
-    HypothesisScorer.publication_badges(self)
+    CitationScorer.publication_badges(self)
   end
 
   def score

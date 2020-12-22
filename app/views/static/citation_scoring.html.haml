@@ -7,7 +7,7 @@
       %h4 This is a work in process!
       This was written to clarify what things <em>should</em> look like
       %br
-      The examples don't match the scores that they should.
+      The examples don't currently match the scores that they should.
 
     %p.mt-4
       %strong
@@ -32,61 +32,99 @@
       The highest score articles are ones that have been peer reviewed prior to publication. Judging the quality of the peer review is difficult, but impact factor is an easily accessible proxy (#{hypothesis_link_to "supporting hypothesis", 2253}). For now, we're using the impact factor of the journal to sort publications into high, medium and low status.
 
     %p.mt-4
-      Here are some examples of articles and what they are scored
+      Here are some examples of articles and what they <em>will be</em> scored
 
     %table.table.table-sm.table-striped.table-bordered
       %thead
-        %th Source
         %th Score
         %th Examples
 
       %tbody
         %tr
-          %td A webpage
           %td 1
-          %td ... (include a non-peer reviewed journal)
+          %td
+            %ul
+              %li
+                A webpage
+                %small
+                  \... (include a non-peer reviewed journal)
         %tr
-          %td Wall Street Journal article
-          %td 2
-          %td ...
-        %tr
-          %td New York Times article
-          %td 2
-          %td ...
-        %tr
-          %td Wikipedia entry
           %td 2
           %td
-            #{citation_link_to "1", 1645},...
+            %ul
+              %li
+                Wall Street Journal article
+                %small ...
+              %li
+                New York Times article
+              %li
+                Wikipedia entry
+                %small
+                  #{citation_link_to "1", 1645}, ...
         %tr
-          %td Government Statistics
-          %td 4
-          %td
-            #{citation_link_to "1", 1642}, #{citation_link_to "2", 1627}, #{citation_link_to "3", 1640}
-        %tr
-          %td Peer reviewed, Low status publication
           %td 3
-          %td ...
+          %td
+            %ul
+              %li
+                Peer reviewed, Low status publication
+                %small ...
+              %li
+                Patent
+                %small ...
         %tr
-          %td Peer reviewed, Medium status publication
           %td 4
-          %td ...
+          %td
+            %ul
+              %li
+                United States agency statistics
+                %small
+                  #{citation_link_to "1", 1642}, #{citation_link_to "2", 1640}, #{citation_link_to "3", 1627}
+
+              %li
+                Peer reviewed, Medium status publication, not open access
+                %small ...
+
         %tr
-          %td Peer reviewed, High status publication
           %td 5
-          %td ...
+          %td
+            %ul
+              %li
+                Peer reviewed, High status publication
+                %small ...
         %tr
-          %td Peer reviewed, Medium status publication, Open access
           %td 6
-          %td ...
+          %td
+            %ul
+              %li
+                Peer reviewed, Medium status publication, Open access
+                %small ...
         %tr
-          %td Randomized controlled trial, Peer reviewed, High status publication, Open access
-          %td 9
-          %td ...
+          %td 7
+          %td
+            %ul
+              %li
+                Meta-analysis, Peer reviewed, Medium status publication, Open access
+                %small ...
         %tr
-          %td Legal citation
+          %td 8
+          %td
+            %ul
+              %li
+                Review, Peer reviewed, High status publication, Open access
+                %small ...
+        %tr
           %td 9
-          %td ...
+          %td
+            %ul
+              %li
+                Randomized controlled trial, Peer reviewed, High status publication, Open access
+                %small ...
+              %li
+                Meta-analysis, Peer reviewed, High status publication, Open access
+                %small ...
+              %li
+                = link_to "Legal citation", "https://en.wikipedia.org/wiki/Legal_citation"
+                %small ...
 
     %p.mt-4
       Here is the actual scoring rubric:
@@ -95,11 +133,11 @@
         %th Scoring rubric
         %th Value
       %tbody
-        - HypothesisScorer::BADGES.each do |section_key, section_badges|
+        - CitationScorer::BADGES.each do |section_key, section_badges|
           - section_badges.each do |badge_key, value|
             %tr
               %td
-                <span class="less-strong">#{section_key.to_s.titleize}:</span> #{HypothesisScorer.badge_humanized(badge_key)}
+                <span class="less-strong">#{section_key.to_s.titleize}:</span> #{CitationScorer.badge_humanized(badge_key)}
               %td
                 %span.less-strong= value
 

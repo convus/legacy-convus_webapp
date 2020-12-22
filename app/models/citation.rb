@@ -4,7 +4,6 @@ class Citation < ApplicationRecord
   include ApprovedAtable
   include GithubSubmittable
 
-  # NOTE: Kind is deprecated, and can be removed sometime soon
   KIND_ENUM = {
     article: 0,
     closed_access_peer_reviewed: 1,
@@ -148,7 +147,7 @@ class Citation < ApplicationRecord
   end
 
   def badges
-    HypothesisScorer.citation_badges(self)
+    CitationScorer.citation_badges(self)
   end
 
   def calculated_score

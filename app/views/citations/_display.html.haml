@@ -62,7 +62,7 @@
             = link_to citation.publication.title, publication_path(citation.publication)
             - citation.publication.badges.keys.each do |badge|
               %em.small.less-strong
-                = HypothesisScorer.badge_humanized(badge)
+                = CitationScorer.badge_humanized(badge)
       %tr
         %td Published date
         %td
