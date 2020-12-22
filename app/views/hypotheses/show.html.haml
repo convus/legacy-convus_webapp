@@ -23,6 +23,14 @@
     %p.mt-4
       %span{ style: "font-size: 125%;" }
         = @hypothesis.title
+    %p.mt-4
+      %small.less-strong.convertTime.d-inline-block
+        = l @hypothesis.created_at, format: :convert_time
+        -# Score hidden for now, because it's inaccurate
+        -# .score-bubble.small{ class: hypothesis_score_class(hypothesis.score) }
+        -#   = hypothesis.score
+      - @hypothesis.tags.each do |tag|
+        = link_to tag.title, hypotheses_path(search_array: tag.title), class: "tag-bubble small"
   - if @hypothesis.approved?
     -# TODO: this is hacked to make sure it doesn't split into multiple lines. It would be great to handle that better
     .col-xl.mt-4.mb-2{ style: "min-width: 330px;" }
