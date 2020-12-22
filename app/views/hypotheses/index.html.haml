@@ -12,7 +12,7 @@
     .col-sm-8.hypotheses-search.mb-2
       = form_tag hypotheses_path, method: "GET", class: "form-inline justify-content-end" do
         .form-group.hypotheses-search-select-group.fancy-select.unfancy.create-options
-          - search_options = (tag_titles + @search_items).uniq
+          - search_options = (tag_titles + @search_items).uniq # include non-tag search items in search box
           = select_tag :search_array, options_for_select(search_options, @search_items), class: "form-control ", prompt: "Matching topics", multiple: true
         = submit_tag "Search", class: "btn btn-outline-primary hypotheses-search-btn"
 

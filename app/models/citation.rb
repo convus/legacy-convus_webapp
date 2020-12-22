@@ -37,7 +37,7 @@ class Citation < ApplicationRecord
 
   attr_accessor :assignable_kind, :add_to_github, :quotes_text
 
-  pg_search_scope :text_search, against: %i[title slug]  # TODO: Create tsvector indexes for performance (issues/92)
+  pg_search_scope :text_search, against: %i[title slug] # TODO: Create tsvector indexes for performance (issues/92)
 
   def self.kinds
     KIND_ENUM.keys.map(&:to_s)
