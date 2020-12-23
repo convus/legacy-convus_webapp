@@ -14,7 +14,6 @@ describe CitationSerializer, type: :lib do
         title: obj.title,
         id: obj.id,
         peer_reviewed: false,
-        randomized_controlled_trial: false,
         url_is_not_publisher: false,
         url_is_direct_link_to_full_text: false,
         url: obj.url,
