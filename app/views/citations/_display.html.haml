@@ -50,11 +50,11 @@
         %td URL direct link?
         %td= display_true_or_false(citation.url_is_direct_link_to_full_text)
       %tr
+        %td Kind
+        %td= citation.kind_humanized
+      %tr
         %td Peer reviewed?
         %td= display_true_or_false(citation.peer_reviewed)
-      %tr
-        %td Randomized controlled trial?
-        %td= display_true_or_false(citation.randomized_controlled_trial)
       %tr
         %td Publication
         %td

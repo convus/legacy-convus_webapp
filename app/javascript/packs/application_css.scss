@@ -14,6 +14,12 @@ $max-width-text: 900px;
   @extend .max-width-text-container;
   margin-left: auto;
   margin-right: auto;
+  @include media-breakpoint-up(lg) {
+    max-width: $max-width-text;
+    .landing-title {
+      padding-bottom: 2rem;
+    }
+  }
 }
 
 // Add a little padding to the bottom

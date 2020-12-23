@@ -6,6 +6,12 @@
     %th
     %th Value
   %tbody
+    -# TODO: when revising score, improve this. For now, just rendering the kind here to be helpful
+    %tr
+      %td
+        <span class="less-strong">Citation:</span> kind
+        %em= citation.kind_humanized
+      %td
     - if citation_badges.any?
       - CitationScorer::BADGES.each do |section_key, section_badges|
         - section_badges.each do |badge_key, value|
@@ -15,10 +21,10 @@
               <span class="less-strong">#{section_key.to_s.titleize}:</span> #{CitationScorer.badge_humanized(badge_key)}
             %td
               %span.less-strong= value
-    - else
-      %tr
-        %td{ colspan: 2 }
-          no score
+    -#- else
+    -#  %tr
+    -#    %td{ colspan: 2 }
+    -#      no score
 .row.no-gutters.mt-1
   .col-5
     - unless skip_citation_link

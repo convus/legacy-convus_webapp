@@ -42,10 +42,12 @@ class HypothesesController < ApplicationController
       @hypothesis.hypothesis_citations.each { |hc| update_citation(hc) }
       if @hypothesis.submitted_to_github?
         flash[:success] = "Hypothesis submitted for review"
-        redirect_to hypothesis_path(@hypothesis.id, initially_toggled: params[:initially_toggled])
+        redirect_to hypothesis_path(@hypothesis.id)
       else
         flash[:success] = "Hypothesis saved"
-        redirect_to edit_hypothesis_path(@hypothesis.id, initially_toggled: params[:initially_toggled])
+        # Don't include initially_toggled paramets unless it's passed because it's ugly
+        target_url_redirecting = ParamsNormalizer.boolean(params[:initially_toggled]) ? edit_hypothesis_path(@hypothesis.id, initially_toggled: true) : edit_hypothesis_path(@hypothesis.id)
+        redirect_to target_url_redirecting
       end
     else
       render :edit
@@ -108,7 +110,8 @@ class HypothesesController < ApplicationController
   end
 
   def permitted_params
-    params.require(:hypothesis).permit(:title, :add_to_github, :tags_string,
+    # Permit tags_string as a string or an array
+    params.require(:hypothesis).permit(:title, :add_to_github, :tags_string, tags_string: [],
       hypothesis_citations_attributes: [:url, :quotes_text, :_destroy, :id])
   end
 

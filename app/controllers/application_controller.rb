@@ -43,7 +43,7 @@ class ApplicationController < ActionController::Base
   end
 
   def tag_titles
-    @tag_titles ||= Tag.approved.pluck(:title)
+    @tag_titles ||= Tag.approved.alphabetical.pluck(:title)
   end
 
   def user_root_path
