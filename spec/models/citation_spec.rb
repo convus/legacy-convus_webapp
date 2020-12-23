@@ -3,13 +3,34 @@ require "rails_helper"
 RSpec.describe Citation, type: :model do
   it_behaves_like "GithubSubmittable"
 
+  describe "kind_humanized" do
+    it "all the things match up" do # Sanity checking because I've messed this up
+      expect(Citation.kind_humanized("article")).to eq "article"
+      humanized_kinds = Citation.kinds.map { |k| Citation.kind_humanized(k) }
+      expect(humanized_kinds.any?(&:blank?)).to be_falsey
+      expect((Citation.kinds_data.keys.map(&:to_s) - Citation.kinds)).to eq([])
+      expect((Citation.kinds_research - Citation.kinds)).to eq([])
+    end
+  end
+
+  describe "friendly_find_kind" do
+    it "returns" do
+      expect(Citation.friendly_find_kind("asdfasdf")).to be_blank
+      expect(Citation.friendly_find_kind(:article)).to eq "article"
+      expect(Citation.friendly_find_kind("article \n")).to eq "article"
+      expect(Citation.friendly_find_kind("research with randomized controlled trial")).to eq "research_with_rct"
+    end
+  end
+
   describe "text_search" do
     let!(:citation1) { FactoryBot.create(:citation, title: "bears are neat", url: "http://example.com/something") }
-    let!(:citation2) { FactoryBot.create(:citation, title: "dragons are neat", url: "http://example.com/else") }
+    let!(:citation2) { FactoryBot.create(:citation, title: "dragons are neat", url: "http://example.com/else", kind: "research_comment") }
     it "finds" do
       expect(Citation.text_search("are neat").pluck(:id)).to match_array([citation1.id, citation2.id])
       expect(Citation.text_search("are NEAT").pluck(:id)).to match_array([citation1.id, citation2.id])
       expect(Citation.text_search("Bears").pluck(:id)).to match_array([citation1.id])
+      expect(citation1.kind_humanized).to eq "article"
+      expect(citation2.kind_humanized).to eq "published research comment"
     end
   end
 
@@ -147,64 +168,6 @@ RSpec.describe Citation, type: :model do
         expect(Citation.friendly_find("website/#{target_slug}")&.id).to eq citation2.id
         expect(Citation.friendly_find("website/#{target_slug}.yml")&.id).to eq citation2.id
         expect(Citation.friendly_find("magazine/#{target_slug}")&.id).to eq citation1.id
-      end
-    end
-  end
-
-  describe "assignable_kind" do
-    let(:citation) { Citation.new(assignable_kind: assign_kind) }
-    let(:assign_kind) { "" }
-    before { citation.set_calculated_attributes }
-
-    it "assigns article" do
-      expect(citation.kind).to eq "article"
-      expect(citation.kind_score).to eq 1
-    end
-    context "kind already assigned" do
-      let(:citation) { Citation.new(assignable_kind: assign_kind, kind: "open_access_peer_reviewed") }
-      it "does not alter kind" do
-        expect(citation.kind).to eq "open_access_peer_reviewed"
-      end
-    end
-    context "illegal kind" do
-      let(:assign_kind) { "open_access_peer_reviewed" }
-      it "returns article" do
-        expect(citation.kind).to eq "article"
-      end
-    end
-    context "article_by_publication_with_retractions" do
-      let(:publication) { Publication.new(has_published_retractions: true) }
-      let(:citation) { Citation.new(assignable_kind: "", publication: publication) }
-      it "sets article_by_publication_with_retractions" do
-        expect(citation.kind).to eq "article_by_publication_with_retractions"
-        expect(citation.kind_score).to eq 2
-      end
-      context "assigning article_by_publication_with_retractions" do
-        let(:assign_kind) { "article_by_publication_with_retractions" }
-        it "returns article_by_publication_with_retractions" do
-          expect(citation.kind).to eq "article_by_publication_with_retractions"
-        end
-      end
-    end
-    context "quote_from_involved_party" do
-      let(:assign_kind) { "quote_from_involved_party" }
-      it "is quote_from_involved_party" do
-        expect(citation.kind).to eq "quote_from_involved_party"
-        expect(citation.kind_score).to eq 5
-      end
-    end
-    context "peer_reviewed" do
-      let(:assign_kind) { "peer_reviewed" }
-      it "sets closed_access" do
-        expect(citation.kind).to eq "closed_access_peer_reviewed"
-        expect(citation.kind_score).to eq 3
-      end
-      context "with url_is_direct_link_to_full_text" do
-        let(:citation) { Citation.new(assignable_kind: assign_kind, url_is_direct_link_to_full_text: true) }
-        it "is open_access" do
-          expect(citation.kind).to eq "open_access_peer_reviewed"
-          expect(citation.kind_score).to eq 20
-        end
       end
     end
   end

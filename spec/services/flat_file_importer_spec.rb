@@ -25,7 +25,7 @@ unless ENV["CIRCLECI"]
     def write_basic_files
       delete_existing_files
       publication = FactoryBot.create(:publication, title: "The Hill")
-      citation = FactoryBot.create(:citation_approved, title: "some citation", publication: publication)
+      citation = FactoryBot.create(:citation_approved, title: "some citation", publication: publication, kind: "government_statistics")
       hypothesis = FactoryBot.create(:hypothesis_approved, title: "hypothesis-1")
       FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: citation.url)
       FactoryBot.create(:tag, title: "Health & Wellness", taxonomy: "family_rank")

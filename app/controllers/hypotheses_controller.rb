@@ -42,10 +42,10 @@ class HypothesesController < ApplicationController
       @hypothesis.hypothesis_citations.each { |hc| update_citation(hc) }
       if @hypothesis.submitted_to_github?
         flash[:success] = "Hypothesis submitted for review"
-        redirect_to hypothesis_path(@hypothesis.id)
+        redirect_to hypothesis_path(@hypothesis.id, initially_toggled: params[:initially_toggled])
       else
         flash[:success] = "Hypothesis saved"
-        redirect_to edit_hypothesis_path(@hypothesis.id)
+        redirect_to edit_hypothesis_path(@hypothesis.id, initially_toggled: params[:initially_toggled])
       end
     else
       render :edit
@@ -129,7 +129,7 @@ class HypothesesController < ApplicationController
   end
 
   def permitted_citation_attrs
-    %w[title authors_str assignable_kind url_is_direct_link_to_full_text published_date_str
+    %w[title authors_str kind url_is_direct_link_to_full_text published_date_str
       url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial quotes_text]
   end
 end

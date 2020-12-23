@@ -121,6 +121,13 @@ module ApplicationHelper
     content_tag(:button, name, html_options)
   end
 
+  # This is required by both hypothesis#new and edit, so make it consistent
+  def citations_block_attributes
+    {:id => "citationsBlock",
+     "data-ckinds" => Citation.kinds.join(","),
+     "data-cresearchkinds" => Citation.kinds_research.join(",")}
+  end
+
   def in_admin?
     controller_namespace == "admin"
   end
