@@ -66,13 +66,7 @@ export class HypothesisForm {
   updateCitationFields($fields) {
     const kind = $fields.find(".kindSelect").val();
     const researchKind = this.researchKinds.includes(kind);
-    const kindDisplay = kind; // Will be more sophisticated
-    log.debug(kind, researchKind);
     // Toggle the kind
     $fields.find(".kindResearchField").collapse(researchKind ? "show" : "hide");
-    // Update the places it should show kind
-    $fields
-      .find(".kindDisplayText")
-      .text(researchKind ? "Research" : kindDisplay);
   }
 }

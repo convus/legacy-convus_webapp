@@ -4,10 +4,12 @@ RSpec.describe Citation, type: :model do
   it_behaves_like "GithubSubmittable"
 
   describe "kind_humanized" do
-    it "returns" do
+    it "all the things match up" do # Sanity checking because I've messed this up
       expect(Citation.kind_humanized("article")).to eq "article"
       humanized_kinds = Citation.kinds.map { |k| Citation.kind_humanized(k) }
       expect(humanized_kinds.any?(&:blank?)).to be_falsey
+      expect((Citation.kinds_data.keys.map(&:to_s) - Citation.kinds)).to eq([])
+      expect((Citation.kinds_research - Citation.kinds)).to eq([])
     end
   end
 

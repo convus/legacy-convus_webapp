@@ -52,7 +52,7 @@ class Citation < ApplicationRecord
 
   def self.kinds_research
     # Probably put this into CitationScorer
-    %w[research_comment research_review research_meta_analysis original_research original_research_with_randomized_controlled_trial].freeze
+    %w[research_comment research_review research_meta_analysis research research_with_rct].freeze
   end
 
   def self.kinds_data
