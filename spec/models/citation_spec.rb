@@ -11,6 +11,15 @@ RSpec.describe Citation, type: :model do
     end
   end
 
+  describe "friendly_find_kind" do
+    it "returns" do
+      expect(Citation.friendly_find_kind("asdfasdf")).to be_blank
+      expect(Citation.friendly_find_kind(:article)).to eq "article"
+      expect(Citation.friendly_find_kind("article \n")).to eq "article"
+      expect(Citation.friendly_find_kind("research with randomized controlled trial")).to eq "research_with_rct"
+    end
+  end
+
   describe "text_search" do
     let!(:citation1) { FactoryBot.create(:citation, title: "bears are neat", url: "http://example.com/something") }
     let!(:citation2) { FactoryBot.create(:citation, title: "dragons are neat", url: "http://example.com/else", kind: "research_comment") }

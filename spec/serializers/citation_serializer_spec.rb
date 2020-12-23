@@ -3,7 +3,7 @@
 require "rails_helper"
 
 describe CitationSerializer, type: :lib do
-  let(:obj) { FactoryBot.create(:citation) }
+  let(:obj) { FactoryBot.create(:citation, kind: "research") }
   let(:serializer) { described_class.new(obj, root: false) }
 
   describe "output" do
@@ -21,6 +21,7 @@ describe CitationSerializer, type: :lib do
         publication_title: obj.publication.title,
         published_date: nil,
         authors: nil,
+        kind: "original research",
         quotes: [
           "This is a quote",
           "Another quote from the same thing"

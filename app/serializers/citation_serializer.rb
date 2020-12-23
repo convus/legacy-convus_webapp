@@ -9,6 +9,7 @@ class CitationSerializer < ApplicationSerializer
     :publication_title,
     :published_date,
     :authors,
+    :kind,
     :quotes
 
   def published_date
@@ -17,5 +18,9 @@ class CitationSerializer < ApplicationSerializer
 
   def quotes
     object.quotes.map(&:text)
+  end
+
+  def kind
+    object.kind_humanized
   end
 end

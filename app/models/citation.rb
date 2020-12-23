@@ -12,8 +12,8 @@ class Citation < ApplicationRecord
     government_statistics: 3,
     non_governmental_statistics: 4,
     quote_from_involved_party: 5,
-    original_research: 10,
-    original_research_with_rct: 11,
+    research: 10,
+    research_with_rct: 11,
     research_review: 12,
     research_meta_analysis: 13,
     research_comment: 14,
@@ -63,8 +63,8 @@ class Citation < ApplicationRecord
       government_statistics: {humanized: "government statistics" },
       non_governmental_statistics: {humanized: "non governmental statistics" },
       quote_from_involved_party: {humanized: "quote from involved party" },
-      original_research: {humanized: "original research" },
-      original_research_with_rct: {humanized: "research with randomized controlled trial" },
+      research: {humanized: "original research" },
+      research_with_rct: {humanized: "research with randomized controlled trial" },
       research_review: {humanized: "research review" },
       research_meta_analysis: {humanized: "research meta analysis" },
       research_comment: {humanized: "published research comment"}
@@ -73,6 +73,15 @@ class Citation < ApplicationRecord
 
   def self.kind_humanized(kind)
     kinds_data.dig(kind&.to_sym, :humanized)
+  end
+
+  def self.friendly_find_kind(str)
+    return nil unless str.present?
+    str = str.to_s.strip
+    return str.gsub(" ", "_") if kinds.include?(str.gsub(" ", "_"))
+    KIND_ENUM.keys.select { |k, v|
+      kinds_data.dig(k, :humanized) == str
+    }.first&.to_s
   end
 
   def self.find_by_slug_or_path_slug(str)
