@@ -478,7 +478,7 @@ RSpec.describe "/hypotheses", type: :request do
             Sidekiq::Testing.inline! do
               patch "#{base_url}/#{subject.to_param}", params: hypothesis_add_to_github_params.merge(initially_toggled: true)
             end
-            expect(response).to redirect_to hypothesis_path(subject.id, initially_toggled: true)
+            expect(response).to redirect_to hypothesis_path(subject.id)
             expect(flash[:success]).to be_present
 
             subject.reload
@@ -557,9 +557,9 @@ RSpec.describe "/hypotheses", type: :request do
         let(:citation_params) { full_citation_params.merge(url_is_not_publisher: true) }
         it "creates" do
           Sidekiq::Worker.clear_all
-          patch "#{base_url}/#{subject.to_param}", params: {hypothesis: hypothesis_params}
+          patch "#{base_url}/#{subject.to_param}", params: {hypothesis: hypothesis_params, initially_toggled: true}
           expect(AddHypothesisToGithubContentJob.jobs.count).to eq 0
-          expect(response).to redirect_to edit_hypothesis_path(subject.id)
+          expect(response).to redirect_to edit_hypothesis_path(subject.id, initially_toggled: true)
           expect(flash[:success]).to be_present
 
           subject.reload

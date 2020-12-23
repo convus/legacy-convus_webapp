@@ -4,7 +4,11 @@ import selectize from "selectize";
 // This could be changed to some other library at some point - this makes it possible for us to abstract that away.
 // Just add the `unfancy` and `fancy-select` classes to a select box and it will be a fancy select box!
 const LoadFancySelects = () => {
-  $(".unfancy.fancy-select.create-options select").selectize({
+  $(".unfancy.fancy-select.create-options-add select").selectize({
+    create: true,
+    plugins: ["remove_button"],
+  });
+  $(".unfancy.fancy-select.create-options-search select").selectize({
     create: true,
     plugins: ["remove_button"],
     render: {
