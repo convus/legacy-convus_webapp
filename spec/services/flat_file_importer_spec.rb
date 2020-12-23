@@ -176,4 +176,30 @@ unless ENV["CIRCLECI"]
       end
     end
   end
+
+  describe "import citation" do
+    let(:citation_attrs) do
+      {
+        title: "Bureau of Justice Statistics,  Crime Victimization, 2019",
+        id: "1627",
+        peer_reviewed: "false",
+        url_is_not_publisher: "false",
+        url_is_direct_link_to_full_text: "true",
+        url: "https://www.bjs.gov/index.cfm?ty=pbdetail&iid=7046",
+        publication_title: "Bureau of Justice Statistics",
+        published_date: "2019-02-03",
+        authors: ["Rachel E. Morgan", "Jennifer L. Truman"],
+        kind: "government statistics",
+        quotes: ["There were 880,000 fewer victims of serious crimes (generally felonies) in 2019 than in 2018, a 19% drop"]
+      }
+    end
+    it "imports the citation" do
+      citation = FlatFileImporter.import_citation(citation_attrs)
+      expect(citation.kind_humanized).to eq citation_attrs[:kind]
+      expect_attrs_to_match_hash(citation, citation_attrs.except(:published_date, :quotes, :kind))
+      # We don't actually import quotes from the citation! They come from the hypotheses
+      expect(citation.quotes.count).to eq 0
+      expect_hashes_to_match(citation.flat_file_serialized, citation_attrs.merge(quotes: []))
+    end
+  end
 end

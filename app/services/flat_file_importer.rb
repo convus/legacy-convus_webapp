@@ -77,7 +77,6 @@ class FlatFileImporter
                       url_is_not_publisher: citation_attrs[:url_is_not_publisher],
                       publication_title: citation_attrs[:publication_title],
                       peer_reviewed: citation_attrs[:peer_reviewed],
-                      randomized_controlled_trial: citation_attrs[:randomized_controlled_trial],
                       url_is_direct_link_to_full_text: citation_attrs[:url_is_direct_link_to_full_text],
                       published_date_str: citation_attrs[:published_date],
                       authors: citation_attrs[:authors])
