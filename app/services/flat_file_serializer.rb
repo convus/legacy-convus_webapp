@@ -2,6 +2,7 @@
 
 class FlatFileSerializer
   FILES_PATH = File.path(ENV["FLAT_FILE_PATH"])
+  require "csv"
 
   class << self
     def write_all_files
