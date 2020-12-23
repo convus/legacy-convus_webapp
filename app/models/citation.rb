@@ -16,7 +16,7 @@ class Citation < ApplicationRecord
     research_with_rct: 11,
     research_review: 12,
     research_meta_analysis: 13,
-    research_comment: 14,
+    research_comment: 14
     # maybe case_study?
   }.freeze
 
@@ -57,8 +57,8 @@ class Citation < ApplicationRecord
 
   def self.kinds_data
     {
-      article: {humanized: "article" },
-      official_document: {humanized: "official document" },
+      article: {humanized: "article"},
+      official_document: {humanized: "official document"},
       legal_citation: {humanized: "legal citation" },
       government_statistics: {humanized: "government statistics" },
       non_governmental_statistics: {humanized: "non governmental statistics" },
@@ -78,10 +78,10 @@ class Citation < ApplicationRecord
   def self.friendly_find_kind(str)
     return nil unless str.present?
     str = str.to_s.strip
-    return str.gsub(" ", "_") if kinds.include?(str.gsub(" ", "_"))
-    KIND_ENUM.keys.select { |k, v|
+    return str.tr(" ", "_") if kinds.include?(str.tr(" ", "_"))
+    KIND_ENUM.keys.find { |k, v|
       kinds_data.dig(k, :humanized) == str
-    }.first&.to_s
+    }&.to_s
   end
 
   def self.find_by_slug_or_path_slug(str)
