@@ -22,10 +22,9 @@
         = f.label :tags_string do
           Topics
           %small.less-strong
-            at least 2, comma delineated
+            at least 2
         - tags_string = (@hypothesis.tag_titles + tag_titles).uniq # include unapproved tags from this hypothesis in search items
         = f.select :tags_string, options_for_select(tags_string, @hypothesis.tag_titles), { prompt: "" }, { class: "form-control", required: true, multiple: true}
-        -#= f.text_field :tags_string, required: true, class: "form-control"
 
   .row.mt-4{ citations_block_attributes }
     .col-12

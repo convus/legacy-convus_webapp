@@ -51,10 +51,10 @@ class Citation < ApplicationRecord
   end
 
   def self.kinds_research
-    # Probably put this into CitationScorer
     %w[research_comment research_review research_meta_analysis research research_with_rct].freeze
   end
 
+  # This might fit better in CitationScorer
   def self.kinds_data
     {
       article: {humanized: "article"},

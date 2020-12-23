@@ -34,7 +34,7 @@
 
           - if nested.object.kind_selectable?
             .form-group
-              = nested.label :kind, "Citation type"
+              = nested.label :kind, "Citation kind"
               - citation_kind_opts = options_for_select(Citation.kinds.map { |k| [Citation.kind_humanized(k)&.titleize, k] }, nested.object.kind)
               = nested.select :kind, citation_kind_opts, {}, { class: "form-control kindSelect" }
 

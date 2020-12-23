@@ -110,7 +110,8 @@ class HypothesesController < ApplicationController
   end
 
   def permitted_params
-    params.require(:hypothesis).permit(:title, :add_to_github, :tags_string,
+    # Permit tags_string as a string or an array
+    params.require(:hypothesis).permit(:title, :add_to_github, :tags_string, tags_string: [],
       hypothesis_citations_attributes: [:url, :quotes_text, :_destroy, :id])
   end
 

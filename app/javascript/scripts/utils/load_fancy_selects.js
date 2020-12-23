@@ -8,6 +8,8 @@ const LoadFancySelects = () => {
     create: true,
     plugins: ["remove_button"],
   });
+
+  // The "add item" text says search to make it clearer
   $(".unfancy.fancy-select.create-options-search select").selectize({
     create: true,
     plugins: ["remove_button"],

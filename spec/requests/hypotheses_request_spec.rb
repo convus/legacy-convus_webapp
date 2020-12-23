@@ -595,7 +595,7 @@ RSpec.describe "/hypotheses", type: :request do
         let(:citation_params) { full_citation_params.merge(url_is_not_publisher: true, publication_title: "Some other title") }
         it "creates with publication title" do
           Sidekiq::Worker.clear_all
-          patch "#{base_url}/#{subject.to_param}", params: {hypothesis: hypothesis_params}
+          patch "#{base_url}/#{subject.to_param}", params: {hypothesis: hypothesis_params.merge(tags_string: ["Economy", "parties"])}
           expect(AddHypothesisToGithubContentJob.jobs.count).to eq 0
           expect(AddCitationToGithubContentJob.jobs.count).to eq 0
           expect(response).to redirect_to edit_hypothesis_path(subject.id)
@@ -603,6 +603,7 @@ RSpec.describe "/hypotheses", type: :request do
 
           subject.reload
           expect(subject.title).to eq hypothesis_params[:title]
+          expect(subject.tags_string).to eq "Economy, parties"
 
           expect(Citation.count).to eq 2
           citation.reload

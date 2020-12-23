@@ -56,10 +56,11 @@
     width: 100%;
     color: $gray-400;
     padding: 0 0 0.2rem;
+    text-decoration: underline;
     &:hover,
     &:active,
     &.active {
-      text-decoration: underline;
+      color: $gray-500;
     }
   }
   .citation-score {
