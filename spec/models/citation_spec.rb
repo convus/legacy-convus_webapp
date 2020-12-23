@@ -3,13 +3,23 @@ require "rails_helper"
 RSpec.describe Citation, type: :model do
   it_behaves_like "GithubSubmittable"
 
+  describe "kind_humanized" do
+    it "returns" do
+      expect(Citation.kind_humanized("article")).to eq "article"
+      humanized_kinds = Citation.kinds.map { |k| Citation.kind_humanized(k) }
+      expect(humanized_kinds.any?(&:blank?)).to be_falsey
+    end
+  end
+
   describe "text_search" do
     let!(:citation1) { FactoryBot.create(:citation, title: "bears are neat", url: "http://example.com/something") }
-    let!(:citation2) { FactoryBot.create(:citation, title: "dragons are neat", url: "http://example.com/else") }
+    let!(:citation2) { FactoryBot.create(:citation, title: "dragons are neat", url: "http://example.com/else", kind: "research_comment") }
     it "finds" do
       expect(Citation.text_search("are neat").pluck(:id)).to match_array([citation1.id, citation2.id])
       expect(Citation.text_search("are NEAT").pluck(:id)).to match_array([citation1.id, citation2.id])
       expect(Citation.text_search("Bears").pluck(:id)).to match_array([citation1.id])
+      expect(citation1.kind_humanized).to eq "article"
+      expect(citation2.kind_humanized).to eq "published research comment"
     end
   end
 
