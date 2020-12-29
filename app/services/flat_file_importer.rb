@@ -71,7 +71,6 @@ class FlatFileImporter
       end
     end
 
-    # TODO: This method isn't tested in detail, and should be
     def import_citation(citation_attrs)
       citation = Citation.where(id: citation_attrs[:id]).first || Citation.new
       citation.approved_at ||= Time.current # If it's in the flat files, it's approved
