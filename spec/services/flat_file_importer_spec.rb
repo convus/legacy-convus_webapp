@@ -161,6 +161,11 @@ unless ENV["CIRCLECI"]
         StorePreviousHypothesisTitleJob.drain
         expect(hypothesis.previous_titles.pluck(:title)).to eq([og_title])
       end
+      describe "removing one of the hypothesis_citations" do
+        it "removes the hypothesis_citation if it isn't present" do
+          fail
+        end
+      end
     end
     context "refuting hypothesis" do
       let!(:hypothesis_refuting) { FactoryBot.create(:hypothesis) }
