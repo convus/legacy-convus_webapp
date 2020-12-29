@@ -53,6 +53,7 @@ class FlatFileImporter
       end
       hypothesis.update(tags_string: hypothesis_attrs[:topics], refuted_by_hypotheses_str: hypothesis_attrs[:refuted_by_hypotheses])
       hypothesis.tags.unapproved.update_all(approved_at: Time.current)
+      hypothesis_citation_ids = []
       hypothesis_attrs[:cited_urls]&.map do |cited_url|
         hypothesis_citation = hypothesis.hypothesis_citations.where(url: cited_url[:url]).first
         hypothesis_citation ||= hypothesis.hypothesis_citations.build(url: cited_url[:url])
@@ -61,7 +62,10 @@ class FlatFileImporter
         unless hypothesis_citation.citation.approved?
           hypothesis_citation.citation.update(approved_at: Time.current)
         end
+        hypothesis_citation_ids << hypothesis_citation.id
       end
+      hypothesis.reload
+      hypothesis.hypothesis_citations.where.not(id: hypothesis_citation_ids).destroy_all
       hypothesis
     end
 

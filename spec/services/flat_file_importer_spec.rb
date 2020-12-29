@@ -161,6 +161,49 @@ unless ENV["CIRCLECI"]
         StorePreviousHypothesisTitleJob.drain
         expect(hypothesis.previous_titles.pluck(:title)).to eq([og_title])
       end
+      describe "removing one of the hypothesis_citations" do
+        let!(:hypothesis_citation_old) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: "http://example.com/", quotes_text: "some quote") }
+        let(:citation_old) { hypothesis_citation_old.citation }
+        it "removes the hypothesis_citation if it isn't present" do
+          citation_old.update(approved_at: Time.current)
+          hypothesis.reload
+          expect(hypothesis.citations.count).to eq 2
+          expect(hypothesis.citations.approved.count).to eq 2
+          expect(hypothesis.citations.pluck(:id)).to include(citation_old.id)
+          expect(hypothesis.quotes.pluck(:text)).to eq(["some quote"])
+          expect(citation_old.approved?).to be_truthy
+          expect(citation_old.hypotheses.pluck(:id)).to eq([hypothesis.id])
+          expect(hypothesis.title).to_not eq hypothesis_attrs[:title]
+          expect(hypothesis.tags.pluck(:id)).to eq([tag.id])
+          expect(Tag.count).to eq 1
+          expect(Citation.count).to eq 2
+          expect(tag.approved?).to be_falsey
+          Sidekiq::Worker.clear_all
+
+          FlatFileImporter.import_hypothesis(hypothesis_attrs)
+          hypothesis.reload
+          expect(hypothesis.title).to eq hypothesis_attrs[:title]
+          expect(hypothesis.id).to eq hypothesis_attrs[:id]
+
+          expect(hypothesis.tags.approved.count).to eq 2
+          expect(hypothesis.tags.pluck(:title)).to match_array(["Environment", "Air quality"])
+          tag.reload
+          expect(tag.approved_at).to be_within(5).of Time.current
+          expect(Tag.count).to eq 2
+
+          expect(hypothesis.citations.count).to eq 1
+          expect(hypothesis.citations.approved.count).to eq 1
+          expect(hypothesis.flat_file_serialized.except(:topics)).to eq(hypothesis_attrs.except(:topics))
+
+          expect(Citation.count).to eq 2
+          citation_old.reload
+          expect(citation_old.hypotheses.pluck(:id)).to eq([])
+          expect(citation_old.quotes.pluck(:text)).to eq(["some quote"]) # Not deleting this, for now
+
+          StorePreviousHypothesisTitleJob.drain
+          expect(hypothesis.previous_titles.pluck(:title)).to eq([og_title])
+        end
+      end
     end
     context "refuting hypothesis" do
       let!(:hypothesis_refuting) { FactoryBot.create(:hypothesis) }
