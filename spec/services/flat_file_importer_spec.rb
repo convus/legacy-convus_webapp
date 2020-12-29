@@ -126,6 +126,8 @@ unless ENV["CIRCLECI"]
 
       expect(hypothesis.citations.count).to eq 1
       expect(hypothesis.flat_file_serialized.except(:topics)).to eq(hypothesis_attrs.except(:topics))
+      citation = hypothesis.citations.first
+      expect(citation.approved?).to be_truthy
     end
     context "hypothesis already exists" do
       let(:og_title) { "Purple air sensors are less accurate than EPA sensors" }
