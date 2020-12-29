@@ -57,6 +57,10 @@ class FlatFileImporter
         hypothesis_citation = hypothesis.hypothesis_citations.where(url: cited_url[:url]).first
         hypothesis_citation ||= hypothesis.hypothesis_citations.build(url: cited_url[:url])
         hypothesis_citation.update(quotes_text: cited_url[:quotes].join("\n"))
+        # If we've imported the hypothesis citation through this, we need to approve it
+        unless hypothesis_citation.citation.approved?
+          hypothesis_citation.citation.update(approved_at: Time.current)
+        end
       end
       hypothesis
     end
@@ -67,7 +71,6 @@ class FlatFileImporter
       end
     end
 
-    # TODO: This method isn't tested in detail, and should be
     def import_citation(citation_attrs)
       citation = Citation.where(id: citation_attrs[:id]).first || Citation.new
       citation.approved_at ||= Time.current # If it's in the flat files, it's approved
