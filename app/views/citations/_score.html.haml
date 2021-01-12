@@ -1,10 +1,12 @@
 - skip_citation_link ||= false
 - citation_badges ||= citation.badges.merge(citation.publication.badges)
+- skip_header ||= false
 
 %table.table.table-sm.table-striped.table-bordered.scoring-table.mb-0
-  %thead
-    %th
-    %th Value
+  - unless skip_header
+    %thead
+      %th Citation property
+      %th Score
   %tbody
     -# TODO: when revising score, improve this. For now, just rendering the kind here to be helpful
     %tr
@@ -25,9 +27,11 @@
     -#  %tr
     -#    %td{ colspan: 2 }
     -#      no score
-.row.no-gutters.mt-1
-  .col-5
-    - unless skip_citation_link
-      = link_to "view citation", citation_path(citation)
-  .col-7.text-right.less-strong
-    = link_to "about citation scoring", citation_scoring_path, class: "gray-link"
+.less-strong.mt-1
+  = link_to "about citation scoring", citation_scoring_path, class: "gray-link"
+-# .row.no-gutters.mt-1
+-#   .col-5
+-#     - unless skip_citation_link
+-#       = link_to "view citation", citation_path(citation)
+-#   .col-7.text-right.less-strong
+-#     = link_to "about citation scoring", citation_scoring_path, class: "gray-link"
