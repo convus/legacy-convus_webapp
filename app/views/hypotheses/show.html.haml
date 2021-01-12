@@ -67,28 +67,61 @@
   - @hypothesis.hypothesis_citations.each do |hypothesis_citation|
     - next unless hypothesis_citation.quotes.any?
     - citation = hypothesis_citation.citation
-    .max-width-text-container.col
+    .col-xl-6
       .hypothesis-quotes-block
         - hypothesis_citation.quotes.each do |quote|
           %blockquote
             = quote.text
-        .text-right.less-strong.mt-1
+        .text-right.mt-1
           %em.small
             - if citation.present?
-              #{citation.publication.title}: #{link_to citation.title, citation.url}
-      .citation-score-panel
-        %a.score-text.text-center{href: "#CitationId#{hypothesis_citation.id}", "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "show_raw", "data-queryvalue" => "true"}
-          citation score
-        - score_display = (citation.score_percentage/10).round
-        - offset = score_display.to_s.length/2
-        .citation-score{style: "left: #{citation.score_percentage}%; margin-left: -#{offset}rem;"}
-          %span.score-pointer
-          = score_display
-        - 7.times do |n|
-          %span.score-tick
-        %hr
-        .score-explanation.mt-4.collapse{id: "CitationId#{hypothesis_citation.id}"}
-          = render partial: "/citations/score", locals: { citation: citation }
+              %span.less-strong #{citation.publication.title}:
+              "#{citation.title}"
+      .row.no-gutters
+        .citation-score-panel.col-10
+          %span.score-text.text-center
+            citation score
+          - score_display = (citation.score_percentage/10).round
+          - offset = score_display.to_s.length/2 - 0.2 # 0.2 because padding on the citation-score-panel
+          .citation-score{style: "left: #{citation.score_percentage}%; margin-left: -#{offset}rem;"}
+            %span.score-pointer
+            = score_display
+          - 7.times do |n|
+            %span.score-tick
+          %hr
+        .col-2.citation-show-more-wrapper.sans-serif
+          %a{href: "#CitationId#{hypothesis_citation.id}", "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "#CitationId#{hypothesis_citation.id}", "data-queryvalue" => "true"}
+            %strong +
+            show more
+      .mt-4.collapse{id: "CitationId#{hypothesis_citation.id}"}
+        %table.table-list.mb-0
+          %tbody
+            %tr
+              %td URL
+              %td
+                = link_to citation.url, citation.url
+            %tr
+              %td Published date
+              %td= citation.published_date_str
+
+            %tr
+              %td Author
+              %td
+                - if citation.authors.count < 2
+                  = citation.authors.first
+                - else
+                  %ul
+                    - citation.authors.each do |author|
+                      %li
+                        = author
+            %tr
+              %td Kind
+              %td= citation.kind_humanized
+        = link_to "view raw data", citation_path(citation), class: "gray-link"
+
+        %h4.mt-4 Scoring
+        = render partial: "/citations/score", locals: { citation: citation, skip_header: true }
+
 - if @hypothesis.approved?
   - badges = @hypothesis.badges
 - else

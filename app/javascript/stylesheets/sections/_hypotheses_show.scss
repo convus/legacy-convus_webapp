@@ -44,29 +44,46 @@
   }
 }
 
+.citation-show-more-wrapper {
+  a {
+    display: block;
+    position: relative;
+    width: 100%;
+    padding: 0.5rem 1.25rem 0;
+    opacity: 0.6;
+    text-align: right;
+    line-height: 1;
+    &:hover,
+    &:active,
+    &.active {
+      opacity: 1;
+    }
+    strong {
+      font-weight: 800;
+      position: absolute;
+      right: 0.25rem;
+      top: 50%;
+      margin-top: -0.25rem;
+    }
+  }
+}
+
 .citation-score-panel {
   position: relative;
-  width: 80%;
-  margin: 0 auto 1rem;
   border-top: 0;
-  padding: 1px 0 0.2rem;
+  padding: 1px 0.2rem 0.2rem !important; // left/right padding updates require inline citation-score style update
   font-size: 90%;
   .score-text {
     display: block;
     width: 100%;
     color: $gray-400;
     padding: 0 0 0.2rem;
-    text-decoration: underline;
-    &:hover,
-    &:active,
-    &.active {
-      color: $gray-500;
-    }
   }
   .citation-score {
     position: absolute;
     top: 0;
     font-size: 90%;
+    z-index: 1;
   }
   .score-pointer {
     display: block;
@@ -82,31 +99,32 @@
   }
   .score-tick {
     height: 4px;
-    background: $gray-500;
+    background: $gray-400;
     display: block;
     width: 1px;
     position: absolute;
     top: 1.4rem;
   }
-  .score-tick:nth-of-type(1) {
+  // Honestly, I don't understand why it's off by 1, but whatever
+  .score-tick:nth-of-type(2) {
     left: 12.5%;
   }
-  .score-tick:nth-of-type(2) {
+  .score-tick:nth-of-type(3) {
     left: 25%;
   }
-  .score-tick:nth-of-type(3) {
+  .score-tick:nth-of-type(4) {
     left: 37.5%;
   }
-  .score-tick:nth-of-type(4) {
+  .score-tick:nth-of-type(5) {
     left: 50%;
   }
-  .score-tick:nth-of-type(5) {
+  .score-tick:nth-of-type(6) {
     left: 62.5%;
   }
-  .score-tick:nth-of-type(6) {
+  .score-tick:nth-of-type(7) {
     left: 75%;
   }
-  .score-tick:nth-of-type(7) {
+  .score-tick:nth-of-type(8) {
     left: 87.5%;
   }
   .score-tick:nth-of-type(2n) {
@@ -119,10 +137,5 @@
     border: none;
     height: 1px;
     background: $gray-400;
-  }
-
-  .score-explanation {
-    padding-left: 5px;
-    padding-right: 5px;
   }
 }
