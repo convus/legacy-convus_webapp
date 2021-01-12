@@ -42,7 +42,7 @@ unless ENV["CIRCLECI"]
       end
     end
 
-    describe "write_approved_hypotheses" do
+    describe "write_hypotheses" do
       let!(:citation) { FactoryBot.create(:citation_approved, title: "Pelosi digs in as pressure builds for COVID-19 deal", publication: publication) }
       let(:hypothesis) { FactoryBot.create(:hypothesis_approved, title: "US waiting for updated COVID-19 relief package", tags_string: "some tag") }
       let!(:hypothesis_citation) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: citation.url) }
@@ -68,6 +68,13 @@ unless ENV["CIRCLECI"]
         expect(file_without_base_dir(citation.flat_file_name(base_dir))).to eq target_filename
         Citation.approved.find_each { |citation| subject.write_citation(citation) }
         expect(list_of_files).to eq([target_filename])
+      end
+    end
+
+    # TODO: write an individual spec for the citation, so it's easier to test
+    describe "write_citation" do
+      it "writes the citation" do
+        fail
       end
     end
 
