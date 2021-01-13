@@ -1,10 +1,11 @@
-.mt-4.mb-4
-  %h1.mb-2.d-none.d-md-block.small-page-header
-    Hypothesis:
+.small-page-header
+  %h1
+    %span.d-none.d-md-block
+      Hypothesis:
 .row
-  = render partial: "/hypotheses/show_title", locals: {hypothesis: @hypothesis}
+  = render partial: "/hypotheses/show_title", locals: {hypothesis: @hypothesis, render_show_link: true}
 
-%h2.mt-4.small-page-header New citation:
+%h2.mt-2.small-page-header Add citation to hypothesis:
 
 = form_for @hypothesis_citation, url: hypothesis_citations_path, method: "POST", html: { class: "form" } do |f|
   .row{ citations_block_attributes }
@@ -15,9 +16,11 @@
       .form-group
         = submit_tag "Save", class: "btn btn-primary"
 %hr
-%h2.mt-big Existing citations:
+%h2.mt-4 Existing citations:
 .row
   - @hypothesis.hypothesis_citations.approved.each do |hypothesis_citation|
     - next unless hypothesis_citation.quotes.any?
     = render partial: "/hypotheses/show_hypothesis_citation", locals: { hypothesis_citation: hypothesis_citation, skip_challenge: true }
 
+.mt-big
+= render "/shared/content_license"

@@ -1,9 +1,12 @@
 - hypothesis ||= @hypothesis
+- render_show_link ||= false
 
 .max-width-text-container.col
   %p.mt-4
     %span{ style: "font-size: 125%;" }
       = hypothesis.title
+      - if render_show_link
+        = link_to internal_link_text, hypothesis_path(hypothesis.to_param), class: "internal-link small"
   %p.mt-4
     %small.less-strong.convertTime.d-inline-block
       = l hypothesis.created_at, format: :convert_time
