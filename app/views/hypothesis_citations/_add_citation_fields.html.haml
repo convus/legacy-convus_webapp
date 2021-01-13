@@ -19,7 +19,9 @@
     .col-md-6.mb-4.mt-2
       = render partial: "/shared/errors", locals: { name: "Citation", obj: @hypothesis_citation }
 
-= form_for @hypothesis_citation, url: hypothesis_citations_path, method: "POST", html: { class: "form", id: "hypothesisForm" } do |f|
+- form_submit_path = is_edit ? hypothesis_citation_path(hypothesis_id: @hypothesis, id: @hypothesis_citation.id) : hypothesis_citations_path(hypothesis_id: @hypothesis)
+= form_for @hypothesis_citation, url: form_submit_path, method: (is_edit ? "PATCH" : "POST"), html: { class: "form", id: "hypothesisForm" } do |f|
+  = hidden_field_tag :initially_toggled, params[:initially_toggled]
   = f.hidden_field :add_to_github, class: "addToGithubField"
 
   .row{ citations_block_attributes }

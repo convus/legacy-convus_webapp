@@ -155,16 +155,10 @@ RSpec.describe "hypothesis_citations", type: :request do
         expect(citation.kind).to eq full_citation_params[:kind]
       end
       context "failing citation update" do
+        # NOTE: I don't actually know how to get the citation to error in update
+        # so this stubs the error, just in case it can happen
         it "renders edit with flash error" do
           subject.reload
-          expect(subject.editable_by?(current_user)).to be_truthy
-          expect(hypothesis.citations.count).to eq 1
-          expect(subject.quotes_text_array).to eq([])
-          citation.reload
-          expect(citation.title_url?).to be_truthy
-          Sidekiq::Worker.clear_all
-          expect(Citation.count).to eq 1
-          # Stub error, I don't actually know how to get this - but just in case
           expect_any_instance_of(Citation).to receive(:update) { |c| c.errors.add(:base, "CRAY error") && false }
           patch "#{base_url}/#{subject.id}", params: {hypothesis_citation: hypothesis_citation_update_params}
           expect(flash[:error]).to match(/CRAY error/)

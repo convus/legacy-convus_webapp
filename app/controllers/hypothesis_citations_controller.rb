@@ -79,33 +79,10 @@ class HypothesisCitationsController < ApplicationController
       .merge(creator_id: current_user.id)
   end
 
-  def update_citation(hypothesis_citation)
-    return false unless hypothesis_citation.citation.editable_by?(current_user)
-    hypothesis_citations_params = permitted_citations_params.values.find { |params|
-      params.present? && params[:url] == hypothesis_citation.url
-    }
-    citation_params = hypothesis_citations_params&.dig(:citation_attributes)
-    hypothesis_citation.citation.update(citation_params) if citation_params.present?
-    hypothesis_citation.citation
-  end
-
-  def permitted_update_params
-    params.require(:hypothesis_citation).permit(:url, :quotes_text, :add_to_github,
-      citation_attributes: %i[title authors_str kind url_is_direct_link_to_full_text published_date_str
-      url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial quotes_text])
-    # params.require(:hypothesis_citation).permit(citation_attributes: permitted_citation_attrs)
-    #   .dig(:hypothesis_citations_attributes)
-  end
-
   def permitted_citation_params
     params.require(:hypothesis_citation).permit(citation_attributes:
       %i[title authors_str kind url_is_direct_link_to_full_text published_date_str
       url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial quotes_text])
       .dig(:citation_attributes)
-  end
-
-  def permitted_citation_attrs
-    %i[title authors_str kind url_is_direct_link_to_full_text published_date_str
-      url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial quotes_text]
   end
 end
