@@ -225,6 +225,7 @@ class Citation < ApplicationRecord
     self.path_slug = [publication&.slug, slug].compact.join("-")
     self.score = calculated_score
     self.kind ||= "article" # default to article for now
+    self.authors ||= []
     if FETCH_WAYBACK_URL && url_is_direct_link_to_full_text
       self.wayback_machine_url ||= WaybackMachineIntegration.fetch_current_url(url)
     end
