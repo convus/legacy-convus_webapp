@@ -15,7 +15,6 @@ class HypothesesController < ApplicationController
 
   def show
     @page_title = @hypothesis.title
-    @page_title = "REFUTED: #{@page_title}" if @hypothesis.refuted?
   end
 
   def edit
@@ -94,7 +93,6 @@ class HypothesesController < ApplicationController
   def matching_hypotheses
     return @matching_hypotheses if defined?(@matching_hypotheses)
     hypotheses = ParamsNormalizer.boolean(params[:search_unapproved]) ? Hypothesis.unapproved : Hypothesis.approved
-    hypotheses = ParamsNormalizer.boolean(params[:search_refuted]) ? hypotheses.refuted : hypotheses.unrefuted
 
     if params[:search_array].present?
       matches = Tag.matching_tag_ids_and_non_tags(params[:search_array])
