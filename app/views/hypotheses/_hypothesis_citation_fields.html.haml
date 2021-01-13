@@ -84,4 +84,6 @@
       .text-center{style: "margin: -1em 0 1em;"}
         %em.less-strong
           You can't edit this citation, it's already been approved. Suggest changes to
-          = link_to "the file on GitHub", f.object.citation.github_html_url, target: "_blank"
+          -# github_html_url should always be present here... but if it's broken, and the url is blank, clicking the link just reloads the page which is super confusing and unhelpful. So at least send the user to a page to see the citation
+          - suggest_url = f.object.citation.github_html_url || citation_path(f.object.citation)
+          = link_to "the file on GitHub", suggest_url, target: "_blank"

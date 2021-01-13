@@ -12,13 +12,13 @@ RSpec.describe "/hypotheses", type: :request do
       kind: "research_review",
       peer_reviewed: true,
       randomized_controlled_trial: true,
-      url_is_direct_link_to_full_text: "0",
+      url_is_direct_link_to_full_text: "1",
       authors_str: "\nZack\n George\n",
       published_date_str: "1990-12-2",
       url_is_not_publisher: false
     }
   end
-  let(:full_citation_url) { "https://example.com/something-of-interest" }
+  let(:citation_url) { "https://example.com/something-of-interest" }
 
   describe "index" do
     let!(:hypothesis) { FactoryBot.create(:hypothesis) }
@@ -232,6 +232,7 @@ RSpec.describe "/hypotheses", type: :request do
         hypothesis_citation = hypothesis.hypothesis_citations.first
         expect(hypothesis_citation.url).to eq hc_params.values.first[:url]
         expect(hypothesis_citation.quotes_text).to be_present
+        expect(hypothesis_citation.creator_id).to eq current_user.id
 
         expect(hypothesis.citations.count).to eq 1
         citation = hypothesis.citations.first
@@ -339,7 +340,7 @@ RSpec.describe "/hypotheses", type: :request do
               _destroy: "0"
             },
             "1" => {
-              url: full_citation_url,
+              url: citation_url,
               quotes_text: "This is a thing",
               citation_attributes: citation_params,
               _destroy: "0"
@@ -370,13 +371,13 @@ RSpec.describe "/hypotheses", type: :request do
 
         citation.reload
         expect(citation.title).to eq full_citation_params[:title]
-        expect(citation.url).to eq full_citation_url
+        expect(citation.url).to eq citation_url
         expect(citation.submitted_to_github?).to be_falsey
         expect(citation.publication).to be_present
         expect(citation.publication_title).to eq "example.com"
         expect(citation.authors).to eq(["Zack", "George"])
         expect(citation.published_date_str).to eq "1990-12-02"
-        expect(citation.url_is_direct_link_to_full_text).to be_falsey
+        expect(citation.url_is_direct_link_to_full_text).to be_truthy
         expect(citation.creator_id).to eq current_user.id
         expect(citation.hypothesis_citations.first.quotes_text).to eq "This is a thing"
         expect(citation.kind).to eq full_citation_params[:kind]
@@ -450,7 +451,7 @@ RSpec.describe "/hypotheses", type: :request do
 
           citation.reload
           expect(citation.title).to eq full_citation_params[:title]
-          expect(citation.url).to eq full_citation_url
+          expect(citation.url).to eq citation_url
           # expect(citation.submitted_to_github?).to be_truthy # Doesn't seem important. Job takes care of this, so ignore
           expect(citation.pull_request_number).to be_blank
           expect(citation.approved_at).to be_blank
@@ -458,7 +459,7 @@ RSpec.describe "/hypotheses", type: :request do
           expect(citation.publication_title).to eq "example.com"
           expect(citation.authors).to eq(["Zack", "George"])
           expect(citation.published_date_str).to eq "1990-12-02"
-          expect(citation.url_is_direct_link_to_full_text).to be_falsey
+          expect(citation.url_is_direct_link_to_full_text).to be_truthy
           expect(citation.peer_reviewed).to be_truthy
           expect(citation.randomized_controlled_trial).to be_truthy
           expect(citation.creator_id).to eq current_user.id
@@ -541,13 +542,13 @@ RSpec.describe "/hypotheses", type: :request do
           expect(Citation.count).to eq 3
           citation.reload
           expect(citation.title).to eq full_citation_params[:title]
-          expect(citation.url).to eq full_citation_url
+          expect(citation.url).to eq citation_url
 
           expect(citation.publication).to be_present
           expect(citation.publication_title).to eq "example.com"
           expect(citation.authors).to eq(["Zack", "George"])
           expect(citation.published_at).to be_within(5).of Time.at(660124800)
-          expect(citation.url_is_direct_link_to_full_text).to be_falsey
+          expect(citation.url_is_direct_link_to_full_text).to be_truthy
           expect(citation.creator).to eq current_user
         end
       end
@@ -571,13 +572,13 @@ RSpec.describe "/hypotheses", type: :request do
           expect(Citation.count).to eq 2
           citation.reload
           expect(citation.title).to eq full_citation_params[:title]
-          expect(citation.url).to eq full_citation_url
+          expect(citation.url).to eq citation_url
           expect(citation.url_is_not_publisher).to be_truthy
           expect(subject.citations.pluck(:id)).to include(citation.id)
 
           expect(citation.authors).to eq(["Zack", "George"])
           expect(citation.published_at).to be_within(5).of Time.at(660124800)
-          expect(citation.url_is_direct_link_to_full_text).to be_falsey
+          expect(citation.url_is_direct_link_to_full_text).to be_truthy
           expect(citation.creator).to eq current_user
           expect(citation.url_is_not_publisher).to be_truthy
 
@@ -606,13 +607,13 @@ RSpec.describe "/hypotheses", type: :request do
           expect(Citation.count).to eq 2
           citation.reload
           expect(citation.title).to eq full_citation_params[:title]
-          expect(citation.url).to eq full_citation_url
+          expect(citation.url).to eq citation_url
           expect(citation.url_is_not_publisher).to be_truthy
           expect(subject.citations.pluck(:id)).to include(citation.id)
 
           expect(citation.authors).to eq(["Zack", "George"])
           expect(citation.published_at).to be_within(5).of Time.at(660124800)
-          expect(citation.url_is_direct_link_to_full_text).to be_falsey
+          expect(citation.url_is_direct_link_to_full_text).to be_truthy
           expect(citation.creator).to eq current_user
           expect(citation.url_is_not_publisher).to be_truthy
 

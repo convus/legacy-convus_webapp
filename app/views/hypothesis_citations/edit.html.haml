@@ -1,26 +1,2 @@
-.small-page-header
-  %h1
-    %span.d-none.d-md-block
-      Hypothesis:
-.row
-  = render partial: "/hypotheses/show_title", locals: {hypothesis: @hypothesis, render_show_link: true}
-
-%h2.mt-4.small-page-header Edit new citation:
-
-= form_for @hypothesis_citation, url: hypothesis_citations_path, method: "POST", html: { class: "form" } do |f|
-  .row{ citations_block_attributes }
-    = render partial: "/hypotheses/hypothesis_citation_fields", locals: {f: f, initially_show: true, skip_remove: true}
-
-  .row
-    .col-6.col-md-4.col-xl-3
-      .form-group
-        = submit_tag "Save", class: "btn btn-primary"
-%hr
-%h2.mt-4 Existing citations:
-.row
-  - @hypothesis.hypothesis_citations.approved.each do |hypothesis_citation|
-    - next unless hypothesis_citation.quotes.any?
-    = render partial: "/hypotheses/show_hypothesis_citation", locals: { hypothesis_citation: hypothesis_citation, skip_challenge: true }
-
-.mt-big
-= render "/shared/content_license"
+-# This and new are very similar, so just use one template
+= render partial: "add_citation_fields", locals: { is_edit: true }

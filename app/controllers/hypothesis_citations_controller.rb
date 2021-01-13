@@ -17,7 +17,7 @@ class HypothesisCitationsController < ApplicationController
     @hypothesis_citation = @hypothesis.hypothesis_citations.build(permitted_params)
     @hypothesis_citation.creator_id = current_user.id
     if @hypothesis_citation.save
-      flash[:success] = "Hypothesis created!"
+      flash[:success] = "Citation added!"
       redirect_to edit_hypothesis_citation_path(id: @hypothesis_citation.id, hypothesis_id: @hypothesis.id)
     else
       render :new
@@ -25,16 +25,23 @@ class HypothesisCitationsController < ApplicationController
   end
 
   def update
-    if @hypothesis.update(permitted_params)
-      @hypothesis.hypothesis_citations.each { |hc| update_citation(hc) }
-      if @hypothesis.submitted_to_github?
-        flash[:success] = "Hypothesis submitted for review"
+    update_successful = @hypothesis_citation.update(permitted_params)
+    if update_successful
+      # Because the citation is assigned during creation, we can't use nested attributes to update it
+      citation = @hypothesis_citation.citation
+      update_successful = citation.update(permitted_citation_params)
+      flash[:error] = "Couldn't save citation; #{citation.errors.full_messages}" unless update_successful
+    end
+    if update_successful
+      if @hypothesis_citation.submitted_to_github?
+        flash[:success] = "Citation submitted for review"
         redirect_to hypothesis_path(@hypothesis.id)
       else
-        flash[:success] = "Hypothesis saved"
+        flash[:success] = "Citation saved"
+        target_url_params = { hypothesis_id: @hypothesis.id, id: @hypothesis_citation.id }
         # Don't include initially_toggled paramets unless it's passed because it's ugly
-        target_url_redirecting = ParamsNormalizer.boolean(params[:initially_toggled]) ? edit_hypothesis_path(@hypothesis.id, initially_toggled: true) : edit_hypothesis_path(@hypothesis.id)
-        redirect_to target_url_redirecting
+        target_url_params[:initially_toggled] = true if ParamsNormalizer.boolean(params[:initially_toggled])
+        redirect_to edit_hypothesis_citation_path(target_url_params)
       end
     else
       render :edit
@@ -68,8 +75,8 @@ class HypothesisCitationsController < ApplicationController
   end
 
   def permitted_params
-    # params.require(:hypothesis).permit(hypothesis_citations_attributes: [:url, :quotes_text, :add_to_github])
     params.require(:hypothesis_citation).permit(:url, :quotes_text, :add_to_github)
+      .merge(creator_id: current_user.id)
   end
 
   def update_citation(hypothesis_citation)
@@ -82,14 +89,23 @@ class HypothesisCitationsController < ApplicationController
     hypothesis_citation.citation
   end
 
-  # Get each set of permitted citation attributes. We're updating them individually
-  def permitted_citations_params
-    params.require(:hypothesis).permit(hypothesis_citations_attributes: [:url, {citation_attributes: permitted_citation_attrs}])
-      .dig(:hypothesis_citations_attributes)
+  def permitted_update_params
+    params.require(:hypothesis_citation).permit(:url, :quotes_text, :add_to_github,
+      citation_attributes: %i[title authors_str kind url_is_direct_link_to_full_text published_date_str
+      url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial quotes_text])
+    # params.require(:hypothesis_citation).permit(citation_attributes: permitted_citation_attrs)
+    #   .dig(:hypothesis_citations_attributes)
+  end
+
+  def permitted_citation_params
+    params.require(:hypothesis_citation).permit(citation_attributes:
+      %i[title authors_str kind url_is_direct_link_to_full_text published_date_str
+      url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial quotes_text])
+      .dig(:citation_attributes)
   end
 
   def permitted_citation_attrs
-    %w[title authors_str kind url_is_direct_link_to_full_text published_date_str
+    %i[title authors_str kind url_is_direct_link_to_full_text published_date_str
       url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial quotes_text]
   end
 end

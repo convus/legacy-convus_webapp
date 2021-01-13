@@ -6,7 +6,7 @@
 
 = form_for @hypothesis, url: { action: "update" }, html: { class: "form", id: "hypothesisForm" } do |f|
   = hidden_field_tag :initially_toggled, params[:initially_toggled]
-  = f.hidden_field :add_to_github
+  = f.hidden_field :add_to_github, class: "addToGithubField"
 
   .row.mb-4
     .col-md-8.col-xl-6

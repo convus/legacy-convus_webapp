@@ -1,0 +1,47 @@
+- is_edit ||= false
+
+.small-page-header
+  %h1
+    %span.d-none.d-md-block
+      Hypothesis:
+.row
+  = render partial: "/hypotheses/show_title", locals: {hypothesis: @hypothesis, render_show_link: true}
+
+%h2.mt-4.small-page-header
+  - if is_edit
+    Edit new citation:
+  - else
+    Add citation to hypothesis:
+
+- if @hypothesis_citation.errors.any?
+  -# These rows and columns duplicate what is in hypothesis_citation_fields - but we want a separate thing
+  .row
+    .col-md-6.mb-4.mt-2
+      = render partial: "/shared/errors", locals: { name: "Citation", obj: @hypothesis_citation }
+
+= form_for @hypothesis_citation, url: hypothesis_citations_path, method: "POST", html: { class: "form", id: "hypothesisForm" } do |f|
+  = f.hidden_field :add_to_github, class: "addToGithubField"
+
+  .row{ citations_block_attributes }
+    = render partial: "/hypotheses/hypothesis_citation_fields", locals: {f: f, initially_show: true, skip_remove: true, render_full_fields: is_edit, initially_toggled: ParamsNormalizer.boolean(params[:initially_toggled])}
+
+  .row
+    .col-6.col-md-4.col-xl-3
+      .form-group
+        = submit_tag "Save", class: "btn btn-primary"
+
+  - if is_edit
+    .mt-4
+      %a#submitForApproval.btn.btn-success.submit-input{ href: "#" }
+        Submit for Approval
+        %span.loadingSpinner.spinner-border.spinner-border-sm.collapse.ml-2
+          %span.sr-only Loading...
+%hr
+%h2.mt-4 Existing citations:
+.row
+  - @hypothesis.hypothesis_citations.approved.each do |hypothesis_citation|
+    - next unless hypothesis_citation.quotes.any?
+    = render partial: "/hypotheses/show_hypothesis_citation", locals: { hypothesis_citation: hypothesis_citation, skip_challenge: true }
+
+.mt-big
+= render "/shared/content_license"

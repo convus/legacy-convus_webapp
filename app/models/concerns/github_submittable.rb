@@ -32,6 +32,7 @@ module GithubSubmittable
     return false unless ParamsNormalizer.boolean(add_to_github)
     AddToGithubContentJob.perform_async(self.class.name, id)
     # Because we've enqueued, and we want the fact that it is submitted to be reflected instantly
+    # ... But call after adding to the job, so we know we're actually in the submitting process
     update(submitting_to_github: true)
   end
 end

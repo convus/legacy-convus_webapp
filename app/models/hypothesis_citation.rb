@@ -51,19 +51,17 @@ class HypothesisCitation < ApplicationRecord
     hypothesis_quotes
   end
 
+  # TODO: make this not a stupid stub
   def title
-    if citation.present?
-      citation.title
-    else
-      "Citation"
-    end
+    citation.present? ? citation.title : "Citation"
   end
 
   def set_calculated_attributes
     self.quotes_text = quotes_text_array.join("\n\n")
     self.quotes_text = nil if quotes_text.blank?
     self.url = UrlCleaner.with_http(UrlCleaner.without_utm(url))
-    self.citation_id = Citation.find_or_create_by_params({url: url, creator_id: hypothesis.creator_id})&.id
+    self.creator_id ||= hypothesis.creator_id
+    self.citation_id = Citation.find_or_create_by_params({url: url, creator_id: creator_id})&.id
     update_hypothesis_quotes(quotes_text_array)
   end
 
