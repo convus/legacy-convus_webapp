@@ -83,4 +83,44 @@ RSpec.describe GithubIntegration do
       end
     end
   end
+
+  describe "create_hypothesis_citation_pull_request" do
+    let(:hypothesis) do
+      hy = Hypothesis.create(title: "Testing GitHub Hypothesis Citation addition", approved_at: Time.current - 1.hour)
+      hy.update_columns(id: 42, created_at: hy.approved_at) # So we get consistent PRs
+      hy
+    end
+    let!(:hypothesis_citation_prior) { FactoryBot.create(:hypothesis_citation_approved, hypothesis: hypothesis, quotes_text: "Some quote here") }
+    let!(:hypothesis_citation) { hypothesis.hypothesis_citations.create(url: "https://testing.convus.org/examples/etc", quotes_text: "whooooooo") }
+
+    it "creates the pull request" do
+      expect(hypothesis_citation.pull_request_number).to be_blank
+      # When changing this - you have to remove any existing refs for branches named the same.
+      # Delete it either by closing the PR: https://github.com/convus/convus_content/pulls
+      # Or deleting the branch manually (if PR wasn't created): https://github.com/convus/convus_content/branches
+      VCR.use_cassette("github_integration-create_hypothesis_citation_pull_request", match_requests_on: [:method]) do
+        hypothesis.reload
+        expect(hypothesis.hypothesis_citations.submitted_to_github.count).to eq 1
+        branches(subject.client).count
+        open_pull_requests(subject.client)
+        expect(hypothesis_citation)
+        pull_request = subject.create_hypothesis_citation_pull_request(hypothesis_citation)
+        # This isn't testing correctly, even though the pull request is being created correctly
+        # ... so ignore for now. To re-enable, will require assigning results above to variables
+        # expect(branches(subject.client).count).to be > initial_branch_count
+        # prs = open_pull_requests(subject.client)
+        # expect(prs.count).to be > initial_pull_requests.count
+        hypothesis_citation.reload
+        expect(hypothesis_citation.pull_request_number).to be_present
+
+        # And check the hypothesis
+        hypothesis.reload
+        expect(hypothesis_citation.pull_request_number).to be_blank #
+        expect(hypothesis.hypothesis_citations.submitted_to_github.count).to eq 2
+
+        # Can't do this via octokit.rb right now. BUT OH GOD THIS IS SOMETHING WE WANT - to make this truthy
+        expect(pull_request.maintainer_can_modify).to be_falsey
+      end
+    end
+  end
 end

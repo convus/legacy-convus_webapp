@@ -28,6 +28,7 @@ describe HypothesisSerializer, type: :lib do
     end
     it "returns the expected output" do
       expect_hashes_to_match(serializer.as_json, target)
+      expect_hashes_to_match(obj.flat_file_serialized, target)
     end
     context "refuted_hypothesis" do
       let(:obj) { FactoryBot.create(:hypothesis_refuted, hypothesis_refuting: refuting_hypothesis) }
@@ -35,6 +36,14 @@ describe HypothesisSerializer, type: :lib do
       let(:refuted_target) { target.merge(refuted_by_hypotheses: ["I refute this hypothesis because of things"]) }
       it "returns target" do
         expect_hashes_to_match(serializer.as_json, refuted_target)
+      end
+    end
+
+    describe "flat_file_serialized with override" do
+      let(:overridden) { target.merge(new_cited_url: {url: "https://stuff.com/example", quotes: ["bbbbbutter"]}) }
+      it "returns the expected output" do
+        obj.serialized_override = overridden
+        expect_hashes_to_match(obj.flat_file_serialized, overridden)
       end
     end
   end

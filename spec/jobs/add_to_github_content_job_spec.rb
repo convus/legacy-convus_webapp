@@ -30,4 +30,18 @@ RSpec.describe AddToGithubContentJob do
       end
     end
   end
+  context "hypothesis_citation" do
+    let(:hypothesis_citation) { FactoryBot.create(:hypothesis_citation, creator: FactoryBot.create(:user)) }
+    it "calls the github integration" do
+      expect_any_instance_of(GithubIntegration).to receive(:create_hypothesis_citation_pull_request) { true }
+      subject.perform("HypothesisCitation", hypothesis_citation.id)
+    end
+    context "pull request present" do
+      let!(:hypothesis_citation) { FactoryBot.create(:hypothesis_citation, pull_request_number: 332) }
+      it "does nothing" do
+        expect_any_instance_of(GithubIntegration).to_not receive(:client)
+        subject.perform("HypothesisCitation", hypothesis_citation.id)
+      end
+    end
+  end
 end

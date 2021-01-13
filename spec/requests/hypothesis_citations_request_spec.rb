@@ -5,7 +5,7 @@ require "rails_helper"
 RSpec.describe "hypothesis_citations", type: :request do
   let(:base_url) { "/hypotheses/#{hypothesis.id}/citations" }
   let(:current_user) { nil }
-  let!(:hypothesis) { FactoryBot.create(:hypothesis_approved, creator: FactoryBot.create(:user)) }
+  let!(:hypothesis) { FactoryBot.create(:hypothesis_approved, creator: FactoryBot.create(:user), created_at: Time.current - 1.hour) }
   let(:subject) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: citation_url, creator: current_user) }
   let(:citation) { subject.citation }
 
@@ -28,7 +28,7 @@ RSpec.describe "hypothesis_citations", type: :request do
       "We found particularly strong responses with regards to hormone levels, the onset of daily activity in diurnal species and life history traits, such as the number of offspring, predation, cognition and seafinding (in turtles)."]
   end
   let(:quotes_text) { quotes.join("\n") }
-  let(:hypothesis_citation_params) { {url: citation_url, quotes_text: quotes_text} }
+  let(:hypothesis_citation_params) { {url: citation_url, quotes_text: quotes_text, add_to_github: "0"} }
 
   describe "new" do
     it "redirects" do
@@ -163,6 +163,51 @@ RSpec.describe "hypothesis_citations", type: :request do
           patch "#{base_url}/#{subject.id}", params: {hypothesis_citation: hypothesis_citation_update_params}
           expect(flash[:error]).to match(/CRAY error/)
           expect(response).to render_template("hypothesis_citations/edit")
+        end
+      end
+      context "add to github" do
+        let(:update_add_to_github_params) { hypothesis_citation_update_params.merge(add_to_github: true) }
+        it "enqueues the job" do
+          subject.reload
+          Sidekiq::Worker.clear_all
+          patch "#{base_url}/#{subject.id}", params: {hypothesis_citation: update_add_to_github_params}
+          expect(flash[:success]).to be_present
+          expect(response).to redirect_to edit_hypothesis_citation_path(hypothesis_id: hypothesis.id, id: subject.id)
+          expect(assigns(:hypothesis_citation)&.id).to eq subject.id
+          expect(AddToGithubContentJob.jobs.count).to eq 1
+          expect(AddToGithubContentJob.jobs.map { |j| j["args"] }.last.flatten).to eq(["HypothesisCitation", subject.id])
+        end
+
+        xit "actually runs" do
+          subject.reload
+          citation.update(pull_request_number: 12)
+          VCR.use_cassette("hypotheses_controller-create_skip_citation", match_requests_on: [:method]) do
+            expect(Hypothesis.count).to eq 1
+            expect(Citation.count).to eq 1
+            expect(citation.pull_request_number).to be_present
+            expect(citation.approved?).to be_falsey
+            Sidekiq::Worker.clear_all
+            Sidekiq::Testing.inline! do
+              patch "#{base_url}/#{subject.to_param}", params: hypothesis_add_to_github_params.merge(initially_toggled: true)
+            end
+            expect(response).to redirect_to hypothesis_path(subject.id)
+            expect(flash[:success]).to be_present
+
+            subject.reload
+            expect(subject.title).to eq hypothesis_params[:title]
+            expect(subject.citations.count).to eq 2
+            expect(subject.approved?).to be_falsey
+            expect(subject.pull_request_number).to be_present
+            expect(subject.pull_request_number).to_not eq 12
+            expect(subject.submitting_to_github).to be_truthy
+            # Even though passed new information, it doesn't update the existing citation
+            citation.reload
+            expect(citation.pull_request_number).to eq 12
+
+            citation2 = subject.citations.order(:created_at).last
+            expect(citation2.submitted_to_github?).to be_truthy
+            expect(citation2.pull_request_number).to eq subject.pull_request_number
+          end
         end
       end
     end

@@ -70,5 +70,6 @@ class HypothesisCitation < ApplicationRecord
     return false if skip_associated_tasks || (hypothesis.present? && hypothesis.created_at > Time.current - 5.seconds)
     # Only update the hypothesis if it isn't destroyed
     hypothesis&.update(updated_at: Time.current) unless hypothesis.destroyed?
+    add_to_github_content
   end
 end

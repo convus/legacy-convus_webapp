@@ -9,6 +9,10 @@ class AddToGithubContentJob < ApplicationJob
       citation = Citation.find id
       return true if citation.approved? || citation.pull_request_number.present?
       GithubIntegration.new.create_citation_pull_request(citation)
+    when "HypothesisCitation"
+      hypothesis_citation = HypothesisCitation.find id
+      return true if hypothesis_citation.approved? || hypothesis_citation.pull_request_number.present?
+      GithubIntegration.new.create_hypothesis_citation_pull_request(hypothesis_citation)
     end
   end
 end

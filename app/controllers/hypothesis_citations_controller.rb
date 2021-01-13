@@ -33,12 +33,16 @@ class HypothesisCitationsController < ApplicationController
       flash[:error] = "Couldn't save citation; #{citation.errors.full_messages}" unless update_successful
     end
     if update_successful
+      target_url_params = {hypothesis_id: @hypothesis.id, id: @hypothesis_citation.id}
+      # Manually trigger to ensure it happens after citation is updated
+      if ParamsNormalizer.boolean(params.dig(:hypothesis_citation, :add_to_github))
+        @hypothesis_citation.update(add_to_github: true)
+      end
       if @hypothesis_citation.submitted_to_github?
         flash[:success] = "Citation submitted for review"
-        redirect_to hypothesis_path(@hypothesis.id)
+        redirect_to edit_hypothesis_citation_path(target_url_params)
       else
         flash[:success] = "Citation saved"
-        target_url_params = {hypothesis_id: @hypothesis.id, id: @hypothesis_citation.id}
         # Don't include initially_toggled paramets unless it's passed because it's ugly
         target_url_params[:initially_toggled] = true if ParamsNormalizer.boolean(params[:initially_toggled])
         redirect_to edit_hypothesis_citation_path(target_url_params)
@@ -75,7 +79,7 @@ class HypothesisCitationsController < ApplicationController
   end
 
   def permitted_params
-    params.require(:hypothesis_citation).permit(:url, :quotes_text, :add_to_github)
+    params.require(:hypothesis_citation).permit(:url, :quotes_text)
       .merge(creator_id: current_user.id)
   end
 
