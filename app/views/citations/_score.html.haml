@@ -1,4 +1,4 @@
-- citation_badges ||= citation.badges.merge(citation.publication.badges)
+- citation_badges ||= citation.badges.merge(citation.publication&.badges || {})
 - skip_header ||= false
 
 %table.table.table-sm.table-striped.table-bordered.scoring-table.mb-0
