@@ -4,6 +4,8 @@ require "rails_helper"
 
 RSpec.describe "/hypotheses", type: :request do
   let(:base_url) { "/hypotheses" }
+  let(:current_user) { nil }
+  let(:subject) { FactoryBot.create(:hypothesis, creator_id: current_user&.id) }
   let(:full_citation_params) do
     {
       title: "Testing hypothesis creation is very important",
@@ -13,13 +15,10 @@ RSpec.describe "/hypotheses", type: :request do
       url_is_direct_link_to_full_text: "0",
       authors_str: "\nZack\n George\n",
       published_date_str: "1990-12-2",
-      url_is_not_publisher: false,
-      quotes_text: "First quote from this literature\nSecond quote, which is cool\nThird"
+      url_is_not_publisher: false
     }
   end
   let(:full_citation_url) { "https://example.com/something-of-interest" }
-  let(:subject) { FactoryBot.create(:hypothesis, creator_id: current_user&.id) }
-  let(:current_user) { nil }
 
   describe "index" do
     let!(:hypothesis) { FactoryBot.create(:hypothesis) }
@@ -311,7 +310,7 @@ RSpec.describe "/hypotheses", type: :request do
           expect(subject.editable_by?(current_user)).to be_falsey
           expect(subject.creator_id).to_not eq current_user.id
           get "#{base_url}/#{subject.to_param}/edit"
-          expect(response.code).to redirect_to account_path
+          expect(response.code).to redirect_to hypothesis_path(subject.to_param)
           expect(flash[:error]).to be_present
         end
       end
@@ -321,7 +320,7 @@ RSpec.describe "/hypotheses", type: :request do
           expect(subject.editable_by?(current_user)).to be_falsey
           expect(subject.creator_id).to eq current_user.id
           get "#{base_url}/#{subject.to_param}/edit"
-          expect(response.code).to redirect_to assigns(:user_root_path)
+          expect(response.code).to redirect_to hypothesis_path(subject.to_param)
           expect(flash[:error]).to be_present
         end
       end
@@ -396,7 +395,7 @@ RSpec.describe "/hypotheses", type: :request do
         it "does not update" do
           expect(subject.creator_id).to_not eq current_user.id
           patch "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_params}
-          expect(response.code).to redirect_to assigns(:user_root_path)
+          expect(response.code).to redirect_to hypothesis_path(subject.to_param)
           expect(flash[:error]).to be_present
           subject.reload
           expect(subject.title).to_not eq hypothesis_params[:title]
@@ -408,7 +407,7 @@ RSpec.describe "/hypotheses", type: :request do
         it "does not update" do
           expect(subject.creator_id).to eq current_user.id
           patch "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_params}
-          expect(response.code).to redirect_to assigns(:user_root_path)
+          expect(response.code).to redirect_to hypothesis_path(subject.to_param)
           expect(flash[:error]).to be_present
           subject.reload
           expect(subject.title).to_not eq hypothesis_params[:title]

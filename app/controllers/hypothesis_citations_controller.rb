@@ -1,7 +1,6 @@
-class HypothesesController < ApplicationController
-  before_action :redirect_to_signup_unless_user_present!, except: %i[index show]
-  before_action :process_user_score
-  before_action :find_hypothesis, except: %i[index new create]
+class HypothesisCitationsController < ApplicationController
+  before_action :redirect_to_signup_unless_user_present!
+  before_action :find_hypothesis_citation
   before_action :ensure_user_can_edit!, only: %i[edit update]
   before_action :set_permitted_format
 
@@ -26,11 +25,11 @@ class HypothesesController < ApplicationController
   end
 
   def create
-    @hypothesis = Hypothesis.new(permitted_params)
-    @hypothesis.creator_id = current_user.id
-    if @hypothesis.save
+    @hypothesis_citation = @hypothesis.hypothesis_citations.build(permitted_params)
+    @hypothesis_citation.creator_id = current_user.id
+    if @hypothesis_citation.save
       flash[:success] = "Hypothesis created!"
-      redirect_to edit_hypothesis_path(@hypothesis.id)
+      redirect_to edit_hypothesis_citation_path(id: @hypothesis_citation.id, hypothesis_id: @hypothesis.id)
     else
       render :new
     end
@@ -53,8 +52,6 @@ class HypothesesController < ApplicationController
     end
   end
 
-  helper_method :matching_hypotheses
-
   private
 
   # To make it possible to use the file path from a citation directly
@@ -62,55 +59,28 @@ class HypothesesController < ApplicationController
     request.format = "html" unless request.format == "json"
   end
 
-  def find_hypothesis
-    @hypothesis = Hypothesis.friendly_find!(params[:id])
-    @citations = @hypothesis.citations
-  end
-
-  def process_user_score
-    return true if session[:after_sign_in_score].blank? || current_user.blank?
-    new_score_data = session.delete(:after_sign_in_score)
-    hypothesis_id, score, kind = new_score_data.split(",")
-    return true if [hypothesis_id, score, kind].compact.count < 3
-    new_score = current_user.user_scores.new(hypothesis_id: hypothesis_id, kind: kind, score: score)
-    new_score.set_calculated_attributes
-    most_recent_score = current_user.user_scores.current.where(hypothesis_id: hypothesis_id, kind: kind).last
-    return true if most_recent_score&.score == new_score.score
-    new_score.save
+  def find_hypothesis_citation
+    @hypothesis = Hypothesis.friendly_find!(params[:hypothesis_id])
+    hypothesis_citation_id = params[:id] || params[:hypothesis_citation_id] # necessary for challenges, probably
+    if hypothesis_citation_id.present?
+      @hypothesis_citation = HypothesisCitation.find(hypothesis_citation_id)
+    end
   end
 
   def ensure_user_can_edit!
-    if @hypothesis.not_submitted_to_github?
-      return true if @hypothesis.creator == current_user
-      flash[:error] = "You can't edit that hypothesis because you didn't create it"
+    return true if @hypothesis_citation.editable_by?(current_user)
+    flash[:error] = if @hypothesis_citation.not_submitted_to_github?
+      flash[:error] = "You can't edit that citation because you didn't create it"
     else
-      flash[:error] = "You can't edit hypotheses that have been submitted"
+      flash[:error] = "You can't edit citations that have been submitted"
     end
-    redirect_to user_root_path
+    redirect_to hypothesis_path(@hypothesis)
     nil
-  end
-
-  def matching_hypotheses
-    return @matching_hypotheses if defined?(@matching_hypotheses)
-    hypotheses = ParamsNormalizer.boolean(params[:search_unapproved]) ? Hypothesis.unapproved : Hypothesis.approved
-
-    if params[:search_array].present?
-      matches = Tag.matching_tag_ids_and_non_tags(params[:search_array])
-      @search_tags = Tag.where(id: matches[:tag_ids])
-      hypotheses = hypotheses.with_tag_ids(@search_tags.pluck(:id)) if @search_tags.any?
-      hypotheses = hypotheses.text_search(matches[:non_tags]) if matches[:non_tags].any?
-      @search_items = @search_tags.pluck(:title) + matches[:non_tags]
-    else
-      @search_items = []
-    end
-
-    @matching_hypotheses = hypotheses
   end
 
   def permitted_params
     # Permit tags_string as a string or an array
-    params.require(:hypothesis).permit(:title, :add_to_github, :tags_string, tags_string: [],
-                                                                             hypothesis_citations_attributes: [:url, :quotes_text, :_destroy, :id])
+    params.require(:hypothesis_citation).permit(:url, :quotes_text, :add_to_github)
   end
 
   def update_citation(hypothesis_citation)

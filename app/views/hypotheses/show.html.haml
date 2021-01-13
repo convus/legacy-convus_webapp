@@ -139,7 +139,7 @@
 .row.mt-big
   .col-6
     - if @hypothesis.approved?
-      = link_to "Add another citation", "#", class: "btn btn-sm btn-outline-secondary"
+      = link_to "Add another citation", new_hypothesis_citation_path(hypothesis_id: @hypothesis.id), class: "btn btn-sm btn-outline-secondary"
 
   .col-6.text-right
     .less-strong

@@ -231,7 +231,6 @@ unless ENV["CIRCLECI"]
 
           expect(hypothesis.flat_file_serialized.except(:topics)).to eq(hypothesis_attrs.except(:topics))
 
-
           expect(Citation.count).to eq 2
           citation_old.reload
           expect(citation_old.hypotheses.pluck(:id)).to eq([])
@@ -240,6 +239,18 @@ unless ENV["CIRCLECI"]
           StorePreviousHypothesisTitleJob.drain
           expect(hypothesis.previous_titles.pluck(:title)).to eq([og_title])
         end
+      end
+    end
+    context "new_cited_url" do
+      let(:new_cited_urls) do
+        {
+          url: "asdfasdf",
+          quotes: ["ddsfasdf"]
+        }
+      end
+      let(:hypothesis_attrs_new_cited_url) { hypothesis_attrs.except(:cited_urls).merge(new_cited_urls: new_cited_urls) }
+      it "doesn't delete the existing url" do
+        fail
       end
     end
     context "refuting hypothesis" do
