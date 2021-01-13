@@ -17,7 +17,7 @@ class HypothesisCitation < ApplicationRecord
   before_validation :set_calculated_attributes
   after_commit :update_hypothesis
 
-  attr_accessor :skip_associated_tasks
+  attr_accessor :add_to_github, :skip_associated_tasks
 
   # There were some issues with legacy hypothesis_citations having duplicates
   # leaving method around until certain they're resolved

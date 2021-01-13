@@ -57,6 +57,8 @@ class FlatFileImporter
       hypothesis_attrs[:cited_urls]&.map do |cited_url|
         hypothesis_citation = hypothesis.hypothesis_citations.where(url: cited_url[:url]).first
         hypothesis_citation ||= hypothesis.hypothesis_citations.build(url: cited_url[:url])
+        hypothesis_citation.approved_at ||= hypothesis_citation.citation&.approved_at || Time.current
+        hypothesis_citation.creator_id ||= hypothesis_citation.citation&.creator_id
         hypothesis_citation.update(quotes_text: cited_url[:quotes].join("\n"))
         # If we've imported the hypothesis citation through this, we need to approve it
         unless hypothesis_citation.citation.approved?
