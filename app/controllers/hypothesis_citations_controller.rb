@@ -4,24 +4,13 @@ class HypothesisCitationsController < ApplicationController
   before_action :ensure_user_can_edit!, only: %i[edit update]
   before_action :set_permitted_format
 
-  def index
-    page = params[:page] || 1
-    per_page = params[:per_page] || 500
-    @hypotheses = matching_hypotheses.reorder(created_at: :desc)
-      .page(page).per(per_page)
-    @page_title = "Convus"
-  end
-
-  def show
-    @page_title = @hypothesis.title
-  end
-
   def edit
-    @page_title = "Edit - #{@hypothesis.title}"
+    @page_title = "Edit - #{@hypothesis_citation.title}"
   end
 
   def new
-    @hypothesis ||= Hypothesis.new
+    @page_title = "Add citation - #{@hypothesis.title}"
+    @hypothesis_citation ||= @hypothesis.hypothesis_citations.build
   end
 
   def create
@@ -79,7 +68,7 @@ class HypothesisCitationsController < ApplicationController
   end
 
   def permitted_params
-    # Permit tags_string as a string or an array
+    # params.require(:hypothesis).permit(hypothesis_citations_attributes: [:url, :quotes_text, :add_to_github])
     params.require(:hypothesis_citation).permit(:url, :quotes_text, :add_to_github)
   end
 

@@ -49,6 +49,14 @@ class HypothesisCitation < ApplicationRecord
     hypothesis_quotes
   end
 
+  def title
+    if citation.present?
+      citation.title
+    else
+      "Citation"
+    end
+  end
+
   def set_calculated_attributes
     self.quotes_text = quotes_text_array.join("\n\n")
     self.quotes_text = nil if quotes_text.blank?
