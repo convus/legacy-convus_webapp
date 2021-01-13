@@ -331,6 +331,8 @@ RSpec.describe Citation, type: :model do
 
         citation.set_calculated_attributes
         expect(citation.publication&.id).to eq publication.id
+        expect(citation.skip_author_field?).to be_truthy
+        expect(citation.skip_published_at_field?).to be_truthy
       end
     end
     describe "multiple subdomains, not wikipedia" do
@@ -345,6 +347,8 @@ RSpec.describe Citation, type: :model do
         citation.set_calculated_attributes
         expect(citation.publication&.id).to be_present
         expect(citation.publication&.id).to_not eq publication.id
+        expect(citation.skip_author_field?).to be_falsey
+        expect(citation.skip_published_at_field?).to be_falsey
       end
     end
   end

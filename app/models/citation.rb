@@ -208,6 +208,14 @@ class Citation < ApplicationRecord
     url.match?(title)
   end
 
+  def skip_author_field?
+    publication&.wikipedia?
+  end
+
+  def skip_published_at_field?
+    publication&.wikipedia?
+  end
+
   def set_calculated_attributes
     self.url = UrlCleaner.with_http(UrlCleaner.without_utm(url))
     self.creator_id ||= hypotheses.first&.creator_id
