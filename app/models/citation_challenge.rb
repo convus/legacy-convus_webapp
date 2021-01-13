@@ -13,7 +13,6 @@ class CitationChallenge < ApplicationRecord
   has_one :citation, through: :hypothesis_citation
   has_one :hypothesis, through: :hypothesis_citation
 
-
   def self.kinds
     KIND_ENUM.keys.map(&:to_s)
   end
