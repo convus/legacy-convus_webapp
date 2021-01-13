@@ -17,6 +17,8 @@ class HypothesisCitation < ApplicationRecord
   before_validation :set_calculated_attributes
   after_commit :update_hypothesis
 
+  scope :hypothesis_approved, -> { left_joins(:hypothesis).where.not(hypotheses: {approved_at: nil}) }
+
   attr_accessor :add_to_github, :skip_associated_tasks
 
   # There were some issues with legacy hypothesis_citations having duplicates

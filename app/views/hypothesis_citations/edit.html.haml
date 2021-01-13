@@ -5,7 +5,7 @@
 .row
   = render partial: "/hypotheses/show_title", locals: {hypothesis: @hypothesis, render_show_link: true}
 
-%h2.mt-4.small-page-header New citation:
+%h2.mt-4.small-page-header Edit new citation:
 
 = form_for @hypothesis_citation, url: hypothesis_citations_path, method: "POST", html: { class: "form" } do |f|
   .row{ citations_block_attributes }
