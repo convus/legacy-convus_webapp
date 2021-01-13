@@ -1,4 +1,8 @@
 class HypothesisCitation < ApplicationRecord
+  include ApprovedAtable
+  include GithubSubmittable
+
+  belongs_to :creator, class_name: "User"
   belongs_to :hypothesis
   belongs_to :citation
 

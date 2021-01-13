@@ -157,14 +157,6 @@ class Hypothesis < ApplicationRecord
     add_to_github_content
   end
 
-  def add_to_github_content
-    return true if submitted_to_github? || GithubIntegration::SKIP_GITHUB_UPDATE
-    return false unless ParamsNormalizer.boolean(add_to_github)
-    AddHypothesisToGithubContentJob.perform_async(id)
-    # Because we've enqueued, and we want the fact that it is submitted to be reflected instantly
-    update(submitting_to_github: true)
-  end
-
   def set_calculated_attributes
     self.score = calculated_score
     if refuted_at.present?

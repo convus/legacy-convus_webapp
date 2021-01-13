@@ -219,7 +219,7 @@ RSpec.describe "/hypotheses", type: :request do
         }.to change(Hypothesis, :count).by 1
         hypothesis = Hypothesis.last
         expect(response).to redirect_to edit_hypothesis_path(hypothesis.id)
-        expect(AddHypothesisToGithubContentJob.jobs.count).to eq 0
+        expect(AddToGithubContentJob.jobs.count).to eq 0
         expect(flash[:success]).to be_present
 
         expect(hypothesis.title).to eq simple_hypothesis_params[:title]
@@ -362,7 +362,7 @@ RSpec.describe "/hypotheses", type: :request do
         expect(response).to redirect_to edit_hypothesis_path(subject.id)
         expect(assigns(:hypothesis)&.id).to eq subject.id
         expect(assigns(:hypothesis).submitted_to_github?).to be_falsey
-        expect(AddHypothesisToGithubContentJob.jobs.count).to eq 0
+        expect(AddToGithubContentJob.jobs.count).to eq 0
         subject.reload
         expect(subject.title).to eq hypothesis_params[:title]
         expect(subject.submitted_to_github?).to be_falsey
@@ -438,8 +438,8 @@ RSpec.describe "/hypotheses", type: :request do
           expect(response).to redirect_to hypothesis_path(subject.id)
           expect(assigns(:hypothesis)&.id).to eq subject.id
           expect(assigns(:hypothesis).submitted_to_github?).to be_truthy
-          expect(AddHypothesisToGithubContentJob.jobs.count).to eq 1
-          expect(AddCitationToGithubContentJob.jobs.count).to eq 0
+          expect(AddToGithubContentJob.jobs.count).to eq 1
+          expect(AddToGithubContentJob.jobs.map { |j| j["args"] }.last.flatten).to eq(["Hypothesis", subject.id])
           subject.reload
           expect(subject.title).to eq hypothesis_params[:title]
           expect(subject.submitted_to_github?).to be_truthy
@@ -527,8 +527,8 @@ RSpec.describe "/hypotheses", type: :request do
           expect(Citation.count).to eq 2
           Sidekiq::Worker.clear_all
           patch "#{base_url}/#{subject.to_param}", params: hypothesis_add_to_github_params
-          expect(AddHypothesisToGithubContentJob.jobs.count).to eq 1
-          expect(AddCitationToGithubContentJob.jobs.count).to eq 0
+          expect(AddToGithubContentJob.jobs.count).to eq 1
+          expect(AddToGithubContentJob.jobs.map { |j| j["args"] }.last.flatten).to eq(["Hypothesis", subject.id])
           expect(response).to redirect_to hypothesis_path(subject.id)
           expect(flash[:success]).to be_present
 
@@ -558,7 +558,7 @@ RSpec.describe "/hypotheses", type: :request do
         it "creates" do
           Sidekiq::Worker.clear_all
           patch "#{base_url}/#{subject.to_param}", params: {hypothesis: hypothesis_params, initially_toggled: true}
-          expect(AddHypothesisToGithubContentJob.jobs.count).to eq 0
+          expect(AddToGithubContentJob.jobs.count).to eq 0
           expect(response).to redirect_to edit_hypothesis_path(subject.id, initially_toggled: true)
           expect(flash[:success]).to be_present
 
@@ -596,8 +596,7 @@ RSpec.describe "/hypotheses", type: :request do
         it "creates with publication title" do
           Sidekiq::Worker.clear_all
           patch "#{base_url}/#{subject.to_param}", params: {hypothesis: hypothesis_params.merge(tags_string: ["Economy", "parties"])}
-          expect(AddHypothesisToGithubContentJob.jobs.count).to eq 0
-          expect(AddCitationToGithubContentJob.jobs.count).to eq 0
+          expect(AddToGithubContentJob.jobs.count).to eq 0
           expect(response).to redirect_to edit_hypothesis_path(subject.id)
           expect(flash[:success]).to be_present
 

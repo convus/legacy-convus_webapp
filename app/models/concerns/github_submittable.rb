@@ -26,4 +26,12 @@ module GithubSubmittable
     return false unless user.present? && not_submitted_to_github?
     creator == user
   end
+
+  def add_to_github_content
+    return true if submitted_to_github? || GithubIntegration::SKIP_GITHUB_UPDATE
+    return false unless ParamsNormalizer.boolean(add_to_github)
+    AddToGithubContentJob.perform_async(self.class.name, id)
+    # Because we've enqueued, and we want the fact that it is submitted to be reflected instantly
+    update(submitting_to_github: true)
+  end
 end
