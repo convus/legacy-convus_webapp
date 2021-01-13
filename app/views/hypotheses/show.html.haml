@@ -87,20 +87,21 @@
               %td URL
               %td
                 = link_to citation.url, citation.url
-            %tr
-              %td Published date
-              %td= citation.published_date_str
-
-            %tr
-              %td Author
-              %td
-                - if citation.authors.count < 2
-                  = citation.authors.first
-                - else
-                  %ul
-                    - citation.authors.each do |author|
-                      %li
-                        = author
+            - unless citation.skip_published_at_field?
+              %tr
+                %td Published date
+                %td= citation.published_date_str
+            - unless citation.skip_author_field?
+              %tr
+                %td Author
+                %td
+                  - if citation.authors.count < 2
+                    = citation.authors.first
+                  - else
+                    %ul
+                      - citation.authors.each do |author|
+                        %li
+                          = author
             %tr
               %td Kind
               %td= citation.kind_humanized

@@ -73,6 +73,10 @@ class Publication < ApplicationRecord
     has_published_retractions
   end
 
+  def wikipedia?
+    title == "Wikipedia"
+  end
+
   def add_base_domain(str)
     bds = base_domains || []
     self.base_domains = (bds + UrlCleaner.base_domains(str)).uniq.sort
