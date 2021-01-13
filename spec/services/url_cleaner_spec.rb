@@ -7,8 +7,17 @@ RSpec.describe UrlCleaner do
     it "returns array of domain with www and without" do
       expect(subject.base_domains("https://www.nationalreview.com/2020/09/the-cdcs-power-grab/")).to eq(["www.nationalreview.com", "nationalreview.com"])
     end
-    it "returns just one domain" do
-      expect(subject.base_domains("https://en.wikipedia.org/wiki/John_von_Neumann")).to eq(["en.wikipedia.org"])
+    context "non-www subdomain" do
+      it "returns just one domain" do
+        # Doing wikipedia domains here, because I ran into this problem with wikipedia, but we're handling wikipedia specially
+        expect(subject.base_domains("https://en.coolpedia.org/wiki/John_von_Neumann")).to eq(["en.coolpedia.org"])
+        expect(subject.base_domains("https://en.m.coolpedia.org/wiki/John_von_Neumann")).to eq(["en.m.coolpedia.org"])
+      end
+    end
+    context "wikipedia" do
+      it "returns wikipedia" do
+        expect(subject.base_domains("https://en.wikipedia.org/wiki/John_von_Neumann")).to eq(["wikipedia.org"])
+      end
     end
   end
 
@@ -17,10 +26,20 @@ RSpec.describe UrlCleaner do
       expect(subject.base_domain_without_www("https://www.nationalreview.com/2020/09/the-cdcs-power-grab/")).to eq("nationalreview.com")
     end
     it "includes non-www subdomain" do
-      expect(subject.base_domain_without_www("https://en.wikipedia.org/wiki/John_von_Neumann")).to eq "en.wikipedia.org"
+      expect(subject.base_domain_without_www("https://en.coolpedia.org/wiki/John_von_Neumann")).to eq "en.coolpedia.org"
     end
     it "handles without http" do
-      expect(subject.base_domain_without_www("wikipedia.org/wiki/John_von_Neumann")).to eq "wikipedia.org"
+      expect(subject.base_domain_without_www("coolpedia.org/wiki/John_von_Neumann")).to eq "coolpedia.org"
+    end
+    context "wikipedia" do
+      it "returns wikipedia" do
+        expect(subject.base_domain_without_www("https://en.wikipedia.org/wiki/John_von_Neumann")).to eq "wikipedia.org"
+        expect(subject.base_domain_without_www("https://en.m.wikipedia.org/wiki/John_von_Neumann")).to eq "wikipedia.org"
+        expect(subject.base_domains("https://en.m.wikipedia.org")).to eq(["wikipedia.org"])
+      end
+      it "doesn't shit the bed on non-percent encoded URLs" do
+        expect(subject.base_domain_without_www("https://en.m.wikipedia.org/wiki/Glass–Steagall_legislation")).to eq "wikipedia.org"
+      end
     end
   end
 

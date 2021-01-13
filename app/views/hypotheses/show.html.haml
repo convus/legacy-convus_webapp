@@ -75,7 +75,8 @@
         .text-right.mt-1
           %em.small
             - if citation.present?
-              %span.less-strong #{citation.publication.title}:
+              - if citation.publication.present?
+                %span.less-strong #{citation.publication.title}:
               "#{citation.title}"
       .row.no-gutters
         .citation-score-panel.col-10

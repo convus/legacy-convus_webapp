@@ -319,5 +319,33 @@ RSpec.describe Citation, type: :model do
         end
       end
     end
+    describe "wikipedia" do
+      let!(:citation_prior) { FactoryBot.create(:citation, url: "https://en.wikipedia.org/wiki/Impact_factor", publication_title: "Wikipedia") }
+      let(:publication) { citation_prior.publication }
+      let(:url) { "https://en.m.wikipedia.org/wiki/Glass–Steagall_legislation" }
+      let(:citation) { Citation.new(url: url, title: "Glass–Steagall legislation") }
+      it "assigns the publication even with non-matching subdomains" do
+        expect(publication.title).to eq "Wikipedia"
+        expect(publication.base_domains).to eq(["wikipedia.org"]) # ignoring the "en"
+        expect(UrlCleaner.base_domain_without_www(url)).to eq "wikipedia.org"
+
+        citation.set_calculated_attributes
+        expect(citation.publication&.id).to eq publication.id
+      end
+    end
+    describe "multiple subdomains, not wikipedia" do
+      let!(:citation_prior) { FactoryBot.create(:citation, url: "https://en.coolpedia.org/wiki/Impact_factor", publication_title: "Coolpedia") }
+      let(:publication) { citation_prior.publication }
+      let(:url) { "https://en.m.coolpedia.org/wiki/Glass–Steagall_legislation" }
+      let(:citation) { Citation.new(url: url, title: "Glass–Steagall legislation") }
+      it "does not match publication" do
+        expect(publication.title).to eq "Coolpedia"
+        expect(publication.base_domains).to eq(["en.coolpedia.org"])
+        expect(UrlCleaner.base_domain_without_www(url)).to eq "en.m.coolpedia.org"
+        citation.set_calculated_attributes
+        expect(citation.publication&.id).to be_present
+        expect(citation.publication&.id).to_not eq publication.id
+      end
+    end
   end
 end
