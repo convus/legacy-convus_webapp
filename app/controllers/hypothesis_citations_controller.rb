@@ -38,7 +38,7 @@ class HypothesisCitationsController < ApplicationController
         redirect_to hypothesis_path(@hypothesis.id)
       else
         flash[:success] = "Citation saved"
-        target_url_params = { hypothesis_id: @hypothesis.id, id: @hypothesis_citation.id }
+        target_url_params = {hypothesis_id: @hypothesis.id, id: @hypothesis_citation.id}
         # Don't include initially_toggled paramets unless it's passed because it's ugly
         target_url_params[:initially_toggled] = true if ParamsNormalizer.boolean(params[:initially_toggled])
         redirect_to edit_hypothesis_citation_path(target_url_params)
@@ -65,11 +65,11 @@ class HypothesisCitationsController < ApplicationController
 
   def ensure_user_can_edit!
     return true if @hypothesis_citation.editable_by?(current_user)
-    flash[:error] = if @hypothesis_citation.not_submitted_to_github?
-      flash[:error] = "You can't edit that citation because you didn't create it"
-    else
-      flash[:error] = "You can't edit citations that have been submitted"
-    end
+    flash[:error] = flash[:error] = if @hypothesis_citation.not_submitted_to_github?
+                      "You can't edit that citation because you didn't create it"
+                    else
+                      "You can't edit citations that have been submitted"
+                    end
     redirect_to hypothesis_path(@hypothesis)
     nil
   end
@@ -82,7 +82,7 @@ class HypothesisCitationsController < ApplicationController
   def permitted_citation_params
     params.require(:hypothesis_citation).permit(citation_attributes:
       %i[title authors_str kind url_is_direct_link_to_full_text published_date_str
-      url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial quotes_text])
+        url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial quotes_text])
       .dig(:citation_attributes)
   end
 end

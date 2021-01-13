@@ -45,7 +45,7 @@ class HypothesesController < ApplicationController
         redirect_to hypothesis_path(@hypothesis.id)
       else
         flash[:success] = "Hypothesis saved"
-        target_url_params = { id: @hypothesis.id }
+        target_url_params = {id: @hypothesis.id}
         # Don't include initially_toggled paramets unless it's passed because it's ugly
         target_url_params[:initially_toggled] = true if ParamsNormalizer.boolean(params[:initially_toggled])
         redirect_to edit_hypothesis_path(target_url_params)
