@@ -90,7 +90,7 @@ class GithubIntegration
   # AKA add a new citation to an existing hypothesis
   def create_hypothesis_citation_pull_request(hypothesis_citation)
     hypothesis = hypothesis_citation.hypothesis
-    branch_name = "proposed-hypothesis-#{hypothesis.id}-update"
+    branch_name = "proposed-hypothesis-#{hypothesis.id}-update-#{hypothesis_citation.id}"
     @current_branch = create_branch(branch_name)
     commit_message = "Add citation to hypothesis: #{hypothesis.title}"
     # Override the flat_file_serialized output to include the passed in hypothesis_citation

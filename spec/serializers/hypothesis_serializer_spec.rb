@@ -33,7 +33,7 @@ describe HypothesisSerializer, type: :lib do
 
     context "unsubmitted hypothesis_citation" do
       let(:obj) { FactoryBot.create(:hypothesis_approved) }
-      let!(:hypothesis_citation3)  { FactoryBot.create(:hypothesis_citation, hypothesis: obj, pull_request_number: 102, submitting_to_github: true) }
+      let!(:hypothesis_citation3) { FactoryBot.create(:hypothesis_citation, hypothesis: obj, pull_request_number: 102, submitting_to_github: true) }
       let(:target_approved) { target.merge(cited_urls: [target[:cited_urls].last]) }
       it "does not include unapproved" do
         hypothesis_citation2.update(approved_at: Time.current - 1.hour)

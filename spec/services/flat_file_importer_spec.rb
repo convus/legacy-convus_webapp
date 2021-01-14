@@ -27,7 +27,7 @@ unless ENV["CIRCLECI"]
       publication = FactoryBot.create(:publication, title: "The Hill")
       citation = FactoryBot.create(:citation_approved, title: "some citation", publication: publication, kind: "government_statistics")
       hypothesis = FactoryBot.create(:hypothesis_approved, title: "hypothesis-1")
-      FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: citation.url)
+      FactoryBot.create(:hypothesis_citation_approved, hypothesis: hypothesis, url: citation.url)
       FactoryBot.create(:tag, title: "Health & Wellness", taxonomy: "family_rank")
       FlatFileSerializer.write_all_files
     end
@@ -183,7 +183,7 @@ unless ENV["CIRCLECI"]
 
         expect(hypothesis.hypothesis_citations.pluck(:id)).to eq([hypothesis_citation.id])
         hypothesis_citation.reload
-        expect(hypothesis_citation.creator_id).to eq user2.id # Pulls from citation rather than hypothesis
+        expect(hypothesis_citation.creator_id).to eq user.id
         expect(hypothesis_citation.approved_at).to be_within(1).of approved_at
 
         StorePreviousHypothesisTitleJob.drain
@@ -240,17 +240,28 @@ unless ENV["CIRCLECI"]
           expect(hypothesis.previous_titles.pluck(:title)).to eq([og_title])
         end
       end
-    end
-    context "new_cited_url" do
-      let(:new_cited_urls) do
-        {
-          url: "asdfasdf",
-          quotes: ["ddsfasdf"]
-        }
-      end
-      let(:hypothesis_attrs_new_cited_url) { hypothesis_attrs.except(:cited_urls).merge(new_cited_urls: new_cited_urls) }
-      it "doesn't delete the existing url" do
-        fail
+      context "new_cited_url" do
+        let!(:hypothesis_citation) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: "https://example.com/citation_addition") }
+        let(:new_cited_urls) { {url: hypothesis_citation.url, quotes: ["ddsfasdf"]} }
+        let(:hypothesis_attrs_new_cited_url) { hypothesis_attrs.merge(cited_urls: [], new_cited_urls: [new_cited_urls]) }
+        it "doesn't delete the existing url, even though they aren't included" do
+          hypothesis.reload
+
+          expect(hypothesis_citation.reload.approved?).to be_falsey
+          expect(hypothesis.citations.count).to eq 2
+          expect(hypothesis.citations.approved.count).to eq 1
+          Sidekiq::Worker.clear_all
+
+          FlatFileImporter.import_hypothesis(hypothesis_attrs_new_cited_url)
+          hypothesis.reload
+          expect(hypothesis.title).to eq hypothesis_attrs[:title]
+          expect(hypothesis.id).to eq hypothesis_attrs[:id]
+          expect(hypothesis.citations.count).to eq 2
+          expect(hypothesis.citations.approved.count).to eq 2
+
+          expect(hypothesis_citation.reload.approved?).to be_truthy
+          expect(hypothesis_citation.quotes_text).to eq "ddsfasdf"
+        end
       end
     end
     context "refuting hypothesis" do

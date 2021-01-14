@@ -117,7 +117,7 @@ RSpec.describe GithubIntegration do
 
         # And check the hypothesis
         hypothesis.reload
-        expect(hypothesis.pull_request_number).to be_blank #
+        expect(hypothesis.pull_request_number).to be_blank
         expect(hypothesis.hypothesis_citations.submitted_to_github.count).to eq 2
 
         # Can't do this via octokit.rb right now. BUT OH GOD THIS IS SOMETHING WE WANT - to make this truthy

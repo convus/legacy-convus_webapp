@@ -54,20 +54,16 @@ class FlatFileImporter
       hypothesis.update(tags_string: hypothesis_attrs[:topics], refuted_by_hypotheses_str: hypothesis_attrs[:refuted_by_hypotheses])
       hypothesis.tags.unapproved.update_all(approved_at: Time.current)
       hypothesis_citation_ids = []
-      hypothesis_attrs[:cited_urls]&.map do |cited_url|
-        hypothesis_citation = hypothesis.hypothesis_citations.where(url: cited_url[:url]).first
-        hypothesis_citation ||= hypothesis.hypothesis_citations.build(url: cited_url[:url])
-        hypothesis_citation.approved_at ||= hypothesis_citation.citation&.approved_at || Time.current
-        hypothesis_citation.creator_id ||= hypothesis_citation.citation&.creator_id
-        hypothesis_citation.update(quotes_text: cited_url[:quotes].join("\n"))
-        # If we've imported the hypothesis citation through this, we need to approve it
-        unless hypothesis_citation.citation.approved?
-          hypothesis_citation.citation.update(approved_at: Time.current)
-        end
+      # If there are "new_cited_urls", only do those
+      (hypothesis_attrs[:new_cited_urls] || hypothesis_attrs[:cited_urls])&.map do |cited_url|
+        hypothesis_citation = create_hypothesis_citation(hypothesis, cited_url)
         hypothesis_citation_ids << hypothesis_citation.id
       end
       hypothesis.reload
-      hypothesis.hypothesis_citations.where.not(id: hypothesis_citation_ids).destroy_all
+      # If we have new_cited_urls, we're ignoring the old cited_urls to avoid merge conflict issues
+      unless hypothesis_attrs.key?(:new_cited_urls)
+        hypothesis.hypothesis_citations.where.not(id: hypothesis_citation_ids).destroy_all
+      end
       hypothesis
     end
 
@@ -94,6 +90,20 @@ class FlatFileImporter
         citation.update_columns(id: citation_attrs[:id])
       end
       citation
+    end
+
+    # probably should be private
+    def create_hypothesis_citation(hypothesis, cited_url)
+      hypothesis_citation = hypothesis.hypothesis_citations.where(url: cited_url[:url]).first
+      hypothesis_citation ||= hypothesis.hypothesis_citations.build(url: cited_url[:url])
+      hypothesis_citation.approved_at ||= hypothesis_citation.citation&.approved_at || Time.current
+      hypothesis_citation.creator_id ||= hypothesis_citation.citation&.creator_id
+      hypothesis_citation.update(quotes_text: cited_url[:quotes].join("\n"))
+      # If we've imported the hypothesis citation through this, we need to approve it
+      unless hypothesis_citation.citation.approved?
+        hypothesis_citation.citation.update(approved_at: Time.current)
+      end
+      hypothesis_citation
     end
   end
 end
