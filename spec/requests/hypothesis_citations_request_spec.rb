@@ -172,41 +172,39 @@ RSpec.describe "hypothesis_citations", type: :request do
           Sidekiq::Worker.clear_all
           patch "#{base_url}/#{subject.id}", params: {hypothesis_citation: update_add_to_github_params}
           expect(flash[:success]).to be_present
-          expect(response).to redirect_to edit_hypothesis_citation_path(hypothesis_id: hypothesis.id, id: subject.id)
+          expect(response).to redirect_to hypothesis_path(hypothesis.to_param)
           expect(assigns(:hypothesis_citation)&.id).to eq subject.id
           expect(AddToGithubContentJob.jobs.count).to eq 1
           expect(AddToGithubContentJob.jobs.map { |j| j["args"] }.last.flatten).to eq(["HypothesisCitation", subject.id])
         end
 
-        xit "actually runs" do
+        it "actually runs" do
           subject.reload
-          citation.update(pull_request_number: 12)
-          VCR.use_cassette("hypotheses_controller-create_skip_citation", match_requests_on: [:method]) do
+          citation.update(approved_at: Time.current - 1.hour) # Test adding a hypothesis_citation with an existing citation
+          VCR.use_cassette("hypotheses_citation_controller-create_skip_citation", match_requests_on: [:method]) do
             expect(Hypothesis.count).to eq 1
             expect(Citation.count).to eq 1
-            expect(citation.pull_request_number).to be_present
-            expect(citation.approved?).to be_falsey
+            expect(citation.pull_request_number).to be_blank
+            expect(citation.approved?).to be_truthy
             Sidekiq::Worker.clear_all
             Sidekiq::Testing.inline! do
-              patch "#{base_url}/#{subject.to_param}", params: hypothesis_add_to_github_params.merge(initially_toggled: true)
+              patch "#{base_url}/#{subject.to_param}", params: {
+                hypothesis_citation: update_add_to_github_params.merge(initially_toggled: true)
+              }
             end
-            expect(response).to redirect_to hypothesis_path(subject.id)
+            expect(response).to redirect_to hypothesis_path(hypothesis.to_param)
             expect(flash[:success]).to be_present
 
-            subject.reload
-            expect(subject.title).to eq hypothesis_params[:title]
-            expect(subject.citations.count).to eq 2
-            expect(subject.approved?).to be_falsey
-            expect(subject.pull_request_number).to be_present
-            expect(subject.pull_request_number).to_not eq 12
-            expect(subject.submitting_to_github).to be_truthy
+            hypothesis.reload
+            expect(hypothesis.citations.count).to eq 1
+            expect(hypothesis.approved?).to be_truthy
+            expect(hypothesis.pull_request_number).to be_blank
             # Even though passed new information, it doesn't update the existing citation
             citation.reload
-            expect(citation.pull_request_number).to eq 12
+            expect(citation.pull_request_number).to be_blank
 
-            citation2 = subject.citations.order(:created_at).last
-            expect(citation2.submitted_to_github?).to be_truthy
-            expect(citation2.pull_request_number).to eq subject.pull_request_number
+            subject.reload
+            expect(subject.pull_request_number).to be_present
           end
         end
       end
