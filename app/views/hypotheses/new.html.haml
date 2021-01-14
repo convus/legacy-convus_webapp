@@ -1,7 +1,8 @@
-%h1 New Hypothesis
+.small-page-header
+  %h1 New Hypothesis
 
 = form_for @hypothesis, url: hypotheses_path, method: "POST", html: { class: "form", id: "hypothesisForm" } do |f|
-  .row.mt-4.mb-4
+  .row.mb-4
     .col-md-8.col-xl-6
       - if @hypothesis.errors.any?
         = render partial: "/shared/errors", locals: { name: "Hypothesis", obj: @hypothesis }
@@ -29,7 +30,5 @@
       .form-group.text-right
         = link_to_add_fields "Add a citation", f, :hypothesis_citations, {class: "btn btn-outline-primary"}, filename: "/hypotheses/hypothesis_citation_fields"
 
-%hr.mt-4
-%small.less-strong
-  Content submitted to Convus is licensed under the
-  = link_to "Creative Commons Attribution-ShareAlike 4.0 International License", "http://creativecommons.org/licenses/by-sa/4.0/", target: "blank"
+%hr.mt-big
+= render "/shared/content_license"

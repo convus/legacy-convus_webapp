@@ -121,27 +121,28 @@ RSpec.describe Hypothesis, type: :model do
     it "enqueues job" do
       expect {
         hypothesis.save
-      }.to change(AddHypothesisToGithubContentJob.jobs, :count).by 0
+      }.to change(AddToGithubContentJob.jobs, :count).by 0
 
       expect {
         hypothesis.update(add_to_github: true)
         hypothesis.update(add_to_github: true)
-      }.to change(AddHypothesisToGithubContentJob.jobs, :count).by 1
+      }.to change(AddToGithubContentJob.jobs, :count).by 1
+      expect(AddToGithubContentJob.jobs.map { |j| j["args"] }.last.flatten).to eq(["Hypothesis", hypothesis.id])
 
       expect {
         hypothesis.update(add_to_github: true, pull_request_number: 12)
-      }.to change(AddHypothesisToGithubContentJob.jobs, :count).by 0
+      }.to change(AddToGithubContentJob.jobs, :count).by 0
 
       expect {
         hypothesis.update(add_to_github: true, pull_request_number: nil, approved_at: Time.current)
-      }.to change(AddHypothesisToGithubContentJob.jobs, :count).by 0
+      }.to change(AddToGithubContentJob.jobs, :count).by 0
     end
     context "with skip_github_update" do
       it "does not enqueue job" do
         stub_const("GithubIntegration::SKIP_GITHUB_UPDATE", true)
         expect {
           hypothesis.update(add_to_github: true)
-        }.to change(AddHypothesisToGithubContentJob.jobs, :count).by 0
+        }.to change(AddToGithubContentJob.jobs, :count).by 0
       end
     end
   end

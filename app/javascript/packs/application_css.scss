@@ -46,6 +46,13 @@ $max-width-text: 900px;
 @import "../stylesheets/sections/admin/pagination";
 @import "../stylesheets/sections/admin/header";
 
+.small-page-header {
+  @extend .clearfix;
+  h1 {
+    font-size: 1.5rem;
+  }
+}
+
 .internal-link {
   text-decoration: underline;
   font-style: italic;

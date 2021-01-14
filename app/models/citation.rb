@@ -59,14 +59,14 @@ class Citation < ApplicationRecord
     {
       article: {humanized: "article"},
       official_document: {humanized: "official document"},
-      legal_citation: {humanized: "legal citation" },
-      government_statistics: {humanized: "government statistics" },
-      non_governmental_statistics: {humanized: "non governmental statistics" },
-      quote_from_involved_party: {humanized: "quote from involved party" },
-      research: {humanized: "original research" },
-      research_with_rct: {humanized: "research with randomized controlled trial" },
-      research_review: {humanized: "research review" },
-      research_meta_analysis: {humanized: "research meta analysis" },
+      legal_citation: {humanized: "legal citation"},
+      government_statistics: {humanized: "government statistics"},
+      non_governmental_statistics: {humanized: "non governmental statistics"},
+      quote_from_involved_party: {humanized: "quote from involved party"},
+      research: {humanized: "original research"},
+      research_with_rct: {humanized: "research with randomized controlled trial"},
+      research_review: {humanized: "research review"},
+      research_meta_analysis: {humanized: "research meta analysis"},
       research_comment: {humanized: "published research comment"}
     }.freeze
   end
@@ -79,9 +79,9 @@ class Citation < ApplicationRecord
     return nil unless str.present?
     str = str.to_s.strip
     return str.tr(" ", "_") if kinds.include?(str.tr(" ", "_"))
-    KIND_ENUM.keys.find { |k, v|
+    KIND_ENUM.keys.find do |k, v|
       kinds_data.dig(k, :humanized) == str
-    }&.to_s
+    end&.to_s
   end
 
   def self.find_by_slug_or_path_slug(str)
@@ -229,13 +229,5 @@ class Citation < ApplicationRecord
     if FETCH_WAYBACK_URL && url_is_direct_link_to_full_text
       self.wayback_machine_url ||= WaybackMachineIntegration.fetch_current_url(url)
     end
-  end
-
-  def add_to_github_content
-    return true if submitted_to_github? || GithubIntegration::SKIP_GITHUB_UPDATE
-    return false unless ParamsNormalizer.boolean(add_to_github)
-    AddCitationToGithubContentJob.perform_async(id)
-    # Because we've enqueued, and we want the fact that it is submitted to be reflected instantly
-    update(submitting_to_github: true)
   end
 end

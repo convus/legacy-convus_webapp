@@ -22,7 +22,7 @@ module ApplicationHelper
   end
 
   def hypothesis_link_to(*args, &block)
-    if block_given?
+    if block
       options = args.first || {}
       html_options = args[1]
       concat(hypothesis_link_to(capture(&block), options, html_options))
@@ -36,7 +36,7 @@ module ApplicationHelper
   end
 
   def citation_link_to(*args, &block)
-    if block_given?
+    if block
       options = args.first || {}
       html_options = args[1]
       concat(citation_link_to(capture(&block), options, html_options))

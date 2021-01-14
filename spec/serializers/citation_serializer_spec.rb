@@ -29,6 +29,7 @@ describe CitationSerializer, type: :lib do
     end
     it "returns the expected output" do
       expect(serializer.as_json).to eq target
+      expect_hashes_to_match(obj.flat_file_serialized, target)
     end
   end
 end

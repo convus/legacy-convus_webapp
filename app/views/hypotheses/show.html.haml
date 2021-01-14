@@ -1,22 +1,12 @@
-.mt-4.mb-4
-  %h1.mb-2.d-none.d-md-block{ style: "font-size: 1.5rem" }
-    Hypothesis:
+.small-page-header
+  %h1
     - if @hypothesis.editable_by?(current_user)
-      %small.ml-2
-        = link_to "edit", edit_hypothesis_path(@hypothesis.id), class: "btn btn-outline-primary btn-sm"
-.row.mt-4
-  .max-width-text-container.col
-    %p.mt-4
-      %span{ style: "font-size: 125%;" }
-        = @hypothesis.title
-    %p.mt-4
-      %small.less-strong.convertTime.d-inline-block
-        = l @hypothesis.created_at, format: :convert_time
-        -# Score hidden for now, because it's inaccurate
-        -# .score-bubble.small{ class: hypothesis_score_class(hypothesis.score) }
-        -#   = hypothesis.score
-      - @hypothesis.tags.each do |tag|
-        = link_to tag.title, hypotheses_path(search_array: tag.title), class: "tag-bubble small"
+      %small.ml-2.float-right
+        = link_to "edit hypothesis", edit_hypothesis_path(@hypothesis.id), class: "btn btn-outline-primary btn-sm"
+    %span.d-none.d-md-block
+      Hypothesis:
+.row
+  = render partial: "/hypotheses/show_title", locals: {hypothesis: @hypothesis}
   - if @hypothesis.approved?
     -# TODO: this is hacked to make sure it doesn't split into multiple lines. It would be great to handle that better
     .col-xl.mt-4.mb-2{ style: "min-width: 330px;" }
@@ -50,69 +40,9 @@
               = button_to score, user_scores_path, { action: "create", params: {score: score, hypothesis_id: @hypothesis.id, kind: "controversy"}, class: "score-item btn btn-link #{active ? 'active' : ''}" }
 
 .row.mt-4
-  - @hypothesis.hypothesis_citations.each do |hypothesis_citation|
+  - @hypothesis.hypothesis_citations.approved.each do |hypothesis_citation|
     - next unless hypothesis_citation.quotes.any?
-    - skip_challenge ||= false
-    - citation = hypothesis_citation.citation
-    .col-xl-6
-      .hypothesis-quotes-block
-        - hypothesis_citation.quotes.each do |quote|
-          %blockquote
-            = quote.text
-        .text-right.mt-1
-          %em.small
-            - if citation.present?
-              - if citation.publication.present?
-                %span.less-strong #{citation.publication.title}:
-              "#{citation.title}"
-      .row.no-gutters
-        .citation-score-panel.col-10
-          %span.score-text.text-center
-            citation score
-          - score_display = (citation.score_percentage/10).round
-          - offset = score_display.to_s.length/2 - 0.2 # 0.2 because padding on the citation-score-panel
-          .citation-score{style: "left: #{citation.score_percentage}%; margin-left: -#{offset}rem;"}
-            %span.score-pointer
-            = score_display
-          - 7.times do |n|
-            %span.score-tick
-          %hr
-        .col-2.citation-show-more-wrapper.sans-serif
-          %a{href: "#CitationId#{hypothesis_citation.id}", "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "#CitationId#{hypothesis_citation.id}", "data-queryvalue" => "true"}
-            %strong +
-            show more
-      .mt-2.collapse{id: "CitationId#{hypothesis_citation.id}"}
-        - unless skip_challenge
-          %a.btn.btn-outline-danger.btn-sm{ href: "#" }
-            Challenge citation
-        %table.table-list.mb-0.mt-2
-          %tbody
-            %tr
-              %td URL
-              %td
-                = link_to citation.url, citation.url
-            - unless citation.skip_published_at_field?
-              %tr
-                %td Published date
-                %td= citation.published_date_str
-            - unless citation.skip_author_field?
-              %tr
-                %td Author
-                %td
-                  - if citation.authors.count < 2
-                    = citation.authors.first
-                  - else
-                    %ul
-                      - citation.authors.each do |author|
-                        %li
-                          = author
-            %tr
-              %td Kind
-              %td= citation.kind_humanized
-        = link_to "view raw data", citation_path(citation), class: "gray-link"
-
-        %h4.mt-4 Scoring
-        = render partial: "/citations/score", locals: { citation: citation, skip_header: true }
+    = render partial: "/hypotheses/show_hypothesis_citation", locals: { hypothesis_citation: hypothesis_citation, skip_challenge: true }
 
 - if @hypothesis.approved?
   - badges = @hypothesis.badges
@@ -139,7 +69,7 @@
 .row.mt-big
   .col-6
     - if @hypothesis.approved?
-      = link_to "Add another citation", "#", class: "btn btn-sm btn-outline-secondary"
+      = link_to "Add another citation", new_hypothesis_citation_path(hypothesis_id: @hypothesis.id), class: "btn btn-sm btn-outline-secondary"
 
   .col-6.text-right
     .less-strong

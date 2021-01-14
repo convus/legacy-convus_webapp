@@ -62,7 +62,7 @@ class GithubIntegration
     # If there is a citation that hasn't been added to github yet, add it to this PR
     citation_ids_added = []
     hypothesis.citations.unapproved.each do |citation|
-      next unless citation.present? && citation.pull_request_number.blank?
+      next unless citation.present? && citation.unapproved?
       citation_ids_added << citation.id
       create_file_on_current_branch(citation.file_path, citation.flat_file_content, "Citation: #{citation.title}")
     end
@@ -84,6 +84,30 @@ class GithubIntegration
     pull_request = client.create_pull_request(CONTENT_REPO, "main", current_branch_name, message)
     number = pull_request.url.split("/pulls/").last
     citation.update(pull_request_number: number)
+    pull_request
+  end
+
+  # AKA add a new citation to an existing hypothesis
+  def create_hypothesis_citation_pull_request(hypothesis_citation)
+    hypothesis = hypothesis_citation.hypothesis
+    branch_name = "proposed-hypothesis-#{hypothesis.id}-update-#{hypothesis_citation.id}"
+    @current_branch = create_branch(branch_name)
+    commit_message = "Add citation to hypothesis: #{hypothesis.title}"
+    # Override the flat_file_serialized output to include the passed in hypothesis_citation
+    # We are adding a new field to prevent merge conflicts
+    hypothesis.serialized_override = hypothesis.flat_file_serialized.merge(new_cited_url: [hypothesis_citation.flat_file_serialized])
+    create_file_on_current_branch(hypothesis.file_path, hypothesis.flat_file_content, commit_message)
+
+    # If there is a citation that hasn't been added to github yet, add it to this PR
+    citation = hypothesis_citation.citation
+    if citation.unapproved?
+      create_file_on_current_branch(citation.file_path, citation.flat_file_content, "Citation: #{citation.title}")
+    end
+    pr_body = "Added new citation to Hypothesis: [#{hypothesis.title}](https://convus.org/hypotheses/#{hypothesis.id})"
+    pull_request = client.create_pull_request(CONTENT_REPO, "main", current_branch_name, commit_message, pr_body)
+    number = pull_request.url.split("/pulls/").last
+    hypothesis_citation.update(pull_request_number: number)
+    citation.update(pull_request_number: number) if citation.unapproved?
     pull_request
   end
 end

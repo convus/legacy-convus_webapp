@@ -29,7 +29,7 @@ class Hypothesis < ApplicationRecord
   scope :unrefuted, -> { where(refuted_at: nil) }
   scope :refuted, -> { where.not(refuted_at: nil) }
 
-  attr_accessor :add_to_github, :skip_associated_tasks
+  attr_accessor :add_to_github, :skip_associated_tasks, :serialized_override
 
   pg_search_scope :text_search, against: :title # TODO: Create tsvector indexes for performance (issues/92)
 
@@ -144,7 +144,8 @@ class Hypothesis < ApplicationRecord
 
   # Required for FlatFileSerializable
   def flat_file_serialized
-    HypothesisSerializer.new(self, root: false).as_json
+    # Enable overriding via attr_writer
+    @serialized_override || HypothesisSerializer.new(self, root: false).as_json
   end
 
   def run_associated_tasks
@@ -155,14 +156,6 @@ class Hypothesis < ApplicationRecord
     return false if skip_associated_tasks
     citations.pluck(:id).each { |i| UpdateCitationQuotesJob.perform_async(i) }
     add_to_github_content
-  end
-
-  def add_to_github_content
-    return true if submitted_to_github? || GithubIntegration::SKIP_GITHUB_UPDATE
-    return false unless ParamsNormalizer.boolean(add_to_github)
-    AddHypothesisToGithubContentJob.perform_async(id)
-    # Because we've enqueued, and we want the fact that it is submitted to be reflected instantly
-    update(submitting_to_github: true)
   end
 
   def set_calculated_attributes

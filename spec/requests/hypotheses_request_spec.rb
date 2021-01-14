@@ -4,22 +4,21 @@ require "rails_helper"
 
 RSpec.describe "/hypotheses", type: :request do
   let(:base_url) { "/hypotheses" }
+  let(:current_user) { nil }
+  let(:subject) { FactoryBot.create(:hypothesis, creator_id: current_user&.id) }
   let(:full_citation_params) do
     {
       title: "Testing hypothesis creation is very important",
       kind: "research_review",
       peer_reviewed: true,
       randomized_controlled_trial: true,
-      url_is_direct_link_to_full_text: "0",
+      url_is_direct_link_to_full_text: "1",
       authors_str: "\nZack\n George\n",
       published_date_str: "1990-12-2",
-      url_is_not_publisher: false,
-      quotes_text: "First quote from this literature\nSecond quote, which is cool\nThird"
+      url_is_not_publisher: false
     }
   end
-  let(:full_citation_url) { "https://example.com/something-of-interest" }
-  let(:subject) { FactoryBot.create(:hypothesis, creator_id: current_user&.id) }
-  let(:current_user) { nil }
+  let(:citation_url) { "https://example.com/something-of-interest" }
 
   describe "index" do
     let!(:hypothesis) { FactoryBot.create(:hypothesis) }
@@ -203,7 +202,7 @@ RSpec.describe "/hypotheses", type: :request do
         }.to change(Hypothesis, :count).by 1
         hypothesis = Hypothesis.last
         expect(response).to redirect_to edit_hypothesis_path(hypothesis.id)
-        expect(AddHypothesisToGithubContentJob.jobs.count).to eq 0
+        expect(AddToGithubContentJob.jobs.count).to eq 0
         expect(flash[:success]).to be_present
 
         expect(hypothesis.title).to eq simple_hypothesis_params[:title]
@@ -217,6 +216,7 @@ RSpec.describe "/hypotheses", type: :request do
         hypothesis_citation = hypothesis.hypothesis_citations.first
         expect(hypothesis_citation.url).to eq hc_params.values.first[:url]
         expect(hypothesis_citation.quotes_text).to be_present
+        expect(hypothesis_citation.creator_id).to eq current_user.id
 
         expect(hypothesis.citations.count).to eq 1
         citation = hypothesis.citations.first
@@ -295,7 +295,7 @@ RSpec.describe "/hypotheses", type: :request do
           expect(subject.editable_by?(current_user)).to be_falsey
           expect(subject.creator_id).to_not eq current_user.id
           get "#{base_url}/#{subject.to_param}/edit"
-          expect(response.code).to redirect_to account_path
+          expect(response.code).to redirect_to hypothesis_path(subject.to_param)
           expect(flash[:error]).to be_present
         end
       end
@@ -305,7 +305,7 @@ RSpec.describe "/hypotheses", type: :request do
           expect(subject.editable_by?(current_user)).to be_falsey
           expect(subject.creator_id).to eq current_user.id
           get "#{base_url}/#{subject.to_param}/edit"
-          expect(response.code).to redirect_to assigns(:user_root_path)
+          expect(response.code).to redirect_to hypothesis_path(subject.to_param)
           expect(flash[:error]).to be_present
         end
       end
@@ -324,7 +324,7 @@ RSpec.describe "/hypotheses", type: :request do
               _destroy: "0"
             },
             "1" => {
-              url: full_citation_url,
+              url: citation_url,
               quotes_text: "This is a thing",
               citation_attributes: citation_params,
               _destroy: "0"
@@ -346,7 +346,7 @@ RSpec.describe "/hypotheses", type: :request do
         expect(response).to redirect_to edit_hypothesis_path(subject.id)
         expect(assigns(:hypothesis)&.id).to eq subject.id
         expect(assigns(:hypothesis).submitted_to_github?).to be_falsey
-        expect(AddHypothesisToGithubContentJob.jobs.count).to eq 0
+        expect(AddToGithubContentJob.jobs.count).to eq 0
         subject.reload
         expect(subject.title).to eq hypothesis_params[:title]
         expect(subject.submitted_to_github?).to be_falsey
@@ -355,13 +355,13 @@ RSpec.describe "/hypotheses", type: :request do
 
         citation.reload
         expect(citation.title).to eq full_citation_params[:title]
-        expect(citation.url).to eq full_citation_url
+        expect(citation.url).to eq citation_url
         expect(citation.submitted_to_github?).to be_falsey
         expect(citation.publication).to be_present
         expect(citation.publication_title).to eq "example.com"
         expect(citation.authors).to eq(["Zack", "George"])
         expect(citation.published_date_str).to eq "1990-12-02"
-        expect(citation.url_is_direct_link_to_full_text).to be_falsey
+        expect(citation.url_is_direct_link_to_full_text).to be_truthy
         expect(citation.creator_id).to eq current_user.id
         expect(citation.hypothesis_citations.first.quotes_text).to eq "This is a thing"
         expect(citation.kind).to eq full_citation_params[:kind]
@@ -380,7 +380,7 @@ RSpec.describe "/hypotheses", type: :request do
         it "does not update" do
           expect(subject.creator_id).to_not eq current_user.id
           patch "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_params}
-          expect(response.code).to redirect_to assigns(:user_root_path)
+          expect(response.code).to redirect_to hypothesis_path(subject.to_param)
           expect(flash[:error]).to be_present
           subject.reload
           expect(subject.title).to_not eq hypothesis_params[:title]
@@ -392,7 +392,7 @@ RSpec.describe "/hypotheses", type: :request do
         it "does not update" do
           expect(subject.creator_id).to eq current_user.id
           patch "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_params}
-          expect(response.code).to redirect_to assigns(:user_root_path)
+          expect(response.code).to redirect_to hypothesis_path(subject.to_param)
           expect(flash[:error]).to be_present
           subject.reload
           expect(subject.title).to_not eq hypothesis_params[:title]
@@ -422,8 +422,8 @@ RSpec.describe "/hypotheses", type: :request do
           expect(response).to redirect_to hypothesis_path(subject.id)
           expect(assigns(:hypothesis)&.id).to eq subject.id
           expect(assigns(:hypothesis).submitted_to_github?).to be_truthy
-          expect(AddHypothesisToGithubContentJob.jobs.count).to eq 1
-          expect(AddCitationToGithubContentJob.jobs.count).to eq 0
+          expect(AddToGithubContentJob.jobs.count).to eq 1
+          expect(AddToGithubContentJob.jobs.map { |j| j["args"] }.last.flatten).to eq(["Hypothesis", subject.id])
           subject.reload
           expect(subject.title).to eq hypothesis_params[:title]
           expect(subject.submitted_to_github?).to be_truthy
@@ -435,7 +435,7 @@ RSpec.describe "/hypotheses", type: :request do
 
           citation.reload
           expect(citation.title).to eq full_citation_params[:title]
-          expect(citation.url).to eq full_citation_url
+          expect(citation.url).to eq citation_url
           # expect(citation.submitted_to_github?).to be_truthy # Doesn't seem important. Job takes care of this, so ignore
           expect(citation.pull_request_number).to be_blank
           expect(citation.approved_at).to be_blank
@@ -443,7 +443,7 @@ RSpec.describe "/hypotheses", type: :request do
           expect(citation.publication_title).to eq "example.com"
           expect(citation.authors).to eq(["Zack", "George"])
           expect(citation.published_date_str).to eq "1990-12-02"
-          expect(citation.url_is_direct_link_to_full_text).to be_falsey
+          expect(citation.url_is_direct_link_to_full_text).to be_truthy
           expect(citation.peer_reviewed).to be_truthy
           expect(citation.randomized_controlled_trial).to be_truthy
           expect(citation.creator_id).to eq current_user.id
@@ -452,12 +452,11 @@ RSpec.describe "/hypotheses", type: :request do
       context "citation already exists" do
         it "does not create a new citation" do
           subject.reload
-          citation.update(pull_request_number: 12)
+          citation.update(approved_at: Time.current - 1.hour)
           VCR.use_cassette("hypotheses_controller-create_skip_citation", match_requests_on: [:method]) do
             expect(Hypothesis.count).to eq 1
             expect(Citation.count).to eq 1
-            expect(citation.pull_request_number).to be_present
-            expect(citation.approved?).to be_falsey
+            expect(citation.approved?).to be_truthy
             Sidekiq::Worker.clear_all
             Sidekiq::Testing.inline! do
               patch "#{base_url}/#{subject.to_param}", params: hypothesis_add_to_github_params.merge(initially_toggled: true)
@@ -474,7 +473,7 @@ RSpec.describe "/hypotheses", type: :request do
             expect(subject.submitting_to_github).to be_truthy
             # Even though passed new information, it doesn't update the existing citation
             citation.reload
-            expect(citation.pull_request_number).to eq 12
+            expect(citation.pull_request_number).to be_blank
 
             citation2 = subject.citations.order(:created_at).last
             expect(citation2.submitted_to_github?).to be_truthy
@@ -511,8 +510,8 @@ RSpec.describe "/hypotheses", type: :request do
           expect(Citation.count).to eq 2
           Sidekiq::Worker.clear_all
           patch "#{base_url}/#{subject.to_param}", params: hypothesis_add_to_github_params
-          expect(AddHypothesisToGithubContentJob.jobs.count).to eq 1
-          expect(AddCitationToGithubContentJob.jobs.count).to eq 0
+          expect(AddToGithubContentJob.jobs.count).to eq 1
+          expect(AddToGithubContentJob.jobs.map { |j| j["args"] }.last.flatten).to eq(["Hypothesis", subject.id])
           expect(response).to redirect_to hypothesis_path(subject.id)
           expect(flash[:success]).to be_present
 
@@ -526,13 +525,13 @@ RSpec.describe "/hypotheses", type: :request do
           expect(Citation.count).to eq 3
           citation.reload
           expect(citation.title).to eq full_citation_params[:title]
-          expect(citation.url).to eq full_citation_url
+          expect(citation.url).to eq citation_url
 
           expect(citation.publication).to be_present
           expect(citation.publication_title).to eq "example.com"
           expect(citation.authors).to eq(["Zack", "George"])
           expect(citation.published_at).to be_within(5).of Time.at(660124800)
-          expect(citation.url_is_direct_link_to_full_text).to be_falsey
+          expect(citation.url_is_direct_link_to_full_text).to be_truthy
           expect(citation.creator).to eq current_user
         end
       end
@@ -542,7 +541,7 @@ RSpec.describe "/hypotheses", type: :request do
         it "creates" do
           Sidekiq::Worker.clear_all
           patch "#{base_url}/#{subject.to_param}", params: {hypothesis: hypothesis_params, initially_toggled: true}
-          expect(AddHypothesisToGithubContentJob.jobs.count).to eq 0
+          expect(AddToGithubContentJob.jobs.count).to eq 0
           expect(response).to redirect_to edit_hypothesis_path(subject.id, initially_toggled: true)
           expect(flash[:success]).to be_present
 
@@ -556,13 +555,13 @@ RSpec.describe "/hypotheses", type: :request do
           expect(Citation.count).to eq 2
           citation.reload
           expect(citation.title).to eq full_citation_params[:title]
-          expect(citation.url).to eq full_citation_url
+          expect(citation.url).to eq citation_url
           expect(citation.url_is_not_publisher).to be_truthy
           expect(subject.citations.pluck(:id)).to include(citation.id)
 
           expect(citation.authors).to eq(["Zack", "George"])
           expect(citation.published_at).to be_within(5).of Time.at(660124800)
-          expect(citation.url_is_direct_link_to_full_text).to be_falsey
+          expect(citation.url_is_direct_link_to_full_text).to be_truthy
           expect(citation.creator).to eq current_user
           expect(citation.url_is_not_publisher).to be_truthy
 
@@ -580,8 +579,7 @@ RSpec.describe "/hypotheses", type: :request do
         it "creates with publication title" do
           Sidekiq::Worker.clear_all
           patch "#{base_url}/#{subject.to_param}", params: {hypothesis: hypothesis_params.merge(tags_string: ["Economy", "parties"])}
-          expect(AddHypothesisToGithubContentJob.jobs.count).to eq 0
-          expect(AddCitationToGithubContentJob.jobs.count).to eq 0
+          expect(AddToGithubContentJob.jobs.count).to eq 0
           expect(response).to redirect_to edit_hypothesis_path(subject.id)
           expect(flash[:success]).to be_present
 
@@ -592,13 +590,13 @@ RSpec.describe "/hypotheses", type: :request do
           expect(Citation.count).to eq 2
           citation.reload
           expect(citation.title).to eq full_citation_params[:title]
-          expect(citation.url).to eq full_citation_url
+          expect(citation.url).to eq citation_url
           expect(citation.url_is_not_publisher).to be_truthy
           expect(subject.citations.pluck(:id)).to include(citation.id)
 
           expect(citation.authors).to eq(["Zack", "George"])
           expect(citation.published_at).to be_within(5).of Time.at(660124800)
-          expect(citation.url_is_direct_link_to_full_text).to be_falsey
+          expect(citation.url_is_direct_link_to_full_text).to be_truthy
           expect(citation.creator).to eq current_user
           expect(citation.url_is_not_publisher).to be_truthy
 

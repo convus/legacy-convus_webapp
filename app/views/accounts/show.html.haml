@@ -1,8 +1,52 @@
 %h3
   %strong= @hypotheses_not_submitted.count
   = "unsubmitted hypotheses".pluralize(@hypotheses_not_submitted.count)
-
+.mt-4
 = render partial: "/hypotheses/table", locals: { hypotheses: @hypotheses_not_submitted, link_to_edit: true }
+
+%h3.mt-4.pt-4
+  %strong= @hypothesis_citations_not_submitted.count
+  = "unsubmitted citations".pluralize(@hypotheses_not_submitted.count)
+.full-screen-table
+  %table.table.table-striped.table-sm.table-bordered
+    %thead
+      - if display_dev_info?
+        %th.only-dev-visible.small.d-none.d-md-table-cell
+          ID
+      %th.d-none.d-md-table-cell
+        Citation
+      %th.d-none.d-md-table-cell
+        Hypothesis
+      %th.d-none.d-md-table-cell
+        Created
+    %tbody
+      - search_items = @search_items || []
+      - @hypothesis_citations_not_submitted.each do |hypothesis_citation|
+        - hypothesis = hypothesis_citation.hypothesis
+        - citation = hypothesis_citation.citation
+        %tr
+          - if display_dev_info?
+            %td.only-dev-visible.small
+              = hypothesis_citation.id
+          %td
+            - if citation.publication.present? && !citation.publication.title_url?
+              #{citation.publication.title}:
+            %em
+              = citation.title.truncate(75)
+            %small.less-strong
+              #{hypothesis_citation.quotes.count}
+              = "quote".pluralize(hypothesis_citation.quotes.count)
+            = link_to "edit", edit_hypothesis_citation_path(hypothesis_id: hypothesis.id, id: hypothesis_citation.id), class: "internal-link"
+          %td.d-none.d-md-table-cell
+            %span
+              = hypothesis.title
+              = link_to internal_link_text, hypothesis_path(hypothesis.to_param), class: "internal-link"
+            - hypothesis.tags.each do |tag|
+              = link_to tag.title, hypotheses_path(sortable_search_params.merge(search_array: (search_items + [tag.title]))), class: "tag-bubble small"
+          %td.d-none.d-md-table-cell
+            %small.convertTime
+              = l hypothesis_citation.created_at, format: :convert_time
+
 
 %h3.mt-4.pt-4
   %strong= @hypotheses_submitted.count

@@ -1,4 +1,8 @@
 class HypothesisCitation < ApplicationRecord
+  include ApprovedAtable
+  include GithubSubmittable
+
+  belongs_to :creator, class_name: "User"
   belongs_to :hypothesis
   belongs_to :citation
 
@@ -13,7 +17,9 @@ class HypothesisCitation < ApplicationRecord
   before_validation :set_calculated_attributes
   after_commit :update_hypothesis
 
-  attr_accessor :skip_associated_tasks
+  scope :hypothesis_approved, -> { left_joins(:hypothesis).where.not(hypotheses: {approved_at: nil}) }
+
+  attr_accessor :add_to_github, :skip_associated_tasks
 
   # There were some issues with legacy hypothesis_citations having duplicates
   # leaving method around until certain they're resolved
@@ -45,11 +51,17 @@ class HypothesisCitation < ApplicationRecord
     hypothesis_quotes
   end
 
+  # TODO: make this not a stupid stub
+  def title
+    citation.present? ? citation.title : "Citation"
+  end
+
   def set_calculated_attributes
     self.quotes_text = quotes_text_array.join("\n\n")
     self.quotes_text = nil if quotes_text.blank?
     self.url = UrlCleaner.with_http(UrlCleaner.without_utm(url))
-    self.citation_id = Citation.find_or_create_by_params({url: url, creator_id: hypothesis.creator_id})&.id
+    self.creator_id ||= hypothesis.creator_id
+    self.citation_id = Citation.find_or_create_by_params({url: url, creator_id: creator_id})&.id
     update_hypothesis_quotes(quotes_text_array)
   end
 
@@ -58,5 +70,14 @@ class HypothesisCitation < ApplicationRecord
     return false if skip_associated_tasks || (hypothesis.present? && hypothesis.created_at > Time.current - 5.seconds)
     # Only update the hypothesis if it isn't destroyed
     hypothesis&.update(updated_at: Time.current) unless hypothesis.destroyed?
+    add_to_github_content
+  end
+
+  # Serialized into hypothesis flat files, but need to access this from multiple places so...
+  def flat_file_serialized
+    {
+      url: citation.url,
+      quotes: hypothesis_quotes.map(&:quote_text)
+    }
   end
 end
