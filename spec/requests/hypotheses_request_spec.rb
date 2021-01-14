@@ -468,12 +468,11 @@ RSpec.describe "/hypotheses", type: :request do
       context "citation already exists" do
         it "does not create a new citation" do
           subject.reload
-          citation.update(pull_request_number: 12)
+          citation.update(approved_at: Time.current - 1.hour)
           VCR.use_cassette("hypotheses_controller-create_skip_citation", match_requests_on: [:method]) do
             expect(Hypothesis.count).to eq 1
             expect(Citation.count).to eq 1
-            expect(citation.pull_request_number).to be_present
-            expect(citation.approved?).to be_falsey
+            expect(citation.approved?).to be_truthy
             Sidekiq::Worker.clear_all
             Sidekiq::Testing.inline! do
               patch "#{base_url}/#{subject.to_param}", params: hypothesis_add_to_github_params.merge(initially_toggled: true)
@@ -490,7 +489,7 @@ RSpec.describe "/hypotheses", type: :request do
             expect(subject.submitting_to_github).to be_truthy
             # Even though passed new information, it doesn't update the existing citation
             citation.reload
-            expect(citation.pull_request_number).to eq 12
+            expect(citation.pull_request_number).to be_blank
 
             citation2 = subject.citations.order(:created_at).last
             expect(citation2.submitted_to_github?).to be_truthy
