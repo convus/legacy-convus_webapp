@@ -24,7 +24,6 @@ RSpec.describe "/hypotheses", type: :request do
     let!(:hypothesis) { FactoryBot.create(:hypothesis) }
     let!(:hypothesis_approved1) { FactoryBot.create(:hypothesis_approved, title: "Here are dogs", tags_string: "animals, Something of Interest") }
     let!(:hypothesis_approved2) { FactoryBot.create(:hypothesis_approved, title: "Here be dragons", tags_string: "animals") }
-    let!(:hypothesis_refuted) { FactoryBot.create(:hypothesis_refuted, hypothesis_refuting: hypothesis_approved1) }
     let(:tag1) { hypothesis_approved1.tags.first }
     let(:tag2) { hypothesis_approved1.tags.last }
     it "renders only the approved" do
@@ -39,9 +38,6 @@ RSpec.describe "/hypotheses", type: :request do
       # Unapproved
       get base_url, params: {search_unapproved: true}
       expect(assigns(:hypotheses).pluck(:id)).to eq([hypothesis.id])
-      # Unapproved & refuted
-      get base_url, params: {search_unapproved: true, search_refuted: true}
-      expect(assigns(:hypotheses).pluck(:id)).to eq([hypothesis_refuted.id])
       # Tags
       get base_url, params: {search_array: "something of interest,,"}
       expect(assigns(:search_tags).pluck(:id)).to eq([tag2.id])
@@ -94,18 +90,6 @@ RSpec.describe "/hypotheses", type: :request do
         # Test that it sets the right title
         title_tag = response.body[/<title.*<\/title>/]
         expect(title_tag).to eq "<title>#{subject.title}</title>"
-      end
-      context "refuted" do
-        let(:subject) { FactoryBot.create(:hypothesis_refuted, :approved) }
-        it "renders" do
-          get "#{base_url}/#{subject.id}"
-          expect(response.code).to eq "200"
-          expect(response).to render_template("hypotheses/show")
-          expect(assigns(:hypothesis)&.id).to eq subject.id
-          # Test that it sets the right title
-          title_tag = response.body[/<title.*<\/title>/]
-          expect(title_tag).to eq "<title>REFUTED: #{subject.title}</title>"
-        end
       end
     end
     context "after_sign_in_score and user signed in" do
