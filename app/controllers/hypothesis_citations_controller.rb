@@ -26,12 +26,11 @@ class HypothesisCitationsController < ApplicationController
 
   def update
     update_successful = @hypothesis_citation.update(permitted_params)
-    if update_successful
+    if update_successful && permitted_citation_params.present? &&
+        @hypothesis_citation.citation.editable_by?(current_user)
       # Because the citation is assigned during creation, we can't use nested attributes to update it
       citation = @hypothesis_citation.citation
-      if citation.editable_by?(current_user) && permitted_citation_params.present?
-        update_successful = citation.update(permitted_citation_params)
-      end
+      update_successful = citation.update(permitted_citation_params)
       flash[:error] = "Couldn't save citation; #{citation.errors.full_messages}" unless update_successful
     end
     if update_successful
