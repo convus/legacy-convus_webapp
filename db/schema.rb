@@ -10,10 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_13_173322) do
+ActiveRecord::Schema.define(version: 2021_01_14_025615) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "citation_challenges", force: :cascade do |t|
+    t.bigint "creator_id"
+    t.bigint "hypothesis_citation_id"
+    t.bigint "supporting_citation_id"
+    t.integer "kind"
+    t.string "reason"
+    t.datetime "approved_at"
+    t.boolean "submitting_to_github", default: false
+    t.integer "pull_request_number"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["creator_id"], name: "index_citation_challenges_on_creator_id"
+    t.index ["hypothesis_citation_id"], name: "index_citation_challenges_on_hypothesis_citation_id"
+    t.index ["supporting_citation_id"], name: "index_citation_challenges_on_supporting_citation_id"
+  end
 
   create_table "citations", force: :cascade do |t|
     t.bigint "publication_id"
