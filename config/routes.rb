@@ -14,9 +14,13 @@ Rails.application.routes.draw do
   get :about, to: "static#about"
   get :citation_scoring, to: "static#citation_scoring"
 
-  resources :citations, :publications, :hypotheses
+  resources :citations, :publications
 
-  resources :user_scores, only: [:create]
+  resources :hypotheses do
+    resources :citations, only: %i[new create edit update], controller: "hypothesis_citations"
+  end
+
+  resources :user_scores, only: %i[create]
 
   get "/citations/:publication_id/:citation_id", to: "citations#show"
 

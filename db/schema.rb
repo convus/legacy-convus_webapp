@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_14_183757) do
+ActiveRecord::Schema.define(version: 2021_01_13_173322) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -70,7 +70,12 @@ ActiveRecord::Schema.define(version: 2020_12_14_183757) do
     t.datetime "updated_at", precision: 6, null: false
     t.text "quotes_text"
     t.text "url"
+    t.integer "pull_request_number"
+    t.datetime "approved_at"
+    t.boolean "submitting_to_github", default: false
+    t.bigint "creator_id"
     t.index ["citation_id"], name: "index_hypothesis_citations_on_citation_id"
+    t.index ["creator_id"], name: "index_hypothesis_citations_on_creator_id"
     t.index ["hypothesis_id"], name: "index_hypothesis_citations_on_hypothesis_id"
   end
 

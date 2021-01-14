@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe HypothesisCitation, type: :model do
+  it_behaves_like "GithubSubmittable"
+
   it "has a valid factory" do
     expect(FactoryBot.create(:hypothesis_citation)).to be_valid
   end

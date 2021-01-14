@@ -3,6 +3,8 @@
 -# initially_toggled is only really for development, when working on the view
 - initially_toggled ||= false
 - initially_toggled = false unless initially_show && render_full_fields
+-# Remove is hidden in hypothesis_citations views
+- skip_remove ||= false
 
 = f.hidden_field :id # necessary to do manually, or else it isn't included for new objects
 
@@ -10,9 +12,10 @@
   .form-group.remove-fields-wrap
     = f.label :url do
       URL
-    = f.label :_destroy, class: "remove-fields text-warning less-strong" do
-      = f.check_box :_destroy
-      remove
+    - unless skip_remove
+      = f.label :_destroy, class: "remove-fields text-warning less-strong" do
+        = f.check_box :_destroy
+        remove
     = f.text_field :url, required: true, class: "form-control hasRequired"
   .form-group
     = f.label :quotes_text do
@@ -81,4 +84,6 @@
       .text-center{style: "margin: -1em 0 1em;"}
         %em.less-strong
           You can't edit this citation, it's already been approved. Suggest changes to
-          = link_to "the file on GitHub", f.object.citation.github_html_url, target: "_blank"
+          -# github_html_url should always be present here... but if it's broken, and the url is blank, clicking the link just reloads the page which is super confusing and unhelpful. So at least send the user to a page to see the citation
+          - suggest_url = f.object.citation.github_html_url || citation_path(f.object.citation)
+          = link_to "the file on GitHub", suggest_url, target: "_blank"

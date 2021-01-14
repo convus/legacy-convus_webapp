@@ -14,7 +14,7 @@ export class HypothesisForm {
       e.preventDefault();
       $("#hypothesisForm .loadingSpinner").collapse("show");
       $(".submit-input").addClass("disabled");
-      $("#hypothesis_add_to_github").val("1");
+      $(".addToGithubField").val("1");
       $("#hypothesisForm").submit();
     });
 

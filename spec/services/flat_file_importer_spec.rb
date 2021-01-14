@@ -27,7 +27,7 @@ unless ENV["CIRCLECI"]
       publication = FactoryBot.create(:publication, title: "The Hill")
       citation = FactoryBot.create(:citation_approved, title: "some citation", publication: publication, kind: "government_statistics")
       hypothesis = FactoryBot.create(:hypothesis_approved, title: "hypothesis-1")
-      FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: citation.url)
+      FactoryBot.create(:hypothesis_citation_approved, hypothesis: hypothesis, url: citation.url)
       FactoryBot.create(:tag, title: "Health & Wellness", taxonomy: "family_rank")
       FlatFileSerializer.write_all_files
     end
@@ -126,6 +126,12 @@ unless ENV["CIRCLECI"]
 
       expect(hypothesis.citations.count).to eq 1
       expect(hypothesis.flat_file_serialized.except(:topics)).to eq(hypothesis_attrs.except(:topics))
+
+      expect(hypothesis.hypothesis_citations.count).to eq 1
+      hypothesis_citation = hypothesis.hypothesis_citations.first
+      expect(hypothesis_citation.approved_at).to be_within(5).of Time.current
+      expect(hypothesis_citation.creator_id).to be_blank
+
       citation = hypothesis.citations.first
       expect(citation.approved?).to be_truthy
     end
@@ -133,12 +139,25 @@ unless ENV["CIRCLECI"]
       let(:og_title) { "Purple air sensors are less accurate than EPA sensors" }
       let(:old_attrs) { hypothesis_attrs.merge(title: og_title, topics: ["Environment"]) }
       let(:hypothesis) { FlatFileImporter.import_hypothesis(old_attrs) }
+      let(:user) { FactoryBot.create(:user) }
+      let(:user2) { FactoryBot.create(:user) }
+      let(:citation) { hypothesis.citations.first }
       it "imports as expected" do
+        approved_at = Time.current - 5.minutes
+        expect(citation.approved?).to be_truthy
+        citation.update(creator_id: user2.id, approved_at: nil) # Ensure import approves existing citations
+        hypothesis.update(creator_id: user.id, approved_at: approved_at)
+        hypothesis.reload
         og_slug = hypothesis.slug
         expect(hypothesis.title).to_not eq hypothesis_attrs[:title]
         expect(hypothesis.tag_titles).to eq(["Environment"])
         expect(hypothesis.tags.pluck(:id)).to eq([tag.id])
         expect(hypothesis.previous_titles.pluck(:title)).to eq([])
+        expect(hypothesis.creator_id).to eq user.id
+        expect(hypothesis.hypothesis_citations.count).to eq 1
+        hypothesis_citation = hypothesis.hypothesis_citations.first
+        expect(hypothesis_citation.creator_id).to be_blank # Imported before hypothesis had creator_id
+        hypothesis_citation.update(approved_at: approved_at)
         expect(Tag.count).to eq 1
         expect(tag.approved?).to be_falsey
         Sidekiq::Worker.clear_all
@@ -148,6 +167,7 @@ unless ENV["CIRCLECI"]
         expect(hypothesis.title).to eq hypothesis_attrs[:title]
         expect(hypothesis.id).to eq hypothesis_attrs[:id]
         expect(hypothesis.slug).to_not eq og_slug
+        expect(hypothesis.approved_at).to be_within(1).of approved_at
 
         expect(hypothesis.tags.approved.count).to eq 2
         expect(hypothesis.tags.pluck(:title)).to match_array(["Environment", "Air quality"])
@@ -155,8 +175,16 @@ unless ENV["CIRCLECI"]
         expect(tag.approved_at).to be_within(5).of Time.current
         expect(Tag.count).to eq 2
 
-        expect(hypothesis.citations.count).to eq 1
+        expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
+        citation.reload
+        expect(citation.approved_at).to be_within(5).of Time.current
+        expect(citation.creator_id).to eq user2.id
         expect(hypothesis.flat_file_serialized.except(:topics)).to eq(hypothesis_attrs.except(:topics))
+
+        expect(hypothesis.hypothesis_citations.pluck(:id)).to eq([hypothesis_citation.id])
+        hypothesis_citation.reload
+        expect(hypothesis_citation.creator_id).to eq user.id
+        expect(hypothesis_citation.approved_at).to be_within(1).of approved_at
 
         StorePreviousHypothesisTitleJob.drain
         expect(hypothesis.previous_titles.pluck(:title)).to eq([og_title])
@@ -173,6 +201,9 @@ unless ENV["CIRCLECI"]
           expect(hypothesis.quotes.pluck(:text)).to eq(["some quote"])
           expect(citation_old.approved?).to be_truthy
           expect(citation_old.hypotheses.pluck(:id)).to eq([hypothesis.id])
+          hypothesis_citation = hypothesis.hypothesis_citations.where.not(citation_id: hypothesis_citation_old.id).first
+          expect(hypothesis_citation.citation.creator_id).to be_blank
+          hypothesis_citation.update(creator_id: user.id)
           expect(hypothesis.title).to_not eq hypothesis_attrs[:title]
           expect(hypothesis.tags.pluck(:id)).to eq([tag.id])
           expect(Tag.count).to eq 1
@@ -191,8 +222,13 @@ unless ENV["CIRCLECI"]
           expect(tag.approved_at).to be_within(5).of Time.current
           expect(Tag.count).to eq 2
 
-          expect(hypothesis.citations.count).to eq 1
+          expect(hypothesis.citations.pluck(:id)).to eq([hypothesis_citation.citation_id])
           expect(hypothesis.citations.approved.count).to eq 1
+          expect(hypothesis.hypothesis_citations.pluck(:id)).to eq([hypothesis_citation.id])
+          hypothesis_citation.reload
+          expect(hypothesis_citation.citation.creator_id).to be_blank
+          expect(hypothesis_citation.creator_id).to eq user.id # Hasn't changed
+
           expect(hypothesis.flat_file_serialized.except(:topics)).to eq(hypothesis_attrs.except(:topics))
 
           expect(Citation.count).to eq 2
@@ -202,6 +238,29 @@ unless ENV["CIRCLECI"]
 
           StorePreviousHypothesisTitleJob.drain
           expect(hypothesis.previous_titles.pluck(:title)).to eq([og_title])
+        end
+      end
+      context "new_cited_url" do
+        let!(:hypothesis_citation) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: "https://example.com/citation_addition") }
+        let(:new_cited_urls) { {url: hypothesis_citation.url, quotes: ["ddsfasdf"]} }
+        let(:hypothesis_attrs_new_cited_url) { hypothesis_attrs.merge(cited_urls: [], new_cited_urls: [new_cited_urls]) }
+        it "doesn't delete the existing url, even though they aren't included" do
+          hypothesis.reload
+
+          expect(hypothesis_citation.reload.approved?).to be_falsey
+          expect(hypothesis.citations.count).to eq 2
+          expect(hypothesis.citations.approved.count).to eq 1
+          Sidekiq::Worker.clear_all
+
+          FlatFileImporter.import_hypothesis(hypothesis_attrs_new_cited_url)
+          hypothesis.reload
+          expect(hypothesis.title).to eq hypothesis_attrs[:title]
+          expect(hypothesis.id).to eq hypothesis_attrs[:id]
+          expect(hypothesis.citations.count).to eq 2
+          expect(hypothesis.citations.approved.count).to eq 2
+
+          expect(hypothesis_citation.reload.approved?).to be_truthy
+          expect(hypothesis_citation.quotes_text).to eq "ddsfasdf"
         end
       end
     end

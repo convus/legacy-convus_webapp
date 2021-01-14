@@ -45,9 +45,10 @@ class HypothesesController < ApplicationController
         redirect_to hypothesis_path(@hypothesis.id)
       else
         flash[:success] = "Hypothesis saved"
+        target_url_params = {id: @hypothesis.id}
         # Don't include initially_toggled paramets unless it's passed because it's ugly
-        target_url_redirecting = ParamsNormalizer.boolean(params[:initially_toggled]) ? edit_hypothesis_path(@hypothesis.id, initially_toggled: true) : edit_hypothesis_path(@hypothesis.id)
-        redirect_to target_url_redirecting
+        target_url_params[:initially_toggled] = true if ParamsNormalizer.boolean(params[:initially_toggled])
+        redirect_to edit_hypothesis_path(target_url_params)
       end
     else
       render :edit
@@ -81,13 +82,13 @@ class HypothesesController < ApplicationController
   end
 
   def ensure_user_can_edit!
-    if @hypothesis.not_submitted_to_github?
-      return true if @hypothesis.creator == current_user
-      flash[:error] = "You can't edit that hypothesis because you didn't create it"
+    return true if @hypothesis.editable_by?(current_user)
+    flash[:error] = if @hypothesis.not_submitted_to_github?
+      "You can't edit that hypothesis because you didn't create it"
     else
-      flash[:error] = "You can't edit hypotheses that have been submitted"
+      "You can't edit hypotheses that have been submitted"
     end
-    redirect_to user_root_path
+    redirect_to hypothesis_path(@hypothesis)
     nil
   end
 
@@ -112,7 +113,7 @@ class HypothesesController < ApplicationController
   def permitted_params
     # Permit tags_string as a string or an array
     params.require(:hypothesis).permit(:title, :add_to_github, :tags_string, tags_string: [],
-      hypothesis_citations_attributes: [:url, :quotes_text, :_destroy, :id])
+                                                                             hypothesis_citations_attributes: [:url, :quotes_text, :_destroy, :id])
   end
 
   def update_citation(hypothesis_citation)

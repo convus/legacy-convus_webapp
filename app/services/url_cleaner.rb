@@ -50,7 +50,7 @@ class UrlCleaner
 
     # escape non-escaped sequences in the URI - e.g. spaces and mdashes
     def encoded_url(str)
-      URI::Parser.new.escape(str)
+      URI::DEFAULT_PARSER.escape(str)
     end
 
     def looks_like_url?(str)

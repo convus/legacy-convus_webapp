@@ -207,27 +207,28 @@ RSpec.describe Citation, type: :model do
     it "enqueues only when add_to_github and not already added" do
       expect {
         citation.save
-      }.to change(AddCitationToGithubContentJob.jobs, :count).by 0
+      }.to change(AddToGithubContentJob.jobs, :count).by 0
 
       expect {
         citation.update(add_to_github: true)
         citation.update(add_to_github: true)
-      }.to change(AddCitationToGithubContentJob.jobs, :count).by 1
+      }.to change(AddToGithubContentJob.jobs, :count).by 1
+      expect(AddToGithubContentJob.jobs.map { |j| j["args"] }.last.flatten).to eq(["Citation", citation.id])
 
       expect {
         citation.update(add_to_github: true, pull_request_number: 12)
-      }.to change(AddCitationToGithubContentJob.jobs, :count).by 0
+      }.to change(AddToGithubContentJob.jobs, :count).by 0
 
       expect {
         citation.update(add_to_github: true, pull_request_number: nil, approved_at: Time.current)
-      }.to change(AddCitationToGithubContentJob.jobs, :count).by 0
+      }.to change(AddToGithubContentJob.jobs, :count).by 0
     end
     context "create with add_to_github" do
       let(:citation) { FactoryBot.build(:citation, add_to_github: true) }
       it "enqueues job" do
         expect {
           citation.save
-        }.to change(AddCitationToGithubContentJob.jobs, :count).by 1
+        }.to change(AddToGithubContentJob.jobs, :count).by 1
       end
     end
     context "via hypothesis creation" do
@@ -240,8 +241,8 @@ RSpec.describe Citation, type: :model do
         expect {
           hypothesis_citation.save
           hypothesis_citation.hypothesis.update(add_to_github: true)
-        }.to change(AddCitationToGithubContentJob.jobs, :count).by 0
-        expect(AddHypothesisToGithubContentJob.jobs.count).to eq 1
+        }.to change(AddToGithubContentJob.jobs, :count).by 1
+        expect(AddToGithubContentJob.jobs.map { |j| j["args"] }.last.flatten).to eq(["Hypothesis", hypothesis_citation.hypothesis.id])
         expect(Hypothesis.count).to eq 1
         expect(Citation.count).to eq 1
       end
@@ -251,7 +252,7 @@ RSpec.describe Citation, type: :model do
         stub_const("GithubIntegration::SKIP_GITHUB_UPDATE", true)
         expect {
           citation.save
-        }.to change(AddCitationToGithubContentJob.jobs, :count).by 0
+        }.to change(AddToGithubContentJob.jobs, :count).by 0
       end
     end
   end

@@ -10,11 +10,15 @@ class HypothesisSerializer < ApplicationSerializer
   end
 
   def cited_urls
-    object.hypothesis_citations.map do |hypothesis_citation|
-      {
-        url: hypothesis_citation.citation.url,
-        quotes: hypothesis_citation.hypothesis_quotes.map(&:quote_text)
-      }
+    hypothesis_citations.map(&:flat_file_serialized)
+  end
+
+  # If the hypothesis is approved, only include the approved hypothesis_citations
+  def hypothesis_citations
+    if object.approved?
+      object.hypothesis_citations.approved
+    else
+      object.hypothesis_citations
     end
   end
 end
