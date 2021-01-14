@@ -129,6 +129,7 @@ RSpec.describe "hypothesis_citations", type: :request do
         expect(subject.quotes_text_array).to eq([])
         citation.reload
         expect(citation.title_url?).to be_truthy
+        expect(citation.editable_by?(current_user)).to be_truthy
         Sidekiq::Worker.clear_all
         expect(Citation.count).to eq 1
         patch "#{base_url}/#{subject.id}", params: {hypothesis_citation: hypothesis_citation_update_params}
@@ -153,6 +154,50 @@ RSpec.describe "hypothesis_citations", type: :request do
         expect(citation.url_is_direct_link_to_full_text).to be_falsey
         expect(citation.creator_id).to eq current_user.id
         expect(citation.kind).to eq full_citation_params[:kind]
+      end
+      context "citation already created" do
+        let!(:citation) { FactoryBot.create(:citation_approved, url: citation_url) }
+        it "doesn't update blocked attributes" do
+          subject.reload
+          expect(subject.editable_by?(current_user)).to be_truthy
+          expect(hypothesis.citations.count).to eq 1
+          expect(subject.quotes_text_array).to eq([])
+          citation.reload
+          expect(citation.editable_by?(current_user)).to be_falsey
+          Sidekiq::Worker.clear_all
+          expect(Citation.count).to eq 1
+          patch "#{base_url}/#{subject.id}", params: {hypothesis_citation: hypothesis_citation_update_params}
+          expect(flash[:success]).to be_present
+          expect(response).to redirect_to edit_hypothesis_citation_path(hypothesis_id: hypothesis.id, id: subject.id)
+          expect(assigns(:hypothesis_citation)&.id).to eq subject.id
+          expect(assigns(:hypothesis_citation).submitted_to_github?).to be_falsey
+          expect(AddToGithubContentJob.jobs.count).to eq 0
+          subject.reload
+          expect(subject.approved?).to be_falsey
+          expect(subject.quotes_text_array).to eq quotes
+          expect(subject.citation_id).to eq citation.id
+          citation.reload
+          expect(citation.title).to_not eq full_citation_params[:title] # Because it shouldn't have been updated
+        end
+        context "not passing citation attributes" do
+          it "updates without error" do # We aren't passing the citations hash, make sure it doesn't explode
+            subject.reload
+            expect(subject.editable_by?(current_user)).to be_truthy
+            citation.reload
+            expect(citation.editable_by?(current_user)).to be_falsey
+            patch "#{base_url}/#{subject.id}", params: {hypothesis_citation: hypothesis_citation_update_params.except(:citation_attributes)}
+            expect(flash[:success]).to be_present
+            expect(response).to redirect_to edit_hypothesis_citation_path(hypothesis_id: hypothesis.id, id: subject.id)
+            expect(assigns(:hypothesis_citation)&.id).to eq subject.id
+            expect(AddToGithubContentJob.jobs.count).to eq 0
+            subject.reload
+            expect(subject.approved?).to be_falsey
+            expect(subject.quotes_text_array).to eq quotes
+            expect(subject.citation_id).to eq citation.id
+            citation.reload
+            expect(citation.title).to_not eq full_citation_params[:title] # Because it shouldn't have been updated
+          end
+        end
       end
       context "failing citation update" do
         # NOTE: I don't actually know how to get the citation to error in update

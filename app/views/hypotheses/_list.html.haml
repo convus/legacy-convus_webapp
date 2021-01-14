@@ -8,16 +8,8 @@
     - hypotheses.each do |hypothesis|
       %li
         .d-block
-          - h_styling = hypothesis.unrefuted? ? {} : {class: "text-danger", style: "text-decoration: line-through;"}
-          %span{ h_styling }
-            = hypothesis.title
-            = link_to internal_link_text, hypothesis_path(hypothesis.to_param), class: "internal-link"
-          - if hypothesis.refuted?
-            %em
-              Refuted by:
-            - hypothesis.refuted_by_hypotheses.each do |h|
-              = h.title
-              = link_to internal_link_text, hypothesis_path(h.to_param), class: "internal-link"
+          = hypothesis.title
+          = link_to internal_link_text, hypothesis_path(hypothesis.to_param), class: "internal-link"
         .hypothesis-info
           %small.less-strong.convertTime.d-inline-block
             = l hypothesis.created_at, format: :convert_time
