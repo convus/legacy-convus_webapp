@@ -72,4 +72,12 @@ class HypothesisCitation < ApplicationRecord
     hypothesis&.update(updated_at: Time.current) unless hypothesis.destroyed?
     add_to_github_content
   end
+
+  # Serialized into hypothesis flat files, but need to access this from multiple places so...
+  def flat_file_serialized
+    {
+      url: citation.url,
+      quotes: hypothesis_quotes.map(&:quote_text)
+    }
+  end
 end

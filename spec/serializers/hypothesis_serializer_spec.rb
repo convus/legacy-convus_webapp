@@ -30,17 +30,21 @@ describe HypothesisSerializer, type: :lib do
       expect_hashes_to_match(serializer.as_json, target)
       expect_hashes_to_match(obj.flat_file_serialized, target)
     end
-    context "refuted_hypothesis" do
-      let(:obj) { FactoryBot.create(:hypothesis_refuted, hypothesis_refuting: refuting_hypothesis) }
-      let(:refuting_hypothesis) { FactoryBot.create(:hypothesis, title: "I refute this hypothesis because of things") }
-      let(:refuted_target) { target.merge(refuted_by_hypotheses: ["I refute this hypothesis because of things"]) }
-      it "returns target" do
-        expect_hashes_to_match(serializer.as_json, refuted_target)
+
+    context "unsubmitted hypothesis_citation" do
+      let(:obj) { FactoryBot.create(:hypothesis_approved) }
+      let!(:hypothesis_citation3)  { FactoryBot.create(:hypothesis_citation, hypothesis: obj, pull_request_number: 102, submitting_to_github: true) }
+      let(:target_approved) { target.merge(cited_urls: [target[:cited_urls].last]) }
+      it "does not include unapproved" do
+        hypothesis_citation2.update(approved_at: Time.current - 1.hour)
+        obj.reload
+        expect_hashes_to_match(serializer.as_json, target_approved)
+        expect_hashes_to_match(obj.flat_file_serialized, target_approved)
       end
     end
 
     describe "flat_file_serialized with override" do
-      let(:overridden) { target.merge(new_cited_url: {url: "https://stuff.com/example", quotes: ["bbbbbutter"]}) }
+      let(:overridden) { target.merge(new_cited_urls: [{url: "https://stuff.com/example", quotes: ["bbbbbutter"]}]) }
       it "returns the expected output" do
         obj.serialized_override = overridden
         expect_hashes_to_match(obj.flat_file_serialized, overridden)

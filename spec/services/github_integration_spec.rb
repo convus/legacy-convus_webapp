@@ -100,6 +100,7 @@ RSpec.describe GithubIntegration do
       # Or deleting the branch manually (if PR wasn't created): https://github.com/convus/convus_content/branches
       VCR.use_cassette("github_integration-create_hypothesis_citation_pull_request", match_requests_on: [:method]) do
         hypothesis.reload
+        expect(hypothesis.pull_request_number).to be_blank
         expect(hypothesis.hypothesis_citations.submitted_to_github.count).to eq 1
         branches(subject.client).count
         open_pull_requests(subject.client)
@@ -112,10 +113,11 @@ RSpec.describe GithubIntegration do
         # expect(prs.count).to be > initial_pull_requests.count
         hypothesis_citation.reload
         expect(hypothesis_citation.pull_request_number).to be_present
+        expect(hypothesis_citation.citation.pull_request_number).to eq hypothesis_citation.pull_request_number
 
         # And check the hypothesis
         hypothesis.reload
-        expect(hypothesis_citation.pull_request_number).to be_blank #
+        expect(hypothesis.pull_request_number).to be_blank #
         expect(hypothesis.hypothesis_citations.submitted_to_github.count).to eq 2
 
         # Can't do this via octokit.rb right now. BUT OH GOD THIS IS SOMETHING WE WANT - to make this truthy
