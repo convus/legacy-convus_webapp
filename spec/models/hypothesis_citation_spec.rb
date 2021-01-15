@@ -3,8 +3,38 @@ require "rails_helper"
 RSpec.describe HypothesisCitation, type: :model do
   it_behaves_like "GithubSubmittable"
 
-  it "has a valid factory" do
-    expect(FactoryBot.create(:hypothesis_citation)).to be_valid
+  describe "factory" do
+    let(:hypothesis_citation) { FactoryBot.create(:hypothesis_citation) }
+    it "has a valid factory" do
+      expect(hypothesis_citation).to be_valid
+      expect(hypothesis_citation.kind).to eq "hypothesis_supporting"
+      expect(hypothesis_citation.challenge?).to be_falsey
+      expect(hypothesis_citation.approved?).to be_falsey
+    end
+    context "challenge_citation_quotation" do
+      let(:hypothesis_citation_challenge) { FactoryBot.create(:hypothesis_citation_challenge_citation_quotation, challenged_hypothesis_citation: hypothesis_citation) }
+      it "is valid" do
+        expect(hypothesis_citation_challenge).to be_valid
+        expect(hypothesis_citation_challenge.kind).to eq "challenge_citation_quotation"
+        expect(hypothesis_citation_challenge.challenge?).to be_truthy
+        expect(hypothesis_citation_challenge.challenged_hypothesis_citation&.id).to eq hypothesis_citation.id
+        expect(hypothesis_citation_challenge.url).to eq hypothesis_citation.url
+        expect(hypothesis_citation_challenge.citation_id).to eq hypothesis_citation.citation_id
+        expect(hypothesis_citation_challenge.approved?).to be_falsey
+      end
+    end
+    context "challenge_by_another_citation" do
+      let(:hypothesis_citation_challenge) { FactoryBot.create(:hypothesis_citation_challenge_by_another_citation, :approved, challenged_hypothesis_citation: hypothesis_citation) }
+      it "is valid" do
+        expect(hypothesis_citation_challenge).to be_valid
+        expect(hypothesis_citation_challenge.kind).to eq "challenge_by_another_citation"
+        expect(hypothesis_citation_challenge.challenge?).to be_truthy
+        expect(hypothesis_citation_challenge.challenged_hypothesis_citation&.id).to eq hypothesis_citation.id
+        expect(hypothesis_citation_challenge.citation_id).to be_present
+        expect(hypothesis_citation_challenge.citation_id).to_not eq hypothesis_citation.id
+        expect(hypothesis_citation_challenge.approved?).to be_truthy
+      end
+    end
   end
 
   describe "url" do

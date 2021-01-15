@@ -20,7 +20,7 @@ class HypothesisCitation < ApplicationRecord
 
   enum kind: KIND_ENUM
 
-  validates :url, presence: true, uniqueness: {scope: [:hypothesis_id]}
+  validates :url, presence: true, uniqueness: {scope: [:hypothesis_id, :challenged_hypothesis_citation_id]}
   validates :hypothesis, presence: true
 
   before_validation :set_calculated_attributes
