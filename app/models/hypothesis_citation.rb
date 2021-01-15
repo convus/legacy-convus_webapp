@@ -2,14 +2,23 @@ class HypothesisCitation < ApplicationRecord
   include ApprovedAtable
   include GithubSubmittable
 
+  KIND_ENUM = {
+    hypothesis_supporting: 0,
+    challenge_citation_quotation: 3,
+    challenge_by_another_citation: 4
+  }.freeze
+
   belongs_to :creator, class_name: "User"
   belongs_to :hypothesis
   belongs_to :citation
+  belongs_to :challenged_hypothesis_citation, class_name: "HypothesisCitation"
 
   has_many :hypothesis_quotes, -> { score_ordered }, dependent: :destroy
   has_many :quotes, through: :hypothesis_quotes
 
   accepts_nested_attributes_for :citation
+
+  enum kind: KIND_ENUM
 
   validates :url, presence: true, uniqueness: {scope: [:hypothesis_id]}
   validates :hypothesis, presence: true
@@ -18,8 +27,21 @@ class HypothesisCitation < ApplicationRecord
   after_commit :update_hypothesis
 
   scope :hypothesis_approved, -> { left_joins(:hypothesis).where.not(hypotheses: {approved_at: nil}) }
+  scope :challenge, -> { where(kind: challenge_kinds) }
 
   attr_accessor :add_to_github, :skip_associated_tasks
+
+  def self.kinds
+    KIND_ENUM.keys.map(&:to_s)
+  end
+
+  def self.challenge_kinds
+    kinds - ["hypothesis_supporting"]
+  end
+
+  def challenge?
+    !hypothesis_supporting?
+  end
 
   # There were some issues with legacy hypothesis_citations having duplicates
   # leaving method around until certain they're resolved
