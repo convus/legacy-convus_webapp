@@ -18,6 +18,32 @@ export class HypothesisForm {
       $("#hypothesisForm").submit();
     });
 
+    this.enableAddAndRemoveCitations();
+
+    // Update all the citation fields
+    Array.from(
+      document.getElementsByClassName("hypothesisCitationFields")
+    ).forEach((el) => {
+      this.updateChallengeKind($(el));
+      this.updateCitationKind($(el));
+    });
+
+    // On citation kind change, update citation
+    $("#citationsBlock").on("change", ".challengeKindSelect", (event) => {
+      this.updateCitationKind(
+        $(event.target).parents(".hypothesisCitationFields")
+      );
+    });
+
+    // On citation kind change, update citation
+    $("#citationsBlock").on("change", ".citationKindSelect", (event) => {
+      this.updateCitationKind(
+        $(event.target).parents(".hypothesisCitationFields")
+      );
+    });
+  }
+
+  enableAddAndRemoveCitations() {
     $(".add-fields").on("click keyboard", function(event) {
       event.preventDefault();
       if (!KeyboardOrClick(event)) {
@@ -52,20 +78,21 @@ export class HypothesisForm {
       $eventTarget.find(".hasRequired").removeAttr("required");
       $eventTarget.first().collapse("hide");
     });
-
-    // Update all the citation fields
-    Array.from(
-      document.getElementsByClassName("citationFields")
-    ).forEach((el) => this.updateCitationFields($(el)));
-    // On citation kind change, update citation
-    $("#citationsBlock").on("change", ".kindSelect", (event) => {
-      this.updateCitationFields($(event.target).parents(".citationFields"));
-    });
   }
 
-  updateCitationFields($fields) {
-    const kind = $fields.find(".kindSelect").val();
-    const researchKind = this.researchKinds.includes(kind);
+  updateChallengeKind($fields) {
+    // Generally there isn't a challenge kind select
+    if (!$fields.find(".challengeKindSelect").length) {
+      return null;
+    }
+    const challengeKind = $fields.find(".challengeKindSelect").val();
+    log.debug(challengeKind);
+    // Toggle the kind
+  }
+
+  updateCitationKind($fields) {
+    const citationKind = $fields.find(".citationKindSelect").val();
+    const researchKind = this.researchKinds.includes(citationKind);
     // Toggle the kind
     $fields.find(".kindResearchField").collapse(researchKind ? "show" : "hide");
   }

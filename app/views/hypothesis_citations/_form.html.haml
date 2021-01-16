@@ -1,4 +1,5 @@
 - is_edit ||= false
+- is_challenge = @challenged_hypothesis_citation.present?
 
 .small-page-header
   %h1
@@ -9,9 +10,15 @@
 
 %h2.mt-4.small-page-header
   - if is_edit
-    Edit new citation:
+    - if is_challenge
+      Edit citation challenge:
+    - else
+      Edit new citation:
   - else
-    Add citation to hypothesis:
+    - if is_challenge
+      Challenge hypothesis citation
+    - else
+      Add citation to hypothesis:
 
 - if @hypothesis_citation.errors.any?
   -# These rows and columns duplicate what is in hypothesis_citation_fields - but we want a separate thing

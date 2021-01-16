@@ -8,8 +8,7 @@ class HypothesesController < ApplicationController
   def index
     page = params[:page] || 1
     per_page = params[:per_page] || 500
-    @hypotheses = matching_hypotheses.reorder(created_at: :desc)
-      .page(page).per(per_page)
+    @hypotheses = matching_hypotheses.newness_ordered.page(page).per(per_page)
     @page_title = "Convus"
   end
 

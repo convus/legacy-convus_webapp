@@ -107,6 +107,19 @@ RSpec.describe Hypothesis, type: :model do
     end
   end
 
+  describe "newness_ordered" do
+    let!(:hypothesis1) { FactoryBot.create(:hypothesis_approved, created_at: Time.current - 5.hours, approved_at: Time.current - 2.minutes) }
+    let!(:hypothesis2) { FactoryBot.create(:hypothesis, created_at: Time.current - 1.hour) }
+    let!(:hypothesis3) { FactoryBot.create(:hypothesis_approved, created_at: Time.current - 5.hours, approved_at: Time.current - 50.minutes) }
+    let!(:hypothesis4) { FactoryBot.create(:hypothesis) }
+    it "orders by approved if approved, otherwise created_at" do
+      # I think it would be better to order by approved_at if it's present, otherwise created_at - which would do this:
+      # expect(Hypothesis.newness_ordered.pluck(:id)).to eq([hypothesis4.id, hypothesis1.id, hypothesis3.id, hypothesis2.id])
+      # ... But I don't know how to do that, so ordering unapproved first
+      expect(Hypothesis.newness_ordered.pluck(:id)).to eq([hypothesis4.id, hypothesis2.id, hypothesis1.id, hypothesis3.id])
+    end
+  end
+
   describe "github_html_url" do
     let(:hypothesis) { FactoryBot.create(:hypothesis, pull_request_number: 2) }
     it "is pull_request if unapproved, file_path if approved" do

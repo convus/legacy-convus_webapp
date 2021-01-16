@@ -8,7 +8,7 @@
 
 = f.hidden_field :id # necessary to do manually, or else it isn't included for new objects
 
-.col-md-6.mb-4.mt-2.collapse.nested-field.citationFields{class: (initially_show ? "show" : "initially-hidden")}
+.col-md-6.mb-4.mt-2.collapse.nested-field.hypothesisCitationFields{class: (initially_show ? "show" : "initially-hidden")}
   .form-group.remove-fields-wrap
     = f.label :url do
       URL
@@ -39,7 +39,7 @@
             .form-group
               = nested.label :kind, "Citation kind"
               - citation_kind_opts = options_for_select(Citation.kinds.map { |k| [Citation.kind_humanized(k)&.titleize, k] }, nested.object.kind)
-              = nested.select :kind, citation_kind_opts, {}, { class: "form-control kindSelect" }
+              = nested.select :kind, citation_kind_opts, {}, { class: "form-control citationKindSelect" }
 
           .form-group.mt-0.collapse.kindResearchField
             .form-check
