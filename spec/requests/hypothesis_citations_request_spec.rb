@@ -6,6 +6,7 @@ RSpec.describe "hypothesis_citations", type: :request do
   let(:base_url) { "/hypotheses/#{hypothesis.id}/citations" }
   let(:current_user) { nil }
   let!(:hypothesis) { FactoryBot.create(:hypothesis_approved, creator: FactoryBot.create(:user), created_at: Time.current - 1.hour) }
+  let(:challenged_hypothesis_citation) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis) }
   let(:subject) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: citation_url, creator: current_user) }
   let(:citation) { subject.citation }
 
@@ -54,6 +55,27 @@ RSpec.describe "hypothesis_citations", type: :request do
         get "#{base_url}/new"
         expect(response.code).to eq "200"
         expect(response).to render_template("hypothesis_citations/new")
+        expect(assigns(:hypothesis)&.id).to eq hypothesis.id
+        expect(assigns(:challenged_hypothesis_citation)&.id).to be_blank
+      end
+      context "challenge_citation_id" do
+        it "renders with challenge" do
+          get "#{base_url}/new?challenged_hypothesis_citation_id=#{challenged_hypothesis_citation.to_param}"
+          expect(response.code).to eq "200"
+          expect(response).to render_template("hypothesis_citations/new")
+          expect(assigns(:hypothesis)&.id).to eq hypothesis.id
+          expect(assigns(:challenged_hypothesis_citation)&.id).to eq challenged_hypothesis_citation.id
+          expect(assigns(:challenged_hypothesis_citation)&.hypothesis_id).to eq hypothesis.id
+        end
+        context "invalid challenged_hypothesis_citation_id" do
+          let(:challenged_hypothesis_citation) { FactoryBot.create(:hypothesis_citation) }
+          it "flash errors" do
+            expect(challenged_hypothesis_citation.hypothesis_id).to_not eq hypothesis.id
+            expect do
+              get "#{base_url}/new?challenged_hypothesis_citation_id=#{challenged_hypothesis_citation.to_param}"
+            end.to raise_error(ActiveRecord::RecordNotFound)
+          end
+        end
       end
     end
 
