@@ -20,7 +20,7 @@ class HypothesisCitation < ApplicationRecord
 
   enum kind: KIND_ENUM
 
-  validates :url, presence: true, uniqueness: {scope: [:hypothesis_id, :challenged_hypothesis_citation_id]}
+  validates :url, presence: true, uniqueness: {scope: [:hypothesis_id, :kind, :challenged_hypothesis_citation_id]}
   validates :hypothesis, presence: true
 
   before_validation :set_calculated_attributes
@@ -82,6 +82,9 @@ class HypothesisCitation < ApplicationRecord
     self.quotes_text = quotes_text_array.join("\n\n")
     self.quotes_text = nil if quotes_text.blank?
     self.url = UrlCleaner.with_http(UrlCleaner.without_utm(url))
+    if challenged_hypothesis_citation.present?
+      self.hypothesis_id = challenged_hypothesis_citation.hypothesis_id
+    end
     self.creator_id ||= hypothesis.creator_id
     self.citation_id = Citation.find_or_create_by_params({url: url, creator_id: creator_id})&.id
     update_hypothesis_quotes(quotes_text_array)
