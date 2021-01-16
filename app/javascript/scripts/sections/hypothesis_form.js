@@ -3,10 +3,11 @@ import KeyboardOrClick from "../utils/keyboard_or_click.js";
 
 export class HypothesisForm {
   constructor() {
-    const kinds = $("#citationsBlock").attr("data-ckinds") || "";
-    const research = $("#citationsBlock").attr("data-cresearchkinds") || "";
-    this.citationKinds = kinds.split(",");
-    this.researchKinds = research.split(",");
+    const $el = $("#citationsBlock");
+    this.challengeKinds = ($el.attr("data-challengekinds") || "").split(",");
+    this.sameKinds = ($el.attr("data-challengesamekinds") || "").split(",");
+    this.citationKinds = ($el.attr("data-citekinds") || "").split(",");
+    this.researchKinds = ($el.attr("data-citeresearchkinds") || "").split(",");
   }
 
   init() {
@@ -28,14 +29,12 @@ export class HypothesisForm {
       this.updateCitationKind($(el));
     });
 
-    // On citation kind change, update citation
     $("#citationsBlock").on("change", ".challengeKindSelect", (event) => {
-      this.updateCitationKind(
+      this.updateChallengeKind(
         $(event.target).parents(".hypothesisCitationFields")
       );
     });
 
-    // On citation kind change, update citation
     $("#citationsBlock").on("change", ".citationKindSelect", (event) => {
       this.updateCitationKind(
         $(event.target).parents(".hypothesisCitationFields")
@@ -86,14 +85,19 @@ export class HypothesisForm {
       return null;
     }
     const challengeKind = $fields.find(".challengeKindSelect").val();
-    log.debug(challengeKind);
+    const isSameCitationKind = this.sameKinds.includes(challengeKind);
     // Toggle the kind
+    $fields
+      .find(".challengeNewCitationField")
+      .collapse(isSameCitationKind ? "hide" : "show");
   }
 
   updateCitationKind($fields) {
     const citationKind = $fields.find(".citationKindSelect").val();
-    const researchKind = this.researchKinds.includes(citationKind);
+    const isResearchKind = this.researchKinds.includes(citationKind);
     // Toggle the kind
-    $fields.find(".kindResearchField").collapse(researchKind ? "show" : "hide");
+    $fields
+      .find(".kindResearchField")
+      .collapse(isResearchKind ? "show" : "hide");
   }
 }

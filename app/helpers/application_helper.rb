@@ -124,8 +124,10 @@ module ApplicationHelper
   # This is required by both hypothesis#new and edit, so make it consistent
   def citations_block_attributes
     {:id => "citationsBlock",
-     "data-ckinds" => Citation.kinds.join(","),
-     "data-cresearchkinds" => Citation.kinds_research.join(",")}
+     "data-citekinds" => Citation.kinds.join(","),
+     "data-citeresearchkinds" => Citation.kinds_research.join(","),
+     "data-challengekinds" => HypothesisCitation.challenge_kinds.join(","),
+     "data-challengesamekinds" => HypothesisCitation.challenge_same_citation_kinds.join(",")}
   end
 
   def in_admin?

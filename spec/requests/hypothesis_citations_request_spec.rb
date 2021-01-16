@@ -6,7 +6,7 @@ RSpec.describe "hypothesis_citations", type: :request do
   let(:base_url) { "/hypotheses/#{hypothesis.id}/citations" }
   let(:current_user) { nil }
   let!(:hypothesis) { FactoryBot.create(:hypothesis_approved, creator: FactoryBot.create(:user), created_at: Time.current - 1.hour) }
-  let(:challenged_hypothesis_citation) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis) }
+  let(:challenged_hypothesis_citation) { FactoryBot.create(:hypothesis_citation_approved, hypothesis: hypothesis) }
   let(:subject) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: citation_url, creator: current_user) }
   let(:citation) { subject.citation }
 
@@ -52,11 +52,13 @@ RSpec.describe "hypothesis_citations", type: :request do
 
     describe "new" do
       it "renders" do
+        expect(challenged_hypothesis_citation).to be_present
         get "#{base_url}/new"
         expect(response.code).to eq "200"
         expect(response).to render_template("hypothesis_citations/new")
         expect(assigns(:hypothesis)&.id).to eq hypothesis.id
         expect(assigns(:challenged_hypothesis_citation)&.id).to be_blank
+        expect(assigns(:hypothesis_citations_shown)&.pluck(:id)).to eq([challenged_hypothesis_citation.id])
       end
       context "challenge_citation_id" do
         it "renders with challenge" do
@@ -66,14 +68,15 @@ RSpec.describe "hypothesis_citations", type: :request do
           expect(assigns(:hypothesis)&.id).to eq hypothesis.id
           expect(assigns(:challenged_hypothesis_citation)&.id).to eq challenged_hypothesis_citation.id
           expect(assigns(:challenged_hypothesis_citation)&.hypothesis_id).to eq hypothesis.id
+          expect(assigns(:hypothesis_citations_shown)&.pluck(:id)).to eq([challenged_hypothesis_citation.id])
         end
         context "invalid challenged_hypothesis_citation_id" do
           let(:challenged_hypothesis_citation) { FactoryBot.create(:hypothesis_citation) }
           it "flash errors" do
             expect(challenged_hypothesis_citation.hypothesis_id).to_not eq hypothesis.id
-            expect do
+            expect {
               get "#{base_url}/new?challenged_hypothesis_citation_id=#{challenged_hypothesis_citation.to_param}"
-            end.to raise_error(ActiveRecord::RecordNotFound)
+            }.to raise_error(ActiveRecord::RecordNotFound)
           end
         end
       end
@@ -118,6 +121,7 @@ RSpec.describe "hypothesis_citations", type: :request do
         # Test that it sets the right title
         title_tag = response.body[/<title.*<\/title>/]
         expect(title_tag).to eq "<title>Edit - #{subject.citation.title}</title>"
+        expect(assigns(:hypothesis_citations_shown)&.pluck(:id)).to eq([])
       end
       context "approved" do
         let(:subject) { FactoryBot.create(:hypothesis_citation_approved, hypothesis: hypothesis, creator: current_user) }

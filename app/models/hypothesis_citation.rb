@@ -41,8 +41,32 @@ class HypothesisCitation < ApplicationRecord
     kinds - ["hypothesis_supporting"]
   end
 
+  def self.challenge_same_citation_kinds
+    challenge_kinds - ["challenge_by_another_citation"]
+  end
+
+  def self.kinds_data
+    {
+      hypothesis_supporting: {humanized: "Supporting citation"},
+      challenge_citation_quotation: {humanized: "Challenge quotation's accuracy in piece"},
+      challenge_by_another_citation: {humanized: "Challenge based on another citation"}
+    }
+  end
+
+  def self.kind_humanized(str)
+    kinds_data.dig(str&.to_sym, :humanized)
+  end
+
+  def kind_humanized
+    self.class.kind_humanized(kind)
+  end
+
   def challenge?
     !hypothesis_supporting?
+  end
+
+  def challenge_same_citation_kind?
+    self.class.challenge_same_citation_kinds.include?(kind)
   end
 
   # There were some issues with legacy hypothesis_citations having duplicates

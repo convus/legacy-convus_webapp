@@ -13,7 +13,13 @@ class HypothesisCitationsController < ApplicationController
     if params[:challenged_hypothesis_citation_id].present?
       @challenged_hypothesis_citation = @hypothesis.hypothesis_citations.find(params[:challenged_hypothesis_citation_id])
     end
-    @hypothesis_citation ||= @hypothesis.hypothesis_citations.build(challenged_hypothesis_citation: @challenged_hypothesis_citation)
+    if @hypothesis_citation.blank? # Just in case we're rendering again
+      @hypothesis_citation = @hypothesis.hypothesis_citations.build
+      if @challenged_hypothesis_citation.present?
+        @hypothesis_citation.challenged_hypothesis_citation = @challenged_hypothesis_citation
+        @hypothesis_citation.kind = HypothesisCitation.challenge_kinds.first
+      end
+    end
   end
 
   def create
@@ -66,8 +72,11 @@ class HypothesisCitationsController < ApplicationController
   def find_hypothesis_citation
     @hypothesis = Hypothesis.friendly_find!(params[:hypothesis_id])
     @hypothesis_citation = HypothesisCitation.find_by_id(params[:id])
+    @hypothesis_citations_shown = @hypothesis.hypothesis_citations.approved
+
     if @hypothesis_citation&.challenge?
       @challenged_hypothesis_citation = @hypothesis_citation.challenged_hypothesis_citation
+      # Probably should force show challenged hypothesis_citation, even if not approved
     end
   end
 

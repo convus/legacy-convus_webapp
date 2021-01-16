@@ -32,6 +32,7 @@ RSpec.describe HypothesisCitation, type: :model do
         expect(challenge_citation_quotation.hypothesis_id).to eq hypothesis.id
         expect(challenge_citation_quotation.citation_id).to eq citation.id
         expect(challenge_citation_quotation.kind).to eq "challenge_citation_quotation"
+        expect(challenge_citation_quotation.kind_humanized).to eq "Challenge quotation's accuracy in piece"
         expect(challenge_citation_quotation.challenge?).to be_truthy
         expect(challenge_citation_quotation.challenged_hypothesis_citation&.id).to eq hypothesis_citation.id
         expect(challenge_citation_quotation.url).to eq hypothesis_citation.url
