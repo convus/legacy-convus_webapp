@@ -32,8 +32,7 @@
   -# Have to have variable class margin-top or it moves after collapsing expand
   .collapse{id: "CitationId#{hypothesis_citation.id}", class: (skip_challenge ? "mt-4" : "mt-2") }
     - unless skip_challenge
-      %a.btn.btn-outline-danger.btn-sm.mb-2{ href: "#" }
-        Challenge citation
+      = link_to "Challenge citation", new_hypothesis_citation_path(hypothesis_id: @hypothesis.id, challenged_hypothesis_citation_id: hypothesis_citation.id), class: "btn btn-outline-danger btn-sm mb-2"
     %table.table-list.mb-0
       %tbody
         %tr
