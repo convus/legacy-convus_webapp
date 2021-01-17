@@ -1,6 +1,7 @@
 -# Must pass in hypothesis citation
 - skip_challenge ||= false
 - citation ||= hypothesis_citation.citation
+- rendering_challenge ||= false
 
 .col-xl-6.mt-2.mb-2
   - if hypothesis_citation.quotes.none?
@@ -11,6 +12,8 @@
           = hypothesis_citation.id
   - else
     .hypothesis-quotes-block
+      - if rendering_challenge
+        %span.d-block.text-warning.mt-2 Challenged!
       - hypothesis_citation.quotes.each do |quote|
         %blockquote
           = quote.text

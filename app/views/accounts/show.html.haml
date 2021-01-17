@@ -29,6 +29,8 @@
             %td.only-dev-visible.small
               = hypothesis_citation.id
           %td
+            - if hypothesis_citation.challenge?
+              %span.text-warning #{hypothesis_citation.kind_humanized}:
             - if citation.publication.present? && !citation.publication.title_url?
               #{citation.publication.title}:
             %em

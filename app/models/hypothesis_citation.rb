@@ -15,6 +15,7 @@ class HypothesisCitation < ApplicationRecord
 
   has_many :hypothesis_quotes, -> { score_ordered }, dependent: :destroy
   has_many :quotes, through: :hypothesis_quotes
+  has_many :challenges, class_name: "HypothesisCitation", foreign_key: :challenged_hypothesis_citation_id
 
   accepts_nested_attributes_for :citation
 
@@ -30,6 +31,8 @@ class HypothesisCitation < ApplicationRecord
 
   scope :hypothesis_approved, -> { left_joins(:hypothesis).where.not(hypotheses: {approved_at: nil}) }
   scope :challenge, -> { where(kind: challenge_kinds) }
+  # TODO: make this actually order based on score, it's a stub right now
+  scope :score_ordered, -> { reorder(created_at: :desc) }
 
   attr_accessor :add_to_github, :skip_associated_tasks
 

@@ -64,6 +64,8 @@ class HypothesesController < ApplicationController
 
   def find_hypothesis
     @hypothesis = Hypothesis.friendly_find!(params[:id])
+    @hypothesis_citations = @hypothesis.hypothesis_citations.approved
+      .hypothesis_supporting.score_ordered
     @citations = @hypothesis.citations
   end
 

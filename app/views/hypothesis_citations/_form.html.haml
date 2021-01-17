@@ -49,6 +49,8 @@
               %span.sr-only Loading...
 %hr
 %h2.mt-4
+  - if @hypothesis_citations_shown.count == 0
+    No
   - if is_challenge
     Other
   - else
@@ -56,8 +58,6 @@
   citations:
 .row
   - @hypothesis_citations_shown.each do |hypothesis_citation|
-    - next if hypothesis_citation.id == @challenged_hypothesis_citation&.id
-    - next unless hypothesis_citation.quotes.any?
     = render partial: "/hypotheses/show_hypothesis_citation", locals: { hypothesis_citation: hypothesis_citation, skip_challenge: true }
 
 .mt-big
