@@ -101,6 +101,18 @@ RSpec.describe HypothesisCitation, type: :model do
         expect(citation1).to be_valid
       end
     end
+    context "challenge_same_citation_kind" do
+      let(:hypothesis_citation_challenge) do
+        FactoryBot.create(:hypothesis_citation_challenge_citation_quotation,
+          challenged_hypothesis_citation: hypothesis_citation,
+          url: "https://example.com")
+      end
+      it "uses the same url" do
+        expect(hypothesis_citation_challenge).to be_valid
+        expect(hypothesis_citation_challenge.challenge_same_citation_kind?).to be_truthy
+        expect(hypothesis_citation_challenge.url).to eq hypothesis_citation.url
+      end
+    end
   end
 
   describe "quotes_text" do

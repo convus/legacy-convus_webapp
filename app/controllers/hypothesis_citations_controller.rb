@@ -92,7 +92,8 @@ class HypothesisCitationsController < ApplicationController
   end
 
   def permitted_params
-    params.require(:hypothesis_citation).permit(:url, :quotes_text)
+    params.require(:hypothesis_citation).permit(:url, :quotes_text, :kind,
+        :challenged_hypothesis_citation_id, :challenge_description)
       .merge(creator_id: current_user.id)
   end
 

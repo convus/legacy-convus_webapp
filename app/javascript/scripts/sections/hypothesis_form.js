@@ -85,11 +85,27 @@ export class HypothesisForm {
       return null;
     }
     const challengeKind = $fields.find(".challengeKindSelect").val();
-    const isSameCitationKind = this.sameKinds.includes(challengeKind);
-    // Toggle the kind
-    $fields
-      .find(".challengeNewCitationField")
-      .collapse(isSameCitationKind ? "hide" : "show");
+
+    if (this.sameKinds.includes(challengeKind)) {
+      // It's currently challenge_same_citation_kind
+      $fields.find(".challengeNewCitationField").collapse("hide");
+      $fields
+        .find(".challengeNewCitationField .hasRequired")
+        .removeAttr("required");
+    } else {
+      $fields.find(".challengeNewCitationField").collapse("show");
+      $fields
+        .find(".challengeNewCitationField .hasRequired")
+        .addAttr("required");
+    }
+    // // Toggle the kind
+    // $fields
+    //   .find(".challengeNewCitationField")
+    //   .collapse(isSameCitationKind ? "hide" : "show");
+    // if (isSameCitationKind) {
+    //   $fields
+    //   .find(".challengeNewCitationField .hasRequired")
+    // }
   }
 
   updateCitationKind($fields) {

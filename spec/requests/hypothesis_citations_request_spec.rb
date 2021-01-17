@@ -100,12 +100,53 @@ RSpec.describe "hypothesis_citations", type: :request do
         expect(hypothesis_citation.creator_id).to eq current_user.id
         expect(hypothesis_citation.url).to eq citation_url
         expect(hypothesis_citation.quotes_text_array).to match_array(quotes)
+        expect(hypothesis_citation.kind).to eq "hypothesis_supporting"
 
         citation = hypothesis_citation.citation
         expect(citation.creator_id).to eq current_user.id
         expect(citation.approved?).to be_falsey
         expect(citation.pull_request_number).to be_blank
         expect(citation.editable_by?(current_user)).to be_truthy
+      end
+      context "challenged_hypothesis_citation" do
+        let(:challenged_hypothesis_citation_params) do
+          {
+            url: citation_url,
+            quotes_text: quotes_text,
+            challenged_hypothesis_citation_id: challenged_hypothesis_citation.id,
+            kind: "challenge_by_another_citation",
+            challenge_description: "because it needs it",
+            add_to_github: "0"
+          }
+        end
+        it "creates a challenge" do
+          expect(challenged_hypothesis_citation).to be_present
+          expect(hypothesis.reload.hypothesis_citations.count).to eq 1
+          Sidekiq::Worker.clear_all
+          expect {
+            post base_url, params: {hypothesis_citation: challenged_hypothesis_citation_params}
+          }.to change(HypothesisCitation, :count).by 1
+          hypothesis.reload
+          expect(hypothesis.creator_id).to_not eq current_user.id
+          hypothesis_citation = hypothesis.hypothesis_citations.last
+          expect(response).to redirect_to edit_hypothesis_citation_path(hypothesis_id: hypothesis.id, id: hypothesis_citation.id)
+          expect(AddToGithubContentJob.jobs.count).to eq 0
+          expect(flash[:success]).to be_present
+
+          expect(hypothesis_citation.approved?).to be_falsey
+          expect(hypothesis_citation.creator_id).to eq current_user.id
+          expect(hypothesis_citation.url).to eq citation_url
+          expect(hypothesis_citation.quotes_text_array).to match_array(quotes)
+          expect(hypothesis_citation.kind).to eq "challenge_by_another_citation"
+          expect(hypothesis_citation.challenged_hypothesis_citation_id).to eq challenged_hypothesis_citation.id
+          expect(hypothesis_citation.challenge_description).to eq "because it needs it"
+
+          citation = hypothesis_citation.citation
+          expect(citation.creator_id).to eq current_user.id
+          expect(citation.approved?).to be_falsey
+          expect(citation.pull_request_number).to be_blank
+          expect(citation.editable_by?(current_user)).to be_truthy
+        end
       end
     end
 
@@ -122,6 +163,23 @@ RSpec.describe "hypothesis_citations", type: :request do
         title_tag = response.body[/<title.*<\/title>/]
         expect(title_tag).to eq "<title>Edit - #{subject.citation.title}</title>"
         expect(assigns(:hypothesis_citations_shown)&.pluck(:id)).to eq([])
+      end
+      context "challenge" do
+        let!(:subject) { FactoryBot.create(:hypothesis_citation_challenge_citation_quotation, challenged_hypothesis_citation: challenged_hypothesis_citation, creator: current_user) }
+        it "renders" do
+          expect(subject.editable_by?(current_user)).to be_truthy
+          expect(subject.citation.editable_by?(current_user)).to be_falsey
+          expect(subject.kind).to eq "challenge_citation_quotation"
+          get "#{base_url}/#{subject.to_param}/edit"
+          expect(response.code).to eq "200"
+          expect(flash).to be_blank
+          expect(response).to render_template("hypothesis_citations/edit")
+          expect(assigns(:hypothesis_citation)&.id).to eq subject.id
+          # Test that it sets the right title
+          title_tag = response.body[/<title.*<\/title>/]
+          expect(title_tag).to eq "<title>Edit - #{subject.citation.title}</title>"
+          expect(assigns(:hypothesis_citations_shown)&.pluck(:id)).to eq([challenged_hypothesis_citation.id])
+        end
       end
       context "approved" do
         let(:subject) { FactoryBot.create(:hypothesis_citation_approved, hypothesis: hypothesis, creator: current_user) }

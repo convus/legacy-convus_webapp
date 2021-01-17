@@ -107,10 +107,12 @@ class HypothesisCitation < ApplicationRecord
   def set_calculated_attributes
     self.quotes_text = quotes_text_array.join("\n\n")
     self.quotes_text = nil if quotes_text.blank?
-    self.url = UrlCleaner.with_http(UrlCleaner.without_utm(url))
+    self.kind ||= "hypothesis_supporting"
     if challenged_hypothesis_citation.present?
       self.hypothesis_id = challenged_hypothesis_citation.hypothesis_id
+      self.url = challenged_hypothesis_citation.url if challenge_same_citation_kind?
     end
+    self.url = UrlCleaner.with_http(UrlCleaner.without_utm(url))
     self.creator_id ||= hypothesis.creator_id
     self.citation_id = Citation.find_or_create_by_params({url: url, creator_id: creator_id})&.id
     update_hypothesis_quotes(quotes_text_array)
