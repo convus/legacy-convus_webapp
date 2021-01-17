@@ -41,7 +41,6 @@
 
 .row.mt-4
   - @hypothesis.hypothesis_citations.approved.each do |hypothesis_citation|
-    - next unless hypothesis_citation.quotes.any?
     = render partial: "/hypotheses/show_hypothesis_citation", locals: { hypothesis_citation: hypothesis_citation }
 
 - if @hypothesis.approved?
