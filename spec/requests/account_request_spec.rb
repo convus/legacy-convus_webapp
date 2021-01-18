@@ -21,8 +21,8 @@ RSpec.describe "/account", type: :request do
       context "with not submitted things" do
         let!(:hypothesis_citation_not_user) { FactoryBot.create(:hypothesis_citation, creator: FactoryBot.create(:user)) }
         let!(:hypothesis_approved) { FactoryBot.create(:hypothesis_approved, creator: current_user) }
-        let!(:hypothesis_citation_approved) { FactoryBot.create(:hypothesis_citation_approved, creator: current_user) }
-        let(:hypothesis_approved2) { hypothesis_citation_approved.hypothesis }
+        let(:hypothesis_approved2) { FactoryBot.create(:hypothesis_approved, creator: current_user) }
+        let!(:hypothesis_citation_approved) { FactoryBot.create(:hypothesis_citation_approved, hypothesis: hypothesis_approved2) }
         let!(:hypothesis_not_submitted) { FactoryBot.create(:hypothesis, creator: current_user) }
         let!(:hypothesis_citation_not_submitted) { FactoryBot.create(:hypothesis_citation, creator: current_user, hypothesis: hypothesis_approved) }
         let!(:hypothesis_citation_not_submitted2) { FactoryBot.create(:hypothesis_citation, creator: current_user, hypothesis: hypothesis_not_submitted) }

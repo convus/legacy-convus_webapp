@@ -3,8 +3,65 @@ require "rails_helper"
 RSpec.describe HypothesisCitation, type: :model do
   it_behaves_like "GithubSubmittable"
 
-  it "has a valid factory" do
-    expect(FactoryBot.create(:hypothesis_citation)).to be_valid
+  describe "factory" do
+    let(:hypothesis_citation) { FactoryBot.create(:hypothesis_citation) }
+    let(:hypothesis) { hypothesis_citation.hypothesis }
+    let(:citation) { hypothesis_citation.citation }
+    it "has a valid factory" do
+      expect(hypothesis_citation).to be_valid
+      expect(hypothesis_citation.kind).to eq "hypothesis_supporting"
+      expect(hypothesis_citation.challenge?).to be_falsey
+      expect(hypothesis_citation.approved?).to be_falsey
+      # Another hypothesis_citation of same url is invalid
+      hypothesis_citation_invalid = FactoryBot.build(:hypothesis_citation, hypothesis: hypothesis, url: hypothesis_citation.url)
+      expect(hypothesis_citation_invalid).to_not be_valid
+    end
+    context "challenges" do
+      let(:challenge_citation_quotation) do
+        FactoryBot.create(:hypothesis_citation_challenge_citation_quotation,
+          challenged_hypothesis_citation: hypothesis_citation)
+      end
+      let(:challenge_by_another_citation) do
+        FactoryBot.create(:hypothesis_citation_challenge_by_another_citation,
+          :approved,
+          challenged_hypothesis_citation: hypothesis_citation)
+      end
+      it "both are valid simultaneously" do
+        expect(challenge_citation_quotation).to be_valid
+        expect(challenge_citation_quotation.challenged_hypothesis_citation_id).to eq hypothesis_citation.id
+        expect(challenge_citation_quotation.hypothesis_id).to eq hypothesis.id
+        expect(challenge_citation_quotation.citation_id).to eq citation.id
+        expect(challenge_citation_quotation.kind).to eq "challenge_citation_quotation"
+        expect(challenge_citation_quotation.kind_humanized).to eq "Challenge quotation's accuracy in piece"
+        expect(challenge_citation_quotation.challenge?).to be_truthy
+        expect(challenge_citation_quotation.challenged_hypothesis_citation&.id).to eq hypothesis_citation.id
+        expect(challenge_citation_quotation.url).to eq hypothesis_citation.url
+        expect(challenge_citation_quotation.citation_id).to eq hypothesis_citation.citation_id
+        expect(challenge_citation_quotation.approved?).to be_falsey
+        # And the challenge by another citation is valid
+        expect(challenge_by_another_citation).to be_valid
+        expect(challenge_by_another_citation.challenged_hypothesis_citation_id).to eq hypothesis_citation.id
+        expect(challenge_by_another_citation.hypothesis_id).to eq hypothesis.id
+        expect(challenge_by_another_citation.citation_id).to_not eq citation.id
+        expect(challenge_by_another_citation.kind).to eq "challenge_by_another_citation"
+        expect(challenge_by_another_citation.challenge?).to be_truthy
+        expect(challenge_by_another_citation.challenged_hypothesis_citation&.id).to eq hypothesis_citation.id
+        expect(challenge_by_another_citation.citation_id).to be_present
+        expect(challenge_by_another_citation.citation_id).to_not eq hypothesis_citation.id
+        expect(challenge_by_another_citation.approved?).to be_truthy
+        # challenging again with another url is valid
+        challenge_by_another_citation2 = FactoryBot.create(:hypothesis_citation_challenge_by_another_citation, challenged_hypothesis_citation: hypothesis_citation)
+        expect(challenge_by_another_citation2).to be_valid
+        expect(challenge_by_another_citation2.hypothesis_id).to eq hypothesis.id
+        # But challenging by citation quotation again isn't, since it already exists
+        challenge_citation_quotation_invalid = FactoryBot.build(:hypothesis_citation_challenge_citation_quotation, challenged_hypothesis_citation: hypothesis_citation)
+        expect(challenge_citation_quotation_invalid).to_not be_valid
+        # And challenging with the existing url isn't, since it already exists
+        challenge_by_another_citation_invalid = FactoryBot.build(:hypothesis_citation_challenge_by_another_citation, challenged_hypothesis_citation: hypothesis_citation, url: challenge_by_another_citation.url)
+        expect(challenge_by_another_citation_invalid.url).to eq challenge_by_another_citation.url
+        expect(challenge_by_another_citation_invalid).to_not be_valid
+      end
+    end
   end
 
   describe "url" do
@@ -42,6 +99,18 @@ RSpec.describe HypothesisCitation, type: :model do
         expect(hypothesis_citation.citation.id).to_not eq citation1.id
         citation1.reload
         expect(citation1).to be_valid
+      end
+    end
+    context "challenge_same_citation_kind" do
+      let(:hypothesis_citation_challenge) do
+        FactoryBot.create(:hypothesis_citation_challenge_citation_quotation,
+          challenged_hypothesis_citation: hypothesis_citation,
+          url: "https://example.com")
+      end
+      it "uses the same url" do
+        expect(hypothesis_citation_challenge).to be_valid
+        expect(hypothesis_citation_challenge.challenge_same_citation_kind?).to be_truthy
+        expect(hypothesis_citation_challenge.url).to eq hypothesis_citation.url
       end
     end
   end

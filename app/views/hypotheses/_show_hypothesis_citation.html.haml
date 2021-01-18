@@ -1,64 +1,73 @@
 -# Must pass in hypothesis citation
 - skip_challenge ||= false
 - citation ||= hypothesis_citation.citation
+- rendering_challenge ||= false
 
-.col-xl-6
-  .hypothesis-quotes-block
-    - hypothesis_citation.quotes.each do |quote|
-      %blockquote
-        = quote.text
-    .text-right.mt-1
-      %em.small
-        - if citation.present?
-          - if citation.publication.present?
-            %span.less-strong #{citation.publication.title}:
-          "#{citation.title}"
-  .row.no-gutters
-    .citation-score-panel.col-10
-      %span.score-text.text-center
-        citation score
-      - score_display = (citation.score_percentage/10).round
-      - offset = score_display.to_s.length/2 - 0.2 # 0.2 because padding on the citation-score-panel
-      .citation-score{style: "left: #{citation.score_percentage}%; margin-left: -#{offset}rem;"}
-        %span.score-pointer
-        = score_display
-      - 7.times do |n|
-        %span.score-tick
-      %hr
-    .col-2.citation-show-more-wrapper.sans-serif
-      %a{href: "#CitationId#{hypothesis_citation.id}", "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "#CitationId#{hypothesis_citation.id}", "data-queryvalue" => "true"}
-        %strong +
-        show more
-  -# Have to have variable class margin-top or it moves after collapsing expand
-  .collapse{id: "CitationId#{hypothesis_citation.id}", class: (skip_challenge ? "mt-4" : "mt-2") }
-    - unless skip_challenge
-      %a.btn.btn-outline-danger.btn-sm.mb-2{ href: "#" }
-        Challenge citation
-    %table.table-list.mb-0
-      %tbody
-        %tr
-          %td URL
-          %td
-            = link_to citation.url, citation.url
-        - unless citation.skip_published_at_field?
+.col-xl-6.mt-2.mb-2
+  - if hypothesis_citation.quotes.none?
+    - if display_dev_info?
+      .only-dev-visible
+        No quotes for Hypothesis Citation ID:
+        %code
+          = hypothesis_citation.id
+  - else
+    .hypothesis-quotes-block
+      - if rendering_challenge
+        %span.d-block.text-warning.mt-2 Challenged!
+      - hypothesis_citation.quotes.each do |quote|
+        %blockquote
+          = quote.text
+      .text-right.mt-1
+        %em.small
+          - if citation.present?
+            - if citation.publication.present?
+              %span.less-strong #{citation.publication.title}:
+            "#{citation.title}"
+    .row.no-gutters
+      .citation-score-panel.col-10
+        %span.score-text.text-center
+          citation score
+        - score_display = (citation.score_percentage/10).round
+        - offset = score_display.to_s.length/2 - 0.2 # 0.2 because padding on the citation-score-panel
+        .citation-score{style: "left: #{citation.score_percentage}%; margin-left: -#{offset}rem;"}
+          %span.score-pointer
+          = score_display
+        - 7.times do |n|
+          %span.score-tick
+        %hr
+      .col-2.citation-show-more-wrapper.sans-serif
+        %a{href: "#CitationId#{hypothesis_citation.id}", "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "#CitationId#{hypothesis_citation.id}", "data-queryvalue" => "true"}
+          %strong +
+          show more
+    -# Have to have variable class margin-top or it moves after collapsing expand
+    .collapse{id: "CitationId#{hypothesis_citation.id}", class: (skip_challenge ? "mt-4" : "mt-2") }
+      - unless skip_challenge
+        = link_to "Challenge citation", new_hypothesis_citation_path(hypothesis_id: @hypothesis.id, challenged_hypothesis_citation_id: hypothesis_citation.id), class: "btn btn-outline-danger btn-sm mb-2"
+      %table.table-list.mb-0
+        %tbody
           %tr
-            %td Published date
-            %td= citation.published_date_str
-        - unless citation.skip_author_field?
-          %tr
-            %td Author
+            %td URL
             %td
-              - if citation.authors.count < 2
-                = citation.authors.first
-              - else
-                %ul
-                  - citation.authors.each do |author|
-                    %li
-                      = author
-        %tr
-          %td Kind
-          %td= citation.kind_humanized
-    = link_to "view raw data", citation_path(citation), class: "gray-link"
+              = link_to citation.url, citation.url
+          - unless citation.skip_published_at_field?
+            %tr
+              %td Published date
+              %td= citation.published_date_str
+          - unless citation.skip_author_field?
+            %tr
+              %td Author
+              %td
+                - if citation.authors.count < 2
+                  = citation.authors.first
+                - else
+                  %ul
+                    - citation.authors.each do |author|
+                      %li
+                        = author
+          %tr
+            %td Kind
+            %td= citation.kind_humanized
+      = link_to "view raw data", citation_path(citation), class: "gray-link"
 
-    %h4.mt-4 Scoring
-    = render partial: "/citations/score", locals: { citation: citation, skip_header: true }
+      %h4.mt-4 Scoring
+      = render partial: "/citations/score", locals: { citation: citation, skip_header: true }

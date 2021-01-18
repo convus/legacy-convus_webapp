@@ -91,6 +91,19 @@ RSpec.describe "/hypotheses", type: :request do
         title_tag = response.body[/<title.*<\/title>/]
         expect(title_tag).to eq "<title>#{subject.title}</title>"
       end
+      context "with challenged" do
+        let(:challenged_hypothesis_citation) { FactoryBot.create(:hypothesis_citation_approved, hypothesis: subject) }
+        let!(:hypothesis_citation_challenge) { FactoryBot.create(:hypothesis_citation_challenge_citation_quotation, :approved, challenged_hypothesis_citation: challenged_hypothesis_citation) }
+        it "renders" do
+          expect(subject.approved?).to be_truthy
+          expect(hypothesis_citation_challenge.approved?).to be_truthy
+          expect(subject.hypothesis_citations.approved.pluck(:id)).to match_array([challenged_hypothesis_citation.id, hypothesis_citation_challenge.id])
+          get "#{base_url}/#{subject.to_param}"
+          expect(response.code).to eq "200"
+          expect(response).to render_template("hypotheses/show")
+          expect(assigns(:hypothesis_citations).pluck(:id)).to eq([challenged_hypothesis_citation.id])
+        end
+      end
     end
     context "after_sign_in_score and user signed in" do
       let(:current_user) { FactoryBot.create(:user) }

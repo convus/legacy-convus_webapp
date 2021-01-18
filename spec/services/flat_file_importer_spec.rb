@@ -105,8 +105,11 @@ unless ENV["CIRCLECI"]
         refuted_by_hypotheses: [],
         topics: ["environment ", "Air quality"],
         cited_urls: [
-          {url: "https://www.kqed.org/science/1969271/making-sense-of-purple-air-vs-airnow-and-a-new-map-to-rule-them-all", quotes: []}
-        ]
+          {url: "https://www.kqed.org/science/1969271/making-sense-of-purple-air-vs-airnow-and-a-new-map-to-rule-them-all",
+           quotes: [],
+           challenges: nil}
+        ],
+        new_cited_url: nil
       }
     end
     let!(:tag) { Tag.find_or_create_for_title("Environment") }
@@ -241,26 +244,91 @@ unless ENV["CIRCLECI"]
         end
       end
       context "new_cited_url" do
-        let!(:hypothesis_citation) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: "https://example.com/citation_addition") }
-        let(:new_cited_urls) { {url: hypothesis_citation.url, quotes: ["ddsfasdf"]} }
-        let(:hypothesis_attrs_new_cited_url) { hypothesis_attrs.merge(cited_urls: [], new_cited_urls: [new_cited_urls]) }
-        it "doesn't delete the existing url, even though they aren't included" do
+        let!(:hypothesis_citation) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: "https://example.com/citation_addition", quotes_text: "ddsfasdf") }
+        let(:hypothesis_attrs_new_cited_url) { old_attrs.merge(new_cited_url: {url: hypothesis_citation.url, quotes: ["ddsfasdf"], challenges: nil}) }
+        it "adds the new hypothesis_citation" do
           hypothesis.reload
 
           expect(hypothesis_citation.reload.approved?).to be_falsey
           expect(hypothesis.citations.count).to eq 2
           expect(hypothesis.citations.approved.count).to eq 1
+          hypothesis.included_unapproved_hypothesis_citation = hypothesis_citation
+          expect_hashes_to_match(hypothesis.flat_file_serialized, hypothesis_attrs_new_cited_url)
           Sidekiq::Worker.clear_all
 
-          FlatFileImporter.import_hypothesis(hypothesis_attrs_new_cited_url)
+          FlatFileImporter.import_hypothesis(hypothesis.flat_file_serialized)
           hypothesis.reload
-          expect(hypothesis.title).to eq hypothesis_attrs[:title]
-          expect(hypothesis.id).to eq hypothesis_attrs[:id]
+          expect(hypothesis.title).to eq old_attrs[:title]
+          expect(hypothesis.id).to eq old_attrs[:id]
           expect(hypothesis.citations.count).to eq 2
           expect(hypothesis.citations.approved.count).to eq 2
 
           expect(hypothesis_citation.reload.approved?).to be_truthy
           expect(hypothesis_citation.quotes_text).to eq "ddsfasdf"
+          expect(hypothesis_citation.challenged_hypothesis_citation&.id).to be_blank
+        end
+      end
+      context "new challenge" do
+        let(:challenged_hypothesis_citation) { hypothesis.reload.hypothesis_citations.first }
+        let(:quotes_text) { "one weird thing that you should know right now" }
+        let(:hypothesis_attrs_new_cited_url) do
+          old_attrs.merge(new_cited_url: {
+            url: challenged_hypothesis_citation.url,
+            quotes: [quotes_text],
+            challenges: challenged_hypothesis_citation.url})
+        end
+        it "adds the new hypothesis_citation" do
+          hypothesis.reload
+          expect(hypothesis.citations.count).to eq 1
+          expect(hypothesis.citations.approved.pluck(:id)).to eq([challenged_hypothesis_citation.citation_id])
+          Sidekiq::Worker.clear_all
+
+          FlatFileImporter.import_hypothesis(hypothesis_attrs_new_cited_url)
+          hypothesis.reload
+          expect(hypothesis.title).to eq old_attrs[:title]
+          expect(hypothesis.id).to eq old_attrs[:id]
+          expect(hypothesis.citations.count).to eq 2
+          expect(hypothesis.hypothesis_citations.count).to eq 2
+          expect(hypothesis.hypothesis_citations.approved.count).to eq 2
+
+          hypothesis_citation = hypothesis.hypothesis_citations.reorder(:created_at).last
+          expect(hypothesis_citation.reload.approved?).to be_truthy
+          expect(hypothesis_citation.quotes_text).to eq quotes_text
+          expect(hypothesis_citation.url).to eq challenged_hypothesis_citation.url
+          expect(hypothesis_citation.challenged_hypothesis_citation&.id).to eq challenged_hypothesis_citation.id
+          expect(hypothesis_citation.kind).to eq "challenge_citation_quotation"
+        end
+        context "challenge exists in db" do
+          let(:example_url) { "https://example.com/citation_addition" }
+          let(:hypothesis_attrs_new_cited_url) do
+            old_attrs.merge(new_cited_url: {
+              url: example_url,
+              quotes: [quotes_text],
+              challenges: challenged_hypothesis_citation.url})
+          end
+          let!(:hypothesis_citation_challenge) { FactoryBot.create(:hypothesis_citation_challenge_by_another_citation, challenged_hypothesis_citation: challenged_hypothesis_citation, quotes_text: quotes_text, url: example_url) }
+          it "approves the challenge" do
+            hypothesis.reload
+            expect(hypothesis_citation_challenge.reload.approved?).to be_falsey
+            expect(hypothesis.hypothesis_citations.approved.pluck(:id)).to eq([challenged_hypothesis_citation.id])
+            hypothesis.included_unapproved_hypothesis_citation = hypothesis_citation_challenge
+            expect_hashes_to_match(hypothesis.flat_file_serialized, hypothesis_attrs_new_cited_url)
+            Sidekiq::Worker.clear_all
+
+            FlatFileImporter.import_hypothesis(hypothesis.flat_file_serialized)
+            hypothesis.reload
+            expect(hypothesis.title).to eq old_attrs[:title]
+            expect(hypothesis.id).to eq old_attrs[:id]
+            expect(hypothesis.citations.count).to eq 2
+            expect(hypothesis.citations.count).to eq 2
+            expect(hypothesis.citations.approved.count).to eq 2
+
+            expect(hypothesis_citation_challenge.reload.approved?).to be_truthy
+            expect(hypothesis_citation_challenge.quotes_text).to eq quotes_text
+            expect(hypothesis_citation_challenge.url).to eq example_url
+            expect(hypothesis_citation_challenge.challenged_hypothesis_citation&.id).to eq challenged_hypothesis_citation.id
+            expect(hypothesis_citation_challenge.kind).to eq "challenge_by_another_citation"
+          end
         end
       end
     end

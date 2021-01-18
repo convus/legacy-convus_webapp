@@ -6,10 +6,31 @@
 -# Remove is hidden in hypothesis_citations views
 - skip_remove ||= false
 
-= f.hidden_field :id # necessary to do manually, or else it isn't included for new objects
+-# Challenge stuff
+- is_challenge ||= false
+- if is_challenge
+  - if f.object.challenge_same_citation_kind?
+    -# If it's using the same citation, the citation has already been added
+    - render_full_fields = false
+    - challenge_same_citation_collapse_class = "collapse challengeNewCitationField initially-hidden"
+  - else
+    - challenge_same_citation_collapse_class = "collapse challengeNewCitationField show"
+- challenge_same_citation_collapse_class ||= ""
 
-.col-md-6.mb-4.mt-2.collapse.nested-field.citationFields{class: (initially_show ? "show" : "initially-hidden")}
-  .form-group.remove-fields-wrap
+= f.hidden_field :id # necessary to do manually, or else it isn't included for new objects
+.col-md-6.mb-4.mt-2.collapse.nested-field.hypothesisCitationFields{class: (initially_show ? "show" : "initially-hidden")}
+  - if is_challenge
+    = f.hidden_field :challenged_hypothesis_citation_id
+    .form-group
+      - if f.object.id.present? # We don't allow editing the kind after creation
+        .form-control-plaintext
+          = f.object.kind_humanized
+      - else
+        = f.label :kind, "What are you challenging?"
+        - kind_opts = options_for_select(HypothesisCitation.challenge_kinds.map { |k| [HypothesisCitation.kind_humanized(k)&.titleize, k] }, f.object.kind)
+        = f.select :kind, kind_opts, {}, { class: "form-control challengeKindSelect" }
+
+  .form-group.remove-fields-wrap{ class: challenge_same_citation_collapse_class }
     = f.label :url do
       URL
     - unless skip_remove
@@ -39,7 +60,7 @@
             .form-group
               = nested.label :kind, "Citation kind"
               - citation_kind_opts = options_for_select(Citation.kinds.map { |k| [Citation.kind_humanized(k)&.titleize, k] }, nested.object.kind)
-              = nested.select :kind, citation_kind_opts, {}, { class: "form-control kindSelect" }
+              = nested.select :kind, citation_kind_opts, {}, { class: "form-control citationKindSelect" }
 
           .form-group.mt-0.collapse.kindResearchField
             .form-check

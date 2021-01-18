@@ -10,7 +10,13 @@ class HypothesisCitationsController < ApplicationController
 
   def new
     @page_title = "Add citation - #{@hypothesis.title}"
-    @hypothesis_citation ||= @hypothesis.hypothesis_citations.build
+    if @hypothesis_citation.blank? # Just in case we're rendering again
+      @hypothesis_citation = @hypothesis.hypothesis_citations.build
+      if @challenged_hypothesis_citation.present?
+        @hypothesis_citation.challenged_hypothesis_citation = @challenged_hypothesis_citation
+        @hypothesis_citation.kind = HypothesisCitation.challenge_kinds.first
+      end
+    end
   end
 
   def create
@@ -62,9 +68,13 @@ class HypothesisCitationsController < ApplicationController
 
   def find_hypothesis_citation
     @hypothesis = Hypothesis.friendly_find!(params[:hypothesis_id])
-    hypothesis_citation_id = params[:id] || params[:hypothesis_citation_id] # necessary for challenges, probably
-    if hypothesis_citation_id.present?
-      @hypothesis_citation = HypothesisCitation.find(hypothesis_citation_id)
+    @hypothesis_citation = HypothesisCitation.find_by_id(params[:id])
+    @hypothesis_citations_shown = @hypothesis.hypothesis_citations.approved
+
+    if @hypothesis_citation&.challenge? || params[:challenged_hypothesis_citation_id].present?
+      @challenged_hypothesis_citation = @hypothesis_citation&.challenged_hypothesis_citation
+      @challenged_hypothesis_citation ||= @hypothesis.hypothesis_citations.find(params[:challenged_hypothesis_citation_id])
+      @hypothesis_citations_shown = @hypothesis_citations_shown.where.not(id: @challenged_hypothesis_citation.id)
     end
   end
 
@@ -80,7 +90,10 @@ class HypothesisCitationsController < ApplicationController
   end
 
   def permitted_params
-    params.require(:hypothesis_citation).permit(:url, :quotes_text)
+    permitted_attrs = %i[url quotes_text]
+    # Only can update these attrs on create:
+    permitted_attrs += %i[kind challenged_hypothesis_citation_id] if @hypothesis_citation&.id.blank?
+    params.require(:hypothesis_citation).permit(*permitted_attrs)
       .merge(creator_id: current_user.id)
   end
 

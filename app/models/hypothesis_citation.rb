@@ -2,24 +2,75 @@ class HypothesisCitation < ApplicationRecord
   include ApprovedAtable
   include GithubSubmittable
 
+  KIND_ENUM = {
+    hypothesis_supporting: 0,
+    challenge_citation_quotation: 3,
+    challenge_by_another_citation: 4
+  }.freeze
+
   belongs_to :creator, class_name: "User"
   belongs_to :hypothesis
   belongs_to :citation
+  belongs_to :challenged_hypothesis_citation, class_name: "HypothesisCitation"
 
   has_many :hypothesis_quotes, -> { score_ordered }, dependent: :destroy
   has_many :quotes, through: :hypothesis_quotes
+  has_many :challenges, class_name: "HypothesisCitation", foreign_key: :challenged_hypothesis_citation_id
 
   accepts_nested_attributes_for :citation
 
-  validates :url, presence: true, uniqueness: {scope: [:hypothesis_id]}
+  enum kind: KIND_ENUM
+
+  validates :url, presence: true, uniqueness: {
+    scope: [:hypothesis_id, :kind, :challenged_hypothesis_citation_id]
+  }
   validates :hypothesis, presence: true
 
   before_validation :set_calculated_attributes
   after_commit :update_hypothesis
 
   scope :hypothesis_approved, -> { left_joins(:hypothesis).where.not(hypotheses: {approved_at: nil}) }
+  scope :challenge, -> { where(kind: challenge_kinds) }
+  # TODO: make this actually order based on score, it's a stub right now
+  scope :score_ordered, -> { reorder(created_at: :desc) }
 
   attr_accessor :add_to_github, :skip_associated_tasks
+
+  def self.kinds
+    KIND_ENUM.keys.map(&:to_s)
+  end
+
+  def self.challenge_kinds
+    kinds - ["hypothesis_supporting"]
+  end
+
+  def self.challenge_same_citation_kinds
+    challenge_kinds - ["challenge_by_another_citation"]
+  end
+
+  def self.kinds_data
+    {
+      hypothesis_supporting: {humanized: "Supporting citation"},
+      challenge_citation_quotation: {humanized: "Challenge quotation's accuracy in piece"},
+      challenge_by_another_citation: {humanized: "Challenge based on another citation"}
+    }
+  end
+
+  def self.kind_humanized(str)
+    kinds_data.dig(str&.to_sym, :humanized)
+  end
+
+  def kind_humanized
+    self.class.kind_humanized(kind)
+  end
+
+  def challenge?
+    !hypothesis_supporting?
+  end
+
+  def challenge_same_citation_kind?
+    self.class.challenge_same_citation_kinds.include?(kind)
+  end
 
   # There were some issues with legacy hypothesis_citations having duplicates
   # leaving method around until certain they're resolved
@@ -59,6 +110,11 @@ class HypothesisCitation < ApplicationRecord
   def set_calculated_attributes
     self.quotes_text = quotes_text_array.join("\n\n")
     self.quotes_text = nil if quotes_text.blank?
+    self.kind ||= calculated_kind
+    if challenged_hypothesis_citation.present?
+      self.hypothesis_id = challenged_hypothesis_citation.hypothesis_id
+      self.url = challenged_hypothesis_citation.url if challenge_same_citation_kind?
+    end
     self.url = UrlCleaner.with_http(UrlCleaner.without_utm(url))
     self.creator_id ||= hypothesis.creator_id
     self.citation_id = Citation.find_or_create_by_params({url: url, creator_id: creator_id})&.id
@@ -77,7 +133,19 @@ class HypothesisCitation < ApplicationRecord
   def flat_file_serialized
     {
       url: citation.url,
-      quotes: hypothesis_quotes.map(&:quote_text)
+      quotes: hypothesis_quotes.map(&:quote_text),
+      challenges: challenged_hypothesis_citation&.url
     }
+  end
+
+  private
+
+  def calculated_kind
+    return "hypothesis_supporting" if challenged_hypothesis_citation_id.blank?
+    if challenged_hypothesis_citation.url == url
+      "challenge_citation_quotation"
+    else
+      "challenge_by_another_citation"
+    end
   end
 end

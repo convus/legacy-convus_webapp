@@ -3,10 +3,11 @@ import KeyboardOrClick from "../utils/keyboard_or_click.js";
 
 export class HypothesisForm {
   constructor() {
-    const kinds = $("#citationsBlock").attr("data-ckinds") || "";
-    const research = $("#citationsBlock").attr("data-cresearchkinds") || "";
-    this.citationKinds = kinds.split(",");
-    this.researchKinds = research.split(",");
+    const $el = $("#citationsBlock");
+    this.challengeKinds = ($el.attr("data-challengekinds") || "").split(",");
+    this.sameKinds = ($el.attr("data-challengesamekinds") || "").split(",");
+    this.citationKinds = ($el.attr("data-citekinds") || "").split(",");
+    this.researchKinds = ($el.attr("data-citeresearchkinds") || "").split(",");
   }
 
   init() {
@@ -18,6 +19,30 @@ export class HypothesisForm {
       $("#hypothesisForm").submit();
     });
 
+    this.enableAddAndRemoveCitations();
+
+    // Update all the citation fields
+    Array.from(
+      document.getElementsByClassName("hypothesisCitationFields")
+    ).forEach((el) => {
+      this.updateChallengeKind($(el));
+      this.updateCitationKind($(el));
+    });
+
+    $("#citationsBlock").on("change", ".challengeKindSelect", (event) => {
+      this.updateChallengeKind(
+        $(event.target).parents(".hypothesisCitationFields")
+      );
+    });
+
+    $("#citationsBlock").on("change", ".citationKindSelect", (event) => {
+      this.updateCitationKind(
+        $(event.target).parents(".hypothesisCitationFields")
+      );
+    });
+  }
+
+  enableAddAndRemoveCitations() {
     $(".add-fields").on("click keyboard", function(event) {
       event.preventDefault();
       if (!KeyboardOrClick(event)) {
@@ -52,21 +77,35 @@ export class HypothesisForm {
       $eventTarget.find(".hasRequired").removeAttr("required");
       $eventTarget.first().collapse("hide");
     });
-
-    // Update all the citation fields
-    Array.from(
-      document.getElementsByClassName("citationFields")
-    ).forEach((el) => this.updateCitationFields($(el)));
-    // On citation kind change, update citation
-    $("#citationsBlock").on("change", ".kindSelect", (event) => {
-      this.updateCitationFields($(event.target).parents(".citationFields"));
-    });
   }
 
-  updateCitationFields($fields) {
-    const kind = $fields.find(".kindSelect").val();
-    const researchKind = this.researchKinds.includes(kind);
+  updateChallengeKind($fields) {
+    // Generally there isn't a challenge kind select
+    if (!$fields.find(".challengeKindSelect").length) {
+      return null;
+    }
+    const challengeKind = $fields.find(".challengeKindSelect").val();
+
+    if (this.sameKinds.includes(challengeKind)) {
+      // It's currently challenge_same_citation_kind
+      $fields.find(".challengeNewCitationField").collapse("hide");
+      $fields
+        .find(".challengeNewCitationField .hasRequired")
+        .removeAttr("required");
+    } else {
+      $fields.find(".challengeNewCitationField").collapse("show");
+      $fields
+        .find(".challengeNewCitationField .hasRequired")
+        .addAttr("required");
+    }
+  }
+
+  updateCitationKind($fields) {
+    const citationKind = $fields.find(".citationKindSelect").val();
+    const isResearchKind = this.researchKinds.includes(citationKind);
     // Toggle the kind
-    $fields.find(".kindResearchField").collapse(researchKind ? "show" : "hide");
+    $fields
+      .find(".kindResearchField")
+      .collapse(isResearchKind ? "show" : "hide");
   }
 }
