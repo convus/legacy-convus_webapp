@@ -105,8 +105,11 @@ unless ENV["CIRCLECI"]
         refuted_by_hypotheses: [],
         topics: ["environment ", "Air quality"],
         cited_urls: [
-          {url: "https://www.kqed.org/science/1969271/making-sense-of-purple-air-vs-airnow-and-a-new-map-to-rule-them-all", quotes: []}
-        ]
+          {url: "https://www.kqed.org/science/1969271/making-sense-of-purple-air-vs-airnow-and-a-new-map-to-rule-them-all",
+           quotes: [],
+           challenges: nil}
+        ],
+        new_cited_url: nil
       }
     end
     let!(:tag) { Tag.find_or_create_for_title("Environment") }
@@ -241,21 +244,22 @@ unless ENV["CIRCLECI"]
         end
       end
       context "new_cited_url" do
-        let!(:hypothesis_citation) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: "https://example.com/citation_addition") }
-        let(:new_cited_urls) { {url: hypothesis_citation.url, quotes: ["ddsfasdf"]} }
-        let(:hypothesis_attrs_new_cited_url) { hypothesis_attrs.merge(cited_urls: [], new_cited_urls: [new_cited_urls]) }
+        let!(:hypothesis_citation) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: "https://example.com/citation_addition", quotes_text: "ddsfasdf") }
+        let(:hypothesis_attrs_new_cited_url) { old_attrs.merge(new_cited_url: {url: hypothesis_citation.url, quotes: ["ddsfasdf"]}) }
         it "doesn't delete the existing url, even though they aren't included" do
           hypothesis.reload
 
           expect(hypothesis_citation.reload.approved?).to be_falsey
           expect(hypothesis.citations.count).to eq 2
           expect(hypothesis.citations.approved.count).to eq 1
+          hypothesis.included_unapproved_hypothesis_citation = hypothesis_citation
+          expect_hashes_to_match(hypothesis.flat_file_serialized, hypothesis_attrs_new_cited_url)
           Sidekiq::Worker.clear_all
 
-          FlatFileImporter.import_hypothesis(hypothesis_attrs_new_cited_url)
+          FlatFileImporter.import_hypothesis(hypothesis.flat_file_serialized)
           hypothesis.reload
-          expect(hypothesis.title).to eq hypothesis_attrs[:title]
-          expect(hypothesis.id).to eq hypothesis_attrs[:id]
+          expect(hypothesis.title).to eq old_attrs[:title]
+          expect(hypothesis.id).to eq old_attrs[:id]
           expect(hypothesis.citations.count).to eq 2
           expect(hypothesis.citations.approved.count).to eq 2
 

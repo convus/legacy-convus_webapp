@@ -95,7 +95,7 @@ class GithubIntegration
     commit_message = "Add citation to hypothesis: #{hypothesis.title}"
     # Override the flat_file_serialized output to include the passed in hypothesis_citation
     # We are adding a new field to prevent merge conflicts
-    hypothesis.serialized_override = hypothesis.flat_file_serialized.merge(new_cited_url: [hypothesis_citation.flat_file_serialized])
+    hypothesis.included_unapproved_hypothesis_citation = hypothesis_citation
     create_file_on_current_branch(hypothesis.file_path, hypothesis.flat_file_content, commit_message)
 
     # If there is a citation that hasn't been added to github yet, add it to this PR

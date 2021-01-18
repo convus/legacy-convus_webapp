@@ -29,7 +29,7 @@ class Hypothesis < ApplicationRecord
   scope :unrefuted, -> { where(refuted_at: nil) }
   scope :refuted, -> { where.not(refuted_at: nil) }
 
-  attr_accessor :add_to_github, :skip_associated_tasks, :serialized_override, :included_unapproved_hypothesis_citation
+  attr_accessor :add_to_github, :skip_associated_tasks, :included_unapproved_hypothesis_citation
 
   pg_search_scope :text_search, against: :title # TODO: Create tsvector indexes for performance (issues/92)
 
@@ -144,8 +144,7 @@ class Hypothesis < ApplicationRecord
 
   # Required for FlatFileSerializable
   def flat_file_serialized
-    # Enable overriding via attr_writer
-    @serialized_override || HypothesisSerializer.new(self, root: false).as_json
+    HypothesisSerializer.new(self, root: false).as_json
   end
 
   def run_associated_tasks
