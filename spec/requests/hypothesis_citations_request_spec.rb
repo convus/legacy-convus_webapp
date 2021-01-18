@@ -39,8 +39,7 @@ RSpec.describe "hypothesis_citations", type: :request do
   end
   let(:challenged_params) do
     hypothesis_citation_params.merge(challenged_hypothesis_citation_id: challenged_hypothesis_citation.id,
-                                     kind: "challenge_by_another_citation",
-                                     challenge_description: "because it needs it")
+                                     kind: "challenge_by_another_citation")
   end
 
   describe "new" do
@@ -141,7 +140,6 @@ RSpec.describe "hypothesis_citations", type: :request do
           expect(hypothesis_citation.quotes_text_array).to match_array(quotes)
           expect(hypothesis_citation.kind).to eq "challenge_by_another_citation"
           expect(hypothesis_citation.challenged_hypothesis_citation_id).to eq challenged_hypothesis_citation.id
-          expect(hypothesis_citation.challenge_description).to eq "because it needs it"
 
           citation = hypothesis_citation.citation
           expect(citation.creator_id).to eq current_user.id
@@ -174,7 +172,6 @@ RSpec.describe "hypothesis_citations", type: :request do
             expect(hypothesis_citation.quotes_text_array).to match_array(quotes)
             expect(hypothesis_citation.kind).to eq "challenge_citation_quotation"
             expect(hypothesis_citation.challenged_hypothesis_citation_id).to eq challenged_hypothesis_citation.id
-            expect(hypothesis_citation.challenge_description).to eq "because it needs it"
 
             citation = hypothesis_citation.citation
             expect(citation.creator_id).to_not eq current_user.id
@@ -306,7 +303,6 @@ RSpec.describe "hypothesis_citations", type: :request do
           expect(subject.citation_id).to eq citation.id
           expect(subject.kind).to eq "challenge_by_another_citation"
           expect(subject.challenged_hypothesis_citation_id).to eq challenged_hypothesis_citation.id
-          expect(subject.challenge_description).to eq "because it needs it"
 
           citation.reload
           expect(citation.title).to eq full_citation_params[:title]

@@ -130,7 +130,7 @@ class HypothesisCitation < ApplicationRecord
   end
 
   # Serialized into hypothesis flat files, but need to access this from multiple places so...
-  def flat_file_serialized(included_challenges = nil)
+  def flat_file_serialized
     {
       url: citation.url,
       quotes: hypothesis_quotes.map(&:quote_text),

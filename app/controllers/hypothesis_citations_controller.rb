@@ -90,7 +90,7 @@ class HypothesisCitationsController < ApplicationController
   end
 
   def permitted_params
-    permitted_attrs = %i[url quotes_text challenge_description]
+    permitted_attrs = %i[url quotes_text]
     # Only can update these attrs on create:
     permitted_attrs += %i[kind challenged_hypothesis_citation_id] if @hypothesis_citation&.id.blank?
     params.require(:hypothesis_citation).permit(*permitted_attrs)

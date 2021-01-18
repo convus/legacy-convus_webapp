@@ -98,14 +98,6 @@ export class HypothesisForm {
         .find(".challengeNewCitationField .hasRequired")
         .addAttr("required");
     }
-    // // Toggle the kind
-    // $fields
-    //   .find(".challengeNewCitationField")
-    //   .collapse(isSameCitationKind ? "hide" : "show");
-    // if (isSameCitationKind) {
-    //   $fields
-    //   .find(".challengeNewCitationField .hasRequired")
-    // }
   }
 
   updateCitationKind($fields) {
