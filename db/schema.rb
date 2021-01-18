@@ -74,7 +74,7 @@ ActiveRecord::Schema.define(version: 2021_01_15_190642) do
     t.datetime "approved_at"
     t.boolean "submitting_to_github", default: false
     t.bigint "creator_id"
-    t.integer "kind", default: 0
+    t.integer "kind"
     t.text "challenge_description"
     t.bigint "challenged_hypothesis_citation_id"
     t.index ["challenged_hypothesis_citation_id"], name: "index_hypothesis_citations_on_challenged_hypothesis_citation_id"

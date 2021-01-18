@@ -57,8 +57,8 @@ class FlatFileImporter
       hypothesis_citations = hypothesis_attrs[:cited_urls] || []
       # If there is a "new_cited_url", process that too
       hypothesis_citations += [hypothesis_attrs[:new_cited_url]] if hypothesis_attrs[:new_cited_url].present?
-      hypothesis_citations.map do |cited_url|
-        hypothesis_citation = create_hypothesis_citation(hypothesis, cited_url)
+      hypothesis_citations.map do |hc_attrs|
+        hypothesis_citation = create_hypothesis_citation(hypothesis, hc_attrs)
         hypothesis_citation_ids << hypothesis_citation.id
       end
       hypothesis.reload
@@ -95,12 +95,18 @@ class FlatFileImporter
     end
 
     # probably should be private
-    def create_hypothesis_citation(hypothesis, cited_url)
-      hypothesis_citation = hypothesis.hypothesis_citations.where(url: cited_url[:url]).first
-      hypothesis_citation ||= hypothesis.hypothesis_citations.build(url: cited_url[:url])
+    def create_hypothesis_citation(hypothesis, hc_attrs)
+      if hc_attrs[:challenges].present?
+        challenged_id = hypothesis.hypothesis_citations.hypothesis_supporting
+          .where(url: hc_attrs[:challenges]).first&.id
+      end
+      hypothesis_citation = hypothesis.hypothesis_citations.where(url: hc_attrs[:url],
+        challenged_hypothesis_citation_id: challenged_id).first
+      hypothesis_citation ||= hypothesis.hypothesis_citations.build(url: hc_attrs[:url])
       hypothesis_citation.approved_at ||= hypothesis_citation.citation&.approved_at || Time.current
       hypothesis_citation.creator_id ||= hypothesis_citation.citation&.creator_id
-      hypothesis_citation.update(quotes_text: cited_url[:quotes].join("\n"))
+      hypothesis_citation.challenged_hypothesis_citation_id ||= challenged_id
+      hypothesis_citation.update(quotes_text: hc_attrs[:quotes].join("\n"))
       # If we've imported the hypothesis citation through this, we need to approve it
       unless hypothesis_citation.citation.approved?
         hypothesis_citation.citation.update(approved_at: Time.current)

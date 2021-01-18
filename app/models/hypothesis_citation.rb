@@ -110,7 +110,7 @@ class HypothesisCitation < ApplicationRecord
   def set_calculated_attributes
     self.quotes_text = quotes_text_array.join("\n\n")
     self.quotes_text = nil if quotes_text.blank?
-    self.kind ||= "hypothesis_supporting"
+    self.kind ||= calculated_kind
     if challenged_hypothesis_citation.present?
       self.hypothesis_id = challenged_hypothesis_citation.hypothesis_id
       self.url = challenged_hypothesis_citation.url if challenge_same_citation_kind?
@@ -136,5 +136,16 @@ class HypothesisCitation < ApplicationRecord
       quotes: hypothesis_quotes.map(&:quote_text),
       challenges: challenged_hypothesis_citation&.url
     }
+  end
+
+  private
+
+  def calculated_kind
+    return "hypothesis_supporting" if challenged_hypothesis_citation_id.blank?
+    if challenged_hypothesis_citation.url == url
+      "challenge_citation_quotation"
+    else
+      "challenge_by_another_citation"
+    end
   end
 end
