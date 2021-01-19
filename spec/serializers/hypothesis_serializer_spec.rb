@@ -14,7 +14,6 @@ describe HypothesisSerializer, type: :lib do
         title: obj.title,
         id: obj.id,
         topics: [],
-        refuted_by_hypotheses: [],
         cited_urls: [
           {
             url: "http://example.com",
