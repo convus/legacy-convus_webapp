@@ -94,7 +94,7 @@ class ApplicationController < ActionController::Base
       session[:after_sign_in_score] = "#{params[:hypothesis_id]},#{params[:score]},#{params[:kind]}"
       session[:user_return_to] = hypothesis_path(params[:hypothesis_id])
     else
-      session[:user_return_to] = request.path
+      session[:user_return_to] = request.fullpath
     end
   end
 
