@@ -101,7 +101,7 @@ class FlatFileImporter
           .where(url: hc_attrs[:challenges]).first&.id
       end
       hypothesis_citation = hypothesis.hypothesis_citations.where(url: hc_attrs[:url],
-        challenged_hypothesis_citation_id: challenged_id).first
+                                                                  challenged_hypothesis_citation_id: challenged_id).first
       hypothesis_citation ||= hypothesis.hypothesis_citations.build(url: hc_attrs[:url])
       hypothesis_citation.approved_at ||= hypothesis_citation.citation&.approved_at || Time.current
       hypothesis_citation.creator_id ||= hypothesis_citation.citation&.creator_id

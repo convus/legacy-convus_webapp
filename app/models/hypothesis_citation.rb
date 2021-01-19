@@ -33,6 +33,9 @@ class HypothesisCitation < ApplicationRecord
   scope :challenge, -> { where(kind: challenge_kinds) }
   # TODO: make this actually order based on score, it's a stub right now
   scope :score_ordered, -> { reorder(created_at: :desc) }
+  # Trying...
+  # scope :no_approved_challenges, -> { where.missing(:challenges) }
+  # left_outer_joins(:challenges).where(challenges: {id: nil})
 
   attr_accessor :add_to_github, :skip_associated_tasks
 

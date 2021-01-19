@@ -275,7 +275,8 @@ unless ENV["CIRCLECI"]
           old_attrs.merge(new_cited_url: {
             url: challenged_hypothesis_citation.url,
             quotes: [quotes_text],
-            challenges: challenged_hypothesis_citation.url})
+            challenges: challenged_hypothesis_citation.url
+          })
         end
         it "adds the new hypothesis_citation" do
           hypothesis.reload
@@ -304,7 +305,8 @@ unless ENV["CIRCLECI"]
             old_attrs.merge(new_cited_url: {
               url: example_url,
               quotes: [quotes_text],
-              challenges: challenged_hypothesis_citation.url})
+              challenges: challenged_hypothesis_citation.url
+            })
           end
           let!(:hypothesis_citation_challenge) { FactoryBot.create(:hypothesis_citation_challenge_by_another_citation, challenged_hypothesis_citation: challenged_hypothesis_citation, quotes_text: quotes_text, url: example_url) }
           it "approves the challenge" do
