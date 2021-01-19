@@ -78,10 +78,11 @@ RSpec.describe "/hypotheses", type: :request do
         expect(response.code).to eq "200"
         expect(response).to render_template("hypotheses/show")
 
-        get "/#{subject.file_path}"
+        get "/#{subject.file_path}?hypothesis_citation_id=3247971234"
         expect(response.code).to eq "200"
         expect(response).to render_template("hypotheses/show")
         expect(assigns(:hypothesis)&.id).to eq subject.id
+        expect(flash[:error]).to be_present
 
         get "#{base_url}/#{subject.id}"
         expect(response.code).to eq "200"
@@ -101,7 +102,30 @@ RSpec.describe "/hypotheses", type: :request do
           get "#{base_url}/#{subject.to_param}"
           expect(response.code).to eq "200"
           expect(response).to render_template("hypotheses/show")
+          expect(flash).to be_blank
           expect(assigns(:hypothesis_citations).pluck(:id)).to eq([challenged_hypothesis_citation.id])
+          expect(assigns(:unapproved_hypothesis_citation)&.id).to be_blank
+          # And requesting it with the
+          get "#{base_url}/#{subject.to_param}?hypothesis_citation_id=#{hypothesis_citation_challenge.id}"
+          expect(response.code).to eq "200"
+          expect(response).to render_template("hypotheses/show")
+          expect(flash[:success]).to be_present
+          expect(assigns(:hypothesis_citations).pluck(:id)).to eq([challenged_hypothesis_citation.id])
+          expect(assigns(:unapproved_hypothesis_citation)&.id).to be_blank
+        end
+      end
+      context "unapproved hypothesis_citation_id" do
+        let(:challenged_hypothesis_citation) { FactoryBot.create(:hypothesis_citation_approved, hypothesis: subject) }
+        let!(:hypothesis_citation_challenge) { FactoryBot.create(:hypothesis_citation_challenge_citation_quotation, challenged_hypothesis_citation: challenged_hypothesis_citation) }
+        it "renders, includes unapproved_hypothesis_citation" do
+          expect(subject.approved?).to be_truthy
+          expect(hypothesis_citation_challenge.approved?).to be_falsey
+          expect(subject.hypothesis_citations.approved.pluck(:id)).to match_array([challenged_hypothesis_citation.id])
+          get "#{base_url}/#{subject.to_param}?hypothesis_citation_id=#{hypothesis_citation_challenge.id}"
+          expect(response.code).to eq "200"
+          expect(response).to render_template("hypotheses/show")
+          expect(assigns(:hypothesis_citations).pluck(:id)).to eq([challenged_hypothesis_citation.id])
+          expect(assigns(:unapproved_hypothesis_citation)&.id).to eq hypothesis_citation_challenge.id
         end
       end
     end

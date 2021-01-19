@@ -16,6 +16,7 @@ class HypothesisCitation < ApplicationRecord
   has_many :hypothesis_quotes, -> { score_ordered }, dependent: :destroy
   has_many :quotes, through: :hypothesis_quotes
   has_many :challenges, class_name: "HypothesisCitation", foreign_key: :challenged_hypothesis_citation_id
+  has_many :challenges_approved, -> { approved }, class_name: "HypothesisCitation", foreign_key: :challenged_hypothesis_citation_id
 
   accepts_nested_attributes_for :citation
 
@@ -33,9 +34,6 @@ class HypothesisCitation < ApplicationRecord
   scope :challenge, -> { where(kind: challenge_kinds) }
   # TODO: make this actually order based on score, it's a stub right now
   scope :score_ordered, -> { reorder(created_at: :desc) }
-  # Trying...
-  # scope :no_approved_challenges, -> { where.missing(:challenges) }
-  # left_outer_joins(:challenges).where(challenges: {id: nil})
 
   attr_accessor :add_to_github, :skip_associated_tasks
 
@@ -63,12 +61,30 @@ class HypothesisCitation < ApplicationRecord
     kinds_data.dig(str&.to_sym, :humanized)
   end
 
+  # TODO: this should be in sql
+  def self.no_approved_challenges
+    select { |hc| hc.no_approved_challenges? }
+  end
+
+  # TODO: this should be in sql
+  def self.approved_challenges
+    select { |hc| hc.approved_challenges? }
+  end
+
   def kind_humanized
     self.class.kind_humanized(kind)
   end
 
   def challenge?
     !hypothesis_supporting?
+  end
+
+  def approved_challenges?
+    challenges_approved.any?
+  end
+
+  def no_approved_challenges?
+    !approved_challenges?
   end
 
   def challenge_same_citation_kind?

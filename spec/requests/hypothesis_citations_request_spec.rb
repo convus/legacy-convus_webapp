@@ -410,7 +410,7 @@ RSpec.describe "hypothesis_citations", type: :request do
           Sidekiq::Worker.clear_all
           patch "#{base_url}/#{subject.id}", params: {hypothesis_citation: update_add_to_github_params}
           expect(flash[:success]).to be_present
-          expect(response).to redirect_to hypothesis_path(hypothesis.to_param)
+          expect(response).to redirect_to hypothesis_path(hypothesis.to_param, hypothesis_citation_id: subject.id)
           expect(assigns(:hypothesis_citation)&.id).to eq subject.id
           expect(AddToGithubContentJob.jobs.count).to eq 1
           expect(AddToGithubContentJob.jobs.map { |j| j["args"] }.last.flatten).to eq(["HypothesisCitation", subject.id])
@@ -430,7 +430,7 @@ RSpec.describe "hypothesis_citations", type: :request do
                 hypothesis_citation: update_add_to_github_params.merge(initially_toggled: true)
               }
             end
-            expect(response).to redirect_to hypothesis_path(hypothesis.to_param)
+            expect(response).to redirect_to hypothesis_path(hypothesis.to_param, hypothesis_citation_id: subject.id)
             expect(flash[:success]).to be_present
 
             hypothesis.reload
