@@ -102,7 +102,6 @@ unless ENV["CIRCLECI"]
       {
         title: "Purple air sensors are less accurate than EPA sensors. By turning on the conversion \"AQandU\" the data will more closely align with EPA readings",
         id: 2115,
-        refuted_by_hypotheses: [],
         topics: ["environment ", "Air quality"],
         cited_urls: [
           {url: "https://www.kqed.org/science/1969271/making-sense-of-purple-air-vs-airnow-and-a-new-map-to-rule-them-all",
@@ -332,21 +331,6 @@ unless ENV["CIRCLECI"]
             expect(hypothesis_citation_challenge.kind).to eq "challenge_by_another_citation"
           end
         end
-      end
-    end
-    context "refuting hypothesis" do
-      let!(:hypothesis_refuting) { FactoryBot.create(:hypothesis) }
-      let(:hypothesis_attrs_refuted) { hypothesis_attrs.merge(refuted_by_hypotheses: [hypothesis_refuting.title]) }
-      let(:hypothesis) { FlatFileImporter.import_hypothesis(hypothesis_attrs) }
-      it "imports and adds refuting" do
-        hypothesis.reload
-        expect(hypothesis.refuted?).to be_falsey
-        FlatFileImporter.import_hypothesis(hypothesis_attrs_refuted)
-
-        hypothesis.reload
-        expect(hypothesis.refuted?).to be_truthy
-        expect(hypothesis.refuted_at).to be_within(1).of Time.current
-        expect(hypothesis.refuted_by_hypotheses.pluck(:id)).to eq([hypothesis_refuting.id])
       end
     end
   end

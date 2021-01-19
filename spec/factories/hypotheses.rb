@@ -8,14 +8,5 @@ FactoryBot.define do
     end
 
     factory :hypothesis_approved, traits: [:approved]
-
-    factory :hypothesis_refuted do
-      transient do
-        hypothesis_refuting { FactoryBot.create(:hypothesis) }
-      end
-      after(:create) do |hypothesis, evaluator|
-        hypothesis.refuting_refutations.create(refuter_hypothesis: evaluator.hypothesis_refuting)
-      end
-    end
   end
 end

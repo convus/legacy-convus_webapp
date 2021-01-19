@@ -2,15 +2,15 @@
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
 #
-# This file is the source Rails uses to define your schema when running `rails
-# db:schema:load`. When creating a new database, `rails db:schema:load` tends to
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
 # be faster and is potentially less error prone than running all of your
 # migrations from scratch. Old migrations may fail to apply correctly if those
 # migrations use external dependencies or application code.
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_15_190642) do
+ActiveRecord::Schema.define(version: 2021_01_19_190054) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -59,7 +59,6 @@ ActiveRecord::Schema.define(version: 2021_01_15_190642) do
     t.integer "pull_request_number"
     t.integer "score"
     t.boolean "submitting_to_github", default: false
-    t.datetime "refuted_at"
     t.index ["creator_id"], name: "index_hypotheses_on_creator_id"
   end
 
@@ -134,15 +133,6 @@ ActiveRecord::Schema.define(version: 2021_01_15_190642) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["citation_id"], name: "index_quotes_on_citation_id"
-  end
-
-  create_table "refutations", force: :cascade do |t|
-    t.bigint "refuted_hypothesis_id"
-    t.bigint "refuter_hypothesis_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["refuted_hypothesis_id"], name: "index_refutations_on_refuted_hypothesis_id"
-    t.index ["refuter_hypothesis_id"], name: "index_refutations_on_refuter_hypothesis_id"
   end
 
   create_table "tags", force: :cascade do |t|
