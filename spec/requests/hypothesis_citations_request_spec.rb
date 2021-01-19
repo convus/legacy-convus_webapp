@@ -48,6 +48,13 @@ RSpec.describe "hypothesis_citations", type: :request do
       expect(response).to redirect_to new_user_session_path
       expect(session[:user_return_to]).to eq "#{base_url}/new"
     end
+    context "challenge" do
+      it "redirects" do
+        get "#{base_url}/new?challenged_hypothesis_citation_id=#{challenged_hypothesis_citation.to_param}"
+        expect(response).to redirect_to new_user_session_path
+        expect(session[:user_return_to]).to eq "#{base_url}/new?challenged_hypothesis_citation_id=#{challenged_hypothesis_citation.to_param}"
+      end
+    end
   end
 
   describe "edit" do
