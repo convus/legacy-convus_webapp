@@ -38,6 +38,11 @@ RSpec.describe HypothesisCitation, type: :model do
         expect(challenge_citation_quotation.url).to eq hypothesis_citation.url
         expect(challenge_citation_quotation.citation_id).to eq hypothesis_citation.citation_id
         expect(challenge_citation_quotation.approved?).to be_falsey
+        hypothesis_citation.reload
+        expect(hypothesis_citation.challenges.pluck(:id)).to eq([challenge_citation_quotation.id])
+        expect(hypothesis_citation.challenges_approved.pluck(:id)).to eq([])
+        expect(HypothesisCitation.no_approved_challenges.map(&:id)).to eq([hypothesis_citation.id, challenge_citation_quotation.id])
+        expect(HypothesisCitation.approved_challenges.map(&:id)).to eq([])
         # And the challenge by another citation is valid
         expect(challenge_by_another_citation).to be_valid
         expect(challenge_by_another_citation.challenged_hypothesis_citation_id).to eq hypothesis_citation.id
@@ -60,6 +65,11 @@ RSpec.describe HypothesisCitation, type: :model do
         challenge_by_another_citation_invalid = FactoryBot.build(:hypothesis_citation_challenge_by_another_citation, challenged_hypothesis_citation: hypothesis_citation, url: challenge_by_another_citation.url)
         expect(challenge_by_another_citation_invalid.url).to eq challenge_by_another_citation.url
         expect(challenge_by_another_citation_invalid).to_not be_valid
+        hypothesis_citation.reload
+        expect(hypothesis_citation.challenges.pluck(:id)).to eq([challenge_citation_quotation.id, challenge_by_another_citation.id, challenge_by_another_citation2.id])
+        expect(hypothesis_citation.challenges_approved.pluck(:id)).to eq([challenge_by_another_citation.id])
+        expect(HypothesisCitation.no_approved_challenges.map(&:id)).to eq([challenge_citation_quotation.id, challenge_by_another_citation.id, challenge_by_another_citation2.id])
+        expect(HypothesisCitation.approved_challenges.map(&:id)).to eq([hypothesis_citation.id])
       end
     end
   end

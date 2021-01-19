@@ -14,6 +14,16 @@ class HypothesesController < ApplicationController
 
   def show
     @page_title = @hypothesis.title
+    if params[:hypothesis_citation_id].present?
+      hypothesis_citation = @hypothesis.hypothesis_citations.find_by_id(params[:hypothesis_citation_id])
+      if hypothesis_citation.blank?
+        flash[:error] = "Unable to find that citation"
+      elsif hypothesis_citation.approved?
+        flash[:success] = "Citation has been approved and is included on this page"
+      else
+        @unapproved_hypothesis_citation = hypothesis_citation
+      end
+    end
   end
 
   def edit

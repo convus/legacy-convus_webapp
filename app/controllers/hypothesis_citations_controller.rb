@@ -46,7 +46,7 @@ class HypothesisCitationsController < ApplicationController
       end
       if @hypothesis_citation.submitted_to_github?
         flash[:success] = "Citation submitted for review"
-        redirect_to hypothesis_path(@hypothesis)
+        redirect_to hypothesis_path(@hypothesis, hypothesis_citation_id: @hypothesis_citation.to_param)
       else
         flash[:success] = "Citation saved"
         target_url_params = {hypothesis_id: @hypothesis.id, id: @hypothesis_citation.id}

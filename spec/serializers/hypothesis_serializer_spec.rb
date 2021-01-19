@@ -93,9 +93,9 @@ describe HypothesisSerializer, type: :lib do
         ]
       end
       let(:challenge2) do
-        { url: "http://example.com",
-          quotes: ["quote1 is actually this quote"],
-          challenges: "http://example.com" }
+        {url: "http://example.com",
+         quotes: ["quote1 is actually this quote"],
+         challenges: "http://example.com"}
       end
       it "returns with expected stuff" do
         expect(hypothesis_citation1.approved?).to be_truthy
