@@ -102,7 +102,7 @@ describe HypothesisSerializer, type: :lib do
         expect(hypothesis_citation_challenge1.approved?).to be_truthy
         expect(hypothesis_citation_challenge2.approved?).to be_truthy
         obj.reload
-        expect(serializer.as_json.dig(:cited_urls)).to eq(cited_urls + [challenge2])
+        expect(serializer.as_json.dig(:cited_urls)).to match_array(cited_urls + [challenge2])
         expect_hashes_to_match(serializer.as_json, target_challenged)
         expect_hashes_to_match(obj.flat_file_serialized, target_challenged)
         # And test with an unapproved challenge
