@@ -104,8 +104,7 @@ RSpec.describe GithubIntegration do
 
       # Make sure that the above hypothesis_title is actually a title that is used in the content_repository
       # Or this isn't testing updating the file contents
-      # VCR.use_cassette("github_integration-existing_file-create_hypothesis_citation_pull_request", match_requests_on: [:method], record: :new_episodes) do
-      VCR.use_cassette("github_integration-existing_file-create_hypothesis_citation_pull_request", record: :new_episodes) do
+      VCR.use_cassette("github_integration-existing_file-create_hypothesis_citation_pull_request", match_requests_on: [:method], record: :new_episodes) do
         hypothesis.reload
         expect(hypothesis.pull_request_number).to be_blank
         expect(hypothesis.hypothesis_citations.submitted_to_github.count).to eq 1
