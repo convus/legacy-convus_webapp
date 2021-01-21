@@ -8,10 +8,11 @@
       - if render_show_link
         = link_to internal_link_text, hypothesis_path(hypothesis.to_param), class: "internal-link small", data: { confirm: "Are you sure? You will lose unsaved changes!" }
   %p.mt-4
-    %small.less-strong.convertTime.d-inline-block
-      = l hypothesis.created_at, format: :convert_time
-      -# Score hidden for now, because it's inaccurate
-      -# .score-bubble.small{ class: hypothesis_score_class(hypothesis.score) }
-      -#   = hypothesis.score
+    -# Time hidden for now because it isn't that important
+    -# %small.less-strong.convertTime.d-inline-block
+    -#   = l hypothesis.created_at, format: :convert_time
+    -# Score hidden for now, because it's inaccurate
+    -# .score-bubble.small{ class: hypothesis_score_class(hypothesis.score) }
+    -#   = hypothesis.score
     - hypothesis.tags.each do |tag|
       = link_to tag.title, hypotheses_path(search_array: tag.title), class: "tag-bubble small"

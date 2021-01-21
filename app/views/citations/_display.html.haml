@@ -36,7 +36,10 @@
             - if citation.pull_request_number.present?
               %em.small.less-strong.mt-2.d-block
                 Approved by
-                = link_to "PR#{citation.pull_request_number}", citation.pull_request_url
+                = link_to "PR##{citation.pull_request_number}", citation.pull_request_url
+                - if citation.approved_at.present?
+                  %span.convertTime.withPreposition
+                    = l citation.approved_at, format: :convert_time
           - else
             %em.less-strong not approved
       - if display_dev_info?

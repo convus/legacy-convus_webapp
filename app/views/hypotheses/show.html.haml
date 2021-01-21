@@ -140,7 +140,10 @@
                 - if @hypothesis.pull_request_number.present?
                   %em.small.less-strong.d-block.mt-2
                     Approved by
-                    = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
+                    = link_to "PR##{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
+                    - if @hypothesis.approved_at.present?
+                      %span.convertTime.withPreposition
+                        = l @hypothesis.approved_at, format: :convert_time
           %tr
             %td Topics
             %td
