@@ -122,7 +122,7 @@ class GithubIntegration
     if citation.unapproved?
       upsert_file_on_current_branch(citation.file_path, citation.flat_file_content, "Citation: #{citation.title}")
     end
-    pr_body = "Added citation #{hypothesis_citation.challenge? ? 'challenging' : ''} to: "
+    pr_body = "Added citation #{hypothesis_citation.challenge? ? 'challenging' : 'to'}: "
     pr_body += "[#{hypothesis.title}](https://convus.org/hypotheses/#{hypothesis.id}?hypothesis_citation_id=#{hypothesis_citation.id})"
     pull_request = create_pull_request(commit_message, pr_body)
     number = pull_request.url.split("/pulls/").last
