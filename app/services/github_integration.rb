@@ -112,7 +112,7 @@ class GithubIntegration
     hypothesis = hypothesis_citation.hypothesis
     branch_name = "update-hypothesis-#{hypothesis.id}-with-#{hypothesis_citation.id}"
     @current_branch = create_branch(branch_name)
-    commit_message = "Add citation to hypothesis: #{hypothesis.title}"
+    commit_message = "Add challenge to hypothesis: #{hypothesis.title}"
     # put hypothesis_citation in the new_cited_url in the serializer (added as a new field to ward off merge conflicts)
     hypothesis.included_unapproved_hypothesis_citation = hypothesis_citation
     upsert_file_on_current_branch(hypothesis.file_path, hypothesis.flat_file_content, commit_message)
