@@ -128,6 +128,7 @@ class Hypothesis < ApplicationRecord
   end
 
   def set_calculated_attributes
+    self.title = title&.strip
     self.score = calculated_score
   end
 

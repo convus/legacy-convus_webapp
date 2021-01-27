@@ -97,8 +97,9 @@ RSpec.describe Hypothesis, type: :model do
 
   describe "text_search" do
     let!(:hypothesis1) { FactoryBot.create(:hypothesis, title: "bears are neat") }
-    let!(:hypothesis2) { FactoryBot.create(:hypothesis, title: "dragons are neat") }
+    let!(:hypothesis2) { FactoryBot.create(:hypothesis, title: "dragons are neat ") }
     it "finds" do
+      expect(hypothesis2.title).to eq "dragons are neat"
       expect(Hypothesis.text_search("are neat").pluck(:id)).to match_array([hypothesis1.id, hypothesis2.id])
       expect(Hypothesis.text_search("are NEAT").pluck(:id)).to match_array([hypothesis1.id, hypothesis2.id])
       expect(Hypothesis.text_search("Bears").pluck(:id)).to match_array([hypothesis1.id])
