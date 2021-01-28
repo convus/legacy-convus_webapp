@@ -1,0 +1,10 @@
+- challenges = hypothesis_citation.challenges.approved
+- has_challenge = challenges.any?
+%li{class: (has_challenge ? "citation-challenged" : "")}
+  - if has_challenge
+    %span.challenge-connecting-line
+  = render partial: "/hypotheses/show_hypothesis_citation", locals: {hypothesis_citation: hypothesis_citation, rendering_list: true, rendering_challenge: has_challenge}
+  - if has_challenge
+    %ul
+      - challenges.each do |challenge|
+        = render partial: "/hypotheses/hypothesis_citation_challenge_list", locals: {hypothesis_citation: challenge}

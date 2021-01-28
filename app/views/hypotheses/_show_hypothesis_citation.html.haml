@@ -1,9 +1,12 @@
 -# Must pass in hypothesis citation
 - skip_challenge ||= false
 - citation ||= hypothesis_citation.citation
+- rendering_list ||= false
 - rendering_challenge ||= false
+- wrapper_classes = rendering_list ? "mt-2 mb-2" : "col-xl-6 mt-2 mb-2"
 
-.col-xl-6.mt-2.mb-2
+-# = content_tag(rendering_list ? "li" : "div", class: wrapper_classes) do
+%div{class: wrapper_classes}
   - if hypothesis_citation.quotes.none?
     - if display_dev_info?
       .only-dev-visible
@@ -12,8 +15,6 @@
           = hypothesis_citation.id
   - else
     .hypothesis-quotes-block
-      - if rendering_challenge
-        %span.d-block.text-warning.mt-2 Challenged!
       - hypothesis_citation.quotes.each do |quote|
         %blockquote
           = quote.text

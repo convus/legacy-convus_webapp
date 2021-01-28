@@ -52,6 +52,7 @@
     opacity: 0.6;
     text-align: right;
     line-height: 1;
+    font-size: 85%;
     &:hover,
     &:active,
     &.active {
@@ -136,5 +137,31 @@
     border: none;
     height: 1px;
     background: $gray-400;
+  }
+}
+
+.challenged-hypothesis-citation-list {
+  &,
+  ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  li ul {
+    margin-left: 0.25rem;
+    & > li {
+      padding-left: 0.75rem;
+      position: relative;
+    }
+  }
+  .challenge-connecting-line {
+    height: 50%;
+    width: 2px;
+    display: block;
+    position: absolute;
+    background: purple;
+  }
+  li.citation-challenged > div .hypothesis-quotes-block {
+    border-color: $warning;
   }
 }
