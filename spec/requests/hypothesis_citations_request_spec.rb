@@ -39,7 +39,7 @@ RSpec.describe "hypothesis_citations", type: :request do
   end
   let(:challenged_params) do
     hypothesis_citation_params.merge(challenged_hypothesis_citation_id: challenged_hypothesis_citation.id,
-                                     kind: "challenge_by_another_citation")
+      kind: "challenge_by_another_citation")
   end
 
   describe "new" do

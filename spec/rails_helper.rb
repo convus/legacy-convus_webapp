@@ -14,6 +14,10 @@ VCR.configure do |config|
   config.allow_http_connections_when_no_cassette = false
   config.hook_into :webmock
   config.ignore_localhost = true # Turn off for local tests, e.g. feature
+
+  %w[OCTOKIT_ACCESS_TOKEN GITHUB_SECRET].each do |key|
+    config.filter_sensitive_data("<#{key}>") { ENV[key] }
+  end
 end
 
 # Requires supporting ruby files with custom matchers and macros, etc, in

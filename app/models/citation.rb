@@ -139,7 +139,7 @@ class Citation < ApplicationRecord
   end
 
   def authors_str=(val)
-    self.authors = val.split(/\n/).map(&:strip).reject(&:blank?)
+    self.authors = val.split("\n").map(&:strip).reject(&:blank?)
   end
 
   def publication_title=(val)
