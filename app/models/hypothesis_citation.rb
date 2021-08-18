@@ -105,7 +105,7 @@ class HypothesisCitation < ApplicationRecord
 
   def quotes_text_array
     return [] unless quotes_text.present?
-    quotes_text.split(/\n/).reject(&:blank?).map { |t| Quote.normalize(t) }
+    quotes_text.split("\n").reject(&:blank?).map { |t| Quote.normalize(t) }
   end
 
   def update_hypothesis_quotes(text_array)
