@@ -40,6 +40,33 @@
               = button_to score, user_scores_path, { action: "create", params: {score: score, hypothesis_id: @hypothesis.id, kind: "controversy"}, class: "score-item btn btn-link #{active ? 'active' : ''}" }
 
 .row.mt-4
+  .argument-show-block.col
+    %p
+      There are many pieces of evidence that back up the roughly spherical shape of the earth, one of the most easily accessible are <a href="#">photos from space</a>.
+    %p
+      Individuals can observe eclipses and the way that day and night transition around the world:
+      .argument-quote-block
+        %blockquote
+          On a flat Earth, a Sun that shines in all directions would illuminate the entire surface at the same time, and all places would experience sunrise and sunset at the horizon at about the same time. With a spherical Earth, half the planet is in daylight at any given time and the other half experiences nighttime. When a given location on the spherical Earth is in sunlight, its antipode - the location exactly on the opposite side of the Earth - is in darkness.
+        .source
+          %em.small
+            %span.less-strong Wikipedia:
+            "Spherical Earth"
+
+    %p
+      Additionally, it makes sense that the earth would be roughly spherical because it's spinning:
+      .argument-quote-block
+        %blockquote
+          The Earth is massive enough that the pull of gravity maintains its roughly spherical shape. Most of its deviation from spherical stems from the centrifugal force caused by rotation around its north-south axis. This force deforms the sphere into an oblate ellipsoid.
+        .source
+          %em.small
+            %span.less-strong Wikipedia:
+            "Spherical Earth"
+
+.mt-5.pb-2
+-# Added ^ for space
+
+.row.mt-4
   - if @hypothesis_citations.no_approved_challenges.any?
     - @hypothesis_citations.no_approved_challenges.each do |hypothesis_citation|
       = render partial: "/hypotheses/show_hypothesis_citation", locals: {hypothesis_citation: hypothesis_citation, rendering_challenge: false}
