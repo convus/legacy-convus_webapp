@@ -1,6 +1,5 @@
 .argument-show-block {
   @extend .max-width-text-container;
-
   p {
     margin: 0.5rem 0 0;
   }
@@ -9,7 +8,6 @@
     padding: 0.5rem 1rem;
     font-size: 90%;
     blockquote {
-      // font-style: italic;
       margin: 0;
       &:before {
         content: ">";

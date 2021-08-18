@@ -14,6 +14,7 @@ class Hypothesis < ApplicationRecord
   has_many :hypothesis_tags, dependent: :destroy
   has_many :tags, through: :hypothesis_tags
   has_many :hypothesis_quotes, -> { score_ordered }
+  has_many :arguments
   has_many :quotes, through: :hypothesis_quotes
   has_many :user_scores
 
@@ -22,7 +23,7 @@ class Hypothesis < ApplicationRecord
   before_validation :set_calculated_attributes
   after_commit :run_associated_tasks
 
-  attr_accessor :add_to_github, :skip_associated_tasks, :included_unapproved_hypothesis_citation
+  attr_accessor :skip_associated_tasks, :included_unapproved_hypothesis_citation
 
   pg_search_scope :text_search, against: :title # TODO: Create tsvector indexes for performance (issues/92)
 
@@ -41,6 +42,10 @@ class Hypothesis < ApplicationRecord
 
   def self.friendly_find(str)
     super || matching_previous_titles(str).last&.hypothesis
+  end
+
+  def display_id
+    "Hypothesis-#{id}"
   end
 
   # We're saving hypothesis with a bunch of associations, make it easier to override the errors

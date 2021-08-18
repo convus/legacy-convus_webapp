@@ -71,6 +71,11 @@ class HypothesisCitation < ApplicationRecord
     select { |hc| hc.approved_challenges? }
   end
 
+  def self.shown(user = nil)
+    return approved unless user.present?
+    approved.or(where(creator_id: user.id))
+  end
+
   def kind_humanized
     self.class.kind_humanized(kind)
   end
