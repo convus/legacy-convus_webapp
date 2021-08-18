@@ -1,5 +1,6 @@
 class Hypothesis < ApplicationRecord
   include TitleSluggable
+  include ReferenceIdable
   include FlatFileSerializable
   include ApprovedAtable
   include GithubSubmittable
