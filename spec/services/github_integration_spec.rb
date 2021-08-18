@@ -73,7 +73,7 @@ RSpec.describe GithubIntegration do
         initial_pull_requests = open_pull_requests(subject.client)
         pull_request = subject.create_citation_pull_request(citation)
         # IDK wtf is happening with this being the same branch count, but whatever, it works for now
-        # expect(branches(subject.client).count).to be > initial_branch_count
+        expect(branches(subject.client).count).to be >= initial_branch_count
         prs = open_pull_requests(subject.client)
         expect(prs.count).to be > initial_pull_requests.count
         citation.reload
@@ -95,8 +95,8 @@ RSpec.describe GithubIntegration do
     let!(:hypothesis_citation_prior) { FactoryBot.create(:hypothesis_citation_approved, hypothesis: hypothesis, quotes_text: "Some quote here") }
     let!(:hypothesis_citation) do
       hypothesis.hypothesis_citations.create(url: "https://testing.convus.org/examples/etc",
-                                            quotes_text: "Test quote #1\n\nTest quote #2",
-                                            challenged_hypothesis_citation_id: hypothesis_citation_prior.id)
+        quotes_text: "Test quote #1\n\nTest quote #2",
+        challenged_hypothesis_citation_id: hypothesis_citation_prior.id)
     end
 
     it "creates the pull request" do

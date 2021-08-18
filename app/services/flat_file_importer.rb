@@ -79,14 +79,14 @@ class FlatFileImporter
       citation = Citation.where(id: citation_attrs[:id]).first || Citation.new
       citation.approved_at ||= Time.current # If it's in the flat files, it's approved
       citation.update(title: citation_attrs[:title],
-                      kind: Citation.friendly_find_kind(citation_attrs[:kind]) || Citation.kinds.first,
-                      url: citation_attrs[:url],
-                      url_is_not_publisher: citation_attrs[:url_is_not_publisher],
-                      publication_title: citation_attrs[:publication_title],
-                      peer_reviewed: citation_attrs[:peer_reviewed],
-                      url_is_direct_link_to_full_text: citation_attrs[:url_is_direct_link_to_full_text],
-                      published_date_str: citation_attrs[:published_date],
-                      authors: citation_attrs[:authors])
+        kind: Citation.friendly_find_kind(citation_attrs[:kind]) || Citation.kinds.first,
+        url: citation_attrs[:url],
+        url_is_not_publisher: citation_attrs[:url_is_not_publisher],
+        publication_title: citation_attrs[:publication_title],
+        peer_reviewed: citation_attrs[:peer_reviewed],
+        url_is_direct_link_to_full_text: citation_attrs[:url_is_direct_link_to_full_text],
+        published_date_str: citation_attrs[:published_date],
+        authors: citation_attrs[:authors])
       # We need to save first, so we can update the columns if necessary
       unless citation.id == citation_attrs[:id]
         citation.update_columns(id: citation_attrs[:id])
@@ -101,7 +101,7 @@ class FlatFileImporter
           .where(url: hc_attrs[:challenges]).first&.id
       end
       hypothesis_citation = hypothesis.hypothesis_citations.where(url: hc_attrs[:url],
-                                                                  challenged_hypothesis_citation_id: challenged_id).first
+        challenged_hypothesis_citation_id: challenged_id).first
       hypothesis_citation ||= hypothesis.hypothesis_citations.build(url: hc_attrs[:url])
       hypothesis_citation.approved_at ||= hypothesis_citation.citation&.approved_at || Time.current
       hypothesis_citation.creator_id ||= hypothesis_citation.citation&.creator_id
