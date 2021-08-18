@@ -10,10 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_19_190054) do
+ActiveRecord::Schema.define(version: 2021_08_18_163645) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "arguments", force: :cascade do |t|
+    t.bigint "hypothesis_id"
+    t.bigint "creator_id"
+    t.text "text"
+    t.text "body_html"
+    t.integer "score"
+    t.datetime "approved_at"
+    t.integer "pull_request_number"
+    t.boolean "submitting_to_github"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["creator_id"], name: "index_arguments_on_creator_id"
+    t.index ["hypothesis_id"], name: "index_arguments_on_hypothesis_id"
+  end
 
   create_table "citations", force: :cascade do |t|
     t.bigint "publication_id"
@@ -152,6 +167,8 @@ ActiveRecord::Schema.define(version: 2021_01_19_190054) do
     t.boolean "expired", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "argument_id"
+    t.index ["argument_id"], name: "index_user_scores_on_argument_id"
     t.index ["hypothesis_id"], name: "index_user_scores_on_hypothesis_id"
     t.index ["user_id"], name: "index_user_scores_on_user_id"
   end
