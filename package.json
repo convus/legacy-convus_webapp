@@ -11,7 +11,8 @@
       "<rootDir>/babel.config.js",
       "<rootDir>/postcss.config.js",
       "<rootDir>/config/*",
-      "/node_modules/"
+      "/node_modules/",
+      "vendor/bundle/*"
     ]
   },
   "dependencies": {
