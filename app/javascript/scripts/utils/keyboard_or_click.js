@@ -1,14 +1,14 @@
 // If a user presses spacebar while having selected a button, treat that as a click
 const KeyboardOrClick = (event) => {
-  if (event.type === "click") {
-    return true;
-  } else if (event.type === "keypress") {
-    const code = event.charCode || event.keyCode;
+  if (event.type === 'click') {
+    return true
+  } else if (event.type === 'keypress') {
+    const code = event.charCode || event.keyCode
     if (code === 32 || code === 13) {
-      return true;
+      return true
     }
   } else {
-    return false;
+    return false
   }
-};
-export default KeyboardOrClick;
+}
+export default KeyboardOrClick
