@@ -109,11 +109,11 @@ export default class ArgumentForm {
     // log.debug(index)
     let matchIndex = null
     for (const score of scores) {
-      log.debug(score, `${index} ${index === score.index} - ${score.index} - ${score.score}`)
+      log.debug(score, `${refNumber} ${refNumber === score.index} - ${score.index} - ${score.score}`)
       // Put our finger on the scale if the index of the potential match is the same as the index of this quote
-      if (index === score.index && score.score > 0.2) {
+      if (refNumber === score.index && score.score > 0.2) {
         log.debug('in here')
-        matchIndex = index
+        matchIndex = refNumber
         break
       }
     }
@@ -125,7 +125,7 @@ export default class ArgumentForm {
     //   return potentialMatches['0']
     // }
 
-    return matchIndex === null ? false : potentialMatches[matchIndex]
+    return matchIndex === null ? false : potentialMatches[matchIndex.toString()]
   }
 
   // I'd prefer to use lodash throttle - BUT - I don't know how to bind the context correctly

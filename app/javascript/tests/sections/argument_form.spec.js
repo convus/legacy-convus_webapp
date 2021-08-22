@@ -45,10 +45,10 @@ describe('matchingExistingQuote', () => {
   describe('single quote', () => {
     const argumentForm = new ArgumentForm({ blockQuotes: ['something'], existingQuotes: { 0: simpleExistingQuote } })
     it('matches simple thing', () => {
-      expect(argumentForm.matchingExistingQuote({ text: 'something', index: 0 })).toStrictEqual(simpleExistingQuote)
+      expect(argumentForm.matchingExistingQuote({ text: 'something', refNumber: 0 })).toStrictEqual(simpleExistingQuote)
     })
     // it("doesn't match complete non match", () => {
-    //   expect(argumentForm.matchingExistingQuote(text: 'blah blah blah', index: 0)).toBe(false)
+    //   expect(argumentForm.matchingExistingQuote(text: 'blah blah blah', refNumber: 0)).toBe(false)
     // })
   })
 })
