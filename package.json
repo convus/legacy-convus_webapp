@@ -5,6 +5,16 @@
     "test": "jest",
     "standard": "standard --fix"
   },
+  "standard": {
+    "parallel": true,
+    "env": ["jest"],
+    "globals": ["jQuery", "$"],
+    "ignore": [
+      "public/**/*",
+      "node_modules/*",
+      "load_fancy_selects.js"
+    ]
+  },
   "jest": {
     "testEnvironment": "jsdom",
     "testPathIgnorePatterns": [

@@ -1,6 +1,0 @@
-fix: true
-parallel: true
-
-ignore:
-  - public/**/*
-  - node_modules/*
