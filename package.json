@@ -1,6 +1,19 @@
 {
   "name": "convus",
   "private": true,
+  "scripts": {
+    "test": "jest",
+    "standard": "standard --fix"
+  },
+  "jest": {
+    "roots": [
+      "spec/javascript"
+    ],
+    "moduleDirectories": [
+      "node_modules",
+      "app/javascript"
+    ]
+  },
   "dependencies": {
     "@rails/actioncable": "^6.0.0",
     "@rails/activestorage": "^6.0.0",
@@ -20,6 +33,11 @@
   },
   "version": "0.1.0",
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.14.1",
+    "babel-jest": "^27.0.6",
+    "jest": "^27.0.6",
+    "jest-cli": "^27.0.6",
+    "jest-junit": "^12.2.0",
     "prettier": "^1.19.1",
     "webpack-dev-server": "^3.11.0"
   }
