@@ -27,6 +27,13 @@
               Create argument:
         = f.text_area :text, rows: 10, class: "form-control"
   #quoteFields.row
+    -# example only for now
+    .quote-field
+      = hidden_field_tag "argument_quote_ref_number"
+      %p.quote-text
+        This is a quote! Quote party etc
+      .form-group
+        = url_field_tag "quote_1_url", "", class: "form-control", placeholder: "Quote URL source"
 
   .row.pt-4.mt-5
     .col-6.col-md-4.col-xl-3

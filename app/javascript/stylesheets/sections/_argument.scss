@@ -27,15 +27,24 @@
   .quote-field {
     @extend .max-width-text-container;
     @extend .col;
+    font-size: 12px; // keep it small
+    margin: 1rem 0 0;
     .quote-text {
-      font-size: 75%;
-      padding-left: 1rem;
+      padding-left: 0.2rem;
+      margin: 0 0 0.1rem;
       &:before {
         content: ">";
         opacity: 0.3;
         font-size: 80%;
         margin-left: -0.25em;
         display: inline-block;
+      }
+    }
+    .form-group {
+      margin: 0;
+      input {
+        font-size: 12px;
+        padding: 0 0.75rem;
       }
     }
   }

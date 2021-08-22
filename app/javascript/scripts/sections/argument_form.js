@@ -10,13 +10,19 @@ export default class ArgumentForm {
     this.throttleLimit = throttleLimit || 500
   }
 
+  // init is called when loaded on the page - and not in testing
   init () {
-    // assign based on things in the dom. Done in init to make testing easier
-    log.debug(this.blockQuotes)
-    this.blockQuotes = (this.blockQuotes != undefined) ? this.blockQuotes : this.parseArgumentQuotes(
-      $('#argument_text').val()
-    )
-    this.existingQuotes = (this.existingQuotes != undefined) ? this.existingQuotes : window.parseExistingQuotes()
+    // assign initial state based on the dom
+    this.blockQuotes = (this.blockQuotes !== undefined)
+      ? this.blockQuotes
+      : this.parseArgumentQuotes(
+        $('#argument_text').val()
+      )
+    this.existingQuotes = (this.existingQuotes !== undefined)
+      ? this.existingQuotes
+      : this.parseExistingQuotes()
+
+    log.debug(this.existingQuotes)
 
     $('#argument_text').on(
       'keydown keyup update blur',
@@ -24,30 +30,9 @@ export default class ArgumentForm {
     )
   }
 
-  updateArgumentQuotes () {
-    const newBlockQuotes = this.parseArgumentQuotes(
-      $('#argument_text').val()
-    )
-
-    // In additional to throttling - if the quotes haven't changed, don't process
-    if (newBlockQuotes == this.newBlockQuotes) {
-      log.debug('same as previous quotes')
-      return
-    }
-
-    window.blockQuotes = newBlockQuotes
-
-    window.existingQuotes = window.parseExistingQuotes()
-
-    log.debug(blockQuotes, existingQuotes)
-    // $("#quoteFields .quote-field").addClass("unprocessed");
-
-    // blockQuotes.forEach((text, index) => window.updateBlockquote(text, index));
-  }
-
   parseArgumentQuotes (text) {
     // Regex out the blockquote sections
-    const quoteRegexp = /(^|\n)\s?>[^\n]*/g
+    const quoteRegexp = /(^|\n)\s*>[^\n]*/g
     const match = text.match(quoteRegexp) || []
 
     // regex out the "> " from the quotes, ignore any empty quotes
@@ -63,11 +48,42 @@ export default class ArgumentForm {
       log.debug($this)
       existingQuotes[String(index)] = {
         matched: false,
-        text: $this.find('.quote-text').text(),
+        text: $this.find('.quote-text').text().trim(),
         removed: $this.hasClass('removed')
       }
     })
     return existingQuotes
+  }
+
+  updateArgumentQuotes () {
+    const newBlockQuotes = this.parseArgumentQuotes(
+      $('#argument_text').val()
+    )
+
+    // In additional to throttling - if the quotes haven't changed, don't process
+    if (this.arrayEquals(this.blockQuotes, newBlockQuotes)) {
+      // log.debug("same as previous quotes")
+      return
+    }
+
+    this.blockQuotes = newBlockQuotes
+    this.existingQuotes = this.parseExistingQuotes()
+
+    log.debug(this.blockQuotes, this.existingQuotes)
+    // $("#quoteFields .quote-field").addClass("unprocessed");
+
+    // blockQuotes.forEach((text, index) => window.updateBlockquote(text, index));
+  }
+
+  renderQuote (text, index, removed, id) {
+    // if there is an existing quote with the ID, grab it
+
+    // otherwise, build a new quote
+
+    // If this is the first quote, prepend it to the quoteFields
+
+    // otherwise, put it after the element with the preceding index
+
   }
 
   updateBlockquote (text, index) {
@@ -105,13 +121,18 @@ export default class ArgumentForm {
     } else {
       log.debug('new field')
       const field =
-        index == 0 ? $('#quoteFields') : $('#quoteFields .quote-field')[index]
+        index === 0 ? $('#quoteFields') : $('#quoteFields .quote-field')[index]
       // log.debug(field);
 
       field.prepend(
         `<div class="quote-field"><p class="quote-text">${quoteText}</p></div>`
       )
     }
+  }
+
+  // h/t https://masteringjs.io/tutorials/fundamentals/compare-arrays
+  arrayEquals (a, b) {
+    return Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.every((val, index) => val === b[index])
   }
 
   // h/t to https://towardsdev.com/debouncing-and-throttling-in-javascript-8862efe2b563
@@ -156,7 +177,7 @@ export default class ArgumentForm {
       shorter = s1
     }
     const longerLength = longer.length
-    if (longerLength == 0) {
+    if (longerLength === 0) {
       return 1.0
     }
     return (
@@ -172,11 +193,11 @@ export default class ArgumentForm {
     for (let i = 0; i <= s1.length; i++) {
       let lastValue = i
       for (let j = 0; j <= s2.length; j++) {
-        if (i == 0) costs[j] = j
+        if (i === 0) costs[j] = j
         else {
           if (j > 0) {
             let newValue = costs[j - 1]
-            if (s1.charAt(i - 1) != s2.charAt(j - 1)) {
+            if (s1.charAt(i - 1) !== s2.charAt(j - 1)) {
               newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1
             }
             costs[j - 1] = lastValue

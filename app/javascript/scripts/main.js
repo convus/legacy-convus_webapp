@@ -10,8 +10,8 @@ import PeriodSelector from './utils/period_selector.js'
 import Chartkick from 'chartkick'
 import Chart from 'chart.js'
 
-import { HypothesisForm } from '../scripts/sections/hypothesis_form.js'
-import { ArgumentForm } from '../scripts/sections/argument_form.js'
+import HypothesisForm from '../scripts/sections/hypothesis_form.js'
+import ArgumentForm from '../scripts/sections/argument_form.js'
 
 window.Chartkick = Chartkick
 Chartkick.addAdapter(Chart)

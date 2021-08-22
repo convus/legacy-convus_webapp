@@ -1,7 +1,7 @@
 import log from '../utils/log'
 import KeyboardOrClick from '../utils/keyboard_or_click.js'
 
-export class HypothesisForm {
+export default class HypothesisForm {
   constructor () {
     const $el = $('#citationsBlock')
     this.challengeKinds = ($el.attr('data-challengekinds') || '').split(',')
