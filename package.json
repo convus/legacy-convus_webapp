@@ -1,6 +1,30 @@
 {
   "name": "convus",
   "private": true,
+  "scripts": {
+    "test": "jest",
+    "standard": "standard --fix"
+  },
+  "standard": {
+    "parallel": true,
+    "env": ["jest"],
+    "globals": ["jQuery", "$"],
+    "ignore": [
+      "public/**/*",
+      "node_modules/*",
+      "load_fancy_selects.js"
+    ]
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "testPathIgnorePatterns": [
+      "<rootDir>/babel.config.js",
+      "<rootDir>/postcss.config.js",
+      "<rootDir>/config/*",
+      "/node_modules/",
+      "vendor/bundle/*"
+    ]
+  },
   "dependencies": {
     "@rails/actioncable": "^6.0.0",
     "@rails/activestorage": "^6.0.0",
@@ -20,7 +44,13 @@
   },
   "version": "0.1.0",
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.14.1",
+    "babel-jest": "^27.0.6",
+    "jest": "^27.0.6",
+    "jest-cli": "^27.0.6",
+    "jest-junit": "^12.2.0",
     "prettier": "^1.19.1",
+    "standard": "^16.0.3",
     "webpack-dev-server": "^3.11.0"
   }
 }
