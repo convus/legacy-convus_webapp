@@ -1,7 +1,0 @@
-fix: true
-parallel: true
-globals: ["jQuery", "$"]
-
-ignore:
-  - public/**/*
-  - node_modules/*
