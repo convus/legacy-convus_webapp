@@ -68,7 +68,7 @@ jobs:
           command: |
             bundle exec rails db:create db:schema:load
       - run:
-          name: Run tests
+          name: Rspec tests
           command: |
             mkdir -p test-results/rspec test-artifacts
             TESTFILES=$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
@@ -79,6 +79,13 @@ jobs:
                               --out test-results/rspec/rspec.xml \
                               --format progress \
                               -- ${TESTFILES}
+      - run:
+          name: Jest Tests
+          command: |
+            mkdir -p test-results/junit
+            yarn test --ci --runInBand --reporters=default --reporters=jest-junit
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: "test-results/junit/"
       - store_test_results:
           path: test-results
       - store_artifacts:
