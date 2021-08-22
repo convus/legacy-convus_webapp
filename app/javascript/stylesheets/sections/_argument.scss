@@ -22,3 +22,21 @@
     }
   }
 }
+
+#argumentForm {
+  .quote-field {
+    @extend .max-width-text-container;
+    @extend .col;
+    .quote-text {
+      font-size: 75%;
+      padding-left: 1rem;
+      &:before {
+        content: ">";
+        opacity: 0.3;
+        font-size: 80%;
+        margin-left: -0.25em;
+        display: inline-block;
+      }
+    }
+  }
+}

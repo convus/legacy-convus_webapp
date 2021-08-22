@@ -2,7 +2,6 @@ require "rails_helper"
 
 RSpec.describe Argument, type: :model do
   it_behaves_like "GithubSubmittable"
-  it_behaves_like "ReferenceIdable"
 
   describe "factory" do
     let(:argument) { FactoryBot.create(:argument) }

@@ -13,6 +13,7 @@ import Chart from "chart.js";
 Chartkick.addAdapter(Chart);
 
 import { HypothesisForm } from "../scripts/sections/hypothesis_form.js";
+import { ArgumentForm } from "../scripts/sections/argument_form.js";
 
 $(document).on("turbolinks:load", function() {
   if (!window.timeParser) {
@@ -28,6 +29,11 @@ $(document).on("turbolinks:load", function() {
   if ($("#hypothesisForm").length) {
     window.hypothesisForm = new HypothesisForm();
     hypothesisForm.init();
+  }
+
+  if ($("#argumentForm").length) {
+    window.argumentForm = new ArgumentForm();
+    argumentForm.init();
   }
 
   $(".addQueryParam").on("click", (e) => {

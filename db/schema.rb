@@ -10,10 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_18_180955) do
+ActiveRecord::Schema.define(version: 2021_08_21_213928) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "argument_quotes", force: :cascade do |t|
+    t.bigint "argument_id"
+    t.bigint "citation_id"
+    t.bigint "creator_id"
+    t.text "text"
+    t.text "url"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["argument_id"], name: "index_argument_quotes_on_argument_id"
+    t.index ["citation_id"], name: "index_argument_quotes_on_citation_id"
+    t.index ["creator_id"], name: "index_argument_quotes_on_creator_id"
+  end
 
   create_table "arguments", force: :cascade do |t|
     t.bigint "hypothesis_id"
@@ -21,7 +34,6 @@ ActiveRecord::Schema.define(version: 2021_08_18_180955) do
     t.text "text"
     t.text "body_html"
     t.integer "score"
-    t.string "reference_id"
     t.datetime "approved_at"
     t.integer "pull_request_number"
     t.boolean "submitting_to_github", default: false
@@ -75,7 +87,6 @@ ActiveRecord::Schema.define(version: 2021_08_18_180955) do
     t.integer "pull_request_number"
     t.integer "score"
     t.boolean "submitting_to_github", default: false
-    t.string "reference_id"
     t.index ["creator_id"], name: "index_hypotheses_on_creator_id"
   end
 
@@ -149,7 +160,6 @@ ActiveRecord::Schema.define(version: 2021_08_18_180955) do
     t.text "text"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "reference_id"
     t.index ["citation_id"], name: "index_quotes_on_citation_id"
   end
 

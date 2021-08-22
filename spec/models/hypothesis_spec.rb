@@ -2,7 +2,6 @@ require "rails_helper"
 
 RSpec.describe Hypothesis, type: :model do
   it_behaves_like "TitleSluggable"
-  it_behaves_like "ReferenceIdable"
   it_behaves_like "GithubSubmittable"
 
   it "has a valid factory" do

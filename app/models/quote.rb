@@ -1,6 +1,4 @@
 class Quote < ApplicationRecord
-  include ReferenceIdable
-
   belongs_to :citation
   has_many :hypothesis_quotes
 

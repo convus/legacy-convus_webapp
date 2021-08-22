@@ -9,8 +9,6 @@ class CreateArguments < ActiveRecord::Migration[6.1]
 
       t.integer :score
 
-      t.string :reference_id
-
       t.datetime :approved_at
       t.integer :pull_request_number
       t.boolean :submitting_to_github, default: false

@@ -1,5 +1,4 @@
 class Argument < ApplicationRecord
-  include ReferenceIdable
   include ApprovedAtable
   include GithubSubmittable
   include PgSearch::Model
