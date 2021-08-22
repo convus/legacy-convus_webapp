@@ -6,7 +6,13 @@
     "standard": "standard --fix"
   },
   "jest": {
-    "testEnvironment": "jsdom"
+    "testEnvironment": "jsdom",
+    "testPathIgnorePatterns": [
+      "<rootDir>/babel.config.js",
+      "<rootDir>/postcss.config.js",
+      "<rootDir>/config/webpack/test.js",
+      "/node_modules/"
+    ]
   },
   "dependencies": {
     "@rails/actioncable": "^6.0.0",
@@ -33,6 +39,7 @@
     "jest-cli": "^27.0.6",
     "jest-junit": "^12.2.0",
     "prettier": "^1.19.1",
+    "prettier-standard": "^16.4.1",
     "webpack-dev-server": "^3.11.0"
   }
 }
