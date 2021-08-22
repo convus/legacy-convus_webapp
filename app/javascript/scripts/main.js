@@ -33,7 +33,7 @@ $(document).on('turbolinks:load', function () {
   }
 
   if ($('#argumentForm').length) {
-    window.argumentForm = new ArgumentForm()
+    window.argumentForm = new ArgumentForm({})
     window.argumentForm.init()
   }
 

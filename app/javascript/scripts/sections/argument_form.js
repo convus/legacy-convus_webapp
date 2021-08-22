@@ -1,9 +1,10 @@
 import log from '../utils/log'
+import _ from 'lodash' // TODO: only import the parts needed
 
 // TODO: make less dependent on jquery
 export default class ArgumentForm {
   // Enable passing in, primarily for testing
-  constructor (blockQuotes, existingQuotes, throttleLimit) {
+  constructor ({ blockQuotes, existingQuotes, throttleLimit }) {
     this.blockQuotes = blockQuotes
     this.existingQuotes = existingQuotes
     // maybe should be based on the power of the device that is editing?
@@ -35,9 +36,13 @@ export default class ArgumentForm {
     const quoteRegexp = /(^|\n)\s*>[^\n]*/g
     const match = text.match(quoteRegexp) || []
 
-    // regex out the "> " from the quotes, ignore any empty quotes
+    // regex out the "> " from the quotes
+    // - ignore any empty quotes
+    // - Trim the string
+    // - remove duplicates
     const replaceRegexp = /(^|\n)\s*>/
-    return match.map(str => str.replace(replaceRegexp, '').trim()).filter(str => str.length > 0)
+    return _.uniq(match.map(str => str.replace(replaceRegexp, '').trim())
+      .filter(str => str.length > 0))
   }
 
   parseExistingQuotes () {
@@ -45,10 +50,10 @@ export default class ArgumentForm {
 
     $('#quoteFields .quote-field').each(function (index) {
       const $this = $(this)
-      log.debug($this)
       existingQuotes[String(index)] = {
         matched: false,
         text: $this.find('.quote-text').text().trim(),
+        id: $this.find('.ref-number-field').val(),
         removed: $this.hasClass('removed')
       }
     })
@@ -59,82 +64,72 @@ export default class ArgumentForm {
     const newBlockQuotes = this.parseArgumentQuotes(
       $('#argument_text').val()
     )
-
     // In additional to throttling - if the quotes haven't changed, don't process
-    if (this.arrayEquals(this.blockQuotes, newBlockQuotes)) {
-      // log.debug("same as previous quotes")
+    if (_.isEqual(this.blockQuotes, newBlockQuotes)) {
       return
     }
 
     this.blockQuotes = newBlockQuotes
     this.existingQuotes = this.parseExistingQuotes()
 
-    log.debug(this.blockQuotes, this.existingQuotes)
-    // $("#quoteFields .quote-field").addClass("unprocessed");
-
-    // blockQuotes.forEach((text, index) => window.updateBlockquote(text, index));
+    this.blockQuotes.forEach((text, index) => window.renderQuote(false, text, index))
+    // THEN - for any unmatched existing quotes, update them to be removed
   }
 
+  // NOTE: for removed quotes, index doesn't matter
   renderQuote (text, index, removed, id) {
+    const isRemoved = !!removed
     // if there is an existing quote with the ID, grab it
-
-    // otherwise, build a new quote
-
+    let quote = this.matchingExistingQuote(text, index)
+    if (quote !== undefined) {
+      // Update matched to be truthy
+      this.existingQuotes[String(index)].matched = true
+    } else {
+      // otherwise, this quote wasn't found so build a new quote
+      quote = {
+        matched: true,
+        text: text,
+        id: String(new Date().getTime()), // simple ID generation
+        removed: isRemoved
+      }
+    }
     // If this is the first quote, prepend it to the quoteFields
 
     // otherwise, put it after the element with the preceding index
-
   }
 
-  updateBlockquote (text, index) {
-    const regexp = /(^|\n)\s*>/
-    const quoteText = text.replace(regexp, '')
-
-    let quoteMatchIndex = null
-
-    // // If there is only one block quote, assume this is it.
-    // if (window.blockQuotes.length == 1 && index == 0 && ) {
-    //   quoteMatchIndex = index;
-    // }
-    if ($('#quoteFields .quote-field.unprocessed').length) {
-      log.debug('ffffff')
-      // First, check if the index matched quote field matches and set it if so.
-      if ($('#quoteFields .quote-field')[index].length) {
-        // Might want to make this match loser if this is the last quote in the argument
-        log.debug(`quote field index!! ${index}`)
-        if (window.looksLikeMatch($('#quoteFields .quote-field')[index])) {
-          quoteMatchIndex = index
-        }
+  matchingExistingQuote ({ text, refNumber }) {
+    // get entries ([k, v]) that aren't already matched
+    const potentialMatches = Object.entries(this.existingQuotes).filter(entry => !entry[1].matched)
+    // Scores is an array sorted by the score (high to low), with entry index
+    const scores = _.sortBy(potentialMatches.map((entry) => {
+      return { index: parseInt(entry[0], 10), score: this.similarity(text, entry[1].text) }
+    }), 'score')
+    // log.debug(potentialMatches)
+    // log.debug(index)
+    let matchIndex = null
+    for (const score of scores) {
+      log.debug(score, `${index} ${index === score.index} - ${score.index} - ${score.score}`)
+      // Put our finger on the scale if the index of the potential match is the same as the index of this quote
+      if (index === score.index && score.score > 0.2) {
+        log.debug('in here')
+        matchIndex = index
+        break
       }
     }
+    log.debug(matchIndex)
+    // Put our finger on the scale if the index of the potential match is the same as the index of this quote
+    // if (this.blockQuotes.length == 1 && Object.keys(potentialMatches).length == 1 &&
+    //   scores[0].score > 0) {
+    //   log.debug(scores[0])
+    //   return potentialMatches['0']
+    // }
 
-    // test quoteMatches - one of the existing quote elements matches the text closely enough
-    let $quoteField = null
-    log.debug(
-      `blockquote length: ${window.blockQuotes.length} index: ${index} quoteMatchIndex: ${quoteMatchIndex}`
-    )
-    if (quoteMatchIndex !== null) {
-      log.debug('matched something!')
-      $quoteField = $($('#quoteFields .quote-field')[index])
-      $quoteField.removeClass('unprocessed')
-      $quoteField.find('.quote-text').text(quoteText)
-    } else {
-      log.debug('new field')
-      const field =
-        index === 0 ? $('#quoteFields') : $('#quoteFields .quote-field')[index]
-      // log.debug(field);
-
-      field.prepend(
-        `<div class="quote-field"><p class="quote-text">${quoteText}</p></div>`
-      )
-    }
+    return matchIndex === null ? false : potentialMatches[matchIndex]
   }
 
-  // h/t https://masteringjs.io/tutorials/fundamentals/compare-arrays
-  arrayEquals (a, b) {
-    return Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.every((val, index) => val === b[index])
-  }
-
+  // I'd prefer to use lodash throttle - BUT - I don't know how to bind the context correctly
+  // So I'm using this throttle, until I figure out how to bind
   // h/t to https://towardsdev.com/debouncing-and-throttling-in-javascript-8862efe2b563
   throttle (func, limit) {
     let lastFunc
@@ -157,16 +152,6 @@ export default class ArgumentForm {
     }
   }
 
-  looksLikeMatch (quote, quoteEl) {
-    $quoteEl = $(quoteEl)
-    // Make sure it isn't processed
-    if (!$quoteEl.hasClass('unprocessed')) {
-      log.debug('has class!!!')
-      return false
-    }
-    return true
-  }
-
   // levenstein matching (TODO: improve)
   // h/t https://stackoverflow.com/questions/10473745/compare-strings-javascript-return-of-likely
   similarity (s1, s2) {
@@ -181,13 +166,13 @@ export default class ArgumentForm {
       return 1.0
     }
     return (
-      (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength)
+      (longerLength - this.editDistance(longer, shorter)) / parseFloat(longerLength)
     )
   }
 
   editDistance (s1, s2) {
-    s1 = s1.toLowerCase()
-    s2 = s2.toLowerCase()
+    s1 = s1.toString().toLowerCase().trim() // should already be trimmed, but just in case
+    s2 = s2.toString().toLowerCase().trim() // should already be trimmed, but just in case
 
     const costs = new Array()
     for (let i = 0; i <= s1.length; i++) {
@@ -210,3 +195,58 @@ export default class ArgumentForm {
     return costs[s2.length]
   }
 }
+
+// Previous stuff...
+// looksLikeMatch (quote, quoteEl) {
+//   $quoteEl = $(quoteEl)
+//   // Make sure it isn't processed
+//   if (!$quoteEl.hasClass('unprocessed')) {
+//     log.debug('has class!!!')
+//     return false
+//   }
+//   return true
+// }
+
+// updateBlockquote (text, index) {
+//   const regexp = /(^|\n)\s*>/
+//   const quoteText = text.replace(regexp, '')
+
+//   let quoteMatchIndex = null
+
+//   // // If there is only one block quote, assume this is it.
+//   // if (window.blockQuotes.length == 1 && index == 0 && ) {
+//   //   quoteMatchIndex = index;
+//   // }
+//   if ($('#quoteFields .quote-field.unprocessed').length) {
+//     log.debug('ffffff')
+//     // First, check if the index matched quote field matches and set it if so.
+//     if ($('#quoteFields .quote-field')[index].length) {
+//       // Might want to make this match loser if this is the last quote in the argument
+//       log.debug(`quote field index!! ${index}`)
+//       if (window.looksLikeMatch($('#quoteFields .quote-field')[index])) {
+//         quoteMatchIndex = index
+//       }
+//     }
+//   }
+
+//   // test quoteMatches - one of the existing quote elements matches the text closely enough
+//   let $quoteField = null
+//   log.debug(
+//     `blockquote length: ${window.blockQuotes.length} index: ${index} quoteMatchIndex: ${quoteMatchIndex}`
+//   )
+//   if (quoteMatchIndex !== null) {
+//     log.debug('matched something!')
+//     $quoteField = $($('#quoteFields .quote-field')[index])
+//     $quoteField.removeClass('unprocessed')
+//     $quoteField.find('.quote-text').text(quoteText)
+//   } else {
+//     log.debug('new field')
+//     const field =
+//       index === 0 ? $('#quoteFields') : $('#quoteFields .quote-field')[index]
+//     // log.debug(field);
+
+//     field.prepend(
+//       `<div class="quote-field"><p class="quote-text">${quoteText}</p></div>`
+//     )
+//   }
+// }
