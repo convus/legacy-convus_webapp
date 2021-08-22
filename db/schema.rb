@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(version: 2021_08_21_213928) do
     t.bigint "argument_id"
     t.bigint "citation_id"
     t.bigint "creator_id"
+    t.integer "ref_number"
     t.text "text"
     t.text "url"
     t.datetime "created_at", precision: 6, null: false

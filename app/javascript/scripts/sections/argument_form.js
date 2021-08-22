@@ -1,5 +1,6 @@
 import log from "../utils/log";
 
+// TODO: make less dependent on jquery
 export class ArgumentForm {
   init() {
     // maybe should be based on the power of the device that is editing?
@@ -11,6 +12,8 @@ export class ArgumentForm {
     window.similarity = this.similarity;
     window.editDistance = this.editDistance;
     window.looksLikeMatch = this.looksLikeMatch;
+    window.parseArgumentQuotes = this.parseArgumentQuotes;
+    window.parseExistingQuotes = this.parseExistingQuotes;
 
     $("#argument_text").on(
       "keydown keyup update blur",
@@ -19,22 +22,45 @@ export class ArgumentForm {
   }
 
   updateArgumentQuotes() {
-    const argumentText = $("#argument_text").val();
+    const newBlockQuotes = window.parseArgumentQuotes(
+      $("#argument_text").val()
+    );
 
-    // In additional to throttling - if the text hasn't changed, don't process
-    if (argumentText == window.argumentText) {
+    // In additional to throttling - if the quotes haven't changed, don't process
+    if (newBlockQuotes == window.newBlockQuotes) {
+      log.debug("same as previous quotes");
       return;
     }
 
-    window.argumentText = argumentText;
+    window.blockQuotes = newBlockQuotes;
 
-    const regexp = /\^|\n\s?>[^\n]*/g;
+    window.existingQuotes = window.parseExistingQuotes();
 
-    window.blockQuotes = argumentText.match(regexp) || [];
+    log.debug(blockQuotes, existingQuotes);
+    // $("#quoteFields .quote-field").addClass("unprocessed");
 
-    $("#quoteFields .quote-field").addClass("unprocessed");
+    // blockQuotes.forEach((text, index) => window.updateBlockquote(text, index));
+  }
 
-    blockQuotes.forEach((text, index) => window.updateBlockquote(text, index));
+  parseArgumentQuotes(text) {
+    const regexp = /^|\n\s?>[^\n]*/g;
+
+    return text.match(regexp) || [];
+  }
+
+  parseExistingQuotes() {
+    const existingQuotes = {};
+
+    $("#quoteFields .quote-field").each(function(index) {
+      const $this = $(this);
+      log.debug($this);
+      existingQuotes[String(index)] = {
+        matched: false,
+        text: $this.find(".quote-text").text(),
+        removed: $this.hasClass("removed"),
+      };
+    });
+    return existingQuotes;
   }
 
   updateBlockquote(text, index) {
@@ -104,7 +130,6 @@ export class ArgumentForm {
   }
 
   looksLikeMatch(quote, quoteEl) {
-    // TODO: less jquery
     $quoteEl = $(quoteEl);
     // Make sure it isn't processed
     if (!$quoteEl.hasClass("unprocessed")) {
@@ -117,13 +142,13 @@ export class ArgumentForm {
   // levenstein matching (TODO: improve)
   // h/t https://stackoverflow.com/questions/10473745/compare-strings-javascript-return-of-likely
   similarity(s1, s2) {
-    var longer = s1;
-    var shorter = s2;
+    let longer = s1;
+    let shorter = s2;
     if (s1.length < s2.length) {
       longer = s2;
       shorter = s1;
     }
-    var longerLength = longer.length;
+    const longerLength = longer.length;
     if (longerLength == 0) {
       return 1.0;
     }
@@ -136,16 +161,17 @@ export class ArgumentForm {
     s1 = s1.toLowerCase();
     s2 = s2.toLowerCase();
 
-    var costs = new Array();
-    for (var i = 0; i <= s1.length; i++) {
-      var lastValue = i;
-      for (var j = 0; j <= s2.length; j++) {
+    const costs = new Array();
+    for (let i = 0; i <= s1.length; i++) {
+      let lastValue = i;
+      for (let j = 0; j <= s2.length; j++) {
         if (i == 0) costs[j] = j;
         else {
           if (j > 0) {
-            var newValue = costs[j - 1];
-            if (s1.charAt(i - 1) != s2.charAt(j - 1))
+            let newValue = costs[j - 1];
+            if (s1.charAt(i - 1) != s2.charAt(j - 1)) {
               newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+            }
             costs[j - 1] = lastValue;
             lastValue = newValue;
           }
