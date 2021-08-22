@@ -6,13 +6,7 @@
     "standard": "standard --fix"
   },
   "jest": {
-    "roots": [
-      "spec/javascript"
-    ],
-    "moduleDirectories": [
-      "node_modules",
-      "app/javascript"
-    ]
+    "testEnvironment": "jsdom"
   },
   "dependencies": {
     "@rails/actioncable": "^6.0.0",
