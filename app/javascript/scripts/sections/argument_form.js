@@ -23,7 +23,7 @@ export default class ArgumentForm {
       ? this.existingQuotes
       : this.parseExistingQuotes()
 
-    log.debug(this.existingQuotes)
+    // log.debug(this.existingQuotes)
 
     $('#argument_text').on(
       'keydown keyup update blur',
@@ -105,26 +105,21 @@ export default class ArgumentForm {
     const scores = _.sortBy(potentialMatches.map((entry) => {
       return { index: parseInt(entry[0], 10), score: this.similarity(text, entry[1].text) }
     }), 'score')
-    // log.debug(potentialMatches)
-    // log.debug(index)
+    // log.debug(potentialMatches, _.reverse(scores))
+    // Iterate through the scores, from high score to low score, use the first match
     let matchIndex = null
-    for (const score of scores) {
-      log.debug(score, `${refNumber} ${refNumber === score.index} - ${score.index} - ${score.score}`)
+    for (const score of _.reverse(scores)) {
+      // log.debug(`score.index: ${score.index}, score: ${score.score} --- refNumber: ${refNumber}, text: ${_.truncate(text, { length: 40 })}`)
+      // ^ For logging in testing, because iteration
       // Put our finger on the scale if the index of the potential match is the same as the index of this quote
-      if (refNumber === score.index && score.score > 0.2) {
-        log.debug('in here')
-        matchIndex = refNumber
+      if (refNumber === score.index && score.score > 0.1) {
+        matchIndex = score.index
+        break
+      } else if (score.score > 0.3) {
+        matchIndex = score.index
         break
       }
     }
-    log.debug(matchIndex)
-    // Put our finger on the scale if the index of the potential match is the same as the index of this quote
-    // if (this.blockQuotes.length == 1 && Object.keys(potentialMatches).length == 1 &&
-    //   scores[0].score > 0) {
-    //   log.debug(scores[0])
-    //   return potentialMatches['0']
-    // }
-
     return matchIndex === null ? false : potentialMatches[matchIndex.toString()]
   }
 
@@ -152,8 +147,9 @@ export default class ArgumentForm {
     }
   }
 
-  // levenstein matching (TODO: improve)
-  // h/t https://stackoverflow.com/questions/10473745/compare-strings-javascript-return-of-likely
+  // levenstein matching - h/t https://stackoverflow.com/questions/10473745/compare-strings-javascript-return-of-likely
+  // TODO: improve for this application
+  // Specific improvements: Current algorithm is more influenced by the length of the string than it should be.
   similarity (s1, s2) {
     let longer = s1
     let shorter = s2
@@ -195,58 +191,3 @@ export default class ArgumentForm {
     return costs[s2.length]
   }
 }
-
-// Previous stuff...
-// looksLikeMatch (quote, quoteEl) {
-//   $quoteEl = $(quoteEl)
-//   // Make sure it isn't processed
-//   if (!$quoteEl.hasClass('unprocessed')) {
-//     log.debug('has class!!!')
-//     return false
-//   }
-//   return true
-// }
-
-// updateBlockquote (text, index) {
-//   const regexp = /(^|\n)\s*>/
-//   const quoteText = text.replace(regexp, '')
-
-//   let quoteMatchIndex = null
-
-//   // // If there is only one block quote, assume this is it.
-//   // if (window.blockQuotes.length == 1 && index == 0 && ) {
-//   //   quoteMatchIndex = index;
-//   // }
-//   if ($('#quoteFields .quote-field.unprocessed').length) {
-//     log.debug('ffffff')
-//     // First, check if the index matched quote field matches and set it if so.
-//     if ($('#quoteFields .quote-field')[index].length) {
-//       // Might want to make this match loser if this is the last quote in the argument
-//       log.debug(`quote field index!! ${index}`)
-//       if (window.looksLikeMatch($('#quoteFields .quote-field')[index])) {
-//         quoteMatchIndex = index
-//       }
-//     }
-//   }
-
-//   // test quoteMatches - one of the existing quote elements matches the text closely enough
-//   let $quoteField = null
-//   log.debug(
-//     `blockquote length: ${window.blockQuotes.length} index: ${index} quoteMatchIndex: ${quoteMatchIndex}`
-//   )
-//   if (quoteMatchIndex !== null) {
-//     log.debug('matched something!')
-//     $quoteField = $($('#quoteFields .quote-field')[index])
-//     $quoteField.removeClass('unprocessed')
-//     $quoteField.find('.quote-text').text(quoteText)
-//   } else {
-//     log.debug('new field')
-//     const field =
-//       index === 0 ? $('#quoteFields') : $('#quoteFields .quote-field')[index]
-//     // log.debug(field);
-
-//     field.prepend(
-//       `<div class="quote-field"><p class="quote-text">${quoteText}</p></div>`
-//     )
-//   }
-// }

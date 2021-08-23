@@ -42,13 +42,49 @@ describe('matchingExistingQuote', () => {
     id: '12',
     removed: false
   }
+  const loremIpsum = {
+    matched: false,
+    text: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+    id: '2',
+    removed: false
+  }
   describe('single quote', () => {
-    const argumentForm = new ArgumentForm({ blockQuotes: ['something'], existingQuotes: { 0: simpleExistingQuote } })
+    const argumentForm = new ArgumentForm({ existingQuotes: { 0: simpleExistingQuote } })
     it('matches simple thing', () => {
-      expect(argumentForm.matchingExistingQuote({ text: 'something', refNumber: 0 })).toStrictEqual(simpleExistingQuote)
+      expect(argumentForm.matchingExistingQuote({ text: 'something', refNumber: 0 })).toStrictEqual(['0', simpleExistingQuote])
+      expect(argumentForm.matchingExistingQuote({ text: 'something new', refNumber: 0 })).toStrictEqual(['0', simpleExistingQuote])
+      expect(argumentForm.matchingExistingQuote({ text: 'new something blah', refNumber: 0 })).toStrictEqual(['0', simpleExistingQuote])
+      expect(argumentForm.matchingExistingQuote({ text: 'something Lorem ipsum dolor sit amet, consectetur adipisicing elit.', refNumber: 0 })).toStrictEqual(['0', simpleExistingQuote])
     })
-    // it("doesn't match complete non match", () => {
-    //   expect(argumentForm.matchingExistingQuote(text: 'blah blah blah', refNumber: 0)).toBe(false)
-    // })
+    it("doesn't match complete non match", () => {
+      expect(argumentForm.matchingExistingQuote({ text: 'blah blah blah', refNumber: 0 })).toBe(false)
+    })
+  })
+
+  describe('already matched', () => {
+    const argumentForm = new ArgumentForm({ existingQuotes: { 0: { ...simpleExistingQuote, ...{ matched: true } } } })
+    it('returns false', () => {
+      expect(argumentForm.matchingExistingQuote({ text: 'something', refNumber: 0 })).toBe(false)
+    })
+  })
+
+  describe('multiple quotes', () => {
+    const argumentForm = new ArgumentForm({ existingQuotes: { 0: loremIpsum, 1: simpleExistingQuote } })
+    it('matches simple', () => {
+      expect(argumentForm.matchingExistingQuote({ text: 'something', refNumber: 0 })).toStrictEqual(['1', simpleExistingQuote])
+      expect(argumentForm.matchingExistingQuote({ text: 'something new', refNumber: 0 })).toStrictEqual(['1', simpleExistingQuote])
+      expect(argumentForm.matchingExistingQuote({ text: 'new something blah', refNumber: 0 })).toStrictEqual(['1', simpleExistingQuote])
+    })
+  })
+
+  describe('multiple similar quotes', () => {
+    const loremIpsum2 = { ...loremIpsum, ...{ text: 'Lorem ipsum dolor sit amet - and some non-latin goes here', id: '4' } }
+    const argumentForm = new ArgumentForm({ existingQuotes: { 0: loremIpsum, 1: loremIpsum2, 2: simpleExistingQuote } })
+    it('matches the better match', () => {
+      expect(argumentForm.matchingExistingQuote({ text: 'Lorem ipsum dolor sit amet -  and', refNumber: 0 })).toStrictEqual(['1', loremIpsum2])
+      // I don't love this test, and I'm ok with it failing - I don't think it tests a real world thing
+      // - but I do think that we have some more testing to do
+      // expect(argumentForm.matchingExistingQuote({ text: 'Lorem ipsum dolor sit amet, consectetur adipisicing', refNumber: 3 })).toStrictEqual(['0', loremIpsum])
+    })
   })
 })
