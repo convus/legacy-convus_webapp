@@ -5,6 +5,7 @@ import _ from 'lodash' // TODO: only import the parts needed
 export default class ArgumentForm {
   // Enable passing in, primarily for testing
   constructor ({ blockQuotes, existingQuotes, throttleLimit }) {
+    this.processing = false
     this.blockQuotes = blockQuotes
     this.existingQuotes = existingQuotes
     // maybe should be based on the power of the device that is editing?
@@ -22,6 +23,9 @@ export default class ArgumentForm {
     this.existingQuotes = (this.existingQuotes !== undefined)
       ? this.existingQuotes
       : this.parseExistingQuotes()
+
+    // For testing purposes, automatically select the argument field
+    $('#argument_text').focus()
 
     // log.debug(this.existingQuotes)
 
@@ -50,13 +54,25 @@ export default class ArgumentForm {
 
     $('#quoteFields .quote-field').each(function (index) {
       const $this = $(this)
+
       existingQuotes[String(index)] = {
         matched: false,
-        text: $this.find('.quote-text').text().trim(),
-        id: $this.find('.ref-number-field').val(),
-        removed: $this.hasClass('removed')
+        text: $this.find('.quote-text').text(),
+        url: $this.find('.url-field').val(),
+        id: $this.find('.hidden-id-field').val(),
+        removed: false
       }
     })
+    // $('#quoteFieldsRemoved .quote-field').each(function (index) {
+    //   const $this = $(this)
+    //   existingQuotes[String(index)] = {
+    //     matched: false,
+    //     text: $this.find('.quote-text').text().trim(),
+    //     url: $this.find('.url-field').val(),
+    //     id: $this.find('.ref-number-field').val(),
+    //     removed: true
+    //   }
+    // })
     return existingQuotes
   }
 
@@ -69,58 +85,116 @@ export default class ArgumentForm {
       return
     }
 
+    // TODO: improve. We were re-processing before finishing rendering (and therefor existingQuotes was blank)
+    if (this.processing) {
+      return
+      // I *believe* the better throttle functionality will take care of this, so I'm not recalling here
+      // return window.setTimeout(() => {window.argumentForm.updateArgumentQuotes(true)}, 2000)
+    }
+    this.processing = true
     this.blockQuotes = newBlockQuotes
     this.existingQuotes = this.parseExistingQuotes()
 
-    this.blockQuotes.forEach((text, index) => window.renderQuote(false, text, index))
-    // THEN - for any unmatched existing quotes, update them to be removed
+    // TODO: move around instead of just removing
+    $('#quoteFields .quote-field').remove()
+    this.blockQuotes.forEach((text, index) => {
+      log.debug(`${index}: ${text}`)
+      this.updateQuote({ text: text, index: index })
+    })
+
+    // Remove any quote fields that are after the index
+    // ... There has got to be a better non-jquery way to do this
+    // $($("#quoteFields .quote-field")[this.blockQuotes.length - 1]).nextAll().remove()
+
+    // For any unmatched existing quotes that have urls, sort them by ID, update them to be removed - and render them
+    // (we ignore non-url quotes, because who cares about them!)
+    // const removedQuotes = _.sortBy(this.existingQuotes.filter(quote => !quote.matched && quote.url.length), 'id')
+    //   .forEach((quote, index) => this.updateQuote({index: index, quote: {...quote, ...{removed: true}}}))
+    // ... and remove any removed quote fields after the index
+    this.processing = false
   }
 
-  // NOTE: for removed quotes, index doesn't matter
-  renderQuote (text, index, removed, id) {
-    const isRemoved = !!removed
-    // if there is an existing quote with the ID, grab it
-    let quote = this.matchingExistingQuote(text, index)
-    if (quote !== undefined) {
-      // Update matched to be truthy
-      this.existingQuotes[String(index)].matched = true
+  updateQuote ({ text, index, removedQuote }) {
+    // Unless quote was passed in, find or create the quote
+    // if (removedQuote !== undefined) {
+    //    this.existingQuotes[String(index)].matched = true
+    // } else
+    let quote = this.matchingExistingQuote({ text: text, refNumber: index })
+
+    if (quote) {
+      // If refNQuote is found, merge in the new text
+      quote = _.merge(quote, { text: text, matched: true })
+      // And make the quote matched
+      if (this.existingQuotes[String(index)]) { this.existingQuotes[String(index)].matched = true }
     } else {
-      // otherwise, this quote wasn't found so build a new quote
+      // this quote wasn't found so build a new quote
+      log.debug(`QUOTE NOT FOUND!!! ${text}`)
       quote = {
         matched: true,
         text: text,
         id: String(new Date().getTime()), // simple ID generation
-        removed: isRemoved
+        url: '',
+        removed: false
       }
     }
-    // If this is the first quote, prepend it to the quoteFields
 
-    // otherwise, put it after the element with the preceding index
+    const selector = quote.removed ? '#quoteFieldsRemoved' : '#quoteFields'
+    // TODO: move around/detach or something, rather than just rerendering
+    // Simplest possible option maybe? just jquery overwrite
+    // const existingQuoteEl = $(selector)[index]
+    // if (existingQuoteEl.length) { $(existingQuoteEl) } else {
+
+    // In the future, we probably want to update the element rather than rerendering it
+    $(selector).append(this.quoteHtml(index, quote))
+  }
+
+  // NOTE: refNumber for deleted quotes should be null - and maybe they shouldn't actually be form elements?
+  // ALSO: quote text should maybe be a hidden field? - probably not actually
+  quoteHtml (refNumber, quote) {
+    return `<div class="quote-field">
+      <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][id]" id="argument_argument_quotes_attributes_${quote.id}_id" class="hidden-id-field" value="${quote.id}">
+      <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][ref_number]" id="argument_argument_quotes_attributes_${quote.id}_ref_number" value="${refNumber}">
+      <p class="quote-text">${quote.text}</p>
+      <div class="form-group">
+        <input type="url" name="argument[argument_quotes_attributes][${quote.id}][url]" id="argument_argument_quotes_attributes_${quote.id}_url" value="${quote.url}" class="form-control url-field" placeholder="Quote URL source">
+      </div>
+    </div>`
   }
 
   matchingExistingQuote ({ text, refNumber }) {
-    // get entries ([k, v]) that aren't already matched
+    // get entries ([k, v]) that aren't already matched, add prevRef to the object
     const potentialMatches = Object.entries(this.existingQuotes).filter(entry => !entry[1].matched)
-    // Scores is an array sorted by the score (high to low), with entry index
-    const scores = _.sortBy(potentialMatches.map((entry) => {
-      return { index: parseInt(entry[0], 10), score: this.similarity(text, entry[1].text) }
-    }), 'score')
-    // log.debug(potentialMatches, _.reverse(scores))
-    // Iterate through the scores, from high score to low score, use the first match
-    let matchIndex = null
-    for (const score of _.reverse(scores)) {
-      // log.debug(`score.index: ${score.index}, score: ${score.score} --- refNumber: ${refNumber}, text: ${_.truncate(text, { length: 40 })}`)
-      // ^ For logging in testing, because iteration
-      // Put our finger on the scale if the index of the potential match is the same as the index of this quote
-      if (refNumber === score.index && score.score > 0.1) {
-        matchIndex = score.index
-        break
-      } else if (score.score > 0.3) {
-        matchIndex = score.index
-        break
+      .map(entry => _.merge(entry[1], { prevRef: entry[0] }))
+    let match
+
+    // Match if a potentialMatch text is a substring of the text (or the text is a substring of a potentialMatch)
+    for (const pMatch of potentialMatches) {
+      if (text.includes(pMatch.text) || pMatch.text.includes(text)) {
+        // log.debug(`substring match: ${pMatch.text} - ${text}`)
+        match = pMatch
       }
     }
-    return matchIndex === null ? false : potentialMatches[matchIndex.toString()]
+    // If not a substring, we use levenstein
+    if (match === undefined) {
+      // Scores is an array sorted by the score (high to low)
+      const scores = _.sortBy(potentialMatches.map((pMatch) => {
+        return { pMatch: pMatch, score: this.similarity(text, pMatch.text) }
+      }), 'score')
+      // Iterate through the scores, from high score to low score, use the first match
+      for (const score of _.reverse(scores)) {
+        // log.debug(`score.index: ${score.index}, score: ${score.score} --- refNumber: ${refNumber}, text: ${_.truncate(text, { length: 40 })}`)
+        // ^ For logging in testing, because iteration
+        // Put our finger on the scale if the index of the potential match is the same as the index of this quote
+        if (refNumber === score.pMatch.prevRef && score.score > 0.1) {
+          match = score.pMatch
+          break
+        } else if (score.score > 0.3) {
+          match = score.pMatch
+          break
+        }
+      }
+    }
+    return match
   }
 
   // I'd prefer to use lodash throttle - BUT - I don't know how to bind the context correctly
