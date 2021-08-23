@@ -52,7 +52,7 @@ export default class ArgumentForm {
   parseExistingQuotes () {
     const existingQuotes = {}
 
-    $('#quoteFields .quote-field').each(function (index) {
+    $('#quoteFieldsWrapper .quote-field').each(function (index) {
       const $this = $(this)
 
       existingQuotes[String(index)] = {
@@ -60,19 +60,11 @@ export default class ArgumentForm {
         text: $this.find('.quote-text').text(),
         url: $this.find('.url-field').val(),
         id: $this.find('.hidden-id-field').val(),
-        removed: false
+        prevRef: index,
+        removed: $this.hasClass('removedQuote')
       }
     })
-    // $('#quoteFieldsRemoved .quote-field').each(function (index) {
-    //   const $this = $(this)
-    //   existingQuotes[String(index)] = {
-    //     matched: false,
-    //     text: $this.find('.quote-text').text().trim(),
-    //     url: $this.find('.url-field').val(),
-    //     id: $this.find('.ref-number-field').val(),
-    //     removed: true
-    //   }
-    // })
+
     return existingQuotes
   }
 
@@ -81,22 +73,17 @@ export default class ArgumentForm {
       $('#argument_text').val()
     )
     // In additional to throttling - if the quotes haven't changed, don't process
-    if (_.isEqual(this.blockQuotes, newBlockQuotes)) {
-      return
-    }
-
+    if (_.isEqual(this.blockQuotes, newBlockQuotes)) { return }
     // TODO: improve. We were re-processing before finishing rendering (and therefor existingQuotes was blank)
-    if (this.processing) {
-      return
-      // I *believe* the better throttle functionality will take care of this, so I'm not recalling here
-      // return window.setTimeout(() => {window.argumentForm.updateArgumentQuotes(true)}, 2000)
-    }
+    // we may want to rerun this later if we're still processing
+    if (this.processing) { return }
+
     this.processing = true
     this.blockQuotes = newBlockQuotes
     this.existingQuotes = this.parseExistingQuotes()
 
     // TODO: move around instead of just removing
-    $('#quoteFields .quote-field').remove()
+    $('#quoteFieldsWrapper .quote-field').remove()
     this.blockQuotes.forEach((text, index) => {
       log.debug(`${index}: ${text}`)
       this.updateQuote({ text: text, index: index })
@@ -107,25 +94,33 @@ export default class ArgumentForm {
     // $($("#quoteFields .quote-field")[this.blockQuotes.length - 1]).nextAll().remove()
 
     // For any unmatched existing quotes that have urls, sort them by ID, update them to be removed - and render them
-    // (we ignore non-url quotes, because who cares about them!)
-    // const removedQuotes = _.sortBy(this.existingQuotes.filter(quote => !quote.matched && quote.url.length), 'id')
-    //   .forEach((quote, index) => this.updateQuote({index: index, quote: {...quote, ...{removed: true}}}))
+    // (we ignore non-url quotes, because who cares, we don't need to save them)
+    const removedQuotes = _.sortBy(Object.values(this.existingQuotes).filter(quote => !quote.matched && quote.url.length), 'prevRef')
+    removedQuotes.forEach((quote, index) => this.updateQuote({ removedQuote: quote }))
     // ... and remove any removed quote fields after the index
     this.processing = false
   }
 
   updateQuote ({ text, index, removedQuote }) {
+    let quote
     // Unless quote was passed in, find or create the quote
-    // if (removedQuote !== undefined) {
-    //    this.existingQuotes[String(index)].matched = true
-    // } else
-    let quote = this.matchingExistingQuote({ text: text, refNumber: index })
+    if (removedQuote !== undefined) {
+      quote = _.merge(removedQuote, { removed: true, matched: true })
+    } else {
+      quote = this.matchingExistingQuote({ text: text, refNumber: index })
+      if (quote) {
+      // If quote exists, merge in the new text, mark it not removed
+        quote = _.merge(quote, { text: text, matched: true, removed: false })
+      // And make the quote matched
+      }
+    }
 
     if (quote) {
-      // If refNQuote is found, merge in the new text
-      quote = _.merge(quote, { text: text, matched: true })
-      // And make the quote matched
-      if (this.existingQuotes[String(index)]) { this.existingQuotes[String(index)].matched = true }
+      // If the quote is one of the existingQuotes, update the existing quote
+      const existingIndex = quote.prevRef || _.findIndex(this.existingQuotes, ['id', quote.id])
+      if (existingIndex) {
+        this.existingQuotes[existingIndex] = quote
+      }
     } else {
       // this quote wasn't found so build a new quote
       log.debug(`QUOTE NOT FOUND!!! ${text}`)
@@ -151,7 +146,7 @@ export default class ArgumentForm {
   // NOTE: refNumber for deleted quotes should be null - and maybe they shouldn't actually be form elements?
   // ALSO: quote text should maybe be a hidden field? - probably not actually
   quoteHtml (refNumber, quote) {
-    return `<div class="quote-field">
+    return `<div class="quote-field ${quote.removed ? 'removedQuote' : ''}">
       <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][id]" id="argument_argument_quotes_attributes_${quote.id}_id" class="hidden-id-field" value="${quote.id}">
       <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][ref_number]" id="argument_argument_quotes_attributes_${quote.id}_ref_number" value="${refNumber}">
       <p class="quote-text">${quote.text}</p>
@@ -162,9 +157,8 @@ export default class ArgumentForm {
   }
 
   matchingExistingQuote ({ text, refNumber }) {
-    // get entries ([k, v]) that aren't already matched, add prevRef to the object
-    const potentialMatches = Object.entries(this.existingQuotes).filter(entry => !entry[1].matched)
-      .map(entry => _.merge(entry[1], { prevRef: entry[0] }))
+    // get unmatched quotes
+    const potentialMatches = Object.values(this.existingQuotes).filter(quote => !quote.matched)
     let match
 
     // Match if a potentialMatch text is a substring of the text (or the text is a substring of a potentialMatch)
