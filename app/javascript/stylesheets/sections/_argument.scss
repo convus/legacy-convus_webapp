@@ -30,7 +30,7 @@
     font-size: 12px; // keep it small
     margin: 1rem 0 0;
     .quote-text {
-      padding-left: 0.2rem;
+      padding-left: 0.3rem;
       margin: 0 0 0.1rem;
       &:before {
         content: ">";
@@ -44,11 +44,16 @@
       margin: 0;
       input {
         font-size: 12px;
-        padding: 0 0.75rem;
+        padding: 0.2rem 0.7rem;
+        height: auto;
       }
     }
   }
   .removed-quotes {
-    opacity: 7;
+    opacity: 0.5;
+    h4 {
+      font-size: 1.25rem;
+      margin: 0.5rem 0 -0.75rem; // remove the padding from the first quote-field
+    }
   }
 }

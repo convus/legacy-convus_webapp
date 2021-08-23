@@ -9,6 +9,7 @@ export default class ArgumentForm {
     this.blockQuotes = blockQuotes
     this.existingQuotes = existingQuotes
     this.removedQuotes = []
+    this.renderedQuoteIds = []
     // maybe should be based on the power of the device that is editing?
     this.throttleLimit = throttleLimit || 500
   }
@@ -76,15 +77,14 @@ export default class ArgumentForm {
     // In additional to throttling - if the quotes haven't changed, don't process
     if (_.isEqual(this.blockQuotes, newBlockQuotes)) { return }
     // TODO: improve. We were re-processing before finishing rendering (and therefor existingQuotes was blank)
-    // we may want to rerun this later if we're still processing
+    // we may want to rerun later if we're still processing now (via setTimeout)
     if (this.processing) { return }
 
     this.processing = true
     this.blockQuotes = newBlockQuotes
     this.existingQuotes = this.parseExistingQuotes()
+    this.renderedQuoteIds = []
 
-    // TODO: move around instead of just removing
-    $('#quoteFieldsWrapper .quote-field').remove()
     this.blockQuotes.forEach((text, index) => {
       this.updateQuote({ text: text, index: index })
     })
@@ -98,6 +98,15 @@ export default class ArgumentForm {
     } else {
       $('#quoteFieldsRemoved').collapse('hide')
     }
+
+    $('#quoteFieldsWrapper .quote-field').each(function () {
+      const id = this.id.replace('quoteId-', '')
+      // Could do something better than get via window, but - good enough for now
+      if (!window.argumentForm.renderedQuoteIds.includes(id)) {
+        this.remove() // remove because it shouldn't be rendered anymore!
+      }
+    })
+
     this.processing = false
   }
 
@@ -109,9 +118,8 @@ export default class ArgumentForm {
     } else {
       quote = this.matchingExistingQuote({ text: text, refNumber: index })
       if (quote) {
-      // If quote exists, merge in the new text, mark it not removed
+      // If quote exists, merge in the new text, mark it not removed and matched
         quote = _.merge(quote, { text: text, matched: true, removed: false })
-      // And make the quote matched
       }
     }
 
@@ -132,16 +140,28 @@ export default class ArgumentForm {
         removed: false
       }
     }
-
-    // TODO: move around/detach or something, rather than just rerendering
+    // Add quote ID to rendered array
+    this.renderedQuoteIds.push(quote.id)
     const selector = quote.removed ? '#quoteFieldsRemoved' : '#quoteFields'
-    $(selector).append(this.quoteHtml(index, quote))
+    // TODO: stop using jQuery here
+    const $el = $(`${selector} #quoteId-${quote.id}`)
+    // If the element exists and is in the same position and is still around, update the quote
+    if ($el.length && quote.prevRef == index) {
+      $el.find('.quote-text').text(text)
+    } else {
+      // Otherwise, we rerender the element.
+      // TODO: improve handling - move things around if possible, instead of always rerendering
+      if ($el.length) { $el.remove() }
+      $(selector).append(this.quoteHtml(index, quote))
+    }
+    // Remove the opposite removed state quote (e.g. remove existing removed quotes)
+    $(`${quote.removed ? '#quoteFields' : '#quoteFieldsRemoved'} #quoteId-${quote.id}`).remove()
   }
 
   // NOTE: refNumber for deleted quotes should be null - and maybe they shouldn't actually be form elements?
   // ALSO: quote text should maybe be a hidden field? - probably not actually
   quoteHtml (refNumber, quote) {
-    return `<div class="quote-field ${quote.removed ? 'removedQuote' : ''}">
+    return `<div class="quote-field ${quote.removed ? 'removedQuote' : ''}" id="quoteId-${quote.id}">
       <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][id]" id="argument_argument_quotes_attributes_${quote.id}_id" class="hidden-id-field" value="${quote.id}">
       <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][ref_number]" id="argument_argument_quotes_attributes_${quote.id}_ref_number" value="${refNumber}">
       <p class="quote-text">${quote.text}</p>
@@ -159,7 +179,6 @@ export default class ArgumentForm {
     // Match if a potentialMatch text is a substring of the text (or the text is a substring of a potentialMatch)
     for (const pMatch of potentialMatches) {
       if (text.includes(pMatch.text) || pMatch.text.includes(text)) {
-        // log.debug(`substring match: ${pMatch.text} - ${text}`)
         match = pMatch
       }
     }
@@ -172,7 +191,6 @@ export default class ArgumentForm {
       // Iterate through the scores, from high score to low score, use the first match
       for (const score of _.reverse(scores)) {
         // log.debug(`score.index: ${score.index}, score: ${score.score} --- refNumber: ${refNumber}, text: ${_.truncate(text, { length: 40 })}`)
-        // ^ For logging in testing, because iteration
         // Put our finger on the scale if the index of the potential match is the same as the index of this quote
         if (refNumber === score.pMatch.prevRef && score.score > 0.1) {
           match = score.pMatch
