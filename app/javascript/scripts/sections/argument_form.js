@@ -8,6 +8,7 @@ export default class ArgumentForm {
     this.processing = false
     this.blockQuotes = blockQuotes
     this.existingQuotes = existingQuotes
+    this.removedQuotes = []
     // maybe should be based on the power of the device that is editing?
     this.throttleLimit = throttleLimit || 500
   }
@@ -85,19 +86,18 @@ export default class ArgumentForm {
     // TODO: move around instead of just removing
     $('#quoteFieldsWrapper .quote-field').remove()
     this.blockQuotes.forEach((text, index) => {
-      log.debug(`${index}: ${text}`)
       this.updateQuote({ text: text, index: index })
     })
 
-    // Remove any quote fields that are after the index
-    // ... There has got to be a better non-jquery way to do this
-    // $($("#quoteFields .quote-field")[this.blockQuotes.length - 1]).nextAll().remove()
-
     // For any unmatched existing quotes that have urls, sort them by ID, update them to be removed - and render them
     // (we ignore non-url quotes, because who cares, we don't need to save them)
-    const removedQuotes = _.sortBy(Object.values(this.existingQuotes).filter(quote => !quote.matched && quote.url.length), 'prevRef')
-    removedQuotes.forEach((quote, index) => this.updateQuote({ removedQuote: quote }))
-    // ... and remove any removed quote fields after the index
+    this.removedQuotes = _.sortBy(Object.values(this.existingQuotes).filter(quote => !quote.matched && quote.url.length), 'prevRef')
+    if (this.removedQuotes.length) {
+      $('#quoteFieldsRemoved').collapse('show')
+      this.removedQuotes.forEach((quote, index) => this.updateQuote({ removedQuote: quote }))
+    } else {
+      $('#quoteFieldsRemoved').collapse('hide')
+    }
     this.processing = false
   }
 
@@ -123,7 +123,7 @@ export default class ArgumentForm {
       }
     } else {
       // this quote wasn't found so build a new quote
-      log.debug(`QUOTE NOT FOUND!!! ${text}`)
+      // log.debug(`QUOTE NOT FOUND!!! ${text}`)
       quote = {
         matched: true,
         text: text,
@@ -133,13 +133,8 @@ export default class ArgumentForm {
       }
     }
 
-    const selector = quote.removed ? '#quoteFieldsRemoved' : '#quoteFields'
     // TODO: move around/detach or something, rather than just rerendering
-    // Simplest possible option maybe? just jquery overwrite
-    // const existingQuoteEl = $(selector)[index]
-    // if (existingQuoteEl.length) { $(existingQuoteEl) } else {
-
-    // In the future, we probably want to update the element rather than rerendering it
+    const selector = quote.removed ? '#quoteFieldsRemoved' : '#quoteFields'
     $(selector).append(this.quoteHtml(index, quote))
   }
 
