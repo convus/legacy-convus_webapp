@@ -22,4 +22,17 @@ class Argument < ApplicationRecord
     return false if skip_associated_tasks
     add_to_github_content
   end
+
+  def argument_markdown
+    Redcarpet::Markdown.new(
+      Redcarpet::Render::HTML.new(no_images: true, no_links: true, filter_html: true),
+      {no_intra_emphasis: true, tables: true, fenced_code_blocks: true, strikethrough: true,
+        superscript: true, lax_spacing: true}
+    )
+  end
+
+  def parse_text
+    return "" unless text.present?
+    argument_markdown.render(text.strip)
+  end
 end
