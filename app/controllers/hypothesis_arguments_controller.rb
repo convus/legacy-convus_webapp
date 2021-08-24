@@ -27,8 +27,14 @@ class HypothesisArgumentsController < ApplicationController
   end
 
   def update
+    previous_argument_quote_ids = @argument.argument_quotes.pluck(:id).map(&:to_s)
     update_successful = @argument.update(permitted_params)
     if update_successful
+      @argument.remove_empty_quotes!
+      # Remove argument_quotes that weren't included in the params (they were removed on the frontend)
+      updated_quote_ids = permitted_params[:argument_quotes_attributes]&.keys || []
+      @argument.argument_quotes.where(id: previous_argument_quote_ids - updated_quote_ids).destroy_all
+      @argument.reload # Because maybe things were deleted!
       # Manually trigger to ensure it happens after argument is updated
       if ParamsNormalizer.boolean(params.dig(:argument, :add_to_github))
         @argument.update(add_to_github: true)

@@ -8,13 +8,20 @@
   = render partial: "/hypotheses/show_title", locals: {hypothesis: @hypothesis, render_show_link: false}
 
 - form_submit_path = is_edit ? hypothesis_argument_path(hypothesis_id: @hypothesis, id: @argument.id) : hypothesis_arguments_path(hypothesis_id: @hypothesis)
-= form_for @argument, url: form_submit_path, method: (is_edit ? "PATCH" : "POST"), html: { class: "form", id: "argumentForm" } do |f|
+= form_for @argument, url: form_submit_path, method: (is_edit ? "PATCH" : "POST"), html: {class: "form", id: "argumentForm"} do |f|
   = f.hidden_field :add_to_github, class: "addToGithubField"
+
+  - if @argument.id.blank?
+    -# Initially assign something to demonstrate how to make quotes
+    - @argument.text ||= "Make your argument here\n\n> This is an example quote"
+  -# Sometimes, we need to process quotes from the text (rather than just using the associated argument_quotes)
+  -# Initially we're always processing, but adding this just in case
+  - process_quotes_from_text = @argument.id.blank? || @argument.errors.any?
 
   .row
     - if @argument.errors.any?
       .col-md-6.mb-4.mt-2
-        = render partial: "/shared/errors", locals: { name: "Argument", obj: @argument }
+        = render partial: "/shared/errors", locals: {name: "Argument", obj: @argument}
 
   .row.mt-4
     .max-width-text-container.col
@@ -26,15 +33,17 @@
             - else
               Create argument:
           %small.less-strong
-        -# Initially assign something to demonstrate how to make quotes
-        - @argument.text ||= "Make your argument here\n\n> This is an example quote"
         = f.text_area :text, rows: 10, class: "form-control"
-  #quoteFieldsWrapper
+  #quoteFieldsWrapper{"data-processonload" => process_quotes_from_text}
     #quoteFields.row
+      - @argument.argument_quotes.not_removed.ref_ordered.each do |argument_quote|
+        = render partial: "/hypothesis_arguments/argument_quote", locals: {argument_quote: argument_quote}
 
-    #quoteFieldsRemoved.removed-quotes.row.collapse
+    #quoteFieldsRemoved.removed-quotes.row.collapse{class: (@argument.argument_quotes.removed.any? ? "show" : "")}
       .col-12.text-warning
         %h4 Removed quotes
+      - @argument.argument_quotes.removed.ref_ordered.each do |argument_quote|
+        = render partial: "/hypothesis_arguments/argument_quote", locals: {argument_quote: argument_quote}
   .row.pt-4.mt-5
     .col
       .form-group
@@ -46,7 +55,7 @@
             Submit for Approval
             %span.loadingSpinner.spinner-border.spinner-border-sm.collapse.ml-2
               %span.sr-only Loading...
-          %em#quoteRequired.collapse.less-strong You must have at least one block quote before submitting
+          %em#quoteRequired.collapse.less-strong Arguments must include at least one block quote to submit
 %hr
 %h2.mt-4
   - if @hypothesis_citations_shown.count == 0
@@ -54,7 +63,7 @@
   citations:
 .row
   - @hypothesis_citations_shown.each do |hypothesis_citation|
-    = render partial: "/hypotheses/show_hypothesis_citation", locals: { hypothesis_citation: hypothesis_citation, skip_challenge: true }
+    = render partial: "/hypotheses/show_hypothesis_citation", locals: {hypothesis_citation: hypothesis_citation, skip_challenge: true}
 
 .mt-big
 = render "/shared/content_license"

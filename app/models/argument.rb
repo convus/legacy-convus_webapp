@@ -14,7 +14,17 @@ class Argument < ApplicationRecord
 
   accepts_nested_attributes_for :argument_quotes, allow_destroy: true, reject_if: :all_blank
 
+  scope :hypothesis_approved, -> { left_joins(:hypothesis).where.not(hypotheses: {approved_at: nil}) }
+
   attr_accessor :skip_associated_tasks
+
+  def remove_empty_quotes!
+    argument_quotes.each { |aq| aq.destroy if aq.removed? && aq.text.blank? && aq.url.blank? }
+  end
+
+  def hypothesis_approved
+    hypothesis&.approved?
+  end
 
   # This will definitely become more sophisticated later!
   def display_id

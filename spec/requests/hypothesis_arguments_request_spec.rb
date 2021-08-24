@@ -16,20 +16,19 @@ RSpec.describe "hypothesis_arguments", type: :request do
       text: "This is the text of an argument on something cool.\n\nAnd this is the text of the seconnd section",
     }
   end
-
+  let(:text) { "\nThis is the text\n\n> This is a quote\n\nAnd some more text" }
+  let(:argument_with_quote_params) do
+    {
+      text: text,
+      argument_quotes_attributes: argument_quotes_params
+    }
+  end
   let(:argument_quotes_params) do
     {Time.current.to_i.to_s => {
       url: "https://example.com/something-of-interest",
       text: "This is a quote",
       ref_number: 0
     }}
-  end
-
-  let(:argument_with_quote_params) do
-    {
-      text: "\nThis is the text\n\n> This is a quote\n\nAnd some more text",
-      argument_quotes_attributes: argument_quotes_params
-    }
   end
 
   describe "new" do
@@ -175,6 +174,81 @@ RSpec.describe "hypothesis_arguments", type: :request do
           expect(argument_quote.text).to eq "This is a quote"
           expect(argument_quote.url).to eq "https://example.com/something-of-interest"
           expect(argument_quote.ref_number).to eq 0
+          expect(argument_quote.creator_id).to eq current_user.id
+        end
+        context "with existing argument_quotes" do
+          let(:text) { "\nThis is the text\n\n> This is a quote\n\nAnd some more text\n > And another quote" }
+          let!(:argument_quote1) { FactoryBot.create(:argument_quote, argument: subject, creator: current_user) }
+          let!(:argument_quote2) { FactoryBot.create(:argument_quote, argument: subject, creator: current_user) }
+          # NOTE: argument_quote0 is removed because it isn't included in params - if a quote gets removed from the frontend, it needs to drop
+          let!(:argument_quote0) { FactoryBot.create(:argument_quote, argument: subject, creator: current_user) }
+          let(:argument_quotes_params) do
+            {
+              "#{argument_quote1.id}" => {
+                url: "https://example.com/a-different-url",
+                text: "And another quote",
+                id: argument_quote1.id,
+                removed: false,
+                ref_number: 2
+              }, "#{argument_quote2.id}" => {
+                url: "",
+                text: "",
+                id: argument_quote2.id,
+                removed: true,
+                ref_number: 3
+              }, (Time.current.to_i - 5).to_s => {
+                url: "https://something.com",
+                text: "This is a removed quote",
+                removed: true,
+                ref_number: 4
+              }, Time.current.to_i.to_s => {
+                url: "",
+                text: "This is a quote",
+                removed: false,
+                ref_number: 0
+              }
+            }
+          end
+          it "creates and updates" do
+            subject.reload
+            expect(subject.editable_by?(current_user)).to be_truthy
+            expect(subject.text).to_not eq text
+            expect(subject.argument_quotes.count).to eq 3
+            expect(ArgumentQuote.pluck(:id)).to match_array([argument_quote0.id, argument_quote1.id, argument_quote2.id])
+
+            Sidekiq::Worker.clear_all
+            patch "#{base_url}/#{subject.id}", params: {argument: argument_with_quote_params}
+            expect(flash[:success]).to be_present
+            expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.id, id: subject.id)
+            expect(assigns(:argument)&.id).to eq subject.id
+            expect(AddToGithubContentJob.jobs.count).to eq 0
+            subject.reload
+            expect(subject.approved?).to be_falsey
+            expect(subject.text).to eq argument_with_quote_params[:text]
+
+            argument_quote1.reload
+            expect(argument_quote1.text).to eq "And another quote"
+            expect(argument_quote1.url).to eq "https://example.com/a-different-url"
+            expect(argument_quote1.removed).to be_falsey
+            expect(argument_quote1.ref_number).to eq 2
+            expect(argument_quote1.creator_id).to eq current_user.id
+
+            argument_quote3 = subject.argument_quotes.where(ref_number: 0).first
+            expect(argument_quote3.text).to eq "This is a quote"
+            expect(argument_quote3.url).to eq ""
+            expect(argument_quote3.removed).to be_falsey
+            expect(argument_quote3.creator_id).to eq current_user.id
+
+            argument_quote4 = subject.argument_quotes.where(ref_number: 4).first
+            expect(argument_quote4.text).to eq "This is a removed quote"
+            expect(argument_quote4.url).to eq "https://something.com"
+            expect(argument_quote4.removed).to be_truthy
+            expect(argument_quote4.creator_id).to eq current_user.id
+
+            # Because argument_quote0 and argument_quote2 is gone
+            expect(subject.argument_quotes.pluck(:id)).to match_array([argument_quote1.id, argument_quote3.id, argument_quote4.id])
+            expect(ArgumentQuote.where(id: argument_quote2.id).any?).to be_falsey
+          end
         end
       end
       context "failing update" do

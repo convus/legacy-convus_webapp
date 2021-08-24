@@ -16,17 +16,21 @@ export default class ArgumentForm {
 
   // init is called when loaded on the page - and not in testing
   init () {
-    // For now we're just assigning updateArgumentQuotes - but we gotta render,
-    // BECAUSE THE URL
+    // Assign initial state based on the dom, if we start rendering via haml
+    this.blockQuotes = (this.blockQuotes !== undefined)
+      ? this.blockQuotes
+      : this.parseArgumentQuotes($('#argument_text').val())
+    this.existingQuotes = (this.existingQuotes !== undefined)
+      ? this.existingQuotes
+      : this.parseExistingQuotes()
+
+    // I THINK we always want to process the text, but you can check $("#quoteFieldsWrapper").attr("data-processonload")
     this.updateArgumentQuotes()
-    // But we may want to assign initial state based on the dom, if we start rendering via haml
-    // this.blockQuotes = (this.blockQuotes !== undefined) ? this.blockQuotes : this.parseArgumentQuotes($('#argument_text').val())
-    // this.existingQuotes = (this.existingQuotes !== undefined) ? this.existingQuotes : this.parseExistingQuotes()
 
     // For testing purposes, automatically select the argument field - but actually this is nice?
     $('#argument_text').focus()
 
-    // Set the initial argument quotes. Could do via haml, but this is easier (at least until we're trying to keep removed around`)
+    // Start updating quotes when argument changes
     $('#argument_text').on(
       'keydown keyup update blur',
       this.throttle(this.updateArgumentQuotes, this.throttleLimit)
@@ -59,6 +63,7 @@ export default class ArgumentForm {
         url: $this.find('.url-field').val(),
         id: this.id.replace('quoteId-', ''),
         prevRef: index,
+        newQuote: $this.hasClass('newQuote'),
         removed: $this.hasClass('removedQuote')
       }
     })
@@ -133,7 +138,8 @@ export default class ArgumentForm {
         text: text,
         id: String(new Date().getTime()), // simple ID generation
         url: '',
-        removed: false
+        removed: false,
+        newQuote: true
       }
     }
     // Add quote ID to rendered array
@@ -144,6 +150,7 @@ export default class ArgumentForm {
     // If the element exists and is in the same position and is still around, update the quote
     if ($el.length && quote.prevRef === index) {
       $el.find('.quote-text').text(text)
+      $el.find(`#argument_argument_quotes_attributes_${quote.id}_text`).val(text)
     } else {
       // Otherwise, we rerender the element.
       // TODO: improve handling - move things around if possible, instead of always rerendering
@@ -154,13 +161,15 @@ export default class ArgumentForm {
     $(`${quote.removed ? '#quoteFields' : '#quoteFieldsRemoved'} #quoteId-${quote.id}`).remove()
   }
 
-  // NOTE: refNumber for deleted quotes should be null - and maybe they shouldn't actually be form elements?
-  // ALSO: quote text should maybe be a hidden field? - probably not actually
+  // NOTE: This is duplicated by _argument_quote.html.erb
   quoteHtml (refNumber, quote) {
-    // <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][id]" id="argument_argument_quotes_attributes_${quote.id}_id" class="hidden-id-field" value="${quote.id}">
-    return `<div class="quote-field ${quote.removed ? 'removedQuote' : ''}" id="quoteId-${quote.id}">
+    // Only include the ID input if quote already exists
+    const idInput = quote.newQuote ? '' : `<input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][id]" id="argument_argument_quotes_attributes_${quote.id}_id" value="${quote.id}">`
+    return `<div id="quoteId-${quote.id}" class="quote-field ${quote.removed ? 'removedQuote' : ''} ${quote.newQuote ? 'newQuote' : ''}">
       <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][ref_number]" id="argument_argument_quotes_attributes_${quote.id}_ref_number" value="${refNumber}">
       <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][removed]" id="argument_argument_quotes_attributes_${quote.id}_removed" value="${quote.removed}">
+      <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][text]" id="argument_argument_quotes_attributes_${quote.id}_text" value="${quote.text}">
+      ${idInput}
       <p class="quote-text">${quote.text}</p>
       <div class="form-group">
         <input type="url" name="argument[argument_quotes_attributes][${quote.id}][url]" id="argument_argument_quotes_attributes_${quote.id}_url" value="${quote.url}" class="form-control url-field" placeholder="Quote URL source">
