@@ -211,20 +211,4 @@ RSpec.describe HypothesisCitation, type: :model do
       end
     end
   end
-
-  describe "shown" do
-    let(:user) { FactoryBot.create(:user) }
-    let!(:hypothesis_citation1) { FactoryBot.create(:hypothesis_citation) }
-    let(:hypothesis) { hypothesis_citation1.hypothesis }
-    let!(:hypothesis_citation2) { FactoryBot.create(:hypothesis_citation, creator: user, hypothesis: hypothesis) }
-    let!(:hypothesis_citation3) { FactoryBot.create(:hypothesis_citation_approved, hypothesis: hypothesis) }
-    let!(:hypothesis_citation4) { FactoryBot.create(:hypothesis_citation, creator: user) }
-    it "returnns users and approved" do
-      expect(HypothesisCitation.where(creator_id: user.id).pluck(:id)).to eq([hypothesis_citation2.id, hypothesis_citation4.id])
-      expect(HypothesisCitation.shown(user).pluck(:id)).to eq([hypothesis_citation2.id, hypothesis_citation3.id, hypothesis_citation4.id])
-      expect(HypothesisCitation.shown.pluck(:id)).to eq([hypothesis_citation3.id])
-      expect(hypothesis.reload.hypothesis_citations.shown(user).pluck(:id)).to eq([hypothesis_citation2.id, hypothesis_citation3.id])
-      expect(hypothesis.reload.hypothesis_citations.shown.pluck(:id)).to eq([hypothesis_citation3.id])
-    end
-  end
 end
