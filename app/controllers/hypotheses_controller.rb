@@ -36,6 +36,7 @@ class HypothesesController < ApplicationController
     end
     @arguments = @hypothesis.arguments.approved
     @unapproved_arguments ||= @hypothesis.arguments.unapproved.shown(current_user)
+      .order(updated_at: :desc)
   end
 
   def edit

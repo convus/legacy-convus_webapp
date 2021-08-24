@@ -21,6 +21,23 @@ class ArgumentQuote < ApplicationRecord
     !removed?
   end
 
+  def citation_ref_text
+    if citation.present?
+      [citation&.publication&.title, citation.title].join(" - ")
+    else
+      url&.truncate(50) || ""
+    end
+  end
+
+  def citation_ref_html
+    return "" unless citation.present? || url.present?
+    if citation.present?
+      "<span title=\"#{url}\"><span class=\"less-strong\">#{citation.publication.title}:</span> #{citation.title}</span>"
+    else
+      "<small title=\"#{url}\">#{url&.truncate(50)}</small>" || ""
+    end
+  end
+
   def set_calculated_attributes
     self.url = UrlCleaner.with_http(UrlCleaner.without_utm(url))
     self.creator_id ||= argument.creator_id

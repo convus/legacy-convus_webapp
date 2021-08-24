@@ -24,7 +24,7 @@ class Argument < ApplicationRecord
   end
 
   def shown?(user = nil)
-    approved || creator_id == user&.id
+    approved? || creator_id == user&.id
   end
 
   def remove_empty_quotes!
@@ -51,6 +51,10 @@ class Argument < ApplicationRecord
       {no_intra_emphasis: true, tables: true, fenced_code_blocks: true, strikethrough: true,
        superscript: true, lax_spacing: true}
     )
+  end
+
+  def update_body_html
+    update(body_html: parse_text)
   end
 
   def parse_text

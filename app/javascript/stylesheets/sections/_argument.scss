@@ -1,7 +1,44 @@
+$argument-border-color: rgba(102, 102, 102, 0.08);
+$argument-background: #f7f7f7;
+
+.arguments-wrapper {
+  @include media-breakpoint-up(sm) {
+    background: $argument-background;
+    border-top: 1px solid rgba(102, 102, 102, 0.05);
+    border-bottom: 1px solid rgba(102, 102, 102, 0.05);
+  }
+}
+
 .argument-show-block {
-  @extend .max-width-text-container;
+  // 60px is padding for the column and the argument-body
+  flex: 0 0 $max-width-text + 60px;
+  max-width: 100%;
+  @include media-breakpoint-down(sm) {
+    border-top: 1px solid $gray-300;
+  }
   p {
     margin: 0.5rem 0 0;
+  }
+  .argument-body {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-top: 1px solid $argument-border-color;
+  }
+  .argument-body,
+  .unapproved-show-info {
+    @include media-breakpoint-up(sm) {
+      background: #fff;
+      border: 1px solid $argument-border-color;
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+  }
+  .unapproved-show-info {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    @include media-breakpoint-up(sm) {
+      border-bottom: none;
+    }
   }
   .argument-quote-block {
     margin: 0;
