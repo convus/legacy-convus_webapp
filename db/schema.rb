@@ -22,6 +22,7 @@ ActiveRecord::Schema.define(version: 2021_08_21_213928) do
     t.integer "ref_number"
     t.text "text"
     t.text "url"
+    t.boolean "removed", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["argument_id"], name: "index_argument_quotes_on_argument_id"

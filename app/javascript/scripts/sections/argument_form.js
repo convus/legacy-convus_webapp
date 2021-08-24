@@ -29,8 +29,8 @@ export default class ArgumentForm {
     // For testing purposes, automatically select the argument field
     $('#argument_text').focus()
 
-    // log.debug(this.existingQuotes)
-
+    // Set the initial argument quotes. Could do via haml, but this is easier (at least until we're trying to keep removed around`)
+    this.updateArgumentQuotes()
     $('#argument_text').on(
       'keydown keyup update blur',
       this.throttle(this.updateArgumentQuotes, this.throttleLimit)
@@ -106,7 +106,6 @@ export default class ArgumentForm {
         this.remove() // remove because it shouldn't be rendered anymore!
       }
     })
-
     this.processing = false
   }
 
@@ -164,6 +163,7 @@ export default class ArgumentForm {
     return `<div class="quote-field ${quote.removed ? 'removedQuote' : ''}" id="quoteId-${quote.id}">
       <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][id]" id="argument_argument_quotes_attributes_${quote.id}_id" class="hidden-id-field" value="${quote.id}">
       <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][ref_number]" id="argument_argument_quotes_attributes_${quote.id}_ref_number" value="${refNumber}">
+      <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][removed]" id="argument_argument_quotes_attributes_${quote.id}_removed" value="${quote.removed}">
       <p class="quote-text">${quote.text}</p>
       <div class="form-group">
         <input type="url" name="argument[argument_quotes_attributes][${quote.id}][url]" id="argument_argument_quotes_attributes_${quote.id}_url" value="${quote.url}" class="form-control url-field" placeholder="Quote URL source">

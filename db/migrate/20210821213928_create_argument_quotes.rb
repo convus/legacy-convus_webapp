@@ -9,6 +9,7 @@ class CreateArgumentQuotes < ActiveRecord::Migration[6.1]
 
       t.text :text
       t.text :url
+      t.boolean :removed, default: false
 
       t.timestamps
     end

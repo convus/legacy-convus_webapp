@@ -73,6 +73,7 @@ class HypothesisArgumentsController < ApplicationController
   end
 
   def permitted_params
-    params.require(:argument).permit(:text)
+    params.require(:argument).permit(:text,
+      argument_quotes_attributes: [:url, :text, :ref_number, :id, :removed])
   end
 end

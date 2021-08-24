@@ -6,10 +6,13 @@ class Argument < ApplicationRecord
   belongs_to :creator, class_name: "User"
   belongs_to :hypothesis
 
-  has_many :quotes
+  has_many :argument_quotes, dependent: :destroy
+  has_many :citations, through: :argument_quotes
   has_many :user_scores
 
   after_commit :run_associated_tasks
+
+  accepts_nested_attributes_for :argument_quotes, allow_destroy: true, reject_if: :all_blank
 
   attr_accessor :skip_associated_tasks
 
