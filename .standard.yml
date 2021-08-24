@@ -3,4 +3,4 @@ parallel: true
 
 ignore:
   - public/**/*
-  - node_modules/*
+  - node_modules/**/*
