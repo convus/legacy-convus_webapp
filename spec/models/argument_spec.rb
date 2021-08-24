@@ -30,9 +30,9 @@ RSpec.describe Argument, type: :model do
     end
     describe "markdown parsing stuff" do
       context "with some whitespace in between things" do
-        let(:text) { "   something\n\n\nanother Thing\n\n" }
+        let(:text) { "   something\n\n\nanother Thing\n\n\n > Blockquote here\n > more quote" }
         it "returns the expected content" do
-          expect(argument.parse_text).to eq "<p>something</p>\n\n<p>another Thing</p>\n"
+          expect(argument.parse_text).to eq "<p>something</p>\n\n<p>another Thing</p>\n\n<blockquote>\n<p>Blockquote here\nmore quote</p>\n</blockquote>\n"
         end
       end
       context "with an image" do

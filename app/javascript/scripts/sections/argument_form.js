@@ -38,17 +38,29 @@ export default class ArgumentForm {
   }
 
   parseArgumentQuotes (text) {
-    // Regex out the blockquote sections
-    const quoteRegexp = /(^|\n)\s*>[^\n]*/g
-    const match = text.match(quoteRegexp) || []
+    // Regex for matching lines that are blockquotes
+    const matchRegexp = /^\s*>/
+    // regex for replacing the "> " from the quotes
+    const replaceRegexp = /^\s*>\s*/
 
-    // regex out the "> " from the quotes
-    // - ignore any empty quotes
-    // - Trim the string
+    const matchingLines = []
+    let lastQuoteLine
+    text.split('\n').forEach((line, index) => {
+      if (line.match(matchRegexp)) {
+        // remove the >, trim the string
+        let quoteText = line.replace(replaceRegexp, '').trim()
+        // We need to group consecutive lines, because that's how markdown parses
+        // So check if the last line was a quote and if so, update it
+        if (lastQuoteLine === index - 1) {
+          quoteText = [matchingLines.pop(), quoteText].join(' ')
+        }
+        matchingLines.push(quoteText)
+        lastQuoteLine = index
+      }
+    })
     // - remove duplicates
-    const replaceRegexp = /(^|\n)\s*>/
-    return _.uniq(match.map(str => str.replace(replaceRegexp, '').trim())
-      .filter(str => str.length > 0))
+    // - ignore any empty quotes
+    return _.uniq(matchingLines).filter(str => str.length > 0)
   }
 
   parseExistingQuotes () {

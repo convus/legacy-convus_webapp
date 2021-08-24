@@ -22,6 +22,13 @@ describe('parseArgumentQuotes', () => {
     expect(argumentForm.parseArgumentQuotes('\nsomething else\nAnd MORE things\n\n\n  >    something \n\nother things')).toStrictEqual(target)
   })
 
+  it('parses multi line block quotes', () => {
+    const target = ['multi line message']
+    expect(argumentForm.parseArgumentQuotes('> multi line message ')).toStrictEqual(target)
+    expect(argumentForm.parseArgumentQuotes('> multi\n> line   \n> message ')).toStrictEqual(target)
+    expect(argumentForm.parseArgumentQuotes('Some stuff goes here\n > multi   \n >    line\n > message     \n\n\nAnd then more stuff')).toStrictEqual(target)
+  })
+
   it('parses text body with multiple quotes', () => {
     const target = ['something', 'something else']
     expect(argumentForm.parseArgumentQuotes('> something\n\n>something else')).toStrictEqual(target)
