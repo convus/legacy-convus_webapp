@@ -37,5 +37,6 @@ class Argument < ApplicationRecord
   def parse_text
     return "" unless text.present?
     argument_markdown.render(text.strip)
+      .gsub(/(<\/?)h\d+/i, '\1p') # Remove header open brackets and close brackets
   end
 end
