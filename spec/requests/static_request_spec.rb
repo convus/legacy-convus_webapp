@@ -18,12 +18,4 @@ RSpec.describe "/", type: :request do
       expect(response).to render_template("static/about")
     end
   end
-
-  describe "/editing" do
-    it "renders" do
-      get "/editing"
-      expect(response.code).to eq "200"
-      expect(response).to render_template("static/editing")
-    end
-  end
 end
