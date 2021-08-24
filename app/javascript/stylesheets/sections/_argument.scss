@@ -32,6 +32,8 @@
     .quote-text {
       padding-left: 0.3rem;
       margin: 0 0 0.1rem;
+      line-height: 1.25;
+      opacity: 0.8;
       &:before {
         content: ">";
         opacity: 0.3;

@@ -18,6 +18,15 @@ class Argument < ApplicationRecord
 
   attr_accessor :skip_associated_tasks
 
+  def self.shown(user = nil)
+    return approved unless user.present?
+    approved.or(where(creator_id: user.id))
+  end
+
+  def shown?(user = nil)
+    approved || creator_id == user&.id
+  end
+
   def remove_empty_quotes!
     argument_quotes.each { |aq| aq.destroy if aq.removed? && aq.text.blank? && aq.url.blank? }
   end

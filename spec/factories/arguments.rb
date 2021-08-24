@@ -7,6 +7,7 @@ FactoryBot.define do
 
     trait :approved do
       approved_at { Time.current - 2.hours }
+      hypothesis { FactoryBot.create(:hypothesis_approved) }
     end
 
     factory :argument_approved, traits: [:approved]

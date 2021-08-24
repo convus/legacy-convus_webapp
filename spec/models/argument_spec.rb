@@ -32,6 +32,7 @@ RSpec.describe Argument, type: :model do
       context "with some whitespace in between things" do
         let(:text) { "   something\n\n\nanother Thing\n\n\n > Blockquote here\n > more quote" }
         it "returns the expected content" do
+          # NOTE: might want to replace new lines with
           expect(argument.parse_text).to eq "<p>something</p>\n\n<p>another Thing</p>\n\n<blockquote>\n<p>Blockquote here\nmore quote</p>\n</blockquote>\n"
         end
       end
@@ -72,6 +73,22 @@ RSpec.describe Argument, type: :model do
           expect(argument.parse_text).to eq target
         end
       end
+    end
+  end
+
+  describe "shown" do
+    let(:user) { FactoryBot.create(:user) }
+    let!(:argument1) { FactoryBot.create(:argument) }
+    let(:hypothesis) { argument1.hypothesis }
+    let!(:argument2) { FactoryBot.create(:argument, creator: user, hypothesis: hypothesis) }
+    let!(:argument3) { FactoryBot.create(:argument_approved, hypothesis: hypothesis) }
+    let!(:argument4) { FactoryBot.create(:argument, creator: user) }
+    it "returnns users and approved" do
+      expect(Argument.where(creator_id: user.id).pluck(:id)).to eq([argument2.id, argument4.id])
+      expect(Argument.shown(user).pluck(:id)).to eq([argument2.id, argument3.id, argument4.id])
+      expect(Argument.shown.pluck(:id)).to eq([argument3.id])
+      expect(hypothesis.reload.arguments.shown(user).pluck(:id)).to eq([argument2.id, argument3.id])
+      expect(hypothesis.reload.arguments.shown.pluck(:id)).to eq([argument3.id])
     end
   end
 end
