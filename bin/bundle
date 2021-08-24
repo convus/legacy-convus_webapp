@@ -56,7 +56,7 @@ m = Module.new {
   def lockfile_version
     return unless File.file?(lockfile)
     lockfile_contents = File.read(lockfile)
-    return unless lockfile_contents =~ /\n\nBUNDLED WITH\n\s{2,}(#{Gem::Version::VERSION_PATTERN})\n/o
+    return unless lockfile_contents =~ /\n\nBUNDLED WITH\n\s{2,}(#{Gem::Version::VERSION_PATTERN})\n/
     Regexp.last_match(1)
   end
 
