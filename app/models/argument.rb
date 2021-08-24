@@ -40,7 +40,7 @@ class Argument < ApplicationRecord
     Redcarpet::Markdown.new(
       Redcarpet::Render::HTML.new(no_images: true, no_links: true, filter_html: true),
       {no_intra_emphasis: true, tables: true, fenced_code_blocks: true, strikethrough: true,
-        superscript: true, lax_spacing: true}
+       superscript: true, lax_spacing: true}
     )
   end
 

@@ -215,7 +215,7 @@ RSpec.describe HypothesisCitation, type: :model do
   describe "shown" do
     let(:user) { FactoryBot.create(:user) }
     let!(:hypothesis_citation1) { FactoryBot.create(:hypothesis_citation) }
-    let(:hypothesis) { hypothesis_citation1.hypothesis  }
+    let(:hypothesis) { hypothesis_citation1.hypothesis }
     let!(:hypothesis_citation2) { FactoryBot.create(:hypothesis_citation, creator: user, hypothesis: hypothesis) }
     let!(:hypothesis_citation3) { FactoryBot.create(:hypothesis_citation_approved, hypothesis: hypothesis) }
     let!(:hypothesis_citation4) { FactoryBot.create(:hypothesis_citation, creator: user) }

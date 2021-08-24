@@ -8,12 +8,12 @@ RSpec.describe "hypothesis_arguments", type: :request do
   let!(:hypothesis) { FactoryBot.create(:hypothesis_approved, creator: FactoryBot.create(:user), created_at: Time.current - 1.hour) }
   let(:hypothesis_citation) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: citation_url, creator: current_user) }
   let(:citation) { hypothesis_citation.citation }
-  let(:quote) { }
+  let(:quote) {}
   let(:subject) { FactoryBot.create(:argument, hypothesis: hypothesis, creator: current_user) }
 
   let(:simple_argument_params) do
     {
-      text: "This is the text of an argument on something cool.\n\nAnd this is the text of the seconnd section",
+      text: "This is the text of an argument on something cool.\n\nAnd this is the text of the seconnd section"
     }
   end
   let(:text) { "\nThis is the text\n\n> This is a quote\n\nAnd some more text" }
@@ -184,13 +184,13 @@ RSpec.describe "hypothesis_arguments", type: :request do
           let!(:argument_quote0) { FactoryBot.create(:argument_quote, argument: subject, creator: current_user) }
           let(:argument_quotes_params) do
             {
-              "#{argument_quote1.id}" => {
+              argument_quote1.id.to_s => {
                 url: "https://example.com/a-different-url",
                 text: "And another quote",
                 id: argument_quote1.id,
                 removed: false,
                 ref_number: 2
-              }, "#{argument_quote2.id}" => {
+              }, argument_quote2.id.to_s => {
                 url: "",
                 text: "",
                 id: argument_quote2.id,
