@@ -20,12 +20,14 @@
     .max-width-text-container.col
       .form-group.mb-0
         = f.label :text do
-          %span
+          %span.less-strong{ title: "Renders with markdown, except no images, links or html" }
             - if is_edit
               Edit new argument:
             - else
               Create argument:
-          %small.less-strong markdown with no images, links or html
+          %small.less-strong
+        -# Initially assign something to demonstrate how to make quotes
+        - @argument.text ||= "Make your argument here\n\n> This is an example quote"
         = f.text_area :text, rows: 10, class: "form-control"
   #quoteFieldsWrapper
     #quoteFields.row
@@ -34,7 +36,7 @@
       .col-12.text-warning
         %h4 Removed quotes
   .row.pt-4.mt-5
-    .col-6.col-md-4.col-xl-3
+    .col
       .form-group
         = submit_tag "Save", class: "btn btn-primary"
 
@@ -44,6 +46,7 @@
             Submit for Approval
             %span.loadingSpinner.spinner-border.spinner-border-sm.collapse.ml-2
               %span.sr-only Loading...
+          %em#quoteRequired.collapse.less-strong You must have at least one block quote before submitting
 %hr
 %h2.mt-4
   - if @hypothesis_citations_shown.count == 0

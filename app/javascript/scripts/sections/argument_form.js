@@ -16,21 +16,17 @@ export default class ArgumentForm {
 
   // init is called when loaded on the page - and not in testing
   init () {
-    // assign initial state based on the dom
-    this.blockQuotes = (this.blockQuotes !== undefined)
-      ? this.blockQuotes
-      : this.parseArgumentQuotes(
-        $('#argument_text').val()
-      )
-    this.existingQuotes = (this.existingQuotes !== undefined)
-      ? this.existingQuotes
-      : this.parseExistingQuotes()
+    // For now we're just assigning updateArgumentQuotes - but we gotta render,
+    // BECAUSE THE URL
+    this.updateArgumentQuotes()
+    // But we may want to assign initial state based on the dom, if we start rendering via haml
+    // this.blockQuotes = (this.blockQuotes !== undefined) ? this.blockQuotes : this.parseArgumentQuotes($('#argument_text').val())
+    // this.existingQuotes = (this.existingQuotes !== undefined) ? this.existingQuotes : this.parseExistingQuotes()
 
-    // For testing purposes, automatically select the argument field
+    // For testing purposes, automatically select the argument field - but actually this is nice?
     $('#argument_text').focus()
 
     // Set the initial argument quotes. Could do via haml, but this is easier (at least until we're trying to keep removed around`)
-    this.updateArgumentQuotes()
     $('#argument_text').on(
       'keydown keyup update blur',
       this.throttle(this.updateArgumentQuotes, this.throttleLimit)
@@ -61,7 +57,7 @@ export default class ArgumentForm {
         matched: false,
         text: $this.find('.quote-text').text(),
         url: $this.find('.url-field').val(),
-        id: $this.find('.hidden-id-field').val(),
+        id: this.id.replace('quoteId-', ''),
         prevRef: index,
         removed: $this.hasClass('removedQuote')
       }
@@ -107,6 +103,7 @@ export default class ArgumentForm {
       }
     })
     this.processing = false
+    this.updateSubmitForApproval()
   }
 
   updateQuote ({ text, index, removedQuote }) {
@@ -145,7 +142,7 @@ export default class ArgumentForm {
     // TODO: stop using jQuery here
     const $el = $(`${selector} #quoteId-${quote.id}`)
     // If the element exists and is in the same position and is still around, update the quote
-    if ($el.length && quote.prevRef == index) {
+    if ($el.length && quote.prevRef === index) {
       $el.find('.quote-text').text(text)
     } else {
       // Otherwise, we rerender the element.
@@ -160,8 +157,8 @@ export default class ArgumentForm {
   // NOTE: refNumber for deleted quotes should be null - and maybe they shouldn't actually be form elements?
   // ALSO: quote text should maybe be a hidden field? - probably not actually
   quoteHtml (refNumber, quote) {
+    // <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][id]" id="argument_argument_quotes_attributes_${quote.id}_id" class="hidden-id-field" value="${quote.id}">
     return `<div class="quote-field ${quote.removed ? 'removedQuote' : ''}" id="quoteId-${quote.id}">
-      <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][id]" id="argument_argument_quotes_attributes_${quote.id}_id" class="hidden-id-field" value="${quote.id}">
       <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][ref_number]" id="argument_argument_quotes_attributes_${quote.id}_ref_number" value="${refNumber}">
       <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][removed]" id="argument_argument_quotes_attributes_${quote.id}_removed" value="${quote.removed}">
       <p class="quote-text">${quote.text}</p>
@@ -202,6 +199,23 @@ export default class ArgumentForm {
       }
     }
     return match
+  }
+
+  updateSubmitForApproval () {
+    log.debug(!$('#submitForApproval').length)
+    // If there isn't a submit for approval button, our job is done
+    if (!$('#submitForApproval').length) { return }
+    // disable unless there is a quote
+    if ($('#quoteFields .quote-field').length > 0) {
+      $('#submitForApproval').attr('disabled', false)
+      $('#submitForApproval').removeClass('disabled')
+      $('#quoteRequired').collapse('hide')
+    } else {
+      // There isn't a quote, so let them know they need one
+      $('#submitForApproval').attr('disabled', true)
+      $('#submitForApproval').addClass('disabled')
+      $('#quoteRequired').collapse('show')
+    }
   }
 
   // I'd prefer to use lodash throttle - BUT - I don't know how to bind the context correctly
@@ -251,7 +265,7 @@ export default class ArgumentForm {
     s1 = s1.toString().toLowerCase().trim() // should already be trimmed, but just in case
     s2 = s2.toString().toLowerCase().trim() // should already be trimmed, but just in case
 
-    const costs = new Array()
+    const costs = []
     for (let i = 0; i <= s1.length; i++) {
       let lastValue = i
       for (let j = 0; j <= s2.length; j++) {
