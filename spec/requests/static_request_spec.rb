@@ -19,11 +19,11 @@ RSpec.describe "/", type: :request do
     end
   end
 
-  describe "/citation_scoring" do
+  describe "/editing" do
     it "renders" do
-      get "/citation_scoring"
+      get "/editing"
       expect(response.code).to eq "200"
-      expect(response).to render_template("static/citation_scoring")
+      expect(response).to render_template("static/editing")
     end
   end
 end

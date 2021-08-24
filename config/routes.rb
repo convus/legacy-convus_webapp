@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   resource :account, only: %i[show edit update]
 
   get :about, to: "static#about"
-  get :citation_scoring, to: "static#citation_scoring"
+  get :editing, to: "static#editing"
 
   resources :citations, :publications
 

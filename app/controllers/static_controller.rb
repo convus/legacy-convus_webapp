@@ -5,7 +5,7 @@ class StaticController < ApplicationController
     @page_title = "About Convus"
   end
 
-  def citation_scoring
-    @page_title = "Citation scoring"
+  def editing
+    @page_title = "Editing"
   end
 end
