@@ -56,7 +56,7 @@ jobs:
           name: Wait for PostgreSQL to start
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - save_cache:
-          key: v2-dep-{{ .Branch }}-{{ epoch }}
+          key: v3-dep-{{ .Branch }}-{{ epoch }}
           paths:
             - ./vendor/bundle
             - ~/.bundle
