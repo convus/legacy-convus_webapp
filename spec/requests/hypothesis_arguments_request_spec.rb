@@ -70,7 +70,7 @@ RSpec.describe "hypothesis_arguments", type: :request do
         hypothesis.reload
         expect(hypothesis.creator_id).to_not eq current_user.id
         argument = hypothesis.arguments.last
-        expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.id, id: argument.id)
+        expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id, id: argument.id)
         expect(AddToGithubContentJob.jobs.count).to eq 0
         expect(flash[:success]).to be_present
 
@@ -88,7 +88,7 @@ RSpec.describe "hypothesis_arguments", type: :request do
           hypothesis.reload
           expect(hypothesis.creator_id).to_not eq current_user.id
           argument = hypothesis.arguments.last
-          expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.id, id: argument.id)
+          expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id, id: argument.id)
           expect(AddToGithubContentJob.jobs.count).to eq 0
           expect(flash[:success]).to be_present
 
@@ -147,7 +147,7 @@ RSpec.describe "hypothesis_arguments", type: :request do
         Sidekiq::Worker.clear_all
         patch "#{base_url}/#{subject.id}", params: {argument: simple_argument_params}
         expect(flash[:success]).to be_present
-        expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.id, id: subject.id)
+        expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id, id: subject.id)
         expect(assigns(:argument)&.id).to eq subject.id
         expect(AddToGithubContentJob.jobs.count).to eq 0
         subject.reload
@@ -163,7 +163,7 @@ RSpec.describe "hypothesis_arguments", type: :request do
           Sidekiq::Worker.clear_all
           patch "#{base_url}/#{subject.id}", params: {argument: argument_with_quote_params}
           expect(flash[:success]).to be_present
-          expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.id, id: subject.id)
+          expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id, id: subject.id)
           expect(assigns(:argument)&.id).to eq subject.id
           expect(AddToGithubContentJob.jobs.count).to eq 0
           subject.reload
@@ -219,7 +219,7 @@ RSpec.describe "hypothesis_arguments", type: :request do
             Sidekiq::Worker.clear_all
             patch "#{base_url}/#{subject.id}", params: {argument: argument_with_quote_params}
             expect(flash[:success]).to be_present
-            expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.id, id: subject.id)
+            expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id, id: subject.id)
             expect(assigns(:argument)&.id).to eq subject.id
             expect(AddToGithubContentJob.jobs.count).to eq 0
             subject.reload
