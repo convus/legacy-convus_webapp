@@ -35,6 +35,8 @@ task update_flat_file_database_without_import: :environment do
   output = ""
   output += `git config user.email admin-bot@convus.org`
   output += `git config user.name convus-admin-bot`
+  # In case something fucked up, checkout the main branch
+  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git checkout -b main 2>&1`
   output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git reset --hard origin/main 2>&1`
   branch_name = "override-#{Time.current.to_i}"
   output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git checkout -b #{branch_name} 2>&1`

@@ -21,6 +21,7 @@ RSpec.describe Hypothesis, type: :model do
     it "makes a valid slug" do
       expect(hypothesis).to be_valid
       slug = hypothesis.slug
+      expect(hypothesis.file_path.gsub("hypotheses/", "").length).to be < 255
       expect(Slugifyer.filename_slugify(slug)).to eq slug
       expect(Slugifyer.filename_slugify(hypothesis.file_path)).to eq slug
       expect(Hypothesis.friendly_find(hypothesis.file_path)&.id).to eq hypothesis.id
