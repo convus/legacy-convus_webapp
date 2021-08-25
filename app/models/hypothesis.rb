@@ -45,9 +45,8 @@ class Hypothesis < ApplicationRecord
 
   def self.friendly_find(str)
     found = find_ref_id(str)
-    return found if found.present?
     # Preference ref_id lookup (in filepath or in id:)
-    if str.is_a?(String)
+    if found.blank? && str.is_a?(String)
       found = if str.match?(/\A(hypotheses\/)?[0-z]+_/i)
         find_ref_id(str.gsub("hypotheses/", "").split("_").first)
       elsif str.match?(/\A[0-z]+:/) # Looks like a base36 ID string!
