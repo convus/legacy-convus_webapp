@@ -15,6 +15,7 @@ class Slugifyer
 
   # Filenames are limited to 255 characters, so truncate the slug
   # ... Leave space for the extension (and ref_id) by truncating at 240
+  # NOTE: if updating, also update Citation#find_by_slug_or_path_slug
   def self.filename_slugify(string)
     return nil if string.blank?
     # Remove filename parts, because we don't want to slugify them
