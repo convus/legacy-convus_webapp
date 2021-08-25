@@ -21,9 +21,9 @@
           - Array(UserScore::MIN_SCORE..UserScore::MAX_SCORE).each do |score|
             - active = quality_score&.score == score
             - if quality_score.present? # Yah, I know, you could still make the form request manually, but who cares that much?
-              %span.score-item{ class: (active ? "active" : "") }= score
+              %span.score-item{class: (active ? "active" : "")}= score
             - else
-              = button_to score, user_scores_path, { action: "create", params: {score: score, hypothesis_id: @hypothesis.id, kind: "quality"}, class: "score-item btn btn-link #{active ? 'active' : ''}" }
+              = button_to score, user_scores_path, {action: "create", params: {score: score, hypothesis_id: @hypothesis.id, kind: "quality"}, class: "score-item btn btn-link #{active ? 'active' : ''}"}
 
         .hypothesis-score.mt-2
           - controversy_score = @hypothesis.user_scores.current.controversy.where(user_id: current_user&.id).first
@@ -35,9 +35,9 @@
           - Array(UserScore::MIN_SCORE..UserScore::MAX_SCORE).each do |score|
             - active = controversy_score&.score == score
             - if controversy_score.present?
-              %span.score-item{ class: (active ? "active" : "") }= score
+              %span.score-item{class: (active ? "active" : "")}= score
             - else
-              = button_to score, user_scores_path, { action: "create", params: {score: score, hypothesis_id: @hypothesis.id, kind: "controversy"}, class: "score-item btn btn-link #{active ? 'active' : ''}" }
+              = button_to score, user_scores_path, {action: "create", params: {score: score, hypothesis_id: @hypothesis.id, kind: "controversy"}, class: "score-item btn btn-link #{active ? 'active' : ''}"}
 - if @arguments.any? || @unapproved_arguments
   .row.mt-4.arguments-wrapper.pb-4
     - @unapproved_arguments.each do |argument|
@@ -52,13 +52,15 @@
                 you created it.
               It is
               %span.text-warning not approved.
+          - if argument.editable_by?(current_user)
+            %span.float-right= link_to "edit", edit_hypothesis_argument_path(hypothesis_id: @hypothesis.id, id: argument.id), class: "gray-link small"
         .argument-body
-          = argument.text
+          = argument.body_html.html_safe
 
     - @arguments.each do |argument|
       .col.argument-show-block.mt-4
         .argument-body
-          = argument.text
+          = argument.body_html.html_safe
 
 .mt-5.pb-2
 -# Added ^ for space
@@ -153,13 +155,13 @@
             %td Score
             %td
               - if @hypothesis.approved?
-                %strong.score-bubble{ class: hypothesis_score_class(@hypothesis.score) }
+                %strong.score-bubble{class: hypothesis_score_class(@hypothesis.score)}
                   = @hypothesis.score
               - unapproved_score = @hypothesis.unapproved_score
               - if @hypothesis.unapproved? || @hypothesis.score < unapproved_score
                 %em.less-strong
                   when approved:
-                %span.score-bubble.small.less-strong{ class: hypothesis_score_class(unapproved_score) }
+                %span.score-bubble.small.less-strong{class: hypothesis_score_class(unapproved_score)}
                   = unapproved_score
 
           %tr
@@ -188,4 +190,4 @@
 
   .row.mt-2
     - @hypothesis.hypothesis_citations.each do |hypothesis_citation|
-      = render partial: "/citations/display", locals: { citation: hypothesis_citation.citation, hypothesis_citation_id: hypothesis_citation.id }
+      = render partial: "/citations/display", locals: {citation: hypothesis_citation.citation, hypothesis_citation_id: hypothesis_citation.id}
