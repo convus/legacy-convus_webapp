@@ -36,7 +36,7 @@ class Hypothesis < ApplicationRecord
   end
 
   def self.matching_previous_titles(str)
-    PreviousTitle.friendly_matching(str)
+    PreviousTitle.friendly_matching(str).map(&:hypothesis)
   end
 
   def self.find_ref_id(str)
@@ -44,7 +44,17 @@ class Hypothesis < ApplicationRecord
   end
 
   def self.friendly_find(str)
-    find_ref_id(str) || super || matching_previous_titles(str).last&.hypothesis
+    found = find_ref_id(str)
+    return found if found.present?
+    # Preference ref_id lookup (in filepath or in id:)
+    if str.is_a?(String)
+      found = if str.match?(/\A(hypotheses\/)?[0-z]+_/i)
+        find_ref_id(str.gsub("hypotheses/", "").split("_").first)
+      elsif str.match?(/\A[0-z]+:/) # Looks like a base36 ID string!
+        find_ref_id(str.split(":").first)
+      end
+    end
+    found || super || matching_previous_titles(str).last
   end
 
   # We're saving hypothesis with a bunch of associations, make it easier to override the errors

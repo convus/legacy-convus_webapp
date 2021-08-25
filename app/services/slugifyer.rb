@@ -16,6 +16,12 @@ class Slugifyer
   # Filenames are limited to 255 characters, so truncate the slug
   # ... Leave space for the extension by truncating at 250
   def self.filename_slugify(string)
+    return nil if string.blank?
+    # Remove filename parts, because we don't want to slugify them
+    string = string&.to_s.strip.downcase
+      .gsub(/\A(hypotheses\/)?[0-z]+_/, "") # Remove leading hypotheses/{ref_id}_
+      .gsub(/\Acitations\//, "") # Remove citations folder
+      .gsub(/\.yml\z/, "") # Remove trailing .yml
     slugify(string)&.truncate(250, omission: "")
       &.delete_suffix("-") # Remove trailing -
   end
