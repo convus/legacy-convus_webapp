@@ -24,6 +24,7 @@ RSpec.describe Hypothesis, type: :model do
       expect(Slugifyer.filename_slugify(slug)).to eq slug
       expect(Hypothesis.friendly_find(slug)).to eq hypothesis
       expect(Hypothesis.friendly_find(title)).to eq hypothesis
+      expect(Hypothesis.friendly_find("#{hypothesis.ref_id.downcase} ")).to eq hypothesis
     end
   end
 

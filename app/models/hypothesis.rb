@@ -40,7 +40,7 @@ class Hypothesis < ApplicationRecord
   end
 
   def self.find_ref_id(str)
-    str.present? ? find_by_ref_id(str.upcase) : nil
+    str.present? ? find_by_ref_id(str.upcase.strip) : nil
   end
 
   def self.friendly_find(str)
