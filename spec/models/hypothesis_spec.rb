@@ -21,10 +21,47 @@ RSpec.describe Hypothesis, type: :model do
     it "makes a valid slug" do
       expect(hypothesis).to be_valid
       slug = hypothesis.slug
+      expect(hypothesis.file_path.gsub("hypotheses/", "").length).to be < 255
       expect(Slugifyer.filename_slugify(slug)).to eq slug
-      expect(Hypothesis.friendly_find(slug)).to eq hypothesis
-      expect(Hypothesis.friendly_find(title)).to eq hypothesis
-      expect(Hypothesis.friendly_find("#{hypothesis.ref_id.downcase} ")).to eq hypothesis
+      expect(Slugifyer.filename_slugify(hypothesis.file_path)).to eq slug
+      expect(Hypothesis.friendly_find(hypothesis.file_path)&.id).to eq hypothesis.id
+      expect(Hypothesis.friendly_find("  #{hypothesis.file_path} ")&.id).to eq hypothesis.id
+      expect(Hypothesis.friendly_find(slug)&.id).to eq hypothesis.id
+      expect(Hypothesis.friendly_find(title)&.id).to eq hypothesis.id
+      expect(Hypothesis.friendly_find("#{hypothesis.ref_id.downcase} ")&.id).to eq hypothesis.id
+    end
+  end
+
+  describe "friendly_find" do
+    let(:title1) { "Overall, the case for reduced meat consumption is strong" }
+    let(:title2) { "The case for reduced meat consumption is strong" }
+    let(:title1_slug) { "overall-the-case-for-reduced-meat-consumption-is-strong" }
+    let(:hypothesis) { FactoryBot.create(:hypothesis_approved, title: title1, ref_number: 3213) }
+    it "finds by various things" do
+      expect(hypothesis.ref_id).to eq "2H9"
+      expect(hypothesis.slug).to eq title1_slug
+      expect(hypothesis.file_path).to eq "hypotheses/2H9_#{title1_slug}.yml"
+      expect(Slugifyer.filename_slugify(hypothesis.file_path)).to eq title1_slug
+      expect(hypothesis.file_path.match?(/\A(hypotheses\/)?[0-z]+_/i)).to be_truthy
+      Sidekiq::Worker.clear_all
+      hypothesis.update(title: title2)
+      StorePreviousHypothesisTitleJob.drain
+      hypothesis.reload
+      expect(hypothesis.previous_titles.count).to eq 1
+      expect(hypothesis.previous_titles.first&.title).to eq title1
+      expect(hypothesis.slug).to eq "the-case-for-reduced-meat-consumption-is-strong"
+      expect(Hypothesis.friendly_find(" 2H9\n")&.id).to eq hypothesis.id
+      expect(Hypothesis.friendly_find(hypothesis.id)&.id).to eq hypothesis.id
+      expect(Hypothesis.friendly_find(title2)&.id).to eq hypothesis.id
+      expect(Hypothesis.friendly_find(hypothesis.slug)&.id).to eq hypothesis.id
+      expect(Hypothesis.friendly_find(hypothesis.file_path)&.id).to eq hypothesis.id
+      expect(Hypothesis.friendly_find("2H9_the-case-for-reduced-meat-consumption-is-strong")&.id).to eq hypothesis.id
+      expect(Hypothesis.friendly_find("2H9: #{title1}")&.id).to eq hypothesis.id
+      expect(Hypothesis.matching_previous_titles(title1).map(&:id)).to eq([hypothesis.id])
+      expect(Hypothesis.matching_previous_titles(title1_slug).map(&:id)).to eq([hypothesis.id])
+      expect(Hypothesis.friendly_find(title1)&.id).to eq hypothesis.id
+      expect(Hypothesis.friendly_find(title1_slug)&.id).to eq hypothesis.id
+      expect(Hypothesis.friendly_find(" 2H9_#{title1_slug}")&.id).to eq hypothesis.id
     end
   end
 

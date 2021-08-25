@@ -27,11 +27,11 @@ unless ENV["CIRCLECI"]
 
     describe "write_all_files" do
       let!(:citation) { FactoryBot.create(:citation_approved, title: "some citation", publication: publication) }
-      let!(:hypothesis) { FactoryBot.create(:hypothesis_approved, title: "hypothesis-1") }
+      let!(:hypothesis) { FactoryBot.create(:hypothesis_approved, title: "hypothesis-1", ref_number: 10) }
       let(:target_filenames) do
         [
           "citations/the-hill-etc/some-citation.yml",
-          "hypotheses/hypothesis-1.yml",
+          "hypotheses/A_hypothesis-1.yml",
           "publications.csv",
           "tags.csv"
         ]
@@ -44,11 +44,12 @@ unless ENV["CIRCLECI"]
 
     describe "write_approved_hypotheses" do
       let!(:citation) { FactoryBot.create(:citation_approved, title: "Pelosi digs in as pressure builds for COVID-19 deal", publication: publication) }
-      let(:hypothesis) { FactoryBot.create(:hypothesis_approved, title: "US waiting for updated COVID-19 relief package", tags_string: "some tag") }
+      let(:hypothesis) { FactoryBot.create(:hypothesis_approved, title: "US waiting for updated COVID-19 relief package", tags_string: "some tag", ref_number: 112) }
       let!(:hypothesis_citation) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: citation.url) }
-      let(:target_filename) { "hypotheses/us-waiting-for-updated-covid-19-relief-package.yml" }
+      let(:target_filename) { "hypotheses/34_us-waiting-for-updated-covid-19-relief-package.yml" }
       it "writes the files" do
         hypothesis.reload
+        expect(hypothesis.ref_id).to eq "34"
         expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
         expect(hypothesis.tags.count).to eq 1
         expect(list_of_files).to eq([])

@@ -1,7 +1,8 @@
 class ReconcileTaskOutputChecker
   NON_ERROR_STRINGS = [
     "Already up to date",
-    "Everything up-to-date"
+    "Everything up-to-date",
+    "Your branch is up to date with 'origin/main'"
   ]
 
   def self.success?(output)

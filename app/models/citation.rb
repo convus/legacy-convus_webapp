@@ -88,7 +88,7 @@ class Citation < ApplicationRecord
     return none unless str.present?
     slug = Slugifyer.slugify(str.gsub(/\.yml\z/i, "")) # remove .yml extension, just in case
     where(path_slug: slug).by_creation.first || # exact path_slug matching
-      where("path_slug ILIKE ?", "#{slug.truncate(250, omission: "")}%").by_creation.first || # filename truncation
+      where("path_slug ILIKE ?", "#{slug.truncate(240, omission: "")}%").by_creation.first || # filename truncation
       where(slug: slug).by_creation.first
   end
 

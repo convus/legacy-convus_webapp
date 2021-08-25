@@ -32,14 +32,11 @@ RSpec.describe GithubIntegration do
   end
 
   describe "create_hypothesis_pull_request" do
-    let(:hypothesis) do
-      hy = Hypothesis.create(title: "Testing GitHub integration")
-      hy.update_column :id, 42 # So we get consistent PRs
-      hy
-    end
+    let(:hypothesis) { Hypothesis.create(title: "Testing GitHub integration", ref_number: 42) }
 
     it "creates the pull request" do
       expect(hypothesis.pull_request_number).to be_blank
+      expect(hypothesis.ref_id).to eq "16"
       # When changing this - you have to remove any existing refs for branches named the same.
       # Delete it either by closing the PR: https://github.com/convus/convus_content/pulls
       # Or deleting the branch manually (if PR wasn't created): https://github.com/convus/convus_content/branches
@@ -87,11 +84,8 @@ RSpec.describe GithubIntegration do
 
   describe "create_hypothesis_citation_pull_request" do
     let(:hypothesis_title) { "IQ tests are repeatable and accurate" }
-    let(:hypothesis) do
-      hy = Hypothesis.create(title: hypothesis_title, approved_at: Time.current - 1.hour)
-      hy.update_columns(id: 2237, created_at: hy.approved_at) # So we get consistent PRs
-      hy
-    end
+    let(:approved_at) { Time.current - 1.hour }
+    let(:hypothesis) { Hypothesis.create(title: hypothesis_title, created_at: approved_at, approved_at: approved_at, ref_number: 2237) }
     let!(:hypothesis_citation_prior) { FactoryBot.create(:hypothesis_citation_approved, hypothesis: hypothesis, quotes_text: "Some quote here") }
     let!(:hypothesis_citation) do
       hypothesis.hypothesis_citations.create(url: "https://testing.convus.org/examples/etc",
@@ -101,6 +95,7 @@ RSpec.describe GithubIntegration do
 
     it "creates the pull request" do
       expect(hypothesis_citation.pull_request_number).to be_blank
+      expect(hypothesis.ref_id).to eq "1Q5"
 
       # Make sure that the above hypothesis_title is actually a title that is used in the content_repository
       # Or this isn't testing updating the file contents
