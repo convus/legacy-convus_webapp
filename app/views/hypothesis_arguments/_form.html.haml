@@ -1,5 +1,10 @@
 - is_edit ||= false
+- render_preview = @argument.id.present? && @argument.body_html.present?
 
+.small-page-header
+  %h1
+    %span.d-none.d-md-block
+      Hypothesis:
 .row
   = render partial: "/hypotheses/show_title", locals: {hypothesis: @hypothesis, render_show_link: true}
 
@@ -10,9 +15,6 @@
   - if @argument.id.blank?
     -# Initially assign something to demonstrate how to make quotes
     - @argument.text ||= "Make your argument here\n\n> This is an example quote"
-  -# Sometimes, we need to process quotes from the text (rather than just using the associated argument_quotes)
-  -# Initially we're always processing, but adding this just in case
-  - process_quotes_from_text = @argument.id.blank? || @argument.errors.any?
 
   .row
     - if @argument.errors.any?
@@ -23,14 +25,13 @@
     .max-width-text-container.col
       .form-group.mb-0
         = f.label :text do
-          %span.less-strong{ title: "Renders with markdown, except no images, links or html" }
+          %span.argument-text-label{ title: "Renders with markdown, except no images, links or html" }
             - if is_edit
               Edit new argument:
             - else
               Create argument:
-          %small.less-strong
         = f.text_area :text, rows: 10, class: "form-control"
-  #quoteFieldsWrapper{"data-processonload" => process_quotes_from_text}
+  #quoteFieldsWrapper
     #quoteFields.row
       - @argument.argument_quotes.not_removed.ref_ordered.each do |argument_quote|
         = render partial: "/hypothesis_arguments/argument_quote", locals: {argument_quote: argument_quote}
@@ -40,10 +41,15 @@
         %h4 Removed quotes
       - @argument.argument_quotes.removed.ref_ordered.each do |argument_quote|
         = render partial: "/hypothesis_arguments/argument_quote", locals: {argument_quote: argument_quote}
+  - if render_preview
+    #argumentPreview.row.collapse{class: (render_preview ? "show" : "")}
+      = render partial: "/hypothesis_arguments/show", locals: {argument: @argument, preview: true, skip_edit: true}
   .row.pt-4.mt-5
     .col
       .form-group
         = submit_tag "Save", class: "btn btn-primary"
+        %em#saveToPreview.ml-2.less-strong.collapse{class: (render_preview ? "" : "show")}
+          \... to preview
 
       - if is_edit
         .mt-4
@@ -51,7 +57,10 @@
             Submit for Approval
             %span.loadingSpinner.spinner-border.spinner-border-sm.collapse.ml-2
               %span.sr-only Loading...
-          %em#quoteRequired.collapse.less-strong Arguments must include at least one block quote to submit
+          %em#quoteRequired.collapse.less-strong
+            Arguments must include at least one block quote to submit (start line with <code>></code>)
+
+
 %hr
 %h2.mt-4
   - if @hypothesis_citations_shown.count == 0

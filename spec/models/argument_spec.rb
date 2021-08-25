@@ -82,10 +82,10 @@ RSpec.describe Argument, type: :model do
       let(:argument) { FactoryBot.create(:argument, text: argument_text) }
       let!(:argument_quote) { FactoryBot.create(:argument_quote, argument: argument, text: quote_text, url: url) }
       let(:target) do
-        "<p>Something cool and stuff</p>\n\n" +
-        "<div class=\"argument-quote-block\">" +
-        "<blockquote>\n<p>#{quote_text}</p>\n</blockquote>" +
-        "<span class=\"source\">#{argument_quote.citation_ref_html}</span></div>\n"
+        "<p>Something cool and stuff</p>\n\n" \
+          "<div class=\"argument-quote-block\">" \
+          "<blockquote>\n<p>#{quote_text}</p>\n</blockquote>" \
+          "<span class=\"source\">#{argument_quote.citation_ref_html}</span></div>\n"
       end
       it "does things" do
         expect(argument_quote.reload.ref_number).to eq 0 # Expect it to be set
@@ -109,10 +109,10 @@ RSpec.describe Argument, type: :model do
         let!(:argument_quote2) { FactoryBot.create(:argument_quote, argument: argument, text: "This here **Rocks**", url: url2) }
         let(:target_with_addition) do
           target +
-          "\n<p>And another thing</p>\n\n" +
-          "<div class=\"argument-quote-block\">" +
-          "<blockquote>\n<p>This here <strong>Rocks</strong></p>\n</blockquote>" +
-          "<span class=\"source\">#{argument_quote2.citation_ref_html}</span></div>\n"
+            "\n<p>And another thing</p>\n\n" \
+            "<div class=\"argument-quote-block\">" \
+            "<blockquote>\n<p>This here <strong>Rocks</strong></p>\n</blockquote>" \
+            "<span class=\"source\">#{argument_quote2.citation_ref_html}</span></div>\n"
         end
         it "renders" do
           expect(argument_quote.reload.ref_number).to eq 0

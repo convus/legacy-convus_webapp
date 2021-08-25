@@ -34,6 +34,7 @@ class HypothesisArgumentsController < ApplicationController
       # Remove argument_quotes that weren't included in the params (they were removed on the frontend)
       updated_quote_ids = permitted_params[:argument_quotes_attributes]&.keys || []
       @argument.argument_quotes.where(id: previous_argument_quote_ids - updated_quote_ids).destroy_all
+      @argument.update_body_html
       @argument.reload # Because maybe things were deleted!
       # Manually trigger to ensure it happens after argument is updated
       if ParamsNormalizer.boolean(params.dig(:argument, :add_to_github))

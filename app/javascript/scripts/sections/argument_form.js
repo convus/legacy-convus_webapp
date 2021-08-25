@@ -10,25 +10,21 @@ export default class ArgumentForm {
     this.existingQuotes = existingQuotes
     this.removedQuotes = []
     this.renderedQuoteIds = []
+    this.previewOpen
     // maybe should be based on the power of the device that is editing?
     this.throttleLimit = throttleLimit || 500
   }
 
   // init is called when loaded on the page - and not in testing
   init () {
-    // Assign initial state based on the dom, if we start rendering via haml
-    // this.blockQuotes = (this.blockQuotes !== undefined)
-    //   ? this.blockQuotes
-    //   : this.parseArgumentQuotes($('#argument_text').val())
-    // this.existingQuotes = (this.existingQuotes !== undefined)
-    //   ? this.existingQuotes
-    //   : this.parseExistingQuotes()
-
-    // I THINK we always want to process the text, but you can check $("#quoteFieldsWrapper").attr("data-processonload")
+    // I THINK we always want to process the text to instantiate the variables
     this.updateArgumentQuotes()
 
     // For testing purposes, automatically select the argument field - but actually this is nice?
     $('#argument_text').focus()
+
+    // Setup preview after inital parse, so that it doesn't initially collapse
+    this.updatePreview()
 
     // Start updating quotes when argument changes
     $('#argument_text').on(
@@ -83,10 +79,27 @@ export default class ArgumentForm {
     return existingQuotes
   }
 
+  updatePreview () {
+    // If undefined, set up preview
+    if (this.previewOpen == undefined) {
+      this.previewOpen = $('#argumentPreview').length
+      if (this.previewOpen) {
+        window.argumentText = $('#argument_text').val()
+      }
+      return
+    }
+    if (window.argumentText !== $('#argument_text').val()) {
+      $('#argumentPreview').collapse('hide')
+      $('#saveToPreview').collapse('show')
+      this.previewOpen = false
+    }
+  }
+
   updateArgumentQuotes () {
     const newBlockQuotes = this.parseArgumentQuotes(
       $('#argument_text').val()
     )
+    if (this.previewOpen) { this.updatePreview() }
     // In additional to throttling - if the quotes haven't changed, don't process
     if (_.isEqual(this.blockQuotes, newBlockQuotes)) { return }
     // TODO: improve. We were re-processing before finishing rendering (and therefor existingQuotes was blank)
@@ -223,7 +236,6 @@ export default class ArgumentForm {
   }
 
   updateSubmitForApproval () {
-    log.debug(!$('#submitForApproval').length)
     // If there isn't a submit for approval button, our job is done
     if (!$('#submitForApproval').length) { return }
     // disable unless there is a quote

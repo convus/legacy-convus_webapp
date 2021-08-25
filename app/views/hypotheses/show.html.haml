@@ -39,28 +39,12 @@
             - else
               = button_to score, user_scores_path, {action: "create", params: {score: score, hypothesis_id: @hypothesis.id, kind: "controversy"}, class: "score-item btn btn-link #{active ? 'active' : ''}"}
 - if @arguments.any? || @unapproved_arguments
-  .row.mt-4.arguments-wrapper.pb-4
+  #arguments-wrapper.row.mt-4.pb-4
     - @unapproved_arguments.each do |argument|
-      .col.argument-show-block.mt-4
-        .unapproved-show-info
-          %span.less-strong.small
-            %em
-              Argument shown because
-              - if params[:argument_id].present?
-                you clicked a link to view it.
-              - else
-                you created it.
-              It is
-              %span.text-warning not approved.
-          - if argument.editable_by?(current_user)
-            %span.float-right= link_to "edit", edit_hypothesis_argument_path(hypothesis_id: @hypothesis.id, id: argument.id), class: "gray-link small"
-        .argument-body
-          = argument.body_html.html_safe
+      = render partial: "/hypothesis_arguments/show", locals: {argument: argument, unapproved_show: true, unapproved_show_linked: params[:argument_id].present?}
 
     - @arguments.each do |argument|
-      .col.argument-show-block.mt-4
-        .argument-body
-          = argument.body_html.html_safe
+      = render partial: "/hypothesis_arguments/show", locals: {argument: argument}
 
 .mt-5.pb-2
 -# Added ^ for space

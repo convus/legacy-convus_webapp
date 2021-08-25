@@ -1,7 +1,7 @@
 $argument-border-color: rgba(102, 102, 102, 0.08);
 $argument-background: #f7f7f7;
 
-.arguments-wrapper {
+#arguments-wrapper {
   @include media-breakpoint-up(sm) {
     background: $argument-background;
     border-top: 1px solid rgba(102, 102, 102, 0.05);
@@ -25,7 +25,7 @@ $argument-background: #f7f7f7;
     border-top: 1px solid $argument-border-color;
   }
   .argument-body,
-  .unapproved-show-info {
+  .argument-show-header {
     @include media-breakpoint-up(sm) {
       background: #fff;
       border: 1px solid $argument-border-color;
@@ -33,7 +33,7 @@ $argument-background: #f7f7f7;
       padding-right: 15px;
     }
   }
-  .unapproved-show-info {
+  .argument-show-header {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     @include media-breakpoint-up(sm) {
@@ -68,6 +68,12 @@ $argument-background: #f7f7f7;
 }
 
 #argumentForm {
+  .argument-text-label {
+    font-family: $font-family-sans-serif;
+    font-weight: 500;
+    line-height: 1.2;
+    font-size: 24px;
+  }
   .quote-field {
     @extend .max-width-text-container;
     @extend .col;

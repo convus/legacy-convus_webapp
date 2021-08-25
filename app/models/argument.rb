@@ -10,10 +10,12 @@ class Argument < ApplicationRecord
   has_many :citations, through: :argument_quotes
   has_many :user_scores
 
+  before_validation :set_calculated_attributes
   after_commit :run_associated_tasks
 
   accepts_nested_attributes_for :argument_quotes, allow_destroy: true, reject_if: :all_blank
 
+  scope :with_body_html, -> { where.not(body_html: nil) }
   scope :hypothesis_approved, -> { left_joins(:hypothesis).where.not(hypotheses: {approved_at: nil}) }
 
   attr_accessor :skip_associated_tasks
@@ -28,7 +30,7 @@ class Argument < ApplicationRecord
   end
 
   def remove_empty_quotes!
-    argument_quotes.each { |aq| aq.destroy if aq.removed? && aq.text.blank? && aq.url.blank? }
+    argument_quotes.each { |aq| aq.destroy if aq.removed? && aq.url.blank? }
   end
 
   def hypothesis_approved
@@ -80,5 +82,9 @@ class Argument < ApplicationRecord
       html_output += quote_or_not
     end
     html_output
+  end
+
+  def set_calculated_attributes
+    self.body_html = nil if body_html.blank?
   end
 end
