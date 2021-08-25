@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe "hypothesis_arguments", type: :request do
-  let(:base_url) { "/hypotheses/#{hypothesis.id}/arguments" }
+  let(:base_url) { "/hypotheses/#{hypothesis.ref_id}/arguments" }
   let(:current_user) { nil }
   let!(:hypothesis) { FactoryBot.create(:hypothesis_approved, creator: FactoryBot.create(:user), created_at: Time.current - 1.hour) }
   let(:hypothesis_citation) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: citation_url, creator: current_user) }
