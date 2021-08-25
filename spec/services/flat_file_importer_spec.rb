@@ -101,7 +101,7 @@ unless ENV["CIRCLECI"]
     let(:hypothesis_attrs) do
       {
         title: "Purple air sensors are less accurate than EPA sensors. By turning on the conversion \"AQandU\" the data will more closely align with EPA readings",
-        id: 2115,
+        id: "1MR",
         topics: ["environment ", "Air quality"],
         cited_urls: [
           {url: "https://www.kqed.org/science/1969271/making-sense-of-purple-air-vs-airnow-and-a-new-map-to-rule-them-all",
@@ -119,7 +119,7 @@ unless ENV["CIRCLECI"]
       expect(tag.approved?).to be_falsey
       hypothesis = FlatFileImporter.import_hypothesis(hypothesis_attrs)
       expect(hypothesis.title).to eq hypothesis_attrs[:title]
-      expect(hypothesis.id).to eq hypothesis_attrs[:id]
+      expect(hypothesis.ref_id).to eq hypothesis_attrs[:id]
 
       expect(hypothesis.tags.approved.count).to eq 2
       expect(hypothesis.tags.pluck(:title)).to match_array(["Environment", "Air quality"])
@@ -167,7 +167,7 @@ unless ENV["CIRCLECI"]
         FlatFileImporter.import_hypothesis(hypothesis_attrs)
         hypothesis.reload
         expect(hypothesis.title).to eq hypothesis_attrs[:title]
-        expect(hypothesis.id).to eq hypothesis_attrs[:id]
+        expect(hypothesis.ref_id).to eq hypothesis_attrs[:id]
         expect(hypothesis.slug).to_not eq og_slug
         expect(hypothesis.approved_at).to be_within(1).of approved_at
 
@@ -216,7 +216,7 @@ unless ENV["CIRCLECI"]
           FlatFileImporter.import_hypothesis(hypothesis_attrs)
           hypothesis.reload
           expect(hypothesis.title).to eq hypothesis_attrs[:title]
-          expect(hypothesis.id).to eq hypothesis_attrs[:id]
+          expect(hypothesis.ref_id).to eq hypothesis_attrs[:id]
 
           expect(hypothesis.tags.approved.count).to eq 2
           expect(hypothesis.tags.pluck(:title)).to match_array(["Environment", "Air quality"])
@@ -258,7 +258,7 @@ unless ENV["CIRCLECI"]
           FlatFileImporter.import_hypothesis(hypothesis.flat_file_serialized)
           hypothesis.reload
           expect(hypothesis.title).to eq old_attrs[:title]
-          expect(hypothesis.id).to eq old_attrs[:id]
+          expect(hypothesis.ref_id).to eq old_attrs[:id]
           expect(hypothesis.citations.count).to eq 2
           expect(hypothesis.citations.approved.count).to eq 2
 
@@ -286,7 +286,7 @@ unless ENV["CIRCLECI"]
           FlatFileImporter.import_hypothesis(hypothesis_attrs_new_cited_url)
           hypothesis.reload
           expect(hypothesis.title).to eq old_attrs[:title]
-          expect(hypothesis.id).to eq old_attrs[:id]
+          expect(hypothesis.ref_id).to eq old_attrs[:id]
           expect(hypothesis.citations.count).to eq 2
           expect(hypothesis.hypothesis_citations.count).to eq 2
           expect(hypothesis.hypothesis_citations.approved.count).to eq 2
@@ -319,7 +319,7 @@ unless ENV["CIRCLECI"]
             FlatFileImporter.import_hypothesis(hypothesis.flat_file_serialized)
             hypothesis.reload
             expect(hypothesis.title).to eq old_attrs[:title]
-            expect(hypothesis.id).to eq old_attrs[:id]
+            expect(hypothesis.ref_id).to eq old_attrs[:id]
             expect(hypothesis.citations.count).to eq 2
             expect(hypothesis.citations.count).to eq 2
             expect(hypothesis.citations.approved.count).to eq 2
