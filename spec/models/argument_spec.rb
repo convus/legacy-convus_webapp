@@ -34,6 +34,7 @@ RSpec.describe Argument, type: :model do
         it "returns the expected content" do
           # NOTE: might want to replace new lines with
           expect(argument.parse_text).to eq "<p>something</p>\n\n<p>another Thing</p>\n\n<blockquote>\n<p>Blockquote here\nmore quote</p>\n</blockquote>\n"
+          expect(argument.parse_text).to eq "<p>something</p>\n\n<p>another Thing</p>\n\n<blockquote>\n<p>Blockquote here\nmore quote</p>\n</blockquote>\n"
         end
       end
       context "with an image" do
@@ -74,6 +75,40 @@ RSpec.describe Argument, type: :model do
         end
       end
     end
+    context "with blockquote" do
+      let(:url) { "http://example.com" }
+      let(:quote_text) { "I believe that this is the solution to discussions of various things on the internet" }
+      let(:argument) { FactoryBot.create(:argument, text: "Something cool and stuff\n\n> #{quote_text}") }
+      let(:argument_quote) { FactoryBot.create(:argument_quote, argument: argument, text: quote_text, url: url) }
+      let(:target) do
+        "<p>Something cool and stuff</p>\n\n" +
+        "<div class=\"argument-quote-block\">" +
+        "<blockquote>\n<p>#{quote_text}</p>\n</blockquote>" +
+        "<span class=\"source\">#{argument_quote.citation_ref_html}</span></div>\n"
+      end
+      it "does things" do
+        expect(argument_quote.reload.ref_number).to eq 0 # Expect it to be set
+        expect(argument_quote.citation_ref_html).to be_present
+        expect(argument.reload.body_html).to be_blank
+        pp argument.parse_text
+        # OMFG testing this was a bear. There is definitely to be a better way, but whatever
+        real_lines = argument.parse_text_with_blockquotes.split("\n").reject(&:blank?)
+        target_lines = target.split("\n").reject(&:blank?)
+        expect(real_lines[0]).to eq target_lines[0]
+        expect(real_lines[1]).to eq target_lines[1]
+        expect(real_lines[2]).to eq target_lines[2]
+        expect(real_lines[3]).to eq target_lines[3]
+        expect(real_lines.count).to eq target_lines.count
+        expect(real_lines).to eq target_lines
+        expect(argument.parse_text_with_blockquotes).to eq target
+        argument.update_body_html
+        argument.reload
+        expect(argument.body_html).to eq target
+      end
+      context "with a blockquote with markdown in it" do
+
+      end
+    end
   end
 
   describe "shown" do
@@ -83,7 +118,7 @@ RSpec.describe Argument, type: :model do
     let!(:argument2) { FactoryBot.create(:argument, creator: user, hypothesis: hypothesis) }
     let!(:argument3) { FactoryBot.create(:argument_approved, hypothesis: hypothesis) }
     let!(:argument4) { FactoryBot.create(:argument, creator: user) }
-    it "returnns users and approved" do
+    it "returns users and approved" do
       expect(Argument.where(creator_id: user.id).pluck(:id)).to eq([argument2.id, argument4.id])
       expect(Argument.shown(user).pluck(:id)).to eq([argument2.id, argument3.id, argument4.id])
       expect(Argument.shown.pluck(:id)).to eq([argument3.id])

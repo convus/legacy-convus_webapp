@@ -224,6 +224,7 @@ RSpec.describe "hypothesis_arguments", type: :request do
             expect(AddToGithubContentJob.jobs.count).to eq 0
             subject.reload
             expect(subject.approved?).to be_falsey
+            expect(subject.body_html).to be_present
             expect(subject.text).to eq argument_with_quote_params[:text]
 
             argument_quote1.reload

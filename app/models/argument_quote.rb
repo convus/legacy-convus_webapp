@@ -42,7 +42,7 @@ class ArgumentQuote < ApplicationRecord
     self.url = UrlCleaner.with_http(UrlCleaner.without_utm(url))
     self.creator_id ||= argument.creator_id
     self.citation_id = Citation.find_or_create_by_params({url: url, creator_id: creator_id})&.id
-    # make sure ref_number is set, or things break
-    self.ref_number ||= (argument&.argument_quotes&.maximum(:ref_number) || 0) + 1
+    # make sure ref_number is set, or things will break
+    self.ref_number ||= (argument&.argument_quotes&.maximum(:ref_number) || -1) + 1
   end
 end
