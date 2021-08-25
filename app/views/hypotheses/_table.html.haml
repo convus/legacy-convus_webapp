@@ -9,6 +9,8 @@
       - if display_dev_info?
         %th.only-dev-visible.small.d-none.d-md-table-cell
           ID
+        %th.only-dev-visible.small.d-none.d-md-table-cell
+          Ref ID
       %th.d-none.d-md-table-cell
         Hypothesis
       %th.d-none.d-md-table-cell
@@ -22,12 +24,14 @@
           - if display_dev_info?
             %td.only-dev-visible.small
               = hypothesis.id
+            %td.only-dev-visible.small
+              = hypothesis.ref_id
           %td
             = hypothesis.title
             .score-bubble.small{ class: hypothesis_score_class(hypothesis.score) }
               = hypothesis.score
             - if link_to_edit
-              = link_to "edit", edit_hypothesis_path(hypothesis.id), class: "internal-link"
+              = link_to "edit", edit_hypothesis_path(hypothesis.ref_id), class: "internal-link"
             - else
               = link_to internal_link_text, hypothesis_path(hypothesis.to_param), class: "internal-link"
             - hypothesis.tags.each do |tag|
