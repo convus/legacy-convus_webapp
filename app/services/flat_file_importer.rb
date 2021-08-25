@@ -44,16 +44,11 @@ class FlatFileImporter
     end
 
     def import_hypothesis(hypothesis_attrs)
-      # TODO: switch to once this find_ref_id
-      hypothesis = Hypothesis.find_ref_id(hypothesis_attrs[:id]) || Hypothesis.new
+      hypothesis = Hypothesis.find_ref_id(hypothesis_attrs[:id]) ||
+        Hypothesis.new(ref_id: hypothesis_attrs[:id], ref_number: hypothesis_attrs[:id].to_i(36))
       hypothesis.approved_at ||= Time.current # If it's in the flat files, it's approved
       hypothesis.update(title: hypothesis_attrs[:title])
 
-      # Temporarily comment out because for initial pass on #126
-      # We need to save first, so we can update the columns if necessary, before creating associations
-      unless hypothesis.ref_id == hypothesis_attrs[:id]
-        hypothesis.update(ref_id: hypothesis_attrs[:id], ref_number: hypothesis_attrs[:id].to_i(36))
-      end
       hypothesis.update(tags_string: hypothesis_attrs[:topics])
       hypothesis.tags.unapproved.update_all(approved_at: Time.current)
       hypothesis_citation_ids = []
