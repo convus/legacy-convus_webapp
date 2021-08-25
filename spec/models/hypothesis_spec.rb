@@ -5,10 +5,14 @@ RSpec.describe Hypothesis, type: :model do
   it_behaves_like "GithubSubmittable"
 
   it "has a valid factory" do
-    hypothesis = FactoryBot.create(:hypothesis)
+    hypothesis = FactoryBot.create(:hypothesis, id: 12)
     expect(hypothesis.id).to be_present
     hypothesis.reload
     expect(hypothesis.tags.pluck(:id)).to eq([])
+    # Testing ref_number
+    expect(hypothesis.id).to eq 12
+    expect(hypothesis.ref_number).to eq 12
+    expect(hypothesis.ref_id).to eq "L"
   end
 
   describe "slugify" do

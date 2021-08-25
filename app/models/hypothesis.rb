@@ -39,8 +39,13 @@ class Hypothesis < ApplicationRecord
     PreviousTitle.friendly_matching(str)
   end
 
+  # For now - eventually probably convert to integer and add an index
+  def self.find_ref_id(str)
+    str.present? ? find_by_ref_id(str.upcase) : nil
+  end
+
   def self.friendly_find(str)
-    super || matching_previous_titles(str).last&.hypothesis
+    find_ref_id(str) || super || matching_previous_titles(str).last&.hypothesis
   end
 
   # We're saving hypothesis with a bunch of associations, make it easier to override the errors
@@ -130,6 +135,8 @@ class Hypothesis < ApplicationRecord
   def set_calculated_attributes
     self.title = title&.strip
     self.score = calculated_score
+    self.ref_number ||= id # NOTE: eventually manage with Redis, to enable external creation
+    self.ref_id ||= ref_number.to_s(36).updase
   end
 
   def calculated_score
