@@ -26,7 +26,7 @@ unless ENV["CIRCLECI"]
       delete_existing_files
       publication = FactoryBot.create(:publication, title: "The Hill")
       citation = FactoryBot.create(:citation_approved, title: "some citation", publication: publication, kind: "government_statistics")
-      hypothesis = FactoryBot.create(:hypothesis_approved, title: "hypothesis-1")
+      hypothesis = FactoryBot.create(:hypothesis_approved, title: "hypothesis-1", ref_number: 2115)
       FactoryBot.create(:hypothesis_citation_approved, hypothesis: hypothesis, url: citation.url)
       FactoryBot.create(:tag, title: "Health & Wellness", taxonomy: "family_rank")
       FlatFileSerializer.write_all_files
@@ -54,7 +54,7 @@ unless ENV["CIRCLECI"]
       let(:target_filenames) do
         [
           "citations/the-hill/some-citation.yml",
-          "hypotheses/hypothesis-1.yml",
+          "hypotheses/1MR_hypothesis-1.yml",
           "publications.csv",
           "tags.csv"
         ]
