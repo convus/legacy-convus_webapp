@@ -75,9 +75,9 @@ class GithubIntegration
   end
 
   def create_hypothesis_pull_request(hypothesis)
-    branch_name = "proposed-hypothesis-#{hypothesis.id}"
+    branch_name = "proposed-hypothesis-#{hypothesis.ref_id}"
     @current_branch = create_branch(branch_name)
-    commit_message = "Hypothesis: #{hypothesis.title}"
+    commit_message = "Hypothesis #{hypothesis.ref_id}: #{hypothesis.title}"
     upsert_file_on_current_branch(hypothesis.file_path, hypothesis.flat_file_content, commit_message)
     # If there is a citation that hasn't been added to github yet, add it to this PR
     citation_ids_added = []
@@ -86,7 +86,7 @@ class GithubIntegration
       citation_ids_added << citation.id
       upsert_file_on_current_branch(citation.file_path, citation.flat_file_content, "Citation: #{citation.title}")
     end
-    pr_body = "View [hypothesis on Convus](https://convus.org/hypotheses/#{hypothesis.id})"
+    pr_body = "View [hypothesis #{hypothesis.ref_id} on Convus](https://convus.org/hypotheses/#{hypothesis.ref_id})"
     pull_request = create_pull_request(commit_message, pr_body)
     number = pull_request.url.split("/pulls/").last
     hypothesis.update(pull_request_number: number)
@@ -110,9 +110,9 @@ class GithubIntegration
   # AKA add a new citation to an existing hypothesis
   def create_hypothesis_citation_pull_request(hypothesis_citation)
     hypothesis = hypothesis_citation.hypothesis
-    branch_name = "update-hypothesis-#{hypothesis.id}-with-#{hypothesis_citation.id}"
+    branch_name = "update-hypothesis-#{hypothesis.ref_id}-with-#{hypothesis_citation.id}"
     @current_branch = create_branch(branch_name)
-    commit_message = "Add challenge to hypothesis: #{hypothesis.title}"
+    commit_message = "Add challenge to hypothesis #{hypothesis.ref_id}: #{hypothesis.title}"
     # put hypothesis_citation in the new_cited_url in the serializer (added as a new field to ward off merge conflicts)
     hypothesis.included_unapproved_hypothesis_citation = hypothesis_citation
     upsert_file_on_current_branch(hypothesis.file_path, hypothesis.flat_file_content, commit_message)
@@ -123,7 +123,7 @@ class GithubIntegration
       upsert_file_on_current_branch(citation.file_path, citation.flat_file_content, "Citation: #{citation.title}")
     end
     pr_body = "Added citation #{hypothesis_citation.challenge? ? "challenging" : "to"}: "
-    pr_body += "[#{hypothesis.title}](https://convus.org/hypotheses/#{hypothesis.id}?hypothesis_citation_id=#{hypothesis_citation.id})"
+    pr_body += "[#{hypothesis.ref_id}: #{hypothesis.title}](https://convus.org/hypotheses/#{hypothesis.ref_id}?hypothesis_citation_id=#{hypothesis_citation.id})"
     pull_request = create_pull_request(commit_message, pr_body)
     number = pull_request.url.split("/pulls/").last
     hypothesis_citation.update(pull_request_number: number)

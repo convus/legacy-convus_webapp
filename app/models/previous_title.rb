@@ -13,12 +13,12 @@ class PreviousTitle < ApplicationRecord
 
   # non-singular duplicate of #friendly_find_slug
   def self.friendly_matching(str = nil)
-    full_title_match = where("title ILIKE ?", str.to_s)
+    full_title_match = where("previous_titles.title ILIKE ?", str.to_s)
     if full_title_match.any?
       full_title_match
     else
       where(slug: Slugifyer.filename_slugify(str))
-    end.id_ordered
+    end.joins(:hypothesis).id_ordered
   end
 
   def hypothesis_previous_titles

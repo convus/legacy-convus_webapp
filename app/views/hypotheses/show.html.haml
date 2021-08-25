@@ -2,7 +2,7 @@
   %h1
     - if @hypothesis.editable_by?(current_user)
       %small.ml-2.float-right
-        = link_to "edit hypothesis", edit_hypothesis_path(@hypothesis.id), class: "btn btn-outline-primary btn-sm"
+        = link_to "edit hypothesis", edit_hypothesis_path(@hypothesis.ref_id), class: "btn btn-outline-primary btn-sm"
     %span.d-none.d-md-block
       Hypothesis:
 .row
@@ -23,7 +23,7 @@
             - if quality_score.present? # Yah, I know, you could still make the form request manually, but who cares that much?
               %span.score-item{class: (active ? "active" : "")}= score
             - else
-              = button_to score, user_scores_path, {action: "create", params: {score: score, hypothesis_id: @hypothesis.id, kind: "quality"}, class: "score-item btn btn-link #{active ? 'active' : ''}"}
+              = button_to score, user_scores_path, {action: "create", params: {score: score, hypothesis_id: @hypothesis.ref_id, kind: "quality"}, class: "score-item btn btn-link #{active ? 'active' : ''}"}
 
         .hypothesis-score.mt-2
           - controversy_score = @hypothesis.user_scores.current.controversy.where(user_id: current_user&.id).first
@@ -37,7 +37,7 @@
             - if controversy_score.present?
               %span.score-item{class: (active ? "active" : "")}= score
             - else
-              = button_to score, user_scores_path, {action: "create", params: {score: score, hypothesis_id: @hypothesis.id, kind: "controversy"}, class: "score-item btn btn-link #{active ? 'active' : ''}"}
+              = button_to score, user_scores_path, {action: "create", params: {score: score, hypothesis_id: @hypothesis.ref_id, kind: "controversy"}, class: "score-item btn btn-link #{active ? 'active' : ''}"}
 - if @arguments.any? || @unapproved_arguments
   .arguments-wrapper.row.mt-4.pb-4
     - @unapproved_arguments.each do |argument|
@@ -107,7 +107,7 @@
 .row.mt-big
   .col-6
     - if @hypothesis.approved?
-      = link_to new_hypothesis_argument_path(hypothesis_id: @hypothesis.id), class: "btn btn-sm btn-outline-secondary" do
+      = link_to new_hypothesis_argument_path(hypothesis_id: @hypothesis.ref_id), class: "btn btn-sm btn-outline-secondary" do
         - if @hypothesis.arguments.shown(current_user).count > 0
           Add another argument
         - else
@@ -115,7 +115,7 @@
 
       -# TODO: delete eventually
       -# .mt-4
-      -#   = link_to "Add another citation", new_hypothesis_citation_path(hypothesis_id: @hypothesis.id), class: "btn btn-sm btn-outline-secondary less-strong"
+      -#   = link_to "Add another citation", new_hypothesis_citation_path(hypothesis_id: @hypothesis.ref_id), class: "btn btn-sm btn-outline-secondary less-strong"
 
   .col-6.text-right
     .less-strong
@@ -132,8 +132,12 @@
             %td
               %span.convertTime.preciseTime
                 = l @hypothesis.created_at, format: :convert_time
+          %tr.only-dev-visible
+            %td ID
+            %td
+              = @hypothesis.ref_id
           - if display_dev_info?
-            %tr.only-dev-visible
+            %tr.only-dev-visible.small
               %td ID
               %td
                 = @hypothesis.id

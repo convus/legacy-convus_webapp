@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe "hypothesis_citations", type: :request do
-  let(:base_url) { "/hypotheses/#{hypothesis.id}/citations" }
+  let(:base_url) { "/hypotheses/#{hypothesis.ref_id}/citations" }
   let(:current_user) { nil }
   let!(:hypothesis) { FactoryBot.create(:hypothesis_approved, creator: FactoryBot.create(:user), created_at: Time.current - 1.hour) }
   let(:challenged_hypothesis_citation) { FactoryBot.create(:hypothesis_citation_approved, hypothesis: hypothesis) }
@@ -110,7 +110,7 @@ RSpec.describe "hypothesis_citations", type: :request do
         hypothesis.reload
         expect(hypothesis.creator_id).to_not eq current_user.id
         hypothesis_citation = hypothesis.hypothesis_citations.last
-        expect(response).to redirect_to edit_hypothesis_citation_path(hypothesis_id: hypothesis.id, id: hypothesis_citation.id)
+        expect(response).to redirect_to edit_hypothesis_citation_path(hypothesis_id: hypothesis.ref_id, id: hypothesis_citation.id)
         expect(AddToGithubContentJob.jobs.count).to eq 0
         expect(flash[:success]).to be_present
 
@@ -137,7 +137,7 @@ RSpec.describe "hypothesis_citations", type: :request do
           hypothesis.reload
           expect(hypothesis.creator_id).to_not eq current_user.id
           hypothesis_citation = hypothesis.hypothesis_citations.last
-          expect(response).to redirect_to edit_hypothesis_citation_path(hypothesis_id: hypothesis.id, id: hypothesis_citation.id)
+          expect(response).to redirect_to edit_hypothesis_citation_path(hypothesis_id: hypothesis.ref_id, id: hypothesis_citation.id)
           expect(AddToGithubContentJob.jobs.count).to eq 0
           expect(flash[:success]).to be_present
 
@@ -169,7 +169,7 @@ RSpec.describe "hypothesis_citations", type: :request do
             hypothesis.reload
             expect(hypothesis.creator_id).to_not eq current_user.id
             hypothesis_citation = hypothesis.hypothesis_citations.last
-            expect(response).to redirect_to edit_hypothesis_citation_path(hypothesis_id: hypothesis.id, id: hypothesis_citation.id)
+            expect(response).to redirect_to edit_hypothesis_citation_path(hypothesis_id: hypothesis.ref_id, id: hypothesis_citation.id)
             expect(AddToGithubContentJob.jobs.count).to eq 0
             expect(flash[:success]).to be_present
 
@@ -256,7 +256,7 @@ RSpec.describe "hypothesis_citations", type: :request do
         expect(Citation.count).to eq 1
         patch "#{base_url}/#{subject.id}", params: {hypothesis_citation: hypothesis_citation_params}
         expect(flash[:success]).to be_present
-        expect(response).to redirect_to edit_hypothesis_citation_path(hypothesis_id: hypothesis.id, id: subject.id)
+        expect(response).to redirect_to edit_hypothesis_citation_path(hypothesis_id: hypothesis.ref_id, id: subject.id)
         expect(assigns(:hypothesis_citation)&.id).to eq subject.id
         expect(assigns(:hypothesis_citation).submitted_to_github?).to be_falsey
         expect(AddToGithubContentJob.jobs.count).to eq 0
@@ -300,7 +300,7 @@ RSpec.describe "hypothesis_citations", type: :request do
           expect(Citation.count).to eq 2
           patch "#{base_url}/#{subject.id}", params: {hypothesis_citation: challenged_params}
           expect(flash[:success]).to be_present
-          expect(response).to redirect_to edit_hypothesis_citation_path(hypothesis_id: hypothesis.id, id: subject.id)
+          expect(response).to redirect_to edit_hypothesis_citation_path(hypothesis_id: hypothesis.ref_id, id: subject.id)
           expect(assigns(:hypothesis_citation)&.id).to eq subject.id
           expect(assigns(:hypothesis_citation).submitted_to_github?).to be_falsey
           expect(AddToGithubContentJob.jobs.count).to eq 0
@@ -339,7 +339,7 @@ RSpec.describe "hypothesis_citations", type: :request do
             # Note: using the default challenged params - which has a different kind
             patch "#{base_url}/#{subject.id}", params: {hypothesis_citation: challenged_params.merge(challenged_hypothesis_citation_id: 21222)}
             expect(flash[:success]).to be_present
-            expect(response).to redirect_to edit_hypothesis_citation_path(hypothesis_id: hypothesis.id, id: subject.id)
+            expect(response).to redirect_to edit_hypothesis_citation_path(hypothesis_id: hypothesis.ref_id, id: subject.id)
             expect(assigns(:hypothesis_citation)&.id).to eq subject.id
             expect(assigns(:hypothesis_citation).submitted_to_github?).to be_falsey
             expect(AddToGithubContentJob.jobs.count).to eq 0
@@ -368,7 +368,7 @@ RSpec.describe "hypothesis_citations", type: :request do
           expect(Citation.count).to eq 1
           patch "#{base_url}/#{subject.id}", params: {hypothesis_citation: hypothesis_citation_params}
           expect(flash[:success]).to be_present
-          expect(response).to redirect_to edit_hypothesis_citation_path(hypothesis_id: hypothesis.id, id: subject.id)
+          expect(response).to redirect_to edit_hypothesis_citation_path(hypothesis_id: hypothesis.ref_id, id: subject.id)
           expect(assigns(:hypothesis_citation)&.id).to eq subject.id
           expect(assigns(:hypothesis_citation).submitted_to_github?).to be_falsey
           expect(AddToGithubContentJob.jobs.count).to eq 0
@@ -387,7 +387,7 @@ RSpec.describe "hypothesis_citations", type: :request do
             expect(citation.editable_by?(current_user)).to be_falsey
             patch "#{base_url}/#{subject.id}", params: {hypothesis_citation: hypothesis_citation_params.except(:citation_attributes)}
             expect(flash[:success]).to be_present
-            expect(response).to redirect_to edit_hypothesis_citation_path(hypothesis_id: hypothesis.id, id: subject.id)
+            expect(response).to redirect_to edit_hypothesis_citation_path(hypothesis_id: hypothesis.ref_id, id: subject.id)
             expect(assigns(:hypothesis_citation)&.id).to eq subject.id
             expect(AddToGithubContentJob.jobs.count).to eq 0
             subject.reload
