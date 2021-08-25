@@ -78,8 +78,9 @@ RSpec.describe Argument, type: :model do
     context "with blockquote" do
       let(:url) { "http://example.com" }
       let(:quote_text) { "I believe that this is the solution to discussions of various things on the internet" }
-      let(:argument) { FactoryBot.create(:argument, text: "Something cool and stuff\n\n> #{quote_text}") }
-      let(:argument_quote) { FactoryBot.create(:argument_quote, argument: argument, text: quote_text, url: url) }
+      let(:argument_text) { "Something cool and stuff\n\n> #{quote_text}" }
+      let(:argument) { FactoryBot.create(:argument, text: argument_text) }
+      let!(:argument_quote) { FactoryBot.create(:argument_quote, argument: argument, text: quote_text, url: url) }
       let(:target) do
         "<p>Something cool and stuff</p>\n\n" +
         "<div class=\"argument-quote-block\">" +
@@ -90,23 +91,46 @@ RSpec.describe Argument, type: :model do
         expect(argument_quote.reload.ref_number).to eq 0 # Expect it to be set
         expect(argument_quote.citation_ref_html).to be_present
         expect(argument.reload.body_html).to be_blank
-        pp argument.parse_text
         # OMFG testing this was a bear. There is definitely to be a better way, but whatever
         real_lines = argument.parse_text_with_blockquotes.split("\n").reject(&:blank?)
         target_lines = target.split("\n").reject(&:blank?)
-        expect(real_lines[0]).to eq target_lines[0]
-        expect(real_lines[1]).to eq target_lines[1]
-        expect(real_lines[2]).to eq target_lines[2]
-        expect(real_lines[3]).to eq target_lines[3]
+        real_lines.count.times { |i| expect(real_lines[i]).to eq target_lines[i] }
         expect(real_lines.count).to eq target_lines.count
         expect(real_lines).to eq target_lines
+
         expect(argument.parse_text_with_blockquotes).to eq target
         argument.update_body_html
         argument.reload
         expect(argument.body_html).to eq target
       end
       context "with a blockquote with markdown in it" do
+        let(:url2) { "https://convus.org/this-this-this" }
+        let(:argument_text) { "Something cool and stuff\n\n> #{quote_text}\n\n And another thing\n > This here **Rocks**\n" }
+        let!(:argument_quote2) { FactoryBot.create(:argument_quote, argument: argument, text: "This here **Rocks**", url: url2) }
+        let(:target_with_addition) do
+          target +
+          "\n<p>And another thing</p>\n\n" +
+          "<div class=\"argument-quote-block\">" +
+          "<blockquote>\n<p>This here <strong>Rocks</strong></p>\n</blockquote>" +
+          "<span class=\"source\">#{argument_quote2.citation_ref_html}</span></div>\n"
+        end
+        it "renders" do
+          expect(argument_quote.reload.ref_number).to eq 0
+          expect(argument_quote.citation_ref_html).to be_present
+          expect(argument_quote2.reload.ref_number).to eq 1
+          expect(argument.reload.body_html).to be_blank
+          # OMFG testing this was a bear. There is definitely to be a better way, but whatever
+          real_lines = argument.parse_text_with_blockquotes.split("\n").reject(&:blank?)
+          target_lines = target_with_addition.split("\n").reject(&:blank?)
+          real_lines.count.times { |i| expect(real_lines[i]).to eq target_lines[i] }
+          expect(real_lines.count).to eq target_lines.count
+          expect(real_lines).to eq target_lines
 
+          expect(argument.parse_text_with_blockquotes).to eq target_with_addition
+          argument.update_body_html
+          argument.reload
+          expect(argument.body_html).to eq target_with_addition
+        end
       end
     end
   end
