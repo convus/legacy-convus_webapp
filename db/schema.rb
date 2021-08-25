@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_19_190054) do
+ActiveRecord::Schema.define(version: 2021_08_18_163640) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -59,7 +59,10 @@ ActiveRecord::Schema.define(version: 2021_01_19_190054) do
     t.integer "pull_request_number"
     t.integer "score"
     t.boolean "submitting_to_github", default: false
+    t.bigint "ref_number"
+    t.string "ref_id"
     t.index ["creator_id"], name: "index_hypotheses_on_creator_id"
+    t.index ["ref_id"], name: "index_hypotheses_on_ref_id", unique: true
   end
 
   create_table "hypothesis_citations", force: :cascade do |t|
