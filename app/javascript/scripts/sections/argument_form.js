@@ -80,14 +80,13 @@ export default class ArgumentForm {
   }
 
   updatePreview () {
-    // If undefined, set up preview
+    // Set up preview trigger if not set up
     if (this.previewOpen == undefined) {
       this.previewOpen = $('#argumentPreview').length
-      if (this.previewOpen) {
-        window.argumentText = $('#argument_text').val()
-      }
+      if (this.previewOpen) { window.argumentText = $('#argument_text').val() }
       return
     }
+    // If the text has changed, hide the preview
     if (window.argumentText !== $('#argument_text').val()) {
       $('#argumentPreview').collapse('hide')
       $('#saveToPreview').collapse('show')

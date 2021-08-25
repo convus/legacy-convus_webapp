@@ -85,6 +85,15 @@ class Argument < ApplicationRecord
   end
 
   def set_calculated_attributes
-    self.body_html = nil if body_html.blank?
+    self.body_html = nil if body_html.blank? # Because we search by nil
+    self.ref_number ||= calculated_ref_number
+  end
+
+  private
+
+  def calculated_ref_number
+    args = Argument.where(hypothesis_id: hypothesis_id)
+    args = args.where("id < ?", id) if id.present?
+    self.ref_number = args.count
   end
 end
