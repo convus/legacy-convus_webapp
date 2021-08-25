@@ -122,7 +122,7 @@ class Hypothesis < ApplicationRecord
   end
 
   def run_associated_tasks
-    update_ref_number if ref_number.blank?
+    update_ref_number if ref_id.blank?
     # Always try to create previous titles - even if skip_associated_tasks
     if approved? && title_previous_change.present?
       StorePreviousHypothesisTitleJob.perform_async(id, title_previous_change.first)
@@ -149,7 +149,7 @@ class Hypothesis < ApplicationRecord
 
   def update_ref_number
     # NOTE: eventually manage ref_number with Redis, to enable external creation
-    new_ref_number = id
+    new_ref_number = ref_number || id
     update_columns(ref_number: new_ref_number, ref_id: new_ref_number.to_s(36).upcase)
   end
 end
