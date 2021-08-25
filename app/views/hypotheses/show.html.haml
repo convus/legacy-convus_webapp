@@ -39,7 +39,7 @@
             - else
               = button_to score, user_scores_path, {action: "create", params: {score: score, hypothesis_id: @hypothesis.id, kind: "controversy"}, class: "score-item btn btn-link #{active ? 'active' : ''}"}
 - if @arguments.any? || @unapproved_arguments
-  #arguments-wrapper.row.mt-4.pb-4
+  .arguments-wrapper.row.mt-4.pb-4
     - @unapproved_arguments.each do |argument|
       = render partial: "/hypothesis_arguments/show", locals: {argument: argument, unapproved_show: true, unapproved_show_linked: params[:argument_id].present?}
 

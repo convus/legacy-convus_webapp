@@ -1,7 +1,7 @@
 $argument-border-color: rgba(102, 102, 102, 0.08);
 $argument-background: #f7f7f7;
 
-#arguments-wrapper {
+.arguments-wrapper {
   @include media-breakpoint-up(sm) {
     background: $argument-background;
     border-top: 1px solid rgba(102, 102, 102, 0.05);
