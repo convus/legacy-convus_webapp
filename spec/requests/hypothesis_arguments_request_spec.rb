@@ -192,7 +192,7 @@ RSpec.describe "hypothesis_arguments", type: :request do
                 ref_number: 2
               }, argument_quote2.id.to_s => {
                 url: "",
-                text: "",
+                text: "Something that is removed",
                 id: argument_quote2.id,
                 removed: true,
                 ref_number: 3

@@ -1,11 +1,7 @@
 - is_edit ||= false
 
-.small-page-header
-  %h1
-    %span.d-none.d-md-block
-      Hypothesis:
 .row
-  = render partial: "/hypotheses/show_title", locals: {hypothesis: @hypothesis, render_show_link: false}
+  = render partial: "/hypotheses/show_title", locals: {hypothesis: @hypothesis, render_show_link: true}
 
 - form_submit_path = is_edit ? hypothesis_argument_path(hypothesis_id: @hypothesis, id: @argument.id) : hypothesis_arguments_path(hypothesis_id: @hypothesis)
 = form_for @argument, url: form_submit_path, method: (is_edit ? "PATCH" : "POST"), html: {class: "form", id: "argumentForm"} do |f|

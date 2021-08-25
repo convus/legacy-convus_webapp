@@ -123,10 +123,15 @@
 .row.mt-big
   .col-6
     - if @hypothesis.approved?
-      = link_to "Add another argument", new_hypothesis_argument_path(hypothesis_id: @hypothesis.id), class: "btn btn-sm btn-outline-secondary"
+      = link_to new_hypothesis_argument_path(hypothesis_id: @hypothesis.id), class: "btn btn-sm btn-outline-secondary" do
+        - if @hypothesis.arguments.shown(current_user).count > 0
+          Add another argument
+        - else
+          Add argument
+
       -# TODO: delete eventually
-      .mt-4
-        = link_to "Add another citation", new_hypothesis_citation_path(hypothesis_id: @hypothesis.id), class: "btn btn-sm btn-outline-secondary less-strong"
+      -# .mt-4
+      -#   = link_to "Add another citation", new_hypothesis_citation_path(hypothesis_id: @hypothesis.id), class: "btn btn-sm btn-outline-secondary less-strong"
 
   .col-6.text-right
     .less-strong

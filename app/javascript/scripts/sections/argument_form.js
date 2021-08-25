@@ -17,12 +17,12 @@ export default class ArgumentForm {
   // init is called when loaded on the page - and not in testing
   init () {
     // Assign initial state based on the dom, if we start rendering via haml
-    this.blockQuotes = (this.blockQuotes !== undefined)
-      ? this.blockQuotes
-      : this.parseArgumentQuotes($('#argument_text').val())
-    this.existingQuotes = (this.existingQuotes !== undefined)
-      ? this.existingQuotes
-      : this.parseExistingQuotes()
+    // this.blockQuotes = (this.blockQuotes !== undefined)
+    //   ? this.blockQuotes
+    //   : this.parseArgumentQuotes($('#argument_text').val())
+    // this.existingQuotes = (this.existingQuotes !== undefined)
+    //   ? this.existingQuotes
+    //   : this.parseExistingQuotes()
 
     // I THINK we always want to process the text, but you can check $("#quoteFieldsWrapper").attr("data-processonload")
     this.updateArgumentQuotes()
