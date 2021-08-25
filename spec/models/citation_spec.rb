@@ -108,7 +108,7 @@ RSpec.describe Citation, type: :model do
     end
     context "really long URL" do
       let(:url) { "https://www.researchgate.net//profile/Mark_Greenberg2/publication/312233343_Promoting_Healthy_Transition_to_College_through_Mindfulness_Training_with_1st_year_College_Students_Pilot_Randomized_Controlled_Trial/links/5ce8706f299bf14d95b76a58/Promoting-Healthy-Transition-to-College-through-Mindfulness-Training-with-1st-year-College-Students-Pilot-Randomized-Controlled-Trial.pdf" }
-      let(:target) { "profile-mark-greenberg2-publication-312233343-promoting-healthy-transition-to-college-through-mindfulness-training-with-1st-year-college-students-pilot-randomized-controlled-trial-links-5ce8706f299bf14d95b76a58-promoting-healthy-transition-to-college" }
+      let(:target) { "profile-mark-greenberg2-publication-312233343-promoting-healthy-transition-to-college-through-mindfulness-training-with-1st-year-college-students-pilot-randomized-controlled-trial-links-5ce8706f299bf14d95b76a58-promoting-healthy-transition" }
       it "slugs, limits to 250 characters" do
         expect(citation.title).to eq "/profile/Mark_Greenberg2/publication/312233343_Promoting_Healthy_Transition_to_College_through_Mindfulness_Training_with_1st_year_College_Students_Pilot_Randomized_Controlled_Trial/links/5ce8706f299bf14d95b76a58/Promoting-Healthy-Transition-to-College-through-Mindfulness-Training-with-1st-year-College-Students-Pilot-Randomized-Controlled-Trial.pdf"
         expect(citation.publication_id).to be_present
