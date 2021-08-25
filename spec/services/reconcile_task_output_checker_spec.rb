@@ -45,5 +45,24 @@ RSpec.describe ReconcileTaskOutputChecker do
         expect(described_class.failed?(multiline)).to be_falsey
       end
     end
+    context "and from force update" do
+      let(:multiline) do
+        "(Output start) HEAD is now at ed12c60 Reconciliation: 2020-12-23\n" \
+          "Switched to a new branch 'override-1608744410'\n" \
+          "On branch override-1608744410\n" \
+          "nothing to commit, working tree clean\n" \
+          "remote:\n" \
+          "remote: Create a pull request for 'override-1608744410' on GitHub by visiting:\n" \
+          "remote: https://github.com/convus/convus_content/pull/new/override-1608744410\n" \
+          "remote:\n" \
+          "To github.com:convus/convus_content.git\n" \
+          "* [new branch] override-1608744410 -> override-1608744410\n" \
+          "Switched to branch 'main'\n" \
+          "Your branch is up to date with 'origin/main'.\n"
+      end
+      it "returns truthy" do
+        expect(described_class.failed?(multiline)).to be_falsey
+      end
+    end
   end
 end
