@@ -2,7 +2,7 @@ class HypothesisSerializer < ApplicationSerializer
   attributes :title, :id, :cited_urls, :new_cited_url, :topics
 
   def id
-    ref_id
+    object.ref_id
   end
 
   def topics
