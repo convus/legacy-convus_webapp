@@ -39,7 +39,6 @@ class Hypothesis < ApplicationRecord
     PreviousTitle.friendly_matching(str)
   end
 
-  # For now - eventually probably convert to integer and add an index
   def self.find_ref_id(str)
     str.present? ? find_by_ref_id(str.upcase) : nil
   end
@@ -123,6 +122,7 @@ class Hypothesis < ApplicationRecord
   end
 
   def run_associated_tasks
+    update_ref_number if ref_number.blank?
     # Always try to create previous titles - even if skip_associated_tasks
     if approved? && title_previous_change.present?
       StorePreviousHypothesisTitleJob.perform_async(id, title_previous_change.first)
@@ -135,8 +135,6 @@ class Hypothesis < ApplicationRecord
   def set_calculated_attributes
     self.title = title&.strip
     self.score = calculated_score
-    self.ref_number ||= id # NOTE: eventually manage with Redis, to enable external creation
-    self.ref_id ||= ref_number.to_s(36).updase
   end
 
   def calculated_score
@@ -145,5 +143,13 @@ class Hypothesis < ApplicationRecord
 
   def unapproved_score
     unapproved_badges.values.sum
+  end
+
+  private
+
+  def update_ref_number
+    # NOTE: eventually manage ref_number with Redis, to enable external creation
+    new_ref_number = id
+    update_columns(ref_number: new_ref_number, ref_id: new_ref_number.to_s(36).upcase)
   end
 end

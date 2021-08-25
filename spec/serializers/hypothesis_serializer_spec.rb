@@ -12,7 +12,7 @@ describe HypothesisSerializer, type: :lib do
     let(:target) do
       {
         title: obj.title,
-        id: obj.id,
+        id: obj.ref_id,
         topics: [],
         cited_urls: [
           {
