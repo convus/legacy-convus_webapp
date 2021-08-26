@@ -33,6 +33,7 @@ export default class ArgumentForm {
     )
   }
 
+  // NOTE: This is duplicated in Argument.parse_quotes, in ruby, for flat file importing
   parseArgumentQuotes (text) {
     // Regex for matching lines that are blockquotes
     const matchRegexp = /^\s*>/

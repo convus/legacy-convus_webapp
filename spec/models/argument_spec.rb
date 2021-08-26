@@ -22,6 +22,94 @@ RSpec.describe Argument, type: :model do
     end
   end
 
+  describe "parse_quotes" do
+    context "empty" do
+      let(:target) { [] }
+      it "is empty" do
+        expect(Argument.parse_quotes("   ")).to eq target
+        expect(Argument.parse_quotes(" \n\nasdfasdf\n\nasdfasdf ")).to eq target
+
+        expect(Argument.parse_quotes(">  \n")).to eq target
+        expect(Argument.parse_quotes(">  \n\n > \n\n>")).to eq target
+      end
+    end
+    context "single quote" do
+      let(:target) { ['something'] }
+      it "parses" do
+        expect(Argument.parse_quotes("> something")).to eq target
+        expect(Argument.parse_quotes("  >  something  \n\nother stuff")).to eq target
+        expect(Argument.parse_quotes("\n> something")).to eq target
+        expect(Argument.parse_quotes("\nsomething else\nAnd MORE things\n\n\n  >    something \n\nother things")).to eq target
+      end
+    end
+    context "multi line block quotes" do
+      let(:target) { ['multi line message'] }
+      it "parses" do
+        expect(Argument.parse_quotes("> multi line message ")).to eq target
+        expect(Argument.parse_quotes("> multi\n> line   \n> message ")).to eq target
+        expect(Argument.parse_quotes("Some stuff goes here\n > multi   \n >    line\n > message     \n\n\nAnd then more stuff")).to eq target
+      end
+    end
+    context "multiple quotes" do
+      let(:target) { ['something', 'something else'] }
+      it "parses" do
+        expect(Argument.parse_quotes("> something\n\n>something else")).to eq target
+        expect(Argument.parse_quotes("  >  something  \n blahhh blah blah\n \nother stuff\n >   something else")).to eq target
+      end
+    end
+    context "multiple of the same quote" do
+      let(:target) { ['something'] }
+      it "parses" do
+        expect(Argument.parse_quotes("> something\n\n>something")).to eq target
+        expect(Argument.parse_quotes("  >  something  \n blahhh blah blah\n \nother stuff\n >   something")).to eq target
+      end
+    end
+  end
+
+  describe "update_text" do
+    let(:argument) { FactoryBot.create(:argument) }
+    let(:url1) { "https://otherthings.com/812383123123" }
+    let(:text) { "New argument, where I prove things\n\n>I'm quoting stuff\n\nfinale" }
+    it "creates" do
+      expect(argument.argument_quotes.count).to eq 0
+      expect(argument.body_html).to be_blank
+      argument.update_from_text(text)
+      argument.reload
+      expect(argument.argument_quotes.count).to eq 1
+      expect(argument.body_html).to be_present
+      argument_quote = argument.argument_quotes.first
+      expect(argument_quote.url).to be_blank
+      expect(argument_quote.text).to eq "I'm quoting stuff"
+      expect(argument_quote.ref_number).to eq 0
+      # It finds by text, if the text is the same
+      argument.update_from_text(text, quote_urls: [url1])
+      argument_quote.reload
+      expect(argument.body_html).to be_present
+      expect(argument_quote.url).to eq url1
+      expect(argument_quote.text).to eq "I'm quoting stuff"
+      expect(argument_quote.ref_number).to eq 0
+    end
+    context "with argument_quotes" do
+      let!(:argument_quote1) { FactoryBot.create(:argument_quote, argument: argument, url: "https://url.com/stufffff") }
+      let!(:argument_quote2) { FactoryBot.create(:argument_quote, argument: argument, url: url1) }
+      let!(:argument_quote3) { FactoryBot.create(:argument_quote, argument: argument, text: nil, url: nil) }
+      it "updates the matching quote, deletes the other" do
+        expect(argument_quote2.reload.ref_number).to eq 1
+        expect(argument.reload.argument_quotes.count).to eq 3
+        expect(argument.body_html).to be_blank
+        argument.update_from_text(text, quote_urls: [url1])
+        argument.reload
+        expect(argument.body_html).to be_present
+        expect(argument.argument_quotes.not_removed.count).to eq 1
+        expect(argument.argument_quotes.removed.count).to eq 1
+        argument_quote2.reload
+        expect(argument_quote2.url).to eq url1
+        expect(argument_quote2.text).to eq "I'm quoting stuff"
+        expect(argument_quote2.ref_number).to eq 0
+      end
+    end
+  end
+
   describe "parse_text" do
     let(:argument) { Argument.new(text: text) }
     it "returns empty" do
@@ -91,6 +179,8 @@ RSpec.describe Argument, type: :model do
         expect(argument_quote.reload.ref_number).to eq 0 # Expect it to be set
         expect(argument_quote.citation_ref_html).to be_present
         expect(argument.reload.body_html).to be_blank
+        expect(argument.ref_number).to eq 1
+        expect(argument.listing_order).to eq 0
         # OMFG testing this was a bear. There is definitely to be a better way, but whatever
         real_lines = argument.parse_text_with_blockquotes.split("\n").reject(&:blank?)
         target_lines = target.split("\n").reject(&:blank?)
@@ -143,11 +233,11 @@ RSpec.describe Argument, type: :model do
     let!(:argument3) { FactoryBot.create(:argument_approved, hypothesis: hypothesis) }
     let!(:argument4) { FactoryBot.create(:argument, creator: user) }
     it "returns users and approved" do
-      expect(Argument.where(creator_id: user.id).pluck(:id)).to eq([argument2.id, argument4.id])
-      expect(Argument.shown(user).pluck(:id)).to eq([argument2.id, argument3.id, argument4.id])
-      expect(Argument.shown.pluck(:id)).to eq([argument3.id])
-      expect(hypothesis.reload.arguments.shown(user).pluck(:id)).to eq([argument2.id, argument3.id])
-      expect(hypothesis.reload.arguments.shown.pluck(:id)).to eq([argument3.id])
+      expect(Argument.where(creator_id: user.id).pluck(:id)).to match_array([argument2.id, argument4.id])
+      expect(Argument.shown(user).pluck(:id)).to match_array([argument2.id, argument3.id, argument4.id])
+      expect(Argument.shown.pluck(:id)).to match_array([argument3.id])
+      expect(hypothesis.reload.arguments.shown(user).pluck(:id)).to match_array([argument2.id, argument3.id])
+      expect(hypothesis.reload.arguments.shown.pluck(:id)).to match_array([argument3.id])
     end
   end
 end

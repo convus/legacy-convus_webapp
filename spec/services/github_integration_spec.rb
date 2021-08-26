@@ -125,6 +125,8 @@ RSpec.describe GithubIntegration do
     end
 
     context "hypothesis file doesn't exist" do
+      # TODO: when it's possible to do this, do it
+      it "creates the hypothesis"
     end
   end
 

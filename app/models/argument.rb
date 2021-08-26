@@ -27,6 +27,29 @@ class Argument < ApplicationRecord
     approved.or(where(creator_id: user.id))
   end
 
+  # Duplicates parseArgumentQuotes in argument_form.js
+  def self.parse_quotes(text)
+    matching_lines = []
+    last_quote_line = nil
+    text.split("\n").each_with_index do |line, index|
+      # match lines that are blockquotes
+      if line.match?(/\A\s*>/)
+        # remove the >, trim the string,
+        quote_text = line.gsub(/\A\s*>\s*/, '').strip
+        # We need to group consecutive lines, because that's how markdown parses
+        # So check if the last line was a quote and if so, update it
+        if last_quote_line == (index - 1)
+          quote_text = [matching_lines.pop, quote_text].join(' ')
+        end
+        matching_lines.push(quote_text)
+        last_quote_line = index
+      end
+    end
+    # - remove duplicates
+    # - ignore any empty quotes
+    matching_lines.uniq.reject(&:blank?)
+  end
+
   def shown?(user = nil)
     approved? || creator_id == user&.id
   end
@@ -50,6 +73,32 @@ class Argument < ApplicationRecord
     add_to_github_content
   end
 
+  # Method to building from flat file content
+  def update_from_text(passed_text, quote_urls: [])
+    self.update(text: passed_text)
+    quotes_from_text = self.class.parse_quotes(text)
+    current_argument_quote_ids = []
+    quotes_from_text.each_with_index do |quote, index|
+      url = quote_urls[index]
+      if url.present?
+        # Make sure we don't grab the same quote multiple times
+        matches = argument_quotes.where.not(id: current_argument_quote_ids).where(url: url)
+        # Try to grab the match by text
+        argument_quote = matches.where(text: quote).first
+        # Fallback to just whatever is there
+        argument_quote ||= matches.first
+      end
+      argument_quote ||= argument_quotes.where.not(id: current_argument_quote_ids).find_by_text(quote)
+      argument_quote ||= argument_quotes.build
+      argument_quote.update!(text: quote, url: url, ref_number: index)
+      current_argument_quote_ids << argument_quote.id
+    end
+    argument_quotes.where.not(id: current_argument_quote_ids).update_all(removed: true)
+    remove_empty_quotes!
+    reload
+    update_body_html
+  end
+
   def argument_markdown
     Redcarpet::Markdown.new(
       Redcarpet::Render::HTML.new(no_images: true, no_links: true, filter_html: true),
@@ -60,6 +109,7 @@ class Argument < ApplicationRecord
 
   def update_body_html
     update(body_html: parse_text_with_blockquotes)
+    self
   end
 
   # Only for internal use, really
@@ -96,6 +146,7 @@ class Argument < ApplicationRecord
   # Eventually will have a separate process for specifying listing_order, but...
   def update_ref_number
     new_ref_number = Argument.where(hypothesis_id: hypothesis_id).where("id < ?", id).count
-    update_columns(ref_number: new_ref_number, listing_order: new_ref_number)
+    # numbers start at 1, just to fuck with future you
+    update_columns(ref_number: new_ref_number + 1, listing_order: new_ref_number)
   end
 end
