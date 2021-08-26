@@ -20,7 +20,7 @@
             %strong.text-warning not
             approved.
       - if preview
-        %span.text-info.small Preview of argument
+        %em.text-info Preview of how argument will look after approved
       - if show_edit
         %span.float-right= link_to "edit", edit_hypothesis_argument_path(hypothesis_id: @hypothesis.id, id: argument.id), class: "gray-link small"
   .argument-body

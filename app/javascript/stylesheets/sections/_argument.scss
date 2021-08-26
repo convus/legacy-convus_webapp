@@ -67,6 +67,13 @@ $argument-background: #f7f7f7;
   }
 }
 
+#argumentPreview {
+  .argument-body,
+  .argument-show-header {
+    border-color: $gray-400;
+  }
+}
+
 #argumentForm {
   .argument-text-label {
     font-family: $font-family-sans-serif;

@@ -8,6 +8,10 @@
 .row
   = render partial: "/hypotheses/show_title", locals: {hypothesis: @hypothesis, render_show_link: true}
 
+- if render_preview
+  #argumentPreview.row.mb-4.collapse{class: (render_preview ? "show" : "")}
+    = render partial: "/hypothesis_arguments/show", locals: {argument: @argument, preview: true, skip_edit: true}
+
 - form_submit_path = is_edit ? hypothesis_argument_path(hypothesis_id: @hypothesis, id: @argument.id) : hypothesis_arguments_path(hypothesis_id: @hypothesis)
 = form_for @argument, url: form_submit_path, method: (is_edit ? "PATCH" : "POST"), html: {class: "form", id: "argumentForm"} do |f|
   = f.hidden_field :add_to_github, class: "addToGithubField"
@@ -41,9 +45,6 @@
         %h4 Removed quotes
       - @argument.argument_quotes.removed.ref_ordered.each do |argument_quote|
         = render partial: "/hypothesis_arguments/argument_quote", locals: {argument_quote: argument_quote}
-  - if render_preview
-    #argumentPreview.row.collapse{class: (render_preview ? "show" : "")}
-      = render partial: "/hypothesis_arguments/show", locals: {argument: @argument, preview: true, skip_edit: true}
   .row.pt-4.mt-5
     .col
       .form-group
@@ -59,7 +60,6 @@
               %span.sr-only Loading...
           %em#quoteRequired.collapse.less-strong
             Arguments must include at least one block quote to submit (start line with <code>></code>)
-
 
 %hr
 %h2.mt-4
