@@ -35,11 +35,11 @@ class Argument < ApplicationRecord
       # match lines that are blockquotes
       if line.match?(/\A\s*>/)
         # remove the >, trim the string,
-        quote_text = line.gsub(/\A\s*>\s*/, '').strip
+        quote_text = line.gsub(/\A\s*>\s*/, "").strip
         # We need to group consecutive lines, because that's how markdown parses
         # So check if the last line was a quote and if so, update it
         if last_quote_line == (index - 1)
-          quote_text = [matching_lines.pop, quote_text].join(' ')
+          quote_text = [matching_lines.pop, quote_text].join(" ")
         end
         matching_lines.push(quote_text)
         last_quote_line = index
@@ -74,7 +74,7 @@ class Argument < ApplicationRecord
 
   # Method to building from flat file content
   def update_from_text(passed_text, quote_urls: [])
-    self.update(text: passed_text)
+    update(text: passed_text)
     quotes_from_text = self.class.parse_quotes(text)
     current_argument_quote_ids = []
     quotes_from_text.each_with_index do |quote, index|

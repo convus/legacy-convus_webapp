@@ -34,7 +34,7 @@ RSpec.describe Argument, type: :model do
       end
     end
     context "single quote" do
-      let(:target) { ['something'] }
+      let(:target) { ["something"] }
       it "parses" do
         expect(Argument.parse_quotes("> something")).to eq target
         expect(Argument.parse_quotes("  >  something  \n\nother stuff")).to eq target
@@ -43,7 +43,7 @@ RSpec.describe Argument, type: :model do
       end
     end
     context "multi line block quotes" do
-      let(:target) { ['multi line message'] }
+      let(:target) { ["multi line message"] }
       it "parses" do
         expect(Argument.parse_quotes("> multi line message ")).to eq target
         expect(Argument.parse_quotes("> multi\n> line   \n> message ")).to eq target
@@ -51,14 +51,14 @@ RSpec.describe Argument, type: :model do
       end
     end
     context "multiple quotes" do
-      let(:target) { ['something', 'something else'] }
+      let(:target) { ["something", "something else"] }
       it "parses" do
         expect(Argument.parse_quotes("> something\n\n>something else")).to eq target
         expect(Argument.parse_quotes("  >  something  \n blahhh blah blah\n \nother stuff\n >   something else")).to eq target
       end
     end
     context "multiple of the same quote" do
-      let(:target) { ['something'] }
+      let(:target) { ["something"] }
       it "parses" do
         expect(Argument.parse_quotes("> something\n\n>something")).to eq target
         expect(Argument.parse_quotes("  >  something  \n blahhh blah blah\n \nother stuff\n >   something")).to eq target
