@@ -16,7 +16,7 @@ export default class HypothesisForm {
       $('#hypothesisForm .loadingSpinner').collapse('show')
       $('.submit-input').addClass('disabled')
       $('.addToGithubField').val('1')
-      $('#hypothesisForm').submit()
+      $('#argumentForm').submit()
     })
 
     this.enableAddAndRemoveCitations()
