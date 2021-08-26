@@ -128,6 +128,52 @@ RSpec.describe "/hypotheses", type: :request do
           expect(assigns(:unapproved_hypothesis_citation)&.id).to eq hypothesis_citation_challenge.id
         end
       end
+
+      context "with arguments" do
+        let!(:argument) { FactoryBot.create(:argument_approved, hypothesis: subject) }
+        it "renders" do
+          expect(subject.approved?).to be_truthy
+          expect(argument.approved?).to be_truthy
+          expect(subject.arguments.shown.pluck(:id)).to eq([argument.id])
+          get "#{base_url}/#{subject.to_param}"
+          expect(response.code).to eq "200"
+          expect(response).to render_template("hypotheses/show")
+          expect(assigns(:arguments).pluck(:id)).to eq([argument.id])
+          expect(assigns(:unapproved_arguments).pluck(:id)).to eq([])
+        end
+        context "unapproved argument_id" do
+          let(:current_user) { FactoryBot.create(:user) }
+          let!(:argument2) { FactoryBot.create(:argument, hypothesis: subject, creator: current_user) }
+          let!(:argument3) { FactoryBot.create(:argument, hypothesis: subject) }
+          it "renders, includes unapproved_hypothesis_citation" do
+            expect(subject.approved?).to be_truthy
+            expect(argument.approved?).to be_truthy
+            expect(argument2.creator_id).to eq current_user.id
+            expect(argument2.approved?).to be_falsey
+            expect(argument2.shown?(current_user)).to be_truthy
+            expect(argument3.shown?(current_user)).to be_falsey
+            # passing ID renders that argument
+            get "#{base_url}/#{subject.to_param}?argument_id=#{argument3.id}"
+            expect(response.code).to eq "200"
+            expect(response).to render_template("hypotheses/show")
+            expect(assigns(:arguments).pluck(:id)).to eq([argument.id])
+            expect(assigns(:unapproved_arguments).pluck(:id)).to eq([argument3.id])
+            # And with the user signed in!
+            sign_in current_user
+            get "#{base_url}/#{subject.to_param}"
+            expect(response.code).to eq "200"
+            expect(response).to render_template("hypotheses/show")
+            expect(assigns(:arguments).pluck(:id)).to eq([argument.id])
+            expect(assigns(:unapproved_arguments).pluck(:id)).to eq([argument2.id])
+            # passing ID renders that argument (even with user)
+            get "#{base_url}/#{subject.to_param}?argument_id=#{argument3.id}"
+            expect(response.code).to eq "200"
+            expect(response).to render_template("hypotheses/show")
+            expect(assigns(:arguments).pluck(:id)).to eq([argument.id])
+            expect(assigns(:unapproved_arguments).pluck(:id)).to eq([argument3.id])
+          end
+        end
+      end
     end
     context "after_sign_in_score and user signed in" do
       let(:current_user) { FactoryBot.create(:user) }

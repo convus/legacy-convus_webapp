@@ -82,6 +82,54 @@ RSpec.describe GithubIntegration do
     end
   end
 
+  describe "create_argument_pull_request" do
+    let(:hypothesis_title) { "The earth is roughly spherical" }
+    let(:approved_at) { Time.current - 1.hour }
+    let(:hypothesis) { Hypothesis.create(title: hypothesis_title, created_at: approved_at, approved_at: approved_at, ref_number: 19) }
+    let(:quote1) { "On a flat Earth, a Sun that shines in all directions would illuminate the entire surface at the same time, and all places would experience sunrise and sunset at the horizon at about the same time. With a spherical Earth, half the planet is in daylight at any given time and the other half experiences nighttime. When a given location on the spherical Earth is in sunlight, its antipode - the location exactly on the opposite side of the Earth - is in darkness." }
+    let(:quote2) { "The Earth is massive enough that the pull of gravity maintains its roughly spherical shape. Most of its deviation from spherical stems from the centrifugal force caused by rotation around its north-south axis. This force deforms the sphere into an oblate ellipsoid" }
+    let(:argument_text) do
+      "There are many pieces of evidence to the roughly spherical shape of the earth - such as photos from space - but in terms of personally verifiable evidence, timezones demonstrate the rotation of the earth:\n\n" \
+      "> #{quote1}\n\n" \
+      "And because the earth is spinning it is drawn into a sphere like shape:\n\n" \
+      "> #{quote2}\n"
+    end
+    let(:url) { "https://en.wikipedia.org/wiki/Spherical_Earth" }
+    let(:argument) { Argument.create(text: argument_text, hypothesis: hypothesis) }
+    let!(:argument_quote1) { ArgumentQuote.create(argument: argument, text: quote1, url: url) }
+    let!(:argument_quote2) { ArgumentQuote.create(argument: argument, text: quote2, url: url) }
+
+    it "creates the pull request" do
+      expect(hypothesis.ref_id).to eq "J"
+      expect(argument.reload.argument_quotes.pluck(:ref_number)).to eq([1, 2])
+      expect(argument.pull_request_number).to be_blank
+
+      # Make sure that the above hypothesis_title is actually a title that is used in the content_repository
+      # Or this isn't testing updating the file contents
+      VCR.use_cassette("github_integration-existing_file-create_argument_pull_request", match_requests_on: [:method], record: :new_episodes) do
+        hypothesis.reload
+        expect(hypothesis.pull_request_number).to be_blank
+        expect(hypothesis.arguments.submitted_to_github.count).to eq 0
+        pull_request = subject.create_argument_pull_request(argument)
+        argument.reload
+        expect(argument.pull_request_number).to be_present
+
+        # And check the hypothesis
+        hypothesis.reload
+        expect(hypothesis.pull_request_number).to be_blank
+        expect(hypothesis.arguments.submitted_to_github.count).to eq 1
+
+        # Can't do this via octokit.rb right now. BUT OH GOD THIS IS SOMETHING WE WANT - to make this truthy
+        expect(pull_request.maintainer_can_modify).to be_falsey
+      end
+    end
+
+    context "hypothesis file doesn't exist" do
+      # TODO: when it's possible to do this, do it
+      it "creates the hypothesis"
+    end
+  end
+
   describe "create_hypothesis_citation_pull_request" do
     let(:hypothesis_title) { "IQ tests are repeatable and accurate" }
     let(:approved_at) { Time.current - 1.hour }

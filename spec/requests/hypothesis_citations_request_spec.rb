@@ -232,7 +232,7 @@ RSpec.describe "hypothesis_citations", type: :request do
         end
       end
       context "other users" do
-        let(:subject) { FactoryBot.create(:hypothesis_citation_approved, hypothesis: hypothesis, creator: hypothesis.creator) }
+        let(:subject) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, creator: hypothesis.creator) }
         it "redirects" do
           expect(subject.creator_id).to_not eq current_user.id
           expect(subject.editable_by?(current_user)).to be_falsey

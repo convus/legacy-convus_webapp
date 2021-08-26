@@ -1,0 +1,15 @@
+<%#
+  NOTE: This is copied in argument_form.js - which is why this is in erb (closer to the JS template)
+  Differences: This always includes the ID input (and never has newQuote class)
+%>
+<div class="quote-field <%= argument_quote.removed ? 'removedQuote' : '' %>" id="quoteId-<%= argument_quote.id %>">
+  <%# NOTE: the ID field should only be filled in if the ID exists %>
+  <input type="hidden" name="argument[argument_quotes_attributes][<%= argument_quote.id %>][id]" id="argument_argument_quotes_attributes_<%= argument_quote.id %>_id" value="<%= argument_quote.id %>">
+  <input type="hidden" name="argument[argument_quotes_attributes][<%= argument_quote.id %>][ref_number]" id="argument_argument_quotes_attributes_<%= argument_quote.id %>_ref_number" value="<%= argument_quote.ref_number %>">
+  <input type="hidden" name="argument[argument_quotes_attributes][<%= argument_quote.id %>][removed]" id="argument_argument_quotes_attributes_<%= argument_quote.id %>_removed" value="<%= argument_quote.removed %>">
+  <input type="hidden" name="argument[argument_quotes_attributes][<%= argument_quote.id %>][text]" id="argument_argument_quotes_attributes_<%= argument_quote.id %>_text" value="<%= argument_quote.text %>">
+  <p class="quote-text"><%= argument_quote.text %></p>
+  <div class="form-group">
+    <input type="url" name="argument[argument_quotes_attributes][<%= argument_quote.id %>][url]" id="argument_argument_quotes_attributes_<%= argument_quote.id %>_url" value="<%= argument_quote.url %>" class="form-control url-field" placeholder="Quote URL source">
+  </div>
+</div>

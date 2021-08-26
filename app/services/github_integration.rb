@@ -107,12 +107,28 @@ class GithubIntegration
     pull_request
   end
 
+  def create_argument_pull_request(argument)
+    hypothesis = argument.hypothesis
+    branch_name = "update-hypothesis-#{hypothesis.ref_id}-with-#{argument.ref_number}"
+    @current_branch = create_branch(branch_name)
+    commit_message = "Add argument to hypothesis #{hypothesis.ref_id}: #{hypothesis.title}"
+    # put argument in the new_cited_url in the serializer (added as a new field to ward off merge conflicts)
+    hypothesis.additional_serialized_argument = argument
+    upsert_file_on_current_branch(hypothesis.file_path, hypothesis.flat_file_content, commit_message)
+
+    pr_body = "Added argument to: [#{hypothesis.ref_id}: #{hypothesis.title}](https://convus.org/hypotheses/#{hypothesis.ref_id}?argument_id=#{argument.id})"
+    pull_request = create_pull_request(commit_message, pr_body)
+    number = pull_request.url.split("/pulls/").last
+    argument.update(pull_request_number: number)
+    pull_request
+  end
+
   # AKA add a new citation to an existing hypothesis
   def create_hypothesis_citation_pull_request(hypothesis_citation)
     hypothesis = hypothesis_citation.hypothesis
     branch_name = "update-hypothesis-#{hypothesis.ref_id}-with-#{hypothesis_citation.id}"
     @current_branch = create_branch(branch_name)
-    commit_message = "Add challenge to hypothesis #{hypothesis.ref_id}: #{hypothesis.title}"
+    commit_message = "Add citation to hypothesis #{hypothesis.ref_id}: #{hypothesis.title}"
     # put hypothesis_citation in the new_cited_url in the serializer (added as a new field to ward off merge conflicts)
     hypothesis.included_unapproved_hypothesis_citation = hypothesis_citation
     upsert_file_on_current_branch(hypothesis.file_path, hypothesis.flat_file_content, commit_message)

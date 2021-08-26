@@ -27,6 +27,8 @@ gem "coderay" # For pretty printing JSON
 gem "chartkick" # Display charts
 gem "groupdate" # Required for charts
 
+gem "redcarpet" # markdown parser. Used for arguments
+
 # Redis stuff
 gem "hiredis"
 gem "redis", require: ["redis", "redis/connection/hiredis"]
@@ -43,7 +45,6 @@ gem "logstash-event" # Use logstash format for logging data
 # API stuff
 # More recent versions of active_model_serializers have gotten slower, so use fastest version
 gem "active_model_serializers", "~> 0.8.3" # Serialize things
-
 # Other app stuff
 gem "kaminari" # Pagination
 

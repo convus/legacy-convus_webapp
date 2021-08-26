@@ -21,9 +21,9 @@
           - Array(UserScore::MIN_SCORE..UserScore::MAX_SCORE).each do |score|
             - active = quality_score&.score == score
             - if quality_score.present? # Yah, I know, you could still make the form request manually, but who cares that much?
-              %span.score-item{ class: (active ? "active" : "") }= score
+              %span.score-item{class: (active ? "active" : "")}= score
             - else
-              = button_to score, user_scores_path, { action: "create", params: {score: score, hypothesis_id: @hypothesis.ref_id, kind: "quality"}, class: "score-item btn btn-link #{active ? 'active' : ''}" }
+              = button_to score, user_scores_path, {action: "create", params: {score: score, hypothesis_id: @hypothesis.ref_id, kind: "quality"}, class: "score-item btn btn-link #{active ? 'active' : ''}"}
 
         .hypothesis-score.mt-2
           - controversy_score = @hypothesis.user_scores.current.controversy.where(user_id: current_user&.id).first
@@ -35,9 +35,19 @@
           - Array(UserScore::MIN_SCORE..UserScore::MAX_SCORE).each do |score|
             - active = controversy_score&.score == score
             - if controversy_score.present?
-              %span.score-item{ class: (active ? "active" : "") }= score
+              %span.score-item{class: (active ? "active" : "")}= score
             - else
-              = button_to score, user_scores_path, { action: "create", params: {score: score, hypothesis_id: @hypothesis.ref_id, kind: "controversy"}, class: "score-item btn btn-link #{active ? 'active' : ''}" }
+              = button_to score, user_scores_path, {action: "create", params: {score: score, hypothesis_id: @hypothesis.ref_id, kind: "controversy"}, class: "score-item btn btn-link #{active ? 'active' : ''}"}
+- if @arguments.any? || @unapproved_arguments
+  .arguments-wrapper.row.mt-4.pb-4
+    - @unapproved_arguments.each do |argument|
+      = render partial: "/hypothesis_arguments/show", locals: {argument: argument, unapproved_show: true, unapproved_show_linked: params[:argument_id].present?}
+
+    - @arguments.each do |argument|
+      = render partial: "/hypothesis_arguments/show", locals: {argument: argument}
+
+.mt-5.pb-2
+-# Added ^ for space
 
 .row.mt-4
   - if @hypothesis_citations.no_approved_challenges.any?
@@ -97,7 +107,15 @@
 .row.mt-big
   .col-6
     - if @hypothesis.approved?
-      = link_to "Add another citation", new_hypothesis_citation_path(hypothesis_id: @hypothesis.ref_id), class: "btn btn-sm btn-outline-secondary"
+      = link_to new_hypothesis_argument_path(hypothesis_id: @hypothesis.ref_id), class: "btn btn-sm btn-outline-secondary" do
+        - if @hypothesis.arguments.shown(current_user).count > 0
+          Add another argument
+        - else
+          Add argument
+
+      -# TODO: delete eventually
+      -# .mt-4
+      -#   = link_to "Add another citation", new_hypothesis_citation_path(hypothesis_id: @hypothesis.ref_id), class: "btn btn-sm btn-outline-secondary less-strong"
 
   .col-6.text-right
     .less-strong
@@ -114,7 +132,7 @@
             %td
               %span.convertTime.preciseTime
                 = l @hypothesis.created_at, format: :convert_time
-          %tr.only-dev-visible
+          %tr
             %td ID
             %td
               = @hypothesis.ref_id
@@ -130,13 +148,13 @@
             %td Score
             %td
               - if @hypothesis.approved?
-                %strong.score-bubble{ class: hypothesis_score_class(@hypothesis.score) }
+                %strong.score-bubble{class: hypothesis_score_class(@hypothesis.score)}
                   = @hypothesis.score
               - unapproved_score = @hypothesis.unapproved_score
               - if @hypothesis.unapproved? || @hypothesis.score < unapproved_score
                 %em.less-strong
                   when approved:
-                %span.score-bubble.small.less-strong{ class: hypothesis_score_class(unapproved_score) }
+                %span.score-bubble.small.less-strong{class: hypothesis_score_class(unapproved_score)}
                   = unapproved_score
 
           %tr
@@ -165,4 +183,4 @@
 
   .row.mt-2
     - @hypothesis.hypothesis_citations.each do |hypothesis_citation|
-      = render partial: "/citations/display", locals: { citation: hypothesis_citation.citation, hypothesis_citation_id: hypothesis_citation.id }
+      = render partial: "/citations/display", locals: {citation: hypothesis_citation.citation, hypothesis_citation_id: hypothesis_citation.id}

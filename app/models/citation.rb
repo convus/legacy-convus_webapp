@@ -42,7 +42,7 @@ class Citation < ApplicationRecord
 
   scope :by_creation, -> { reorder(:created_at) }
 
-  attr_accessor :add_to_github, :quotes_text
+  attr_accessor :quotes_text
 
   pg_search_scope :text_search, against: %i[title slug] # TODO: Create tsvector indexes for performance (issues/92)
 
