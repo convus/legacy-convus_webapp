@@ -5,11 +5,11 @@ class HypothesisArgumentsController < ApplicationController
   before_action :set_permitted_format
 
   def edit
-    @page_title = "Edit - #{@argument.ref_number}"
+    @page_title = "Edit Argument: #{@hypothesis.title}"
   end
 
   def new
-    @page_title = "Add Argument - #{@hypothesis.title}"
+    @page_title = "Add Argument: #{@hypothesis.title}"
     if @argument.blank? # Just in case we're rendering again
       @argument = @hypothesis.arguments.build
     end
