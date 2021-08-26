@@ -25,10 +25,10 @@ export default class ArgumentForm {
 
     $('#submitForApproval').on('click', (e) => {
       e.preventDefault()
-      $('#hypothesisForm .loadingSpinner').collapse('show')
+      $('form .loadingSpinner').collapse('show')
       $('.submit-input').addClass('disabled')
       $('.addToGithubField').val('1')
-      $('#hypothesisForm').submit()
+      $('#argumentForm').submit()
     })
 
     // Setup preview after inital parse, so that it doesn't initially collapse

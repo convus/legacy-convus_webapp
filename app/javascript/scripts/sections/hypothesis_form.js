@@ -13,10 +13,10 @@ export default class HypothesisForm {
   init () {
     $('#submitForApproval').on('click', (e) => {
       e.preventDefault()
-      $('#hypothesisForm .loadingSpinner').collapse('show')
+      $('form .loadingSpinner').collapse('show')
       $('.submit-input').addClass('disabled')
       $('.addToGithubField').val('1')
-      $('#argumentForm').submit()
+      $('#hypothesisForm').submit()
     })
 
     this.enableAddAndRemoveCitations()
