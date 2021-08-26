@@ -57,10 +57,6 @@ class Hypothesis < ApplicationRecord
     found || super || matching_previous_titles(str).last
   end
 
-  def display_id
-    "Hypothesis-#{id}"
-  end
-
   # We're saving hypothesis with a bunch of associations, make it easier to override the errors
   # So that association errors are clearer
   def errors_full_messages

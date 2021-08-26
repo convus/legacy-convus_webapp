@@ -5,7 +5,7 @@ class HypothesisArgumentsController < ApplicationController
   before_action :set_permitted_format
 
   def edit
-    @page_title = "Edit - #{@argument.display_id}"
+    @page_title = "Edit - #{@argument.ref_number}"
   end
 
   def new

@@ -39,11 +39,6 @@ class Argument < ApplicationRecord
     hypothesis&.approved?
   end
 
-  # This will definitely become more sophisticated later!
-  def display_id
-    "#{hypothesis&.display_id}: Argument-#{id}"
-  end
-
   # Actually serialized into hypothesis files, using a serializer to make it easier to manage
   def flat_file_serialized
     ArgumentSerializer.new(self, root: false).as_json
