@@ -10,7 +10,9 @@ import PeriodSelector from './utils/period_selector.js'
 import Chartkick from 'chartkick'
 import Chart from 'chart.js'
 
-import { HypothesisForm } from '../scripts/sections/hypothesis_form.js'
+import HypothesisForm from '../scripts/sections/hypothesis_form.js'
+import ArgumentForm from '../scripts/sections/argument_form.js'
+
 window.Chartkick = Chartkick
 Chartkick.addAdapter(Chart)
 
@@ -28,6 +30,11 @@ $(document).on('turbolinks:load', function () {
   if ($('#hypothesisForm').length) {
     window.hypothesisForm = new HypothesisForm()
     window.hypothesisForm.init()
+  }
+
+  if ($('#argumentForm').length) {
+    window.argumentForm = new ArgumentForm({})
+    window.argumentForm.init()
   }
 
   $('.addQueryParam').on('click', (e) => {

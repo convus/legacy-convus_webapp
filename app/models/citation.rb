@@ -42,7 +42,7 @@ class Citation < ApplicationRecord
 
   scope :by_creation, -> { reorder(:created_at) }
 
-  attr_accessor :add_to_github, :quotes_text
+  attr_accessor :quotes_text
 
   pg_search_scope :text_search, against: %i[title slug] # TODO: Create tsvector indexes for performance (issues/92)
 
@@ -88,7 +88,7 @@ class Citation < ApplicationRecord
     return none unless str.present?
     slug = Slugifyer.slugify(str.gsub(/\.yml\z/i, "")) # remove .yml extension, just in case
     where(path_slug: slug).by_creation.first || # exact path_slug matching
-      where("path_slug ILIKE ?", "#{slug.truncate(250, omission: "")}%").by_creation.first || # filename truncation
+      where("path_slug ILIKE ?", "#{slug.truncate(240, omission: "")}%").by_creation.first || # filename truncation
       where(slug: slug).by_creation.first
   end
 

@@ -14,6 +14,7 @@ class Hypothesis < ApplicationRecord
   has_many :hypothesis_tags, dependent: :destroy
   has_many :tags, through: :hypothesis_tags
   has_many :hypothesis_quotes, -> { score_ordered }
+  has_many :arguments
   has_many :quotes, through: :hypothesis_quotes
   has_many :user_scores
 
@@ -22,7 +23,7 @@ class Hypothesis < ApplicationRecord
   before_validation :set_calculated_attributes
   after_commit :run_associated_tasks
 
-  attr_accessor :add_to_github, :skip_associated_tasks, :included_unapproved_hypothesis_citation
+  attr_accessor :skip_associated_tasks, :included_unapproved_hypothesis_citation, :additional_serialized_argument
 
   pg_search_scope :text_search, against: :title # TODO: Create tsvector indexes for performance (issues/92)
 
@@ -36,11 +37,24 @@ class Hypothesis < ApplicationRecord
   end
 
   def self.matching_previous_titles(str)
-    PreviousTitle.friendly_matching(str)
+    PreviousTitle.friendly_matching(str).map(&:hypothesis)
+  end
+
+  def self.find_ref_id(str)
+    str.present? ? find_by_ref_id(str.to_s.upcase.strip) : nil
   end
 
   def self.friendly_find(str)
-    super || matching_previous_titles(str).last&.hypothesis
+    found = find_ref_id(str)
+    # Preference ref_id lookup (in filepath or in id:)
+    if found.blank? && str.is_a?(String)
+      found = if str.match?(/\A(hypotheses\/)?[0-z]+_/i)
+        find_ref_id(str.gsub("hypotheses/", "").split("_").first)
+      elsif str.match?(/\A[0-z]+:/) # Looks like a base36 ID string!
+        find_ref_id(str.split(":").first)
+      end
+    end
+    found || super || matching_previous_titles(str).last
   end
 
   # We're saving hypothesis with a bunch of associations, make it easier to override the errors
@@ -109,7 +123,7 @@ class Hypothesis < ApplicationRecord
 
   # Required for FlatFileSerializable
   def file_pathnames
-    ["hypotheses", "#{slug}.yml"]
+    ["hypotheses", "#{ref_id}_#{slug}.yml"]
   end
 
   # Required for FlatFileSerializable
@@ -118,6 +132,7 @@ class Hypothesis < ApplicationRecord
   end
 
   def run_associated_tasks
+    update_ref_number if ref_id.blank?
     # Always try to create previous titles - even if skip_associated_tasks
     if approved? && title_previous_change.present?
       StorePreviousHypothesisTitleJob.perform_async(id, title_previous_change.first)
@@ -138,5 +153,13 @@ class Hypothesis < ApplicationRecord
 
   def unapproved_score
     unapproved_badges.values.sum
+  end
+
+  private
+
+  def update_ref_number
+    # NOTE: eventually manage ref_number with Redis, to enable external creation
+    new_ref_number = ref_number || id
+    update_columns(ref_number: new_ref_number, ref_id: new_ref_number.to_s(36).upcase)
   end
 end

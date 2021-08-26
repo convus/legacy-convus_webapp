@@ -24,7 +24,7 @@ class HypothesisCitationsController < ApplicationController
     @hypothesis_citation.creator_id = current_user.id
     if @hypothesis_citation.save
       flash[:success] = "Citation added!"
-      redirect_to edit_hypothesis_citation_path(id: @hypothesis_citation.id, hypothesis_id: @hypothesis.id)
+      redirect_to edit_hypothesis_citation_path(id: @hypothesis_citation.id, hypothesis_id: @hypothesis.ref_id)
     else
       render :new
     end
@@ -49,7 +49,7 @@ class HypothesisCitationsController < ApplicationController
         redirect_to hypothesis_path(@hypothesis, hypothesis_citation_id: @hypothesis_citation.to_param)
       else
         flash[:success] = "Citation saved"
-        target_url_params = {hypothesis_id: @hypothesis.id, id: @hypothesis_citation.id}
+        target_url_params = {hypothesis_id: @hypothesis.ref_id, id: @hypothesis_citation.id}
         # Don't include initially_toggled paramets unless it's passed because it's ugly
         target_url_params[:initially_toggled] = true if ParamsNormalizer.boolean(params[:initially_toggled])
         redirect_to edit_hypothesis_citation_path(target_url_params)

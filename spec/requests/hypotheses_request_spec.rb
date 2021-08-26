@@ -128,6 +128,52 @@ RSpec.describe "/hypotheses", type: :request do
           expect(assigns(:unapproved_hypothesis_citation)&.id).to eq hypothesis_citation_challenge.id
         end
       end
+
+      context "with arguments" do
+        let!(:argument) { FactoryBot.create(:argument_approved, hypothesis: subject) }
+        it "renders" do
+          expect(subject.approved?).to be_truthy
+          expect(argument.approved?).to be_truthy
+          expect(subject.arguments.shown.pluck(:id)).to eq([argument.id])
+          get "#{base_url}/#{subject.to_param}"
+          expect(response.code).to eq "200"
+          expect(response).to render_template("hypotheses/show")
+          expect(assigns(:arguments).pluck(:id)).to eq([argument.id])
+          expect(assigns(:unapproved_arguments).pluck(:id)).to eq([])
+        end
+        context "unapproved argument_id" do
+          let(:current_user) { FactoryBot.create(:user) }
+          let!(:argument2) { FactoryBot.create(:argument, hypothesis: subject, creator: current_user) }
+          let!(:argument3) { FactoryBot.create(:argument, hypothesis: subject) }
+          it "renders, includes unapproved_hypothesis_citation" do
+            expect(subject.approved?).to be_truthy
+            expect(argument.approved?).to be_truthy
+            expect(argument2.creator_id).to eq current_user.id
+            expect(argument2.approved?).to be_falsey
+            expect(argument2.shown?(current_user)).to be_truthy
+            expect(argument3.shown?(current_user)).to be_falsey
+            # passing ID renders that argument
+            get "#{base_url}/#{subject.to_param}?argument_id=#{argument3.id}"
+            expect(response.code).to eq "200"
+            expect(response).to render_template("hypotheses/show")
+            expect(assigns(:arguments).pluck(:id)).to eq([argument.id])
+            expect(assigns(:unapproved_arguments).pluck(:id)).to eq([argument3.id])
+            # And with the user signed in!
+            sign_in current_user
+            get "#{base_url}/#{subject.to_param}"
+            expect(response.code).to eq "200"
+            expect(response).to render_template("hypotheses/show")
+            expect(assigns(:arguments).pluck(:id)).to eq([argument.id])
+            expect(assigns(:unapproved_arguments).pluck(:id)).to eq([argument2.id])
+            # passing ID renders that argument (even with user)
+            get "#{base_url}/#{subject.to_param}?argument_id=#{argument3.id}"
+            expect(response.code).to eq "200"
+            expect(response).to render_template("hypotheses/show")
+            expect(assigns(:arguments).pluck(:id)).to eq([argument.id])
+            expect(assigns(:unapproved_arguments).pluck(:id)).to eq([argument3.id])
+          end
+        end
+      end
     end
     context "after_sign_in_score and user signed in" do
       let(:current_user) { FactoryBot.create(:user) }
@@ -238,7 +284,7 @@ RSpec.describe "/hypotheses", type: :request do
           post base_url, params: {hypothesis: simple_hypothesis_params.merge(approved_at: Time.current.to_s)}
         }.to change(Hypothesis, :count).by 1
         hypothesis = Hypothesis.last
-        expect(response).to redirect_to edit_hypothesis_path(hypothesis.id)
+        expect(response).to redirect_to edit_hypothesis_path(hypothesis.ref_id)
         expect(AddToGithubContentJob.jobs.count).to eq 0
         expect(flash[:success]).to be_present
 
@@ -296,7 +342,7 @@ RSpec.describe "/hypotheses", type: :request do
             post base_url, params: {hypothesis: hypothesis_params}
           }.to change(Citation, :count).by 1
           hypothesis = Hypothesis.last
-          expect(response).to redirect_to edit_hypothesis_path(hypothesis.id)
+          expect(response).to redirect_to edit_hypothesis_path(hypothesis.ref_id)
           expect(flash[:success]).to be_present
 
           expect(hypothesis.title).to eq simple_hypothesis_params[:title]
@@ -380,7 +426,7 @@ RSpec.describe "/hypotheses", type: :request do
         patch "#{base_url}/#{subject.id}", params: {hypothesis: hypothesis_params.merge(add_to_github: "")}
         expect(flash[:success]).to be_present
         expect(Citation.count).to eq 2
-        expect(response).to redirect_to edit_hypothesis_path(subject.id)
+        expect(response).to redirect_to edit_hypothesis_path(subject.ref_id)
         expect(assigns(:hypothesis)&.id).to eq subject.id
         expect(assigns(:hypothesis).submitted_to_github?).to be_falsey
         expect(AddToGithubContentJob.jobs.count).to eq 0
@@ -456,7 +502,7 @@ RSpec.describe "/hypotheses", type: :request do
           Sidekiq::Worker.clear_all
           patch "#{base_url}/#{subject.id}", params: hypothesis_add_to_github_params
           expect(flash[:success]).to be_present
-          expect(response).to redirect_to hypothesis_path(subject.id)
+          expect(response).to redirect_to hypothesis_path(subject.ref_id)
           expect(assigns(:hypothesis)&.id).to eq subject.id
           expect(assigns(:hypothesis).submitted_to_github?).to be_truthy
           expect(AddToGithubContentJob.jobs.count).to eq 1
@@ -498,7 +544,7 @@ RSpec.describe "/hypotheses", type: :request do
             Sidekiq::Testing.inline! do
               patch "#{base_url}/#{subject.to_param}", params: hypothesis_add_to_github_params.merge(initially_toggled: true)
             end
-            expect(response).to redirect_to hypothesis_path(subject.id)
+            expect(response).to redirect_to hypothesis_path(subject.ref_id)
             expect(flash[:success]).to be_present
 
             subject.reload
@@ -527,7 +573,7 @@ RSpec.describe "/hypotheses", type: :request do
         #       Sidekiq::Testing.inline! do
         #         patch "#{base_url}/#{subject.to_param}", params: {hypothesis: hypothesis_params}
         #       end
-        #       expect(response).to redirect_to edit_hypothesis_path(subject.id)
+        #       expect(response).to redirect_to edit_hypothesis_path(subject.ref_id)
         #       expect(flash[:success]).to be_present
         #       subject.reload
         #       expect(subject.title).to eq hypothesis_params[:title]
@@ -549,7 +595,7 @@ RSpec.describe "/hypotheses", type: :request do
           patch "#{base_url}/#{subject.to_param}", params: hypothesis_add_to_github_params
           expect(AddToGithubContentJob.jobs.count).to eq 1
           expect(AddToGithubContentJob.jobs.map { |j| j["args"] }.last.flatten).to eq(["Hypothesis", subject.id])
-          expect(response).to redirect_to hypothesis_path(subject.id)
+          expect(response).to redirect_to hypothesis_path(subject.ref_id)
           expect(flash[:success]).to be_present
 
           subject.reload
@@ -579,7 +625,7 @@ RSpec.describe "/hypotheses", type: :request do
           Sidekiq::Worker.clear_all
           patch "#{base_url}/#{subject.to_param}", params: {hypothesis: hypothesis_params, initially_toggled: true}
           expect(AddToGithubContentJob.jobs.count).to eq 0
-          expect(response).to redirect_to edit_hypothesis_path(subject.id, initially_toggled: true)
+          expect(response).to redirect_to edit_hypothesis_path(subject.ref_id, initially_toggled: true)
           expect(flash[:success]).to be_present
 
           subject.reload
@@ -617,7 +663,7 @@ RSpec.describe "/hypotheses", type: :request do
           Sidekiq::Worker.clear_all
           patch "#{base_url}/#{subject.to_param}", params: {hypothesis: hypothesis_params.merge(tags_string: ["Economy", "parties"])}
           expect(AddToGithubContentJob.jobs.count).to eq 0
-          expect(response).to redirect_to edit_hypothesis_path(subject.id)
+          expect(response).to redirect_to edit_hypothesis_path(subject.ref_id)
           expect(flash[:success]).to be_present
 
           subject.reload

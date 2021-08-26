@@ -90,3 +90,26 @@ jobs:
           path: test-results
       - store_artifacts:
           path: test-artifacts
+
+  deploy_production:
+    machine:
+      enabled: true
+    working_directory: ~/convus/convus_webapp
+    steps:
+      - checkout
+      - run:
+          name: Deploying to Cloud66 Production
+          command: |
+            curl -X POST -d "" https://hooks.cloud66.com/stacks/redeploy/${CLOUD66_REDEPLOYMENT_PATH}
+
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - build
+      - deploy_production:
+          requires:
+            - build
+          filters:
+            branches:
+              only: main

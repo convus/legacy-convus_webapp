@@ -1,0 +1,27 @@
+- preview ||= false
+- unapproved_show ||= false
+- unapproved_show_linked ||= false
+- skip_edit ||= false
+-# Probably don't want to pass in show_editable?
+- show_edit ||= !skip_edit && argument.editable_by?(current_user)
+
+.col.argument-show-block.mt-4
+  - if unapproved_show || preview || show_edit
+    %header.argument-show-header
+      - if unapproved_show
+        %span.less-strong.small
+          %em
+            Argument shown because
+            - if unapproved_show_linked
+              you clicked a link to view it.
+            - else
+              you created it.
+            It is
+            %strong.text-warning not
+            approved.
+      - if preview
+        %span.text-info.small Preview of argument
+      - if show_edit
+        %span.float-right= link_to "edit", edit_hypothesis_argument_path(hypothesis_id: @hypothesis.id, id: argument.id), class: "gray-link small"
+  .argument-body
+    = argument.body_html&.html_safe

@@ -10,10 +10,42 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_19_190054) do
+ActiveRecord::Schema.define(version: 2021_08_21_213928) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "argument_quotes", force: :cascade do |t|
+    t.bigint "argument_id"
+    t.bigint "citation_id"
+    t.bigint "creator_id"
+    t.integer "ref_number"
+    t.text "text"
+    t.text "url"
+    t.boolean "removed", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["argument_id"], name: "index_argument_quotes_on_argument_id"
+    t.index ["citation_id"], name: "index_argument_quotes_on_citation_id"
+    t.index ["creator_id"], name: "index_argument_quotes_on_creator_id"
+  end
+
+  create_table "arguments", force: :cascade do |t|
+    t.bigint "hypothesis_id"
+    t.bigint "creator_id"
+    t.text "text"
+    t.text "body_html"
+    t.integer "score"
+    t.integer "ref_number"
+    t.integer "listing_order"
+    t.datetime "approved_at"
+    t.integer "pull_request_number"
+    t.boolean "submitting_to_github", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["creator_id"], name: "index_arguments_on_creator_id"
+    t.index ["hypothesis_id"], name: "index_arguments_on_hypothesis_id"
+  end
 
   create_table "citations", force: :cascade do |t|
     t.bigint "publication_id"
@@ -59,7 +91,10 @@ ActiveRecord::Schema.define(version: 2021_01_19_190054) do
     t.integer "pull_request_number"
     t.integer "score"
     t.boolean "submitting_to_github", default: false
+    t.bigint "ref_number"
+    t.string "ref_id"
     t.index ["creator_id"], name: "index_hypotheses_on_creator_id"
+    t.index ["ref_id"], name: "index_hypotheses_on_ref_id", unique: true
   end
 
   create_table "hypothesis_citations", force: :cascade do |t|
@@ -152,6 +187,8 @@ ActiveRecord::Schema.define(version: 2021_01_19_190054) do
     t.boolean "expired", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "argument_id"
+    t.index ["argument_id"], name: "index_user_scores_on_argument_id"
     t.index ["hypothesis_id"], name: "index_user_scores_on_hypothesis_id"
     t.index ["user_id"], name: "index_user_scores_on_user_id"
   end

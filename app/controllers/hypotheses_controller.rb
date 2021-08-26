@@ -24,6 +24,19 @@ class HypothesesController < ApplicationController
         @unapproved_hypothesis_citation = hypothesis_citation
       end
     end
+    if params[:argument_id].present?
+      argument = @hypothesis.arguments.find_by_id(params[:argument_id])
+      if argument.blank?
+        flash[:error] = "Unable to find that argument"
+      elsif argument.approved?
+        flash[:success] = "Argument has been approved and is included on this page"
+      else
+        @unapproved_arguments = @hypothesis.arguments.where(id: params[:argument_id])
+      end
+    end
+    @arguments = @hypothesis.arguments.approved
+    @unapproved_arguments ||= @hypothesis.arguments.unapproved.shown(current_user)
+      .order(updated_at: :desc)
   end
 
   def edit
@@ -39,7 +52,7 @@ class HypothesesController < ApplicationController
     @hypothesis.creator_id = current_user.id
     if @hypothesis.save
       flash[:success] = "Hypothesis created!"
-      redirect_to edit_hypothesis_path(@hypothesis.id)
+      redirect_to edit_hypothesis_path(@hypothesis.ref_id)
     else
       render :new
     end
@@ -50,10 +63,10 @@ class HypothesesController < ApplicationController
       @hypothesis.hypothesis_citations.each { |hc| update_citation(hc) }
       if @hypothesis.submitted_to_github?
         flash[:success] = "Hypothesis submitted for review"
-        redirect_to hypothesis_path(@hypothesis.id)
+        redirect_to hypothesis_path(@hypothesis.ref_id)
       else
         flash[:success] = "Hypothesis saved"
-        target_url_params = {id: @hypothesis.id}
+        target_url_params = {id: @hypothesis.ref_id}
         # Don't include initially_toggled paramets unless it's passed because it's ugly
         target_url_params[:initially_toggled] = true if ParamsNormalizer.boolean(params[:initially_toggled])
         redirect_to edit_hypothesis_path(target_url_params)

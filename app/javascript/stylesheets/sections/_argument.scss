@@ -1,0 +1,111 @@
+$argument-border-color: rgba(102, 102, 102, 0.08);
+$argument-background: #f7f7f7;
+
+.arguments-wrapper {
+  @include media-breakpoint-up(sm) {
+    background: $argument-background;
+    border-top: 1px solid rgba(102, 102, 102, 0.05);
+    border-bottom: 1px solid rgba(102, 102, 102, 0.05);
+  }
+}
+
+.argument-show-block {
+  // 60px is padding for the column and the argument-body
+  flex: 0 0 $max-width-text + 60px;
+  max-width: 100%;
+  @include media-breakpoint-down(sm) {
+    border-top: 1px solid $gray-300;
+  }
+  p {
+    margin: 0.5rem 0 0;
+  }
+  .argument-body {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-top: 1px solid $argument-border-color;
+  }
+  .argument-body,
+  .argument-show-header {
+    @include media-breakpoint-up(sm) {
+      background: #fff;
+      border: 1px solid $argument-border-color;
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+  }
+  .argument-show-header {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    @include media-breakpoint-up(sm) {
+      border-bottom: none;
+    }
+  }
+  .argument-quote-block {
+    margin: 0;
+    padding: 0.25rem 1rem 1.5rem;
+    position: relative;
+    blockquote {
+      margin: 0;
+      &:before {
+        content: ">";
+        opacity: 0.3;
+        font-size: 80%;
+        margin-left: -0.25em;
+        display: block;
+        position: absolute;
+        top: 1rem;
+        left: 0.25rem;
+      }
+    }
+    .source {
+      display: block;
+      width: 100%;
+      text-align: right;
+      font-size: 80%;
+      margin-top: -2px; // idk, looks better to me?
+    }
+  }
+}
+
+#argumentForm {
+  .argument-text-label {
+    font-family: $font-family-sans-serif;
+    font-weight: 500;
+    line-height: 1.2;
+    font-size: 24px;
+  }
+  .quote-field {
+    @extend .max-width-text-container;
+    @extend .col;
+    font-size: 12px; // keep it small
+    margin: 1rem 0 0;
+    .quote-text {
+      padding-left: 0.3rem;
+      margin: 0 0 0.1rem;
+      line-height: 1.25;
+      opacity: 0.8;
+      &:before {
+        content: ">";
+        opacity: 0.3;
+        font-size: 80%;
+        margin-left: -0.25em;
+        display: inline-block;
+      }
+    }
+    .form-group {
+      margin: 0;
+      input {
+        font-size: 12px;
+        padding: 0.2rem 0.7rem;
+        height: auto;
+      }
+    }
+  }
+  .removed-quotes {
+    opacity: 0.5;
+    h4 {
+      font-size: 1.25rem;
+      margin: 1rem 0 -0.75rem; // remove the padding from the first quote-field
+    }
+  }
+}

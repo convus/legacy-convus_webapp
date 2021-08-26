@@ -17,6 +17,7 @@ Rails.application.routes.draw do
 
   resources :hypotheses do
     resources :citations, only: %i[new create edit update], controller: "hypothesis_citations"
+    resources :arguments, only: %i[new create edit update], controller: "hypothesis_arguments"
   end
 
   resources :user_scores, only: %i[create]
