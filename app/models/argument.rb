@@ -44,7 +44,7 @@ class Argument < ApplicationRecord
     "#{hypothesis&.display_id}: Argument-#{id}"
   end
 
-  # Required for FlatFileSerializable
+  # Actually serialized into hypothesis files, using a serializer to make it easier to manage
   def flat_file_serialized
     ArgumentSerializer.new(self, root: false).as_json
   end
