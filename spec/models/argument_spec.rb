@@ -80,21 +80,21 @@ RSpec.describe Argument, type: :model do
       argument_quote = argument.argument_quotes.first
       expect(argument_quote.url).to be_blank
       expect(argument_quote.text).to eq "I'm quoting stuff"
-      expect(argument_quote.ref_number).to eq 0
+      expect(argument_quote.ref_number).to eq 1
       # It finds by text, if the text is the same
       argument.update_from_text(text, quote_urls: [url1])
       argument_quote.reload
       expect(argument.body_html).to be_present
       expect(argument_quote.url).to eq url1
       expect(argument_quote.text).to eq "I'm quoting stuff"
-      expect(argument_quote.ref_number).to eq 0
+      expect(argument_quote.ref_number).to eq 1
     end
     context "with argument_quotes" do
       let!(:argument_quote1) { FactoryBot.create(:argument_quote, argument: argument, url: "https://url.com/stufffff") }
       let!(:argument_quote2) { FactoryBot.create(:argument_quote, argument: argument, url: url1) }
       let!(:argument_quote3) { FactoryBot.create(:argument_quote, argument: argument, text: nil, url: nil) }
       it "updates the matching quote, deletes the other" do
-        expect(argument_quote2.reload.ref_number).to eq 1
+        expect(argument_quote2.reload.ref_number).to eq 2
         expect(argument.reload.argument_quotes.count).to eq 3
         expect(argument.body_html).to be_blank
         argument.update_from_text(text, quote_urls: [url1])
@@ -105,7 +105,7 @@ RSpec.describe Argument, type: :model do
         argument_quote2.reload
         expect(argument_quote2.url).to eq url1
         expect(argument_quote2.text).to eq "I'm quoting stuff"
-        expect(argument_quote2.ref_number).to eq 0
+        expect(argument_quote2.ref_number).to eq 1
       end
     end
   end
@@ -176,7 +176,7 @@ RSpec.describe Argument, type: :model do
           "<span class=\"source\">#{argument_quote.citation_ref_html}</span></div>\n"
       end
       it "does things" do
-        expect(argument_quote.reload.ref_number).to eq 0 # Expect it to be set
+        expect(argument_quote.reload.ref_number).to eq 1 # Expect it to be set
         expect(argument_quote.citation_ref_html).to be_present
         expect(argument.reload.body_html).to be_blank
         expect(argument.ref_number).to eq 1
@@ -205,9 +205,9 @@ RSpec.describe Argument, type: :model do
             "<span class=\"source\">#{argument_quote2.citation_ref_html}</span></div>\n"
         end
         it "renders" do
-          expect(argument_quote.reload.ref_number).to eq 0
+          expect(argument_quote.reload.ref_number).to eq 1
           expect(argument_quote.citation_ref_html).to be_present
-          expect(argument_quote2.reload.ref_number).to eq 1
+          expect(argument_quote2.reload.ref_number).to eq 2
           expect(argument.reload.body_html).to be_blank
           # OMFG testing this was a bear. There is definitely to be a better way, but whatever
           real_lines = argument.parse_text_with_blockquotes.split("\n").reject(&:blank?)

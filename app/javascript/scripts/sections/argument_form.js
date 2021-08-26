@@ -71,7 +71,7 @@ export default class ArgumentForm {
         text: $this.find('.quote-text').text(),
         url: $this.find('.url-field').val(),
         id: this.id.replace('quoteId-', ''),
-        prevRef: index,
+        prevIndex: index,
         newQuote: $this.hasClass('newQuote'),
         removed: $this.hasClass('removedQuote')
       }
@@ -117,7 +117,7 @@ export default class ArgumentForm {
 
     // For any unmatched existing quotes that have urls, sort them by ID, update them to be removed - and render them
     // (we ignore non-url quotes, because who cares, we don't need to save them)
-    this.removedQuotes = _.sortBy(Object.values(this.existingQuotes).filter(quote => !quote.matched && quote.url.length), 'prevRef')
+    this.removedQuotes = _.sortBy(Object.values(this.existingQuotes).filter(quote => !quote.matched && quote.url.length), 'prevIndex')
     if (this.removedQuotes.length) {
       $('#quoteFieldsRemoved').collapse('show')
       this.removedQuotes.forEach((quote, index) => this.updateQuote({ removedQuote: quote }))
@@ -142,7 +142,7 @@ export default class ArgumentForm {
     if (removedQuote !== undefined) {
       quote = _.merge(removedQuote, { removed: true, matched: true })
     } else {
-      quote = this.matchingExistingQuote({ text: text, refNumber: index })
+      quote = this.matchingExistingQuote({ text: text, index: index })
       if (quote) {
       // If quote exists, merge in the new text, mark it not removed and matched
         quote = _.merge(quote, { text: text, matched: true, removed: false })
@@ -151,7 +151,7 @@ export default class ArgumentForm {
 
     if (quote) {
       // If the quote is one of the existingQuotes, update the existing quote
-      const existingIndex = quote.prevRef || _.findIndex(this.existingQuotes, ['id', quote.id])
+      const existingIndex = quote.prevIndex || _.findIndex(this.existingQuotes, ['id', quote.id])
       if (existingIndex) {
         this.existingQuotes[existingIndex] = quote
       }
@@ -173,7 +173,7 @@ export default class ArgumentForm {
     // TODO: stop using jQuery here
     const $el = $(`${selector} #quoteId-${quote.id}`)
     // If the element exists and is in the same position and is still around, update the quote
-    if ($el.length && quote.prevRef === index) {
+    if ($el.length && quote.prevIndex === index) {
       $el.find('.quote-text').text(text)
       $el.find(`#argument_argument_quotes_attributes_${quote.id}_text`).val(text)
     } else {
@@ -187,11 +187,11 @@ export default class ArgumentForm {
   }
 
   // NOTE: This is duplicated by _argument_quote.html.erb
-  quoteHtml (refNumber, quote) {
+  quoteHtml (index, quote) {
     // Only include the ID input if quote already exists
     const idInput = quote.newQuote ? '' : `<input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][id]" id="argument_argument_quotes_attributes_${quote.id}_id" value="${quote.id}">`
     return `<div id="quoteId-${quote.id}" class="quote-field ${quote.removed ? 'removedQuote' : ''} ${quote.newQuote ? 'newQuote' : ''}">
-      <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][ref_number]" id="argument_argument_quotes_attributes_${quote.id}_ref_number" value="${refNumber}">
+      <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][ref_number]" id="argument_argument_quotes_attributes_${quote.id}_ref_number" value="${index + 1}">
       <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][removed]" id="argument_argument_quotes_attributes_${quote.id}_removed" value="${quote.removed}">
       <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][text]" id="argument_argument_quotes_attributes_${quote.id}_text" value="${quote.text}">
       ${idInput}
@@ -202,7 +202,7 @@ export default class ArgumentForm {
     </div>`
   }
 
-  matchingExistingQuote ({ text, refNumber }) {
+  matchingExistingQuote ({ text, index }) {
     // get unmatched quotes
     const potentialMatches = Object.values(this.existingQuotes).filter(quote => !quote.matched)
     let match
@@ -221,9 +221,9 @@ export default class ArgumentForm {
       }), 'score')
       // Iterate through the scores, from high score to low score, use the first match
       for (const score of _.reverse(scores)) {
-        // log.debug(`score.index: ${score.index}, score: ${score.score} --- refNumber: ${refNumber}, text: ${_.truncate(text, { length: 40 })}`)
+        // log.debug(`score.index: ${score.index}, score: ${score.score} --- index: ${index}, text: ${_.truncate(text, { length: 40 })}`)
         // Put our finger on the scale if the index of the potential match is the same as the index of this quote
-        if (refNumber === score.pMatch.prevRef && score.score > 0.1) {
+        if (index === score.pMatch.prevIndex && score.score > 0.1) {
           match = score.pMatch
           break
         } else if (score.score > 0.3) {

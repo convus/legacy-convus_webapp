@@ -101,7 +101,7 @@ RSpec.describe GithubIntegration do
 
     it "creates the pull request" do
       expect(hypothesis.ref_id).to eq "J"
-      expect(argument.reload.argument_quotes.pluck(:ref_number)).to eq([0, 1])
+      expect(argument.reload.argument_quotes.pluck(:ref_number)).to eq([1, 2])
       expect(argument.pull_request_number).to be_blank
 
       # Make sure that the above hypothesis_title is actually a title that is used in the content_repository

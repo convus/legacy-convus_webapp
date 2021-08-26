@@ -371,12 +371,12 @@ unless ENV["CIRCLECI"]
           expect(argument.body_html).to be_present
           expect(argument.argument_quotes.not_removed.count).to eq 2
           argument_quote1 = argument.argument_quotes.ref_ordered.first
-          expect(argument_quote1.ref_number).to eq 0
+          expect(argument_quote1.ref_number).to eq 1
           expect(argument_quote1.url).to eq "https://en.wikipedia.org/wiki/Spherical_Earth"
           expect(argument_quote1.text).to eq "On a flat Earth, a Sun that shines in all directions would illuminate the entire surface at the same time, and all places would experience sunrise and sunset at the horizon at about the same time. With a spherical Earth, half the planet is in daylight at any given time and the other half experiences nighttime. When a given location on the spherical Earth is in sunlight, its antipode - the location exactly on the opposite side of the Earth - is in darkness."
 
           argument_quote2 = argument.argument_quotes.ref_ordered.last
-          expect(argument_quote2.ref_number).to eq 1
+          expect(argument_quote2.ref_number).to eq 2
           expect(argument_quote2.url).to eq "https://en.wikipedia.org/wiki/Spherical_Earth"
           expect(argument_quote2.text).to eq "The Earth is massive enough that the pull of gravity maintains its roughly spherical shape. Most of its deviation from spherical stems from the centrifugal force caused by rotation around its north-south axis. This force deforms the sphere into an oblate ellipsoid"
 

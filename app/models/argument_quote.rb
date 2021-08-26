@@ -9,10 +9,6 @@ class ArgumentQuote < ApplicationRecord
   scope :removed, -> { where(removed: true) }
   scope :not_removed, -> { where(removed: false) }
 
-  def ref_number_display
-    ref_number + 1 # Off by 1
-  end
-
   def removed?
     removed
   end
@@ -50,6 +46,6 @@ class ArgumentQuote < ApplicationRecord
   def calculated_ref_number
     arg_quotes = ArgumentQuote.where(argument_id: argument_id)
     arg_quotes = arg_quotes.where("id < ?", id) if id.present?
-    self.ref_number = arg_quotes.count
+    self.ref_number = arg_quotes.count + 1
   end
 end

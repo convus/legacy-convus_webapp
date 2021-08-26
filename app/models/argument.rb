@@ -45,8 +45,7 @@ class Argument < ApplicationRecord
         last_quote_line = index
       end
     end
-    # - remove duplicates
-    # - ignore any empty quotes
+    # - remove duplicates & ignore any empty quotes
     matching_lines.uniq.reject(&:blank?)
   end
 
@@ -90,7 +89,7 @@ class Argument < ApplicationRecord
       end
       argument_quote ||= argument_quotes.where.not(id: current_argument_quote_ids).find_by_text(quote)
       argument_quote ||= argument_quotes.build
-      argument_quote.update!(text: quote, url: url, ref_number: index)
+      argument_quote.update!(text: quote, url: url, ref_number: index + 1)
       current_argument_quote_ids << argument_quote.id
     end
     argument_quotes.where.not(id: current_argument_quote_ids).update_all(removed: true)
@@ -122,7 +121,7 @@ class Argument < ApplicationRecord
   # This sucks and is brittle
   def parse_text_with_blockquotes
     html_output = ""
-    # This is a dumb way of doing this, sorry, I'm tired (Also, I don't think it handles nested blockquotes - but fuck them anyway)
+    # This is a dumb way of doing this, sorry, I'm tired (also, I don't think it handles nested blockquotes - but fuck them anyway)
     quote_sources = argument_quotes.not_removed.order(:ref_number).map(&:citation_ref_html)
     opening_tag = "<div class=\"argument-quote-block\"><blockquote>"
     parse_text.gsub(/<blockquote>/i, "||QBLK||>>>>").split("||QBLK||").each do |quote_or_not|

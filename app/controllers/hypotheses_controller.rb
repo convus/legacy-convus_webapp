@@ -27,9 +27,9 @@ class HypothesesController < ApplicationController
     if params[:argument_id].present?
       argument = @hypothesis.arguments.find_by_id(params[:argument_id])
       if argument.blank?
-        flash[:error] = "Unable to find that citation"
+        flash[:error] = "Unable to find that argument"
       elsif argument.approved?
-        flash[:success] = "Citation has been approved and is included on this page"
+        flash[:success] = "Argument has been approved and is included on this page"
       else
         @unapproved_arguments = @hypothesis.arguments.where(id: params[:argument_id])
       end
