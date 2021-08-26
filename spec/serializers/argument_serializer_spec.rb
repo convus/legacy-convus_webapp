@@ -7,7 +7,7 @@ describe ArgumentSerializer, type: :lib do
   let(:serializer) { described_class.new(obj, root: false) }
 
   describe "output" do
-    let(:text) { "something that I'm arguing about and other stuff,\nhere is something else\n\n> Quote to stuff\n\n"}
+    let(:text) { "something that I'm arguing about and other stuff,\nhere is something else\n\n> Quote to stuff\n\n" }
     let!(:argument_quote1) { FactoryBot.create(:argument_quote, argument: obj, url: "https://stuff.com") }
     let(:target) do
       {

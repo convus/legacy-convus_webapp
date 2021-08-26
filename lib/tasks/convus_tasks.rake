@@ -23,7 +23,7 @@ task reconcile_flat_file_database: :environment do
   commit_message = "Reconciliation: #{Time.now.utc.to_date.iso8601}"
   # Get the number of commit_messages with that title, add number to the back of the commit_message
   reconciliation_count = `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git --no-pager log --grep="#{commit_message}" --format=oneline 2>&1`
-  commit_message = commit_message + "_#{reconciliation_count.scan(/\n/).size + 1}"
+  commit_message += "_#{reconciliation_count.scan(/\n/).size + 1}"
   output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git commit -m"#{commit_message}" 2>&1`
   output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git push origin main 2>&1`
 
@@ -52,7 +52,7 @@ task update_flat_file_database_without_import: :environment do
   commit_message = "Reconciliation: #{Time.now.utc.to_date.iso8601}"
   # Get the number of commit_messages with that title, add number to the back of the commit_message
   reconciliation_count = `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git --no-pager log --grep="#{commit_message}" --format=oneline 2>&1`
-  commit_message = commit_message + "_#{reconciliation_count.scan(/\n/).size + 1}"
+  commit_message += "_#{reconciliation_count.scan(/\n/).size + 1}"
   output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git commit -m"#{commit_message}" 2>&1`
   output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git push origin #{branch_name} 2>&1`
   # Get back on main so future commands don't error
