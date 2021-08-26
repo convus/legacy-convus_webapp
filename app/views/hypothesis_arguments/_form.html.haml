@@ -16,10 +16,6 @@
 = form_for @argument, url: form_submit_path, method: (is_edit ? "PATCH" : "POST"), html: {class: "form", id: "argumentForm"} do |f|
   = f.hidden_field :add_to_github, class: "addToGithubField"
 
-  - if @argument.id.blank?
-    -# Initially assign something to demonstrate how to make quotes
-    - @argument.text ||= "Make your argument here\n\n> This is an example quote"
-
   .row
     - if @argument.errors.any?
       .col-md-6.mb-4.mt-2
@@ -34,7 +30,7 @@
               Edit new argument:
             - else
               Create argument:
-        = f.text_area :text, rows: 10, class: "form-control"
+        = f.text_area :text, rows: 10, placeholder: "Make your argument!\n\n> This is an example quote - all arguments need at least one.\n> Make one by starting a line with '>'", class: "form-control"
   #quoteFieldsWrapper
     #quoteFields.row
       - @argument.argument_quotes.not_removed.ref_ordered.each do |argument_quote|
