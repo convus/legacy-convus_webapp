@@ -6,7 +6,7 @@
 - show_edit ||= !skip_edit && argument.editable_by?(current_user)
 
 .col.argument-show-block.mt-4
-  - if unapproved_show || preview || show_edit
+  - if unapproved_show || show_edit
     %header.argument-show-header
       - if unapproved_show
         %span.less-strong.small
@@ -19,8 +19,6 @@
             It is
             %strong.text-warning not
             approved.
-      - if preview
-        %em.text-info Preview of how argument will look after approved
       - if show_edit
         %span.float-right= link_to "edit", edit_hypothesis_argument_path(hypothesis_id: @hypothesis.id, id: argument.id), class: "gray-link small"
   .argument-body

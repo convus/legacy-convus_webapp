@@ -9,8 +9,11 @@
   = render partial: "/hypotheses/show_title", locals: {hypothesis: @hypothesis, render_show_link: true}
 
 - if render_preview
-  #argumentPreview.row.mb-4.collapse{class: (render_preview ? "show" : "")}
-    = render partial: "/hypothesis_arguments/show", locals: {argument: @argument, preview: true, skip_edit: true}
+  #argumentPreview.row.mt-4.mb-4.collapse{class: (render_preview ? "show" : "")}
+    .max-width-text-container
+      .col-12
+        %em.text-info Preview of how argument will look after approved
+      = render partial: "/hypothesis_arguments/show", locals: {argument: @argument, preview: true, skip_edit: true}
 
 - form_submit_path = is_edit ? hypothesis_argument_path(hypothesis_id: @hypothesis, id: @argument.id) : hypothesis_arguments_path(hypothesis_id: @hypothesis)
 = form_for @argument, url: form_submit_path, method: (is_edit ? "PATCH" : "POST"), html: {class: "form", id: "argumentForm"} do |f|
