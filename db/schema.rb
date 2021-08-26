@@ -37,6 +37,7 @@ ActiveRecord::Schema.define(version: 2021_08_21_213928) do
     t.text "body_html"
     t.integer "score"
     t.integer "ref_number"
+    t.integer "listing_order"
     t.datetime "approved_at"
     t.integer "pull_request_number"
     t.boolean "submitting_to_github", default: false

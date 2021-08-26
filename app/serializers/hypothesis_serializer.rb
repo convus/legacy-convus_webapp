@@ -1,5 +1,5 @@
 class HypothesisSerializer < ApplicationSerializer
-  attributes :title, :id, :cited_urls, :new_cited_url, :topics
+  attributes :title, :id, :arguments, :cited_urls, :new_cited_url, :topics
 
   def id
     object.ref_id
@@ -24,5 +24,17 @@ class HypothesisSerializer < ApplicationSerializer
     else
       object.hypothesis_citations
     end
+  end
+
+  # If the hypothesis is approved, only include the approved arguments
+  def arguments
+    arguments_included = if object.approved?
+      object.arguments.approved
+    else
+      object.arguments
+    end
+    # If
+    (arguments_included + [object.additional_serialized_argument]).reject(&:blank?)
+      .map { |a| [a.ref_number, a.flat_file_serialized] }.to_h
   end
 end

@@ -9,6 +9,7 @@ class CreateArguments < ActiveRecord::Migration[6.1]
 
       t.integer :score
       t.integer :ref_number
+      t.integer :listing_order
 
       t.datetime :approved_at
       t.integer :pull_request_number

@@ -23,7 +23,7 @@ class Hypothesis < ApplicationRecord
   before_validation :set_calculated_attributes
   after_commit :run_associated_tasks
 
-  attr_accessor :skip_associated_tasks, :included_unapproved_hypothesis_citation
+  attr_accessor :skip_associated_tasks, :included_unapproved_hypothesis_citation, :additional_serialized_argument
 
   pg_search_scope :text_search, against: :title # TODO: Create tsvector indexes for performance (issues/92)
 

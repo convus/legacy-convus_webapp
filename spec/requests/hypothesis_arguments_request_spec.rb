@@ -77,6 +77,7 @@ RSpec.describe "hypothesis_arguments", type: :request do
         expect(argument.approved?).to be_falsey
         expect(argument.creator_id).to eq current_user.id
         expect(argument.text).to eq simple_argument_params[:text]
+        expect(argument.body_html).to be_present
       end
       context "with argument_quotes" do
         it "creates" do

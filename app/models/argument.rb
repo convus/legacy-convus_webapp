@@ -1,5 +1,6 @@
 class Argument < ApplicationRecord
   include ApprovedAtable
+  include FlatFileSerializable
   include GithubSubmittable
   include PgSearch::Model
 
@@ -16,6 +17,7 @@ class Argument < ApplicationRecord
   accepts_nested_attributes_for :argument_quotes, allow_destroy: true, reject_if: :all_blank
 
   scope :with_body_html, -> { where.not(body_html: nil) }
+  scope :listing_ordered, -> { reorder(:listing_order) }
   scope :hypothesis_approved, -> { left_joins(:hypothesis).where.not(hypotheses: {approved_at: nil}) }
 
   attr_accessor :skip_associated_tasks
@@ -42,7 +44,13 @@ class Argument < ApplicationRecord
     "#{hypothesis&.display_id}: Argument-#{id}"
   end
 
+  # Required for FlatFileSerializable
+  def flat_file_serialized
+    ArgumentSerializer.new(self, root: false).as_json
+  end
+
   def run_associated_tasks
+    update_ref_number if ref_number.blank?
     return false if skip_associated_tasks
     add_to_github_content
   end
@@ -51,7 +59,7 @@ class Argument < ApplicationRecord
     Redcarpet::Markdown.new(
       Redcarpet::Render::HTML.new(no_images: true, no_links: true, filter_html: true),
       {no_intra_emphasis: true, tables: true, fenced_code_blocks: true, strikethrough: true,
-       superscript: true, lax_spacing: true}
+       superscript: true, lax_spacing: true, }
     )
   end
 
@@ -86,14 +94,14 @@ class Argument < ApplicationRecord
 
   def set_calculated_attributes
     self.body_html = nil if body_html.blank? # Because we search by nil
-    self.ref_number ||= calculated_ref_number
+
   end
 
   private
 
-  def calculated_ref_number
-    args = Argument.where(hypothesis_id: hypothesis_id)
-    args = args.where("id < ?", id) if id.present?
-    self.ref_number = args.count
+  # Eventually will have a separate process for specifying listing_order, but...
+  def update_ref_number
+    new_ref_number = Argument.where(hypothesis_id: hypothesis_id).where("id < ?", id).count
+    update_columns(ref_number: new_ref_number, listing_order: new_ref_number)
   end
 end

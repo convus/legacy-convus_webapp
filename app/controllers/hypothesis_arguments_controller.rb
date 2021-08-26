@@ -19,6 +19,7 @@ class HypothesisArgumentsController < ApplicationController
     @argument = @hypothesis.arguments.build(permitted_params)
     @argument.creator_id = current_user.id
     if @argument.save
+      @argument.update_body_html
       flash[:success] = "Argument added!"
       redirect_to edit_hypothesis_argument_path(id: @argument.id, hypothesis_id: @hypothesis.ref_id)
     else
