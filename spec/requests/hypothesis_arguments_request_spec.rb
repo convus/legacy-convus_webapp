@@ -115,7 +115,7 @@ RSpec.describe "hypothesis_arguments", type: :request do
         expect(assigns(:argument)&.id).to eq subject.id
         # Test that it sets the right title
         title_tag = response.body[/<title.*<\/title>/]
-        expect(title_tag).to eq "<title>Edit - #{subject.ref_number}</title>"
+        expect(title_tag).to eq "<title>Edit Argument: #{subject.hypothesis.title}</title>"
         expect(assigns(:hypothesis_citations_shown)&.pluck(:id)).to eq([])
       end
       context "approved" do
