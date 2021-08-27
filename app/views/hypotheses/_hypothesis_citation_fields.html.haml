@@ -101,6 +101,11 @@
                 Published date
                 %small.less-strong YYYY-MM-DD
               = nested.text_field :published_date_str, placeholder: "optional", class: "form-control"
+          .form-group
+            = nested.label :doi do
+              DOI
+              = link_to "digital object identifier", "https://en.wikipedia.org/wiki/Digital_object_identifier", target: "_blank", class: "small less-strong"
+            = nested.text_field :doi, placeholder: "optional", class: "form-control"
     - else
       .text-center{style: "margin: -1em 0 1em;"}
         %em.less-strong
