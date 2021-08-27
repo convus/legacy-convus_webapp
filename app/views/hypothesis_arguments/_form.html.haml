@@ -9,10 +9,10 @@
   = render partial: "/hypotheses/show_title", locals: {hypothesis: @hypothesis, render_show_link: true}
 
 - if render_preview
-  #argumentPreview.row.mt-4.mb-4.collapse{class: (render_preview ? "show" : "")}
+  #argumentPreview.row.arguments-wrapper.mt-4.mb-4.collapse{class: (render_preview ? "show" : "")}
     .max-width-text-container
-      .col-12
-        %em.text-info Preview of how argument will look after approved
+      .col-12.preview-text.mt-3
+        %em.text-info Preview of argument:
       = render partial: "/hypothesis_arguments/show", locals: {argument: @argument, preview: true, skip_edit: true}
 
 - form_submit_path = is_edit ? hypothesis_argument_path(hypothesis_id: @hypothesis, id: @argument.id) : hypothesis_arguments_path(hypothesis_id: @hypothesis)
@@ -33,7 +33,17 @@
               Edit new argument:
             - else
               Create argument:
-        = f.text_area :text, rows: 10, placeholder: "Make your argument!\n\n> This is an example quote - all arguments need at least one.\n> Make one by starting a line with '>'", class: "form-control"
+        = f.text_area :text, rows: 10, placeholder: "Make your argument!", class: "form-control"
+        .less-strong.text-right
+          %a.gray-link{href: "#editingInfo", tabindex: -1, "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "show_raw", "data-queryvalue" => "true"}
+            editing help
+      #editingInfo.collapse
+        %ul.mt-2
+          %li All arguments need at least one blockquote. Create one by starting a line with ">"
+          %li Create italics by putting one underscore <em>_around some text_</em>
+          %li Make text bold by putting two asterisks <strong>**around text**</strong>
+          %li Save to see a preview of what the argument will look like
+
   #quoteFieldsWrapper
     #quoteFields.row
       - @argument.argument_quotes.not_removed.ref_ordered.each do |argument_quote|
@@ -48,8 +58,6 @@
     .col
       .form-group
         = submit_tag "Save", class: "btn btn-primary"
-        %em#saveToPreview.ml-2.less-strong.collapse{class: (render_preview ? "" : "show")}
-          \... to preview
 
       - if is_edit
         .mt-4
@@ -58,7 +66,7 @@
             %span.loadingSpinner.spinner-border.spinner-border-sm.collapse.ml-2
               %span.sr-only Loading...
           %em#quoteRequired.collapse.less-strong
-            Arguments must include at least one block quote to submit (start line with <code>></code>)
+            Arguments must include at least one block quote to submit (start line with >)
 
 %hr
 %h2.mt-4

@@ -98,7 +98,6 @@ export default class ArgumentForm {
     // If the text has changed, hide the preview
     if (window.argumentText !== $('#argument_text').val()) {
       $('#argumentPreview').collapse('hide')
-      $('#saveToPreview').collapse('show')
       this.previewOpen = false
     }
   }
