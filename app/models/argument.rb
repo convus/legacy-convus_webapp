@@ -19,6 +19,7 @@ class Argument < ApplicationRecord
   scope :with_body_html, -> { where.not(body_html: nil) }
   scope :listing_ordered, -> { reorder(:listing_order) }
   scope :hypothesis_approved, -> { left_joins(:hypothesis).where.not(hypotheses: {approved_at: nil}) }
+  scope :normal_user, -> { left_joins(:creator).where(users: {role: "normal_user"}) }
 
   attr_accessor :skip_associated_tasks
 

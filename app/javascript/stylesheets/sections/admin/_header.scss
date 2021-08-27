@@ -66,15 +66,17 @@
 }
 
 #adminNavbar {
-  .override-link-color {
-    color: #fff;
+  padding-top: 0;
+  padding-bottom: 0;
+  .navbar-brand {
+    font-size: 1.1em;
   }
   .dropdown-toggle {
     cursor: pointer;
   }
   .fancy-select {
     min-width: 300px;
-    margin-top: 4px;
+    margin-top: 0;
     @include media-breakpoint-down(xs) {
       min-width: 240px;
     }

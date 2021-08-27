@@ -9,6 +9,9 @@
           %td Created
           %td
             = admin_number_display(Hypothesis.count)
+            %em.small.less-strong.ml-2
+              = admin_number_display(Hypothesis.normal_user.count)
+              by normal users
         %tr
           %td Approved
           %td
@@ -44,6 +47,9 @@
           %td Approved
           %td
             = admin_number_display(Argument.approved.count)
+            %em.small.less-strong.ml-2
+              = admin_number_display(Argument.normal_user.count)
+              by normal users
         %tr
           %td Created past week
           %td
