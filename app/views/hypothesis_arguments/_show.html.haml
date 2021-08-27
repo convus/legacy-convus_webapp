@@ -20,7 +20,14 @@
             %strong.text-warning not
             approved.
       - if !argument.approved? && argument.submitted_to_github?
-        %small.ml-auto= link_to "PR##{argument.pull_request_number}", argument.pull_request_url
+        %small.ml-auto
+          - if argument.submitting_to_github?
+            %span.less-strong
+              waiting for PR,
+              %a{href: ""}
+                reload
+          - else
+            = link_to "PR##{argument.pull_request_number}", argument.pull_request_url
       - if show_edit
         %span.float-right= link_to "edit", edit_hypothesis_argument_path(hypothesis_id: @hypothesis.id, id: argument.id), class: "gray-link small"
 
