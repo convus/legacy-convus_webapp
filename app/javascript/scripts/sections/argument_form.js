@@ -23,7 +23,7 @@ export default class ArgumentForm {
     // For testing purposes, automatically select the argument field - but actually this is nice?
     $('#argument_text').focus()
 
-    $('#submitForApproval').on('click keydown', (e) => {
+    $('#submitForApproval').on('click', (e) => {
       e.preventDefault()
       $('form .loadingSpinner').collapse('show')
       $('.submit-input').addClass('disabled')

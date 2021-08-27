@@ -43,7 +43,7 @@ class HypothesisArgumentsController < ApplicationController
       end
       if @argument.submitted_to_github?
         flash[:success] = "Argument submitted for review"
-        redirect_to hypothesis_path(@hypothesis, argument_id: @argument.to_param)
+        redirect_to hypothesis_path(@hypothesis, argument_id: @argument.ref_number)
       else
         flash[:success] = "Argument saved"
         target_url_params = {hypothesis_id: @hypothesis.ref_id, id: @argument.id}

@@ -45,7 +45,7 @@
       .form-group.text-right
         = link_to_add_fields "Add a citation", f, :hypothesis_citations, {class: "btn btn-outline-primary"}, filename: "/hypotheses/hypothesis_citation_fields"
   .mt-4
-    %a#submitForApproval.btn.btn-success.submit-input{ href: "#" }
+    %button#submitForApproval.btn.btn-success.submit-input
       Submit for Approval
       %span.loadingSpinner.spinner-border.spinner-border-sm.collapse.ml-2
         %span.sr-only Loading...
