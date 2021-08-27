@@ -9,6 +9,7 @@ class CitationSerializer < ApplicationSerializer
     :published_date,
     :authors,
     :kind,
+    :doi,
     :quotes
 
   def published_date

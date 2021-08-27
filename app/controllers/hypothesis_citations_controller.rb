@@ -99,7 +99,7 @@ class HypothesisCitationsController < ApplicationController
 
   def permitted_citation_params
     params.require(:hypothesis_citation).permit(citation_attributes:
-      %i[title authors_str kind url_is_direct_link_to_full_text published_date_str
+      %i[title authors_str kind url_is_direct_link_to_full_text published_date_str doi
         url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial quotes_text])
       .dig(:citation_attributes)
   end
