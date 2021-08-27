@@ -13,11 +13,21 @@
       window.tags = #{tag_titles};
   %body
     - if in_admin?
-      %nav.navbar.navbar-expand.navbar-dark
+      %nav.navbar.navbar-expand.navbar-dark.bg-dark#adminNavbar
         .container-fluid
-          %ul.navbar-nav.ml-auto
-            %li.nav-item
-              = active_link "content_commits", admin_content_commits_path, class: "nav-link"
+          %a.d-lg-inline-block.navbar-brand{ href: admin_root_url }
+            %span.d-none.d-xl-inline-block
+              Convus
+            Admin
+          - if admin_nav_display_view_all?
+            = link_to admin_nav_select_link_active[:path], class: "nav-link text-muted em" do
+              All
+              .d-none.d-xl-inline-block
+                = admin_nav_select_link_active[:title]
+          .fancy-select.unfancy.no-restore-on-backspace.mr-auto#adminNavSelect
+            = select(:admin, :other_navigation, options_for_select(admin_nav_select_links.map { |l| [l[:title], l[:path]] }), { prompt: admin_nav_select_prompt }, { class: "form-control" })
+          .d-none.hidden-select#adminNavSelectDuplicate
+            = select(:admin, :other_navigation, options_for_select(admin_nav_select_links.map { |l| [l[:title], l[:path]] }), { prompt: admin_nav_select_prompt }, { class: "form-control" })
     - else
       %nav.navbar.navbar-expand.navbar-light.main-navbar
         .container-fluid

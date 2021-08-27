@@ -25,6 +25,9 @@ class Hypothesis < ApplicationRecord
 
   attr_accessor :skip_associated_tasks, :included_unapproved_hypothesis_citation, :additional_serialized_argument
 
+  scope :no_argument, -> { left_joins(:arguments).where(arguments: {id: nil}) }
+  scope :normal_user, -> { left_joins(:creator).where(users: {role: "normal_user"}) }
+
   pg_search_scope :text_search, against: :title # TODO: Create tsvector indexes for performance (issues/92)
 
   def self.with_tags(string_or_array)

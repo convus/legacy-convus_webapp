@@ -1,0 +1,60 @@
+
+- week_period = (Time.current - 1.week)..Time.current
+.row.mt-5
+  .col-md-6.mt-2
+    %h2 Hypotheses
+    %table.table-list.mt-4
+      %tbody
+        %tr
+          %td Created
+          %td
+            = admin_number_display(Hypothesis.count)
+            %em.small.less-strong.ml-2
+              = admin_number_display(Hypothesis.normal_user.count)
+              by normal users
+        %tr
+          %td Approved
+          %td
+            = admin_number_display(Hypothesis.approved.count)
+        %tr
+          %td Created past week
+          %td
+            = admin_number_display(Hypothesis.where(created_at: week_period).count)
+        %tr
+          %td Updated past week
+          %td
+            = admin_number_display(Hypothesis.where(updated_at: week_period).count)
+        -# TODO: remove once all arguments migrated
+        %tr
+          %td Without Arguments
+          %td
+            - no_argument = Hypothesis.no_argument
+            = admin_number_display(no_argument.count)
+            %ul.small
+              - no_argument.order(:created_at).limit(10).each do |hypothesis|
+                %li= link_to hypothesis.title, hypotheses_path(hypothesis)
+
+
+  .col-md-6.mt-2
+    %h2 Arguments
+    %table.table-list.mt-4
+      %tbody
+        %tr
+          %td Created
+          %td
+            = admin_number_display(Argument.count)
+        %tr
+          %td Approved
+          %td
+            = admin_number_display(Argument.approved.count)
+            %em.small.less-strong.ml-2
+              = admin_number_display(Argument.normal_user.count)
+              by normal users
+        %tr
+          %td Created past week
+          %td
+            = admin_number_display(Argument.where(created_at: week_period).count)
+        %tr
+          %td Updated past week
+          %td
+            = admin_number_display(Argument.where(updated_at: week_period).count)
