@@ -272,7 +272,7 @@ RSpec.describe "hypothesis_arguments", type: :request do
           Sidekiq::Worker.clear_all
           patch "#{base_url}/#{subject.id}", params: {argument: update_add_to_github_params}
           expect(flash[:success]).to be_present
-          expect(response).to redirect_to hypothesis_path(hypothesis.to_param, argument_id: subject.id)
+          expect(response).to redirect_to hypothesis_path(hypothesis.to_param, argument_id: subject.ref_number)
           expect(assigns(:argument)&.id).to eq subject.id
           expect(AddToGithubContentJob.jobs.count).to eq 1
           expect(AddToGithubContentJob.jobs.map { |j| j["args"] }.last.flatten).to eq(["Argument", subject.id])
