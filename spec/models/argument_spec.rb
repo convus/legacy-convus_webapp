@@ -240,4 +240,43 @@ RSpec.describe Argument, type: :model do
       expect(hypothesis.reload.arguments.shown.pluck(:id)).to match_array([argument3.id])
     end
   end
+
+  describe "url" do
+    let(:url) { "https://example.com/stuff?utm_things=asdfasdf" }
+    let(:argument) { FactoryBot.create(:argument, creator: FactoryBot.create(:user)) }
+    let!(:argument_quote) { FactoryBot.build(:argument_quote, argument: argument, url: url, citation: nil, creator: nil) }
+    it "creates the citation" do
+      expect {
+        argument_quote.save
+      }.to change(Citation, :count).by 1
+      expect(argument_quote.url).to eq "https://example.com/stuff"
+      expect(argument_quote.argument.creator).to be_present
+      citation = argument_quote.citation
+      expect(citation.url).to eq argument_quote.url
+      expect(citation.creator_id).to eq argument_quote.argument.creator_id
+    end
+    context "citation already exists" do
+      let!(:citation) { FactoryBot.create(:citation, url: url, creator: nil) }
+      it "associates with the existing citation" do
+        expect(citation).to be_valid
+        expect(citation.creator_id).to be_blank
+        expect {
+          argument_quote.save
+        }.to change(Citation, :count).by 0
+        expect(argument_quote.citation_id).to eq citation.id
+        expect(citation.creator_id).to be_blank
+      end
+    end
+    context "citation changed" do
+      it "updates to a new citation" do
+        argument_quote.save
+        citation1 = argument_quote.citation
+        expect(citation1).to be_valid
+        argument_quote.update(url: "https://example.com/other-stuff")
+        expect(argument_quote.citation.id).to_not eq citation1.id
+        citation1.reload
+        expect(citation1).to be_valid
+      end
+    end
+  end
 end

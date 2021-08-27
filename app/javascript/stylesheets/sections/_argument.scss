@@ -42,7 +42,7 @@ $argument-background: #f7f7f7;
   }
   .argument-quote-block {
     margin: 0;
-    padding: 0.25rem 1rem 1.5rem;
+    padding: 0.25rem 1rem 0.5rem;
     position: relative;
     color: $gray-600;
     blockquote {
@@ -69,10 +69,6 @@ $argument-background: #f7f7f7;
 
 #argumentPreview {
   padding-bottom: 2em;
-  // .argument-body,
-  // .argument-show-header {
-  //   border-color: $gray-400;
-  // }
   .preview-text {
     margin-bottom: -1em;
   }
