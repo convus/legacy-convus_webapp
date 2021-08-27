@@ -7,37 +7,37 @@
       Hypothesis:
 .row
   = render partial: "/hypotheses/show_title", locals: {hypothesis: @hypothesis}
-  - if @hypothesis.approved?
-    -# TODO: this is hacked to make sure it doesn't split into multiple lines. It would be great to handle that better
-    .col-xl.mt-4.mb-2{ style: "min-width: 330px;" }
-      .text-right.less-strong
-        .hypothesis-score
-          - quality_score = @hypothesis.user_scores.current.quality.where(user_id: current_user&.id).first
-          - if quality_score.present?
-            quality
-            <div class="current-avg less-strong">(<span>avg</span> #{@hypothesis.user_scores.quality.current_score})</div>:
-          - else
-            quality:
-          - Array(UserScore::MIN_SCORE..UserScore::MAX_SCORE).each do |score|
-            - active = quality_score&.score == score
-            - if quality_score.present? # Yah, I know, you could still make the form request manually, but who cares that much?
-              %span.score-item{class: (active ? "active" : "")}= score
-            - else
-              = button_to score, user_scores_path, {action: "create", params: {score: score, hypothesis_id: @hypothesis.ref_id, kind: "quality"}, class: "score-item btn btn-link #{active ? 'active' : ''}"}
-
-        .hypothesis-score.mt-2
-          - controversy_score = @hypothesis.user_scores.current.controversy.where(user_id: current_user&.id).first
-          - if controversy_score.present?
-            controversy
-            <div class="current-avg less-strong">(<span>avg</span> #{@hypothesis.user_scores.controversy.current_score})</div>:
-          - else
-            controversy:
-          - Array(UserScore::MIN_SCORE..UserScore::MAX_SCORE).each do |score|
-            - active = controversy_score&.score == score
-            - if controversy_score.present?
-              %span.score-item{class: (active ? "active" : "")}= score
-            - else
-              = button_to score, user_scores_path, {action: "create", params: {score: score, hypothesis_id: @hypothesis.ref_id, kind: "controversy"}, class: "score-item btn btn-link #{active ? 'active' : ''}"}
+  -# Hide scoring! Keep it around as reference for now though
+  -# - if @hypothesis.approved?
+  -#   -# TODO: this is hacked to make sure it doesn't split into multiple lines. It would be great to handle that better
+  -#   .col-xl.mt-4.mb-2{ style: "min-width: 330px;" }
+  -#     .text-right.less-strong
+  -#       .hypothesis-score
+  -#         - quality_score = @hypothesis.user_scores.current.quality.where(user_id: current_user&.id).first
+  -#         - if quality_score.present?
+  -#           quality
+  -#           <div class="current-avg less-strong">(<span>avg</span> #{@hypothesis.user_scores.quality.current_score})</div>:
+  -#         - else
+  -#           quality:
+  -#         - Array(UserScore::MIN_SCORE..UserScore::MAX_SCORE).each do |score|
+  -#           - active = quality_score&.score == score
+  -#           - if quality_score.present? # Yah, I know, you could still make the form request manually, but who cares that much?
+  -#             %span.score-item{class: (active ? "active" : "")}= score
+  -#           - else
+  -#             = button_to score, user_scores_path, {action: "create", params: {score: score, hypothesis_id: @hypothesis.ref_id, kind: "quality"}, class: "score-item btn btn-link #{active ? 'active' : ''}"}
+  -#      .hypothesis-score.mt-2
+  -#        - controversy_score = @hypothesis.user_scores.current.controversy.where(user_id: current_user&.id).first
+  -#        - if controversy_score.present?
+  -#          controversy
+  -#          <div class="current-avg less-strong">(<span>avg</span> #{@hypothesis.user_scores.controversy.current_score})</div>:
+  -#        - else
+  -#          controversy:
+  -#        - Array(UserScore::MIN_SCORE..UserScore::MAX_SCORE).each do |score|
+  -#          - active = controversy_score&.score == score
+  -#          - if controversy_score.present?
+  -#            %span.score-item{class: (active ? "active" : "")}= score
+  -#          - else
+  -#            = button_to score, user_scores_path, {action: "create", params: {score: score, hypothesis_id: @hypothesis.ref_id, kind: "controversy"}, class: "score-item btn btn-link #{active ? 'active' : ''}"}
 - if @arguments.any? || @unapproved_arguments
   .arguments-wrapper.row.mt-4.pb-4
     - @unapproved_arguments.each do |argument|
