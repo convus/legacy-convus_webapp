@@ -15,6 +15,7 @@ RSpec.describe "hypothesis_citations", type: :request do
       title: "A meta-analysis of biological impacts of artificial light at night",
       publication_title: "Nature",
       kind: "research_meta_analysis",
+      doi: "https://doi.org/10.1038/d41586-020-02335-z",
       peer_reviewed: true,
       randomized_controlled_trial: false,
       url_is_direct_link_to_full_text: "0",
@@ -268,6 +269,7 @@ RSpec.describe "hypothesis_citations", type: :request do
 
         citation.reload
         expect(citation.title).to eq full_citation_params[:title]
+        expect(citation.doi).to eq full_citation_params[:doi]
         expect(citation.url).to eq citation_url
         expect(citation.submitted_to_github?).to be_falsey
         expect(citation.publication).to be_present

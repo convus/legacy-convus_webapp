@@ -403,6 +403,7 @@ unless ENV["CIRCLECI"]
         published_date: "2019-02-03",
         authors: ["Rachel E. Morgan", "Jennifer L. Truman"],
         kind: "government statistics",
+        doi: "https://doi.org/10.1038/s41467-020-17316-z",
         quotes: ["There were 880,000 fewer victims of serious crimes (generally felonies) in 2019 than in 2018, a 19% drop"]
       }
     end
