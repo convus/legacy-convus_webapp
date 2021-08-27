@@ -12,6 +12,7 @@ import Chart from 'chart.js'
 
 import HypothesisForm from '../scripts/sections/hypothesis_form.js'
 import ArgumentForm from '../scripts/sections/argument_form.js'
+import AdminBase from '../scripts/sections/admin_base.js'
 
 window.Chartkick = Chartkick
 Chartkick.addAdapter(Chart)
@@ -35,6 +36,11 @@ $(document).on('turbolinks:load', function () {
   if ($('#argumentForm').length) {
     window.argumentForm = new ArgumentForm({})
     window.argumentForm.init()
+  }
+
+  if ($('#adminNavbar').length) {
+    window.adminBase = new AdminBase({})
+    window.adminBase.init()
   }
 
   $('.addQueryParam').on('click', (e) => {
