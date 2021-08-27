@@ -20,6 +20,7 @@ describe CitationSerializer, type: :lib do
         publication_title: obj.publication.title,
         published_date: nil,
         authors: [],
+        doi: nil,
         kind: "original research",
         quotes: [
           "This is a quote",
