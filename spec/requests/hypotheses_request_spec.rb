@@ -153,7 +153,7 @@ RSpec.describe "/hypotheses", type: :request do
             expect(argument2.shown?(current_user)).to be_truthy
             expect(argument3.shown?(current_user)).to be_falsey
             # passing ID renders that argument
-            get "#{base_url}/#{subject.to_param}?argument_id=#{argument3.id}"
+            get "#{base_url}/#{subject.to_param}?argument_id=#{argument3.ref_number}"
             expect(response.code).to eq "200"
             expect(response).to render_template("hypotheses/show")
             expect(assigns(:arguments).pluck(:id)).to eq([argument.id])
@@ -166,7 +166,7 @@ RSpec.describe "/hypotheses", type: :request do
             expect(assigns(:arguments).pluck(:id)).to eq([argument.id])
             expect(assigns(:unapproved_arguments).pluck(:id)).to eq([argument2.id])
             # passing ID renders that argument (even with user)
-            get "#{base_url}/#{subject.to_param}?argument_id=#{argument3.id}"
+            get "#{base_url}/#{subject.to_param}?argument_id=#{argument3.ref_number}"
             expect(response.code).to eq "200"
             expect(response).to render_template("hypotheses/show")
             expect(assigns(:arguments).pluck(:id)).to eq([argument.id])

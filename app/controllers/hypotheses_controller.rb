@@ -25,13 +25,13 @@ class HypothesesController < ApplicationController
       end
     end
     if params[:argument_id].present?
-      argument = @hypothesis.arguments.find_by_id(params[:argument_id])
+      argument = @hypothesis.arguments.find_by_ref_number(params[:argument_id])
       if argument.blank?
         flash[:error] = "Unable to find that argument"
       elsif argument.approved?
         flash[:success] = "Argument has been approved and is included on this page"
       else
-        @unapproved_arguments = @hypothesis.arguments.where(id: params[:argument_id])
+        @unapproved_arguments = @hypothesis.arguments.where(ref_number: params[:argument_id])
       end
     end
     @arguments = @hypothesis.arguments.approved

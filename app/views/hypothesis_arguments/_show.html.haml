@@ -21,10 +21,11 @@
             approved.
       - if !argument.approved? && argument.submitted_to_github?
         %small.ml-auto
-          - if argument.submitting_to_github?
+          - if argument.pull_request_number.blank?
             %span.less-strong
               waiting for PR,
-              %a{href: ""}
+              -# Hacky hack, sry
+              %a{href: "javascript:void(0);", onclick: "location.reload();"}
                 reload
           - else
             = link_to "PR##{argument.pull_request_number}", argument.pull_request_url

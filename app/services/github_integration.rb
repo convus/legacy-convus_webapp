@@ -116,7 +116,7 @@ class GithubIntegration
     hypothesis.additional_serialized_argument = argument
     upsert_file_on_current_branch(hypothesis.file_path, hypothesis.flat_file_content, commit_message)
 
-    pr_body = "Added argument to: [#{hypothesis.ref_id}: #{hypothesis.title}](https://convus.org/hypotheses/#{hypothesis.ref_id}?argument_id=#{argument.id})"
+    pr_body = "Added argument to: [#{hypothesis.ref_id}: #{hypothesis.title}](https://convus.org/hypotheses/#{hypothesis.ref_id}?argument_id=#{argument.ref_number})"
     pull_request = create_pull_request(commit_message, pr_body)
     number = pull_request.url.split("/pulls/").last
     argument.update(pull_request_number: number)
