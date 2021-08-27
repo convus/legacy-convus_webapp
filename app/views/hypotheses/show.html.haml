@@ -77,7 +77,7 @@
       - if @unapproved_hypothesis_citation.pull_request_number.present?
         %h4
           Citation waiting on approval,
-          = link_to "PR#{@unapproved_hypothesis_citation.pull_request_number}", @unapproved_hypothesis_citation.pull_request_url
+          = link_to "PR##{@unapproved_hypothesis_citation.pull_request_number}", @unapproved_hypothesis_citation.pull_request_url
       - else
         Waiting for pull request to be created, page will reload.
         -# if hypothesis hasn't been updated recently, skip this (something broke?)
@@ -103,7 +103,7 @@
         - if @hypothesis.pull_request_number.present?
           %h4
             Hypothesis waiting on approval,
-            = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
+            = link_to "PR##{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
         - else
           Waiting for pull request to be created, page will reload.
           -# if hypothesis hasn't been updated recently, skip this (something broke?)

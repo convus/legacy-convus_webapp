@@ -7,7 +7,7 @@
 
 .col.argument-show-block.mt-4
   - if unapproved_show || show_edit
-    %header.argument-show-header
+    %header.argument-show-header.d-flex
       - if unapproved_show
         %span.less-strong.small
           %em
@@ -19,7 +19,10 @@
             It is
             %strong.text-warning not
             approved.
+      - if !argument.approved? && argument.submitted_to_github?
+        %small.ml-auto= link_to "PR##{argument.pull_request_number}", argument.pull_request_url
       - if show_edit
         %span.float-right= link_to "edit", edit_hypothesis_argument_path(hypothesis_id: @hypothesis.id, id: argument.id), class: "gray-link small"
+
   .argument-body
     = argument.body_html&.html_safe
