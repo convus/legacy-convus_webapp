@@ -12,7 +12,6 @@ Rails.application.routes.draw do
   resource :account, only: %i[show edit update]
 
   get :about, to: "static#about"
-  get :citation_scoring, to: "static#citation_scoring"
 
   resources :citations, :publications
 
@@ -28,7 +27,7 @@ Rails.application.routes.draw do
   post "/webhooks/github", to: "webhooks#github"
 
   namespace :admin do
-    root to: "content_commits#index"
+    root to: "reporting#index"
     resources :content_commits
   end
 

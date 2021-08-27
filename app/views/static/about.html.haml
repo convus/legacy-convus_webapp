@@ -11,25 +11,40 @@
 
     %ul
       %li
-        When a hypothesis is submitted, moderators review and approve it (if the hypothesis is valid, ie falsifiable)
+        When a hypothesis is submitted, moderators review and approve it (if the hypothesis is valid, ie falsifiable).
       %li
-        Hypotheses are given a score based on the quality of their citations
-        (#{link_to "read about citation scoring", citation_scoring_path})
+        Hypotheses have arguments. All arguments must have citations.
       %li
-        Disagree with a hypothesis? Challenge the citations or submit a hypothesis with better citations.
+        Everyone can submit corrections and improvements.
+      %li
+        Users get moderator ability once they have submitted a significant number of approved edits.
+
 
     / %hr.mt-big
 
     %h4.mt-big Objectives
     %ul
       %li
-        Provide a platform for scientific communication and public consideration of science
-      %li
         Encourage discussion based on evidence and outcomes
       %li
         Offer a place to learn about other viewpoints and challenge your own opinions
       %li
         Reward quality over novelty and improvement over perfection
+      %li
+        Provide a platform for scientific communication and public consideration of science
+
+
+    %h4.mt-big Editing/formatting
+    %ul
+      %li
+        %strong Hypotheses
+        are plain text only and should end with punctuation
+
+      %li
+        %strong Arguments
+        are formatted with markdownp
+        %small.less-strong (#{link_to "cheat sheet", "https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet", class: ""})
+        but can't include links, images, headers or inline HTML.
 
     %hr.mt-big
 
