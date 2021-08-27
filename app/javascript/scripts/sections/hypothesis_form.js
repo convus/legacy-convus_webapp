@@ -11,7 +11,7 @@ export default class HypothesisForm {
   }
 
   init () {
-    $('#submitForApproval').on('click', (e) => {
+    $('#submitForApproval').on('click keyboard', (e) => {
       e.preventDefault()
       $('form .loadingSpinner').collapse('show')
       $('.submit-input').addClass('disabled')
