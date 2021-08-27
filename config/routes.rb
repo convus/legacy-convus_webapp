@@ -27,7 +27,7 @@ Rails.application.routes.draw do
   post "/webhooks/github", to: "webhooks#github"
 
   namespace :admin do
-    root to: "content_commits#index"
+    root to: "reporting#index"
     resources :content_commits
   end
 
