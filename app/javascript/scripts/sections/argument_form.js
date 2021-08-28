@@ -10,7 +10,8 @@ export default class ArgumentForm {
     this.existingQuotes = existingQuotes
     this.removedQuotes = []
     this.renderedQuoteIds = []
-    this.previewOpen
+    this.existingText = undefined
+    this.previewOpen = undefined
     // maybe should be based on the power of the device that is editing?
     this.throttleLimit = throttleLimit || 500
   }
@@ -90,7 +91,7 @@ export default class ArgumentForm {
 
   updatePreview () {
     // Set up preview trigger if not set up
-    if (this.previewOpen == undefined) {
+    if (this.previewOpen === undefined) {
       this.previewOpen = $('#argumentPreview').length
       if (this.previewOpen) { window.argumentText = $('#argument_text').val() }
       return
@@ -106,12 +107,20 @@ export default class ArgumentForm {
     const newBlockQuotes = this.parseArgumentQuotes(
       $('#argument_text').val()
     )
+
+    const newText = $('#argument_text').val()
+
     if (this.previewOpen) { this.updatePreview() }
-    // In additional to throttling - if the quotes haven't changed, don't process
-    if (_.isEqual(this.blockQuotes, newBlockQuotes)) { return }
+    if (newText === this.existingText) { return }
+    this.existingText = newText
+    // Previously was skipping processing if quotes hadn't changed, but that failed for cut and paste sometimes
+    // // In additional to throttling - if the quotes haven't changed, don't process
+    // if (_.isEqual(this.blockQuotes, newBlockQuotes)) { return }
     // TODO: improve. We were re-processing before finishing rendering (and therefor existingQuotes was blank)
     // we may want to rerun later if we're still processing now (via setTimeout)
     if (this.processing) { return }
+
+    log.debug('processing')
 
     this.processing = true
     this.blockQuotes = newBlockQuotes
@@ -158,8 +167,8 @@ export default class ArgumentForm {
 
     if (quote) {
       // If the quote is one of the existingQuotes, update the existing quote
-      const existingIndex = quote.prevIndex || _.findIndex(this.existingQuotes, ['id', quote.id])
-      if (existingIndex) {
+      const existingIndex = quote.prevIndex || _.findIndex(Object.values(this.existingQuotes), ['id', quote.id])
+      if (existingIndex >= 0) {
         this.existingQuotes[existingIndex] = quote
       }
     } else {
