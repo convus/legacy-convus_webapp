@@ -42,8 +42,9 @@ $argument-background: #f7f7f7;
   }
   .argument-quote-block {
     margin: 0;
-    padding: 0.25rem 1rem 1.5rem;
+    padding: 0.25rem 1rem 0.5rem;
     position: relative;
+    color: $gray-600;
     blockquote {
       margin: 0;
       &:before {
@@ -62,8 +63,14 @@ $argument-background: #f7f7f7;
       width: 100%;
       text-align: right;
       font-size: 80%;
-      margin-top: -2px; // idk, looks better to me?
     }
+  }
+}
+
+#argumentPreview {
+  padding-bottom: 2em;
+  .preview-text {
+    margin-bottom: -1em;
   }
 }
 

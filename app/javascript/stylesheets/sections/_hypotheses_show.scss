@@ -3,6 +3,7 @@
   padding: 0 0.5rem 0.25em 0.5rem;
   background: $gray-100;
   border: 1px solid $gray-300;
+  border-bottom: none; // hack to fix table top double up
   blockquote {
     margin: 0.75em 0 0 0;
     &:before {

@@ -7,37 +7,37 @@
       Hypothesis:
 .row
   = render partial: "/hypotheses/show_title", locals: {hypothesis: @hypothesis}
-  - if @hypothesis.approved?
-    -# TODO: this is hacked to make sure it doesn't split into multiple lines. It would be great to handle that better
-    .col-xl.mt-4.mb-2{ style: "min-width: 330px;" }
-      .text-right.less-strong
-        .hypothesis-score
-          - quality_score = @hypothesis.user_scores.current.quality.where(user_id: current_user&.id).first
-          - if quality_score.present?
-            quality
-            <div class="current-avg less-strong">(<span>avg</span> #{@hypothesis.user_scores.quality.current_score})</div>:
-          - else
-            quality:
-          - Array(UserScore::MIN_SCORE..UserScore::MAX_SCORE).each do |score|
-            - active = quality_score&.score == score
-            - if quality_score.present? # Yah, I know, you could still make the form request manually, but who cares that much?
-              %span.score-item{class: (active ? "active" : "")}= score
-            - else
-              = button_to score, user_scores_path, {action: "create", params: {score: score, hypothesis_id: @hypothesis.ref_id, kind: "quality"}, class: "score-item btn btn-link #{active ? 'active' : ''}"}
-
-        .hypothesis-score.mt-2
-          - controversy_score = @hypothesis.user_scores.current.controversy.where(user_id: current_user&.id).first
-          - if controversy_score.present?
-            controversy
-            <div class="current-avg less-strong">(<span>avg</span> #{@hypothesis.user_scores.controversy.current_score})</div>:
-          - else
-            controversy:
-          - Array(UserScore::MIN_SCORE..UserScore::MAX_SCORE).each do |score|
-            - active = controversy_score&.score == score
-            - if controversy_score.present?
-              %span.score-item{class: (active ? "active" : "")}= score
-            - else
-              = button_to score, user_scores_path, {action: "create", params: {score: score, hypothesis_id: @hypothesis.ref_id, kind: "controversy"}, class: "score-item btn btn-link #{active ? 'active' : ''}"}
+  -# Hide scoring! Keep it around as reference for now though
+  -# - if @hypothesis.approved?
+  -#   -# TODO: this is hacked to make sure it doesn't split into multiple lines. It would be great to handle that better
+  -#   .col-xl.mt-4.mb-2{ style: "min-width: 330px;" }
+  -#     .text-right.less-strong
+  -#       .hypothesis-score
+  -#         - quality_score = @hypothesis.user_scores.current.quality.where(user_id: current_user&.id).first
+  -#         - if quality_score.present?
+  -#           quality
+  -#           <div class="current-avg less-strong">(<span>avg</span> #{@hypothesis.user_scores.quality.current_score})</div>:
+  -#         - else
+  -#           quality:
+  -#         - Array(UserScore::MIN_SCORE..UserScore::MAX_SCORE).each do |score|
+  -#           - active = quality_score&.score == score
+  -#           - if quality_score.present? # Yah, I know, you could still make the form request manually, but who cares that much?
+  -#             %span.score-item{class: (active ? "active" : "")}= score
+  -#           - else
+  -#             = button_to score, user_scores_path, {action: "create", params: {score: score, hypothesis_id: @hypothesis.ref_id, kind: "quality"}, class: "score-item btn btn-link #{active ? 'active' : ''}"}
+  -#      .hypothesis-score.mt-2
+  -#        - controversy_score = @hypothesis.user_scores.current.controversy.where(user_id: current_user&.id).first
+  -#        - if controversy_score.present?
+  -#          controversy
+  -#          <div class="current-avg less-strong">(<span>avg</span> #{@hypothesis.user_scores.controversy.current_score})</div>:
+  -#        - else
+  -#          controversy:
+  -#        - Array(UserScore::MIN_SCORE..UserScore::MAX_SCORE).each do |score|
+  -#          - active = controversy_score&.score == score
+  -#          - if controversy_score.present?
+  -#            %span.score-item{class: (active ? "active" : "")}= score
+  -#          - else
+  -#            = button_to score, user_scores_path, {action: "create", params: {score: score, hypothesis_id: @hypothesis.ref_id, kind: "controversy"}, class: "score-item btn btn-link #{active ? 'active' : ''}"}
 - if @arguments.any? || @unapproved_arguments
   .arguments-wrapper.row.mt-4.pb-4
     - @unapproved_arguments.each do |argument|
@@ -46,10 +46,16 @@
     - @arguments.each do |argument|
       = render partial: "/hypothesis_arguments/show", locals: {argument: argument}
 
-.mt-5.pb-2
--# Added ^ for space
+.mt-5
+-# ^ extra spacing
+- if @hypothesis.approved?
+  = link_to new_hypothesis_argument_path(hypothesis_id: @hypothesis.ref_id), class: "btn btn-sm btn-outline-secondary" do
+    - if @hypothesis.arguments.shown(current_user).count > 0
+      Add another argument
+    - else
+      Add argument
 
-.row.mt-4
+.row.pt-2.mt-4
   - if @hypothesis_citations.no_approved_challenges.any?
     - @hypothesis_citations.no_approved_challenges.each do |hypothesis_citation|
       = render partial: "/hypotheses/show_hypothesis_citation", locals: {hypothesis_citation: hypothesis_citation, rendering_challenge: false}
@@ -71,7 +77,7 @@
       - if @unapproved_hypothesis_citation.pull_request_number.present?
         %h4
           Citation waiting on approval,
-          = link_to "PR#{@unapproved_hypothesis_citation.pull_request_number}", @unapproved_hypothesis_citation.pull_request_url
+          = link_to "PR##{@unapproved_hypothesis_citation.pull_request_number}", @unapproved_hypothesis_citation.pull_request_url
       - else
         Waiting for pull request to be created, page will reload.
         -# if hypothesis hasn't been updated recently, skip this (something broke?)
@@ -97,30 +103,17 @@
         - if @hypothesis.pull_request_number.present?
           %h4
             Hypothesis waiting on approval,
-            = link_to "PR#{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
+            = link_to "PR##{@hypothesis.pull_request_number}", @hypothesis.pull_request_url
         - else
           Waiting for pull request to be created, page will reload.
           -# if hypothesis hasn't been updated recently, skip this (something broke?)
           - if @hypothesis.updated_at > Time.current - 2.minutes
             :javascript
               window.setTimeout(() => {location.reload();}, 2000);
-.row.mt-big
-  .col-6
-    - if @hypothesis.approved?
-      = link_to new_hypothesis_argument_path(hypothesis_id: @hypothesis.ref_id), class: "btn btn-sm btn-outline-secondary" do
-        - if @hypothesis.arguments.shown(current_user).count > 0
-          Add another argument
-        - else
-          Add argument
-
-      -# TODO: delete eventually
-      -# .mt-4
-      -#   = link_to "Add another citation", new_hypothesis_citation_path(hypothesis_id: @hypothesis.ref_id), class: "btn btn-sm btn-outline-secondary less-strong"
-
-  .col-6.text-right
-    .less-strong
-      %a.small.gray-link.addQueryParam{href: "#rawData", "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "show_raw", "data-queryvalue" => "true"}
-        show raw data
+.mt-big
+  .less-strong
+    %a.small.gray-link.addQueryParam{href: "#rawData", "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "show_raw", "data-queryvalue" => "true"}
+      show raw data
 
 #rawData.collapse{class: (ParamsNormalizer.boolean(params[:show_raw]) ? "show" : "")}
   .row.mt-4

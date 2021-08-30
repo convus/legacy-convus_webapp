@@ -5,11 +5,11 @@ class HypothesisArgumentsController < ApplicationController
   before_action :set_permitted_format
 
   def edit
-    @page_title = "Edit - #{@argument.ref_number}"
+    @page_title = "Edit Argument: #{@hypothesis.title}"
   end
 
   def new
-    @page_title = "Add Argument - #{@hypothesis.title}"
+    @page_title = "Add Argument: #{@hypothesis.title}"
     if @argument.blank? # Just in case we're rendering again
       @argument = @hypothesis.arguments.build
     end
@@ -19,6 +19,7 @@ class HypothesisArgumentsController < ApplicationController
     @argument = @hypothesis.arguments.build(permitted_params)
     @argument.creator_id = current_user.id
     if @argument.save
+      update_hypothesis_if_permitted
       @argument.update_body_html
       flash[:success] = "Argument added!"
       redirect_to edit_hypothesis_argument_path(id: @argument.id, hypothesis_id: @hypothesis.ref_id)
@@ -31,6 +32,7 @@ class HypothesisArgumentsController < ApplicationController
     previous_argument_quote_ids = @argument.argument_quotes.pluck(:id).map(&:to_s)
     update_successful = @argument.update(permitted_params)
     if update_successful
+      update_hypothesis_if_permitted
       @argument.remove_empty_quotes!
       # Remove argument_quotes that weren't included in the params (they were removed on the frontend)
       updated_quote_ids = permitted_params[:argument_quotes_attributes]&.keys || []
@@ -43,7 +45,7 @@ class HypothesisArgumentsController < ApplicationController
       end
       if @argument.submitted_to_github?
         flash[:success] = "Argument submitted for review"
-        redirect_to hypothesis_path(@hypothesis, argument_id: @argument.to_param)
+        redirect_to hypothesis_path(@hypothesis, argument_id: @argument.ref_number)
       else
         flash[:success] = "Argument saved"
         target_url_params = {hypothesis_id: @hypothesis.ref_id, id: @argument.id}
@@ -78,6 +80,15 @@ class HypothesisArgumentsController < ApplicationController
                     end
     redirect_to hypothesis_path(@hypothesis)
     nil
+  end
+
+  def update_hypothesis_if_permitted
+    return unless @hypothesis.editable_by?(current_user) &&
+      (params[:hypothesis_title].present? || params[:hypothesis_tag_string].present?)
+
+    @hypothesis.title = params[:hypothesis_title] if params[:hypothesis_title].present?
+    @hypothesis.tags_string = params[:hypothesis_tags_string] if params[:hypothesis_tags_string]
+    @hypothesis.save
   end
 
   def permitted_params

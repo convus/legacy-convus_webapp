@@ -32,7 +32,7 @@
             = admin_number_display(no_argument.count)
             %ul.small
               - no_argument.order(:created_at).limit(10).each do |hypothesis|
-                %li= link_to hypothesis.title, hypotheses_path(hypothesis)
+                %li= link_to hypothesis.title, hypothesis_path(hypothesis)
 
 
   .col-md-6.mt-2

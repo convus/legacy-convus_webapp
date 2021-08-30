@@ -6,10 +6,11 @@ class Admin::ContentCommitsController < Admin::BaseController
 
   def index
     page = params[:page] || 1
-    per_page = params[:per_page] || 20
+    @per_page = params[:per_page] || 25
     @render_chart = ParamsNormalizer.boolean(params[:render_chart])
     @time_range_column = set_time_range_column
-    @content_commits = matching_content_commits.reorder("#{sort_column} #{sort_direction}").page(page).per(per_page)
+    @content_commits = matching_content_commits.reorder("#{sort_column} #{sort_direction}")
+      .page(page).per(@per_page)
   end
 
   helper_method :matching_content_commits

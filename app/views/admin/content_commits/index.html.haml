@@ -15,16 +15,7 @@
 
 = render partial: "/shared/period_select"
 
-.row.mt-2.mb-4
-  .col-12.admin-pagination
-    = paginate @content_commits
-    .pagination-number
-      = number_with_delimiter(matching_content_commits.count)
-      = "matching commits".pluralize(matching_content_commits.count)
-      %em.ml-1
-        %strong
-          = humanized_time_range_column(@time_range_column)
-        = humanized_time_range(@time_range)
+= render partial: "/shared/pagination", locals: {collection: @content_commits, count: matching_content_commits.count, name: "Content Commit"}
 
 .mt-4.full-screen-table
   %table.table.table-sm.table-bordered.table-striped

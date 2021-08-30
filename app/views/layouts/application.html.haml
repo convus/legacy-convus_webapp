@@ -6,7 +6,10 @@
     %title= page_title
     = csrf_meta_tags
     = csp_meta_tag
-    %link{ href: "/favicon.ico", rel: "icon", sizes: "192x192" }
+    - if Rails.env.development?
+      %link{ href: "/favicon-local.ico", rel: "icon", sizes: "192x192" }
+    - else
+      %link{ href: "/favicon.ico", rel: "icon", sizes: "192x192" }
     = stylesheet_pack_tag "application_css", media: "all", "data-turbolinks-track": "reload"
     = javascript_pack_tag "application", "data-turbolinks-track": "reload"
     :javascript

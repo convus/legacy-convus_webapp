@@ -1,0 +1,24 @@
+-# Requires locals: collection, name
+- count ||= collection.total_count
+- skip_total ||= false
+- skip_pagination ||= false
+
+.row.mt-4.mb-4
+  - unless skip_total
+    .col-md-5
+      %p.pagination-number
+        %strong= number_with_delimiter(count)
+        Matching #{name.pluralize(count)}
+
+        -# Almost all have time range...
+        - if defined?(@time_range)
+          %em
+            - if defined?(@time_range_column)
+              = humanized_time_range_column(@time_range_column)
+            = humanized_time_range(@time_range)
+  - unless skip_pagination
+    .pagination-flex.justify-content-md-end{class: (skip_total ? "col-12" : "col-md-7")}
+      = paginate collection
+      - if count > @per_page.to_i
+        - per_pages = [10, 25, 50, 100, @per_page.to_i].uniq.sort
+        = select_tag :per_page_select, options_for_select(per_pages.map { |i| ["#{i} / page", i] }, selected: @per_page), { class: "form-control per-page-select" }

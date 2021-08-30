@@ -13,7 +13,7 @@ export default class HypothesisForm {
   init () {
     $('#submitForApproval').on('click', (e) => {
       e.preventDefault()
-      $('#hypothesisForm .loadingSpinner').collapse('show')
+      $('form .loadingSpinner').collapse('show')
       $('.submit-input').addClass('disabled')
       $('.addToGithubField').val('1')
       $('#hypothesisForm').submit()
@@ -43,7 +43,7 @@ export default class HypothesisForm {
   }
 
   enableAddAndRemoveCitations () {
-    $('.add-fields').on('click keyboard', function (event) {
+    $('.add-fields').on('click', function (event) {
       event.preventDefault()
       if (!KeyboardOrClick(event)) {
         return false
@@ -60,7 +60,7 @@ export default class HypothesisForm {
       // Need to re-load fancy selects here, if we add fields with fancy selects
     })
 
-    $('#citationsBlock').on('click keyboard', '.remove-fields', function (
+    $('#citationsBlock').on('click', '.remove-fields', function (
       event
     ) {
       if (!KeyboardOrClick(event)) {

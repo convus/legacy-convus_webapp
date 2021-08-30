@@ -5,8 +5,9 @@ require "rails_helper"
 RSpec.describe "hypothesis_arguments", type: :request do
   let(:base_url) { "/hypotheses/#{hypothesis.ref_id}/arguments" }
   let(:current_user) { nil }
-  let!(:hypothesis) { FactoryBot.create(:hypothesis_approved, creator: FactoryBot.create(:user), created_at: Time.current - 1.hour) }
+  let!(:hypothesis) { FactoryBot.create(:hypothesis, creator: hypothesis_creator, created_at: Time.current - 1.hour) }
   let(:hypothesis_citation) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: citation_url, creator: current_user) }
+  let(:hypothesis_creator) { FactoryBot.create(:user) }
   let(:citation) { hypothesis_citation.citation }
   let(:quote) {}
   let(:subject) { FactoryBot.create(:argument, hypothesis: hypothesis, creator: current_user) }
@@ -29,6 +30,19 @@ RSpec.describe "hypothesis_arguments", type: :request do
       text: "This is a quote",
       ref_number: 0
     }}
+  end
+
+  def expect_argument_with_quotes_to_be_updated(argument)
+    expect(assigns(:argument)&.id).to eq argument.id
+    argument.reload
+    expect(argument.approved?).to be_falsey
+    expect(argument.text).to eq argument_with_quote_params[:text]
+    expect(argument.argument_quotes.count).to eq 1
+    argument_quote = argument.argument_quotes.first
+    expect(argument_quote.text).to eq "This is a quote"
+    expect(argument_quote.url).to eq "https://example.com/something-of-interest"
+    expect(argument_quote.ref_number).to eq 0
+    expect(argument_quote.creator_id).to eq current_user.id
   end
 
   describe "new" do
@@ -81,6 +95,7 @@ RSpec.describe "hypothesis_arguments", type: :request do
       end
       context "with argument_quotes" do
         it "creates" do
+          expect(hypothesis.reload.editable_by?(current_user)).to be_falsey
           expect(hypothesis.arguments.count).to eq 0
           Sidekiq::Worker.clear_all
           expect {
@@ -92,15 +107,30 @@ RSpec.describe "hypothesis_arguments", type: :request do
           expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id, id: argument.id)
           expect(AddToGithubContentJob.jobs.count).to eq 0
           expect(flash[:success]).to be_present
+          expect_argument_with_quotes_to_be_updated(argument)
+        end
+        context "with hypothesis params" do
+          let(:hypothesis_creator) { current_user }
+          it "updates hypothesis" do
+            expect(hypothesis.reload.editable_by?(current_user)).to be_truthy
+            expect(hypothesis.arguments.count).to eq 0
+            Sidekiq::Worker.clear_all
+            expect {
+              post base_url, params: {argument: argument_with_quote_params,
+                hypothesis_title: "new title", hypothesis_tags_string: "animals, Something of Interest"}
+            }.to change(Argument, :count).by 1
+            hypothesis.reload
+            argument = hypothesis.arguments.last
+            expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id, id: argument.id)
+            expect(AddToGithubContentJob.jobs.count).to eq 0
+            expect(flash[:success]).to be_present
+            expect(argument.creator_id).to eq current_user.id
+            expect_argument_with_quotes_to_be_updated(argument)
 
-          expect(argument.approved?).to be_falsey
-          expect(argument.creator_id).to eq current_user.id
-          expect(argument.text).to eq argument_with_quote_params[:text]
-          expect(argument.argument_quotes.count).to eq 1
-          argument_quote = argument.argument_quotes.first
-          expect(argument_quote.text).to eq "This is a quote"
-          expect(argument_quote.url).to eq "https://example.com/something-of-interest"
-          expect(argument_quote.ref_number).to eq 0
+            hypothesis.reload
+            expect(hypothesis.title).to eq "new title"
+            expect(hypothesis.tags.pluck(:title)).to eq(["animals", "Something of Interest"])
+          end
         end
       end
     end
@@ -115,7 +145,7 @@ RSpec.describe "hypothesis_arguments", type: :request do
         expect(assigns(:argument)&.id).to eq subject.id
         # Test that it sets the right title
         title_tag = response.body[/<title.*<\/title>/]
-        expect(title_tag).to eq "<title>Edit - #{subject.ref_number}</title>"
+        expect(title_tag).to eq "<title>Edit Argument: #{subject.hypothesis.title}</title>"
         expect(assigns(:hypothesis_citations_shown)&.pluck(:id)).to eq([])
       end
       context "approved" do
@@ -264,18 +294,76 @@ RSpec.describe "hypothesis_arguments", type: :request do
           expect(assigns(:argument).errors.full_messages.to_s).to match(/CRAY error/)
           expect(response).to render_template("hypothesis_arguments/edit")
         end
+        context "already submitted" do
+          let(:subject) { FactoryBot.create(:argument_approved, hypothesis: hypothesis, creator: current_user, text: "Original argument text") }
+          it "redirects to edit" do
+            expect(subject.reload.editable_by?(current_user)).to be_falsey
+            patch "#{base_url}/#{subject.id}", params: {argument: simple_argument_params}
+            expect(flash[:error]).to be_present
+            expect(response).to redirect_to(hypothesis_path(hypothesis.to_param))
+            expect(subject.reload.text).to eq "Original argument text"
+          end
+        end
+      end
+      context "update hypothesis" do
+        let(:hypothesis_creator) { current_user }
+        it "updates" do
+          subject.reload
+          expect(subject.editable_by?(current_user)).to be_truthy
+          expect(subject.text).to_not eq argument_with_quote_params[:text]
+          expect(subject.argument_quotes.count).to eq 0
+          hypothesis.update(tags_string: "Economy")
+          expect(hypothesis.reload.editable_by?(current_user)).to be_truthy
+          Sidekiq::Worker.clear_all
+          patch "#{base_url}/#{subject.id}", params: {argument: argument_with_quote_params,
+            hypothesis_title: "This seems like the truth",
+            hypothesis_tags_string: "economy\nparties"}
+          expect(flash[:success]).to be_present
+          expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id, id: subject.id)
+          expect(AddToGithubContentJob.jobs.count).to eq 0
+          expect_argument_with_quotes_to_be_updated(subject)
+          expect(subject.approved?).to be_falsey
+
+          expect(hypothesis.reload.title).to eq "This seems like the truth"
+          expect(hypothesis.tags.pluck(:title)).to eq(["Economy", "parties"])
+        end
+        context "hypothesis can't be updated" do
+          let(:hypothesis) { FactoryBot.create(:hypothesis_approved, creator: current_user, created_at: Time.current - 1.hour, title: "Original hypothesis title") }
+          it "does not update" do
+            subject.reload
+            expect(subject.editable_by?(current_user)).to be_truthy
+            expect(subject.text).to_not eq argument_with_quote_params[:text]
+            expect(subject.argument_quotes.count).to eq 0
+            hypothesis.update(tags_string: "Economy")
+            expect(hypothesis.reload.editable_by?(current_user)).to be_falsey
+            Sidekiq::Worker.clear_all
+            patch "#{base_url}/#{subject.id}", params: {argument: argument_with_quote_params,
+              hypothesis_title: "This seems like the truth",
+              hypothesis_tags_string: "economy\nparties"}
+            expect(flash[:success]).to be_present
+            expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id, id: subject.id)
+            expect(AddToGithubContentJob.jobs.count).to eq 0
+            expect_argument_with_quotes_to_be_updated(subject)
+            expect(subject.approved?).to be_falsey
+
+            expect(hypothesis.reload.title).to eq "Original hypothesis title"
+            expect(hypothesis.tags.pluck(:title)).to eq(["Economy"])
+          end
+        end
       end
       context "add to github" do
-        let(:update_add_to_github_params) { simple_argument_params.merge(add_to_github: true) }
+        let(:update_add_to_github_params) { argument_with_quote_params.merge(add_to_github: true) }
         it "enqueues the job" do
           subject.reload
           Sidekiq::Worker.clear_all
           patch "#{base_url}/#{subject.id}", params: {argument: update_add_to_github_params}
           expect(flash[:success]).to be_present
-          expect(response).to redirect_to hypothesis_path(hypothesis.to_param, argument_id: subject.id)
+          expect(response).to redirect_to hypothesis_path(hypothesis.to_param, argument_id: subject.ref_number)
           expect(assigns(:argument)&.id).to eq subject.id
           expect(AddToGithubContentJob.jobs.count).to eq 1
           expect(AddToGithubContentJob.jobs.map { |j| j["args"] }.last.flatten).to eq(["Argument", subject.id])
+          expect_argument_with_quotes_to_be_updated(subject)
+          expect(subject.approved?).to be_falsey
         end
       end
     end

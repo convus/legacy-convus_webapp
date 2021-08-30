@@ -25,22 +25,18 @@ class HypothesesController < ApplicationController
       end
     end
     if params[:argument_id].present?
-      argument = @hypothesis.arguments.find_by_id(params[:argument_id])
+      argument = @hypothesis.arguments.find_by_ref_number(params[:argument_id])
       if argument.blank?
         flash[:error] = "Unable to find that argument"
       elsif argument.approved?
         flash[:success] = "Argument has been approved and is included on this page"
       else
-        @unapproved_arguments = @hypothesis.arguments.where(id: params[:argument_id])
+        @unapproved_arguments = @hypothesis.arguments.where(ref_number: params[:argument_id])
       end
     end
     @arguments = @hypothesis.arguments.approved
     @unapproved_arguments ||= @hypothesis.arguments.unapproved.shown(current_user)
       .order(updated_at: :desc)
-  end
-
-  def edit
-    @page_title = "Edit - #{@hypothesis.title}"
   end
 
   def new
@@ -52,12 +48,20 @@ class HypothesesController < ApplicationController
     @hypothesis.creator_id = current_user.id
     if @hypothesis.save
       flash[:success] = "Hypothesis created!"
-      redirect_to edit_hypothesis_path(@hypothesis.ref_id)
+      redirect_to new_hypothesis_argument_path(hypothesis_id: @hypothesis.ref_id)
     else
       render :new
     end
   end
 
+  # NOTE: As of PR#129 hypothesis edit is skipped - you go straight to argument new
+  # Leaving this around to avoid changing unnecessary things
+  def edit
+    @page_title = "Edit - #{@hypothesis.title}"
+  end
+
+  # NOTE: As of PR#129 hypothesis edit is skipped - you go straight to argument new
+  # Leaving this around to avoid changing unnecessary things
   def update
     if @hypothesis.update(permitted_params)
       @hypothesis.hypothesis_citations.each { |hc| update_citation(hc) }
