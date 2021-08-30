@@ -66,7 +66,7 @@ RSpec.describe Argument, type: :model do
     end
   end
 
-  describe "update_text" do
+  describe "update_from_text" do
     let(:argument) { FactoryBot.create(:argument) }
     let(:url1) { "https://otherthings.com/812383123123" }
     let(:text) { "New argument, where I prove things\n\n>I'm quoting stuff\n\nfinale" }

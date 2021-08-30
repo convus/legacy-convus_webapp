@@ -6,12 +6,12 @@ export default class ArgumentForm {
   // Enable passing in, primarily for testing
   constructor ({ blockQuotes, existingQuotes, throttleLimit }) {
     this.processing = false
-    this.blockQuotes = blockQuotes
-    this.existingQuotes = existingQuotes
+    this.blockQuotes = blockQuotes || []
+    this.existingQuotes = existingQuotes || []
     this.removedQuotes = []
     this.renderedQuoteIds = []
     this.existingText = undefined
-    this.previewOpen = undefined
+    this.previewCollapsed = undefined
     // maybe should be based on the power of the device that is editing?
     this.throttleLimit = throttleLimit || 500
   }
@@ -90,40 +90,32 @@ export default class ArgumentForm {
   }
 
   updatePreview () {
-    // Set up preview trigger if not set up
-    if (this.previewOpen === undefined) {
-      this.previewOpen = $('#argumentPreview').length
-      if (this.previewOpen) { window.argumentText = $('#argument_text').val() }
-      return
-    }
-    // If the text has changed, hide the preview
-    if (window.argumentText !== $('#argument_text').val()) {
+    // If this hasn't run, collapse it (this should only run if the text has changed)
+    if (this.previewCollapsed === undefined) {
+      this.previewCollapsed = true
       $('#argumentPreview').collapse('hide')
-      this.previewOpen = false
     }
   }
 
   updateArgumentQuotes () {
-    const newBlockQuotes = this.parseArgumentQuotes(
-      $('#argument_text').val()
-    )
+    // If currently processing, skip running
+    if (this.processing) { return }
 
     const newText = $('#argument_text').val()
-
-    if (this.previewOpen) { this.updatePreview() }
+    // Don't process if text is unchanged
     if (newText === this.existingText) { return }
+    // update the preview if the text has changed
+    if (!this.previewCollapsed) { this.updatePreview() }
     this.existingText = newText
-    // Previously was skipping processing if quotes hadn't changed, but that failed for cut and paste sometimes
-    // // In additional to throttling - if the quotes haven't changed, don't process
+    // Previously was skipping processing if quotes hadn't changed, but that seemed to fail for cut and paste sometimes
+    // const newBlockQuotes = this.parseArgumentQuotes($('#argument_text').val())
     // if (_.isEqual(this.blockQuotes, newBlockQuotes)) { return }
     // TODO: improve. We were re-processing before finishing rendering (and therefor existingQuotes was blank)
     // we may want to rerun later if we're still processing now (via setTimeout)
-    if (this.processing) { return }
-
-    log.debug('processing')
+    // log.debug('processing')
 
     this.processing = true
-    this.blockQuotes = newBlockQuotes
+    this.blockQuotes = this.parseArgumentQuotes($('#argument_text').val())
     this.existingQuotes = this.parseExistingQuotes()
     this.renderedQuoteIds = []
 
@@ -154,7 +146,7 @@ export default class ArgumentForm {
 
   updateQuote ({ text, index, removedQuote }) {
     let quote
-    // Unless quote was passed in, find or create the quote
+    // Unless removedQuote was passed in, find or create the quote
     if (removedQuote !== undefined) {
       quote = _.merge(removedQuote, { removed: true, matched: true })
     } else {
@@ -222,7 +214,6 @@ export default class ArgumentForm {
     // get unmatched quotes
     const potentialMatches = Object.values(this.existingQuotes).filter(quote => !quote.matched)
     let match
-
     // Match if a potentialMatch text is a substring of the text (or the text is a substring of a potentialMatch)
     for (const pMatch of potentialMatches) {
       if (text.includes(pMatch.text) || pMatch.text.includes(text)) {
@@ -231,9 +222,15 @@ export default class ArgumentForm {
     }
     // If not a substring, we use levenstein
     if (match === undefined) {
+      // get the quotes that are after this quote
+      const laterQuotes = this.blockQuotes.slice(index + 1)
       // Scores is an array sorted by the score (high to low)
       const scores = _.sortBy(potentialMatches.map((pMatch) => {
-        return { pMatch: pMatch, score: this.similarity(text, pMatch.text) }
+        // If there is quote after this quote in the blockQuote array that matches the text of this potentialMatch exactly,
+        // give it a score of zero (important if a quote is pasted in before the existing quote)
+        // Otherwise - use levenstein similarity to match
+        const score = (laterQuotes.some((i) => i === pMatch.text)) ? 0 : this.similarity(text, pMatch.text)
+        return { pMatch: pMatch, score: score }
       }), 'score')
       // Iterate through the scores, from high score to low score, use the first match
       for (const score of _.reverse(scores)) {

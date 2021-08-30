@@ -44,23 +44,23 @@ describe('parseArgumentQuotes', () => {
 
 describe('matchingExistingQuote', () => {
   const simpleExistingQuote = {
-    prevRef: 0,
+    prevIndex: 0,
     matched: false,
     text: 'something',
     id: '12',
     removed: false
   }
   const loremIpsum = {
-    prevRef: 1,
+    prevIndex: 1,
     matched: false,
-    text: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
     id: '2',
     removed: false
   }
   describe('single quote', () => {
     const argumentForm = new ArgumentForm({ existingQuotes: { 0: simpleExistingQuote } })
     it('matches simple thing', () => {
-      const target = { ...simpleExistingQuote, ...{ prevRef: 0 } }
+      const target = { ...simpleExistingQuote, ...{ prevIndex: 0 } }
       expect(argumentForm.matchingExistingQuote({ text: 'something', index: 0 })).toStrictEqual(target)
       expect(argumentForm.matchingExistingQuote({ text: 'something new', index: 0 })).toStrictEqual(target)
       expect(argumentForm.matchingExistingQuote({ text: 'new something blah', index: 0 })).toStrictEqual(target)
@@ -87,8 +87,21 @@ describe('matchingExistingQuote', () => {
     })
   })
 
+  describe('existing quote', () => {
+    const closeMatchText = 'Lorem ipsum dolor sit amet - and'
+    const loremIpsum0 = { ...loremIpsum, ...{ prevIndex: 0 } }
+    const argumentForm = new ArgumentForm({ existingQuotes: { 0: loremIpsum0 }, blockQuotes: [closeMatchText, loremIpsum0.text] })
+    it('does not match the later exact match', () => {
+      // Make sure that the similarity is at least the similarity required for matching things of the same index
+      expect(argumentForm.similarity(closeMatchText, loremIpsum0.text)).toBeGreaterThan(0.2)
+      // This is specifically relevant when pasting in quotes before the existing quote
+      expect(argumentForm.matchingExistingQuote({ text: closeMatchText, index: 0 })).toBe(undefined)
+      expect(argumentForm.matchingExistingQuote({ text: loremIpsum0.text, index: 1 })).toStrictEqual(loremIpsum0)
+    })
+  })
+
   describe('multiple similar quotes', () => {
-    const loremIpsum2 = { ...loremIpsum, ...{ text: 'Lorem ipsum dolor sit amet - and some non-latin goes here', id: '4', prevRef: 2 } }
+    const loremIpsum2 = { ...loremIpsum, ...{ text: 'Lorem ipsum dolor sit amet - and some non-latin goes here', id: '4', prevIndex: 2 } }
     it('matches the better match', () => {
       const argumentForm = new ArgumentForm({ existingQuotes: { 1: simpleExistingQuote, 0: loremIpsum, 2: loremIpsum2 } })
 
