@@ -11,7 +11,7 @@ export default class ArgumentForm {
     this.removedQuotes = []
     this.renderedQuoteIds = []
     this.existingText = undefined
-    this.previewCollapsed = undefined
+    this.previewOpen = false
     // maybe should be based on the power of the device that is editing?
     this.throttleLimit = throttleLimit || 500
   }
@@ -20,6 +20,9 @@ export default class ArgumentForm {
   init () {
     // I THINK we always want to process the text to instantiate the variables
     this.updateArgumentQuotes()
+
+    // Setup preview after inital parse, so that it doesn't initially collapse
+    this.previewOpen = $('#argumentPreview').length > 0
 
     // For testing purposes, automatically select the argument field - but actually this is nice?
     $('#argument_text').focus()
@@ -31,9 +34,6 @@ export default class ArgumentForm {
       $('.addToGithubField').val('1')
       $('#argumentForm').submit()
     })
-
-    // Setup preview after inital parse, so that it doesn't initially collapse
-    this.updatePreview()
 
     // Start updating quotes when argument changes
     $('#argument_text').on(
@@ -90,11 +90,10 @@ export default class ArgumentForm {
   }
 
   updatePreview () {
+    log.debug('updating preview')
     // If this hasn't run, collapse it (this should only run if the text has changed)
-    if (this.previewCollapsed === undefined) {
-      this.previewCollapsed = true
-      $('#argumentPreview').collapse('hide')
-    }
+    this.previewOpen = false
+    $('#argumentPreview').collapse('hide')
   }
 
   updateArgumentQuotes () {
@@ -105,7 +104,7 @@ export default class ArgumentForm {
     // Don't process if text is unchanged
     if (newText === this.existingText) { return }
     // update the preview if the text has changed
-    if (!this.previewCollapsed) { this.updatePreview() }
+    if (this.previewOpen) { this.updatePreview() }
     this.existingText = newText
     // Previously was skipping processing if quotes hadn't changed, but that seemed to fail for cut and paste sometimes
     // const newBlockQuotes = this.parseArgumentQuotes($('#argument_text').val())
