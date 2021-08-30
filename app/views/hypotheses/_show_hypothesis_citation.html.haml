@@ -17,57 +17,54 @@
       - hypothesis_citation.quotes.each do |quote|
         %blockquote
           = quote.text
-      .text-right.mt-1
-        %em.small
-          - if citation.present?
+
+    %table.table-list.mb-0
+      %tbody
+        %tr
+          %td Title
+          %td
+            = citation.title
+        %tr
+          %td URL
+          %td
+            = link_to citation.url, citation.url
+        %tr
+          %td Kind
+          %td= citation.kind_humanized
+        %tr
+          %td Publication
+          %td
             - if citation.publication.present?
-              %span.less-strong #{citation.publication.title}:
-            "#{citation.title}"
-    .row.no-gutters
-      .citation-score-panel.col-10
-        %span.score-text.text-center
-          citation score
-        - score_display = (citation.score_percentage/10).round
-        - offset = score_display.to_s.length/2 - 0.2 # 0.2 because padding on the citation-score-panel
-        .citation-score{style: "left: #{citation.score_percentage}%; margin-left: -#{offset}rem;"}
-          %span.score-pointer
-          = score_display
-        - 7.times do |n|
-          %span.score-tick
-        %hr
-      .col-2.citation-show-more-wrapper.sans-serif
-        %a{href: "#CitationId#{hypothesis_citation.id}", "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "#CitationId#{hypothesis_citation.id}", "data-queryvalue" => "true"}
-          %strong +
-          show more
-    -# Have to have variable class margin-top or it moves after collapsing expand
-    .collapse{id: "CitationId#{hypothesis_citation.id}", class: (skip_challenge ? "mt-4" : "mt-2") }
-      - unless skip_challenge
-        = link_to "Challenge citation", new_hypothesis_citation_path(hypothesis_id: @hypothesis.ref_id, challenged_hypothesis_citation_id: hypothesis_citation.id), class: "btn btn-outline-danger btn-sm mb-2"
-      %table.table-list.mb-0
-        %tbody
+              = link_to citation.publication.title, publication_path(citation.publication)
+              - citation.publication.badges.keys.each do |badge|
+                %em.small.less-strong
+                  = CitationScorer.badge_humanized(badge)
+        - unless citation.skip_published_at_field?
           %tr
-            %td URL
+            %td Published date
+            %td= citation.published_date_str
+        - unless citation.skip_author_field?
+          %tr
+            %td Author
             %td
-              = link_to citation.url, citation.url
-          - unless citation.skip_published_at_field?
-            %tr
-              %td Published date
-              %td= citation.published_date_str
-          - unless citation.skip_author_field?
-            %tr
-              %td Author
-              %td
-                - if citation.authors.count < 2
-                  = citation.authors.first
-                - else
-                  %ul
-                    - citation.authors.each do |author|
-                      %li
-                        = author
-          %tr
-            %td Kind
-            %td= citation.kind_humanized
-      = link_to "view raw data", citation_path(citation), class: "gray-link"
+              - if citation.authors.count < 2
+                = citation.authors.first
+              - else
+                %ul
+                  - citation.authors.each do |author|
+                    %li
+                      = author
+        %tr
+          %td DOI
+          %td= citation.doi
+    .row.small
+      .col-6
+        = link_to "view raw data", citation_path(citation), class: "gray-link"
+      -# HIDING challenge citation for now - until we have
+      -# -# Have to have variable class margin-top or it moves after collapsing expand
+      -# - unless skip_challenge
+      -#   .col-6.text-right
+      -#     = link_to "Challenge citation", new_hypothesis_citation_path(hypothesis_id: @hypothesis.ref_id, challenged_hypothesis_citation_id: hypothesis_citation.id), class: "text-danger"
 
       -# %h4.mt-4 Scoring
       -# = render partial: "/citations/score", locals: { citation: citation, skip_header: true }
