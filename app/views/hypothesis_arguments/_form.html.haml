@@ -5,20 +5,30 @@
   %h1
     %span.d-none.d-md-block
       Hypothesis:
-.row
-  = render partial: "/hypotheses/show_title", locals: {hypothesis: @hypothesis, render_show_link: true}
 
-- if render_preview
-  #argumentPreview.row.arguments-wrapper.mt-4.mb-4.collapse{class: (render_preview ? "show" : "")}
-    .max-width-text-container
-      .col-12.preview-text.mt-3
-        %em.text-info Preview of argument:
-      = render partial: "/hypothesis_arguments/show", locals: {argument: @argument, preview: true, skip_edit: true}
 
 - form_submit_path = is_edit ? hypothesis_argument_path(hypothesis_id: @hypothesis, id: @argument.id) : hypothesis_arguments_path(hypothesis_id: @hypothesis)
 = form_for @argument, url: form_submit_path, method: (is_edit ? "PATCH" : "POST"), html: {class: "form", id: "argumentForm"} do |f|
   = f.hidden_field :add_to_github, class: "addToGithubField"
-
+  .row
+    - if @hypothesis.editable_by?(current_user)
+      .max-width-text-container.col
+        .form-group
+          = label_tag :hypothesis_title do
+            Hypothesis text
+            %span.small.less-strong
+              must be falsifiable
+          = text_area_tag :hypothesis_title, @hypothesis.title, class: "form-control"
+      .max-width-text-container.col
+        .form-group.fancy-select.unfancy.create-options-add
+          = label_tag :hypothesis_tags_string do
+            Topics
+            %small.less-strong
+              at least 2
+          - tags_string = (@hypothesis.tag_titles + tag_titles).uniq # include unapproved tags from this hypothesis in search items
+          = select_tag :hypothesis_tags_string, options_for_select(tags_string, @hypothesis.tag_titles), { class: "form-control", required: true, multiple: true}
+    - else
+      = render partial: "/hypotheses/show_title", locals: {hypothesis: @hypothesis, render_show_link: true}
   .row
     - if @argument.errors.any?
       .col-md-6.mb-4.mt-2
@@ -59,14 +69,21 @@
       .form-group
         = submit_tag "Save", class: "btn btn-primary"
 
-      - if is_edit
-        .mt-4
-          %button#submitForApproval.btn.btn-success.submit-input
-            Submit for Approval
-            %span.loadingSpinner.spinner-border.spinner-border-sm.collapse.ml-2
-              %span.sr-only Loading...
-          %em#quoteRequired.collapse.less-strong
-            Arguments must include at least one block quote to submit (start line with >)
+  - if render_preview
+    #argumentPreview.row.arguments-wrapper.mt-4.mb-4.collapse{class: (render_preview ? "show" : "")}
+      .max-width-text-container
+        .col-12.preview-text.mt-3
+          %em.text-info Preview of argument:
+        = render partial: "/hypothesis_arguments/show", locals: {argument: @argument, preview: true, skip_edit: true}
+
+  - if is_edit
+    .mt-4
+      %button#submitForApproval.btn.btn-success.submit-input
+        Submit for Approval
+        %span.loadingSpinner.spinner-border.spinner-border-sm.collapse.ml-2
+          %span.sr-only Loading...
+      %em#quoteRequired.collapse.less-strong
+        Arguments must include at least one block quote to submit (start line with >)
 
 %hr
 %h2.mt-4

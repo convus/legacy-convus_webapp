@@ -284,7 +284,7 @@ RSpec.describe "/hypotheses", type: :request do
           post base_url, params: {hypothesis: simple_hypothesis_params.merge(approved_at: Time.current.to_s)}
         }.to change(Hypothesis, :count).by 1
         hypothesis = Hypothesis.last
-        expect(response).to redirect_to edit_hypothesis_path(hypothesis.ref_id)
+        expect(response).to redirect_to new_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id)
         expect(AddToGithubContentJob.jobs.count).to eq 0
         expect(flash[:success]).to be_present
 
@@ -342,7 +342,7 @@ RSpec.describe "/hypotheses", type: :request do
             post base_url, params: {hypothesis: hypothesis_params}
           }.to change(Citation, :count).by 1
           hypothesis = Hypothesis.last
-          expect(response).to redirect_to edit_hypothesis_path(hypothesis.ref_id)
+          expect(response).to redirect_to new_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id)
           expect(flash[:success]).to be_present
 
           expect(hypothesis.title).to eq simple_hypothesis_params[:title]

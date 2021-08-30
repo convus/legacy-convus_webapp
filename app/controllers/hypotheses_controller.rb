@@ -39,10 +39,6 @@ class HypothesesController < ApplicationController
       .order(updated_at: :desc)
   end
 
-  def edit
-    @page_title = "Edit - #{@hypothesis.title}"
-  end
-
   def new
     @hypothesis ||= Hypothesis.new
   end
@@ -52,12 +48,20 @@ class HypothesesController < ApplicationController
     @hypothesis.creator_id = current_user.id
     if @hypothesis.save
       flash[:success] = "Hypothesis created!"
-      redirect_to edit_hypothesis_path(@hypothesis.ref_id)
+      redirect_to new_hypothesis_argument_path(hypothesis_id: @hypothesis.ref_id)
     else
       render :new
     end
   end
 
+  # NOTE: As of PR#129 hypothesis edit is skipped - you go straight to argument new
+  # Leaving this around to avoid changing unnecessary things
+  def edit
+    @page_title = "Edit - #{@hypothesis.title}"
+  end
+
+  # NOTE: As of PR#129 hypothesis edit is skipped - you go straight to argument new
+  # Leaving this around to avoid changing unnecessary things
   def update
     if @hypothesis.update(permitted_params)
       @hypothesis.hypothesis_citations.each { |hc| update_citation(hc) }
