@@ -57,13 +57,13 @@
   #quoteFieldsWrapper
     #quoteFields.row
       - @argument.argument_quotes.not_removed.ref_ordered.each do |argument_quote|
-        = render partial: "/hypothesis_arguments/argument_quote", locals: {argument_quote: argument_quote}
+        = render partial: "/hypothesis_arguments/argument_quote_fields", locals: {argument_quote: argument_quote}
 
     #quoteFieldsRemoved.removed-quotes.row.collapse{class: (@argument.argument_quotes.removed.any? ? "show" : "")}
       .col-12.text-warning
         %h4 Removed quotes
       - @argument.argument_quotes.removed.ref_ordered.each do |argument_quote|
-        = render partial: "/hypothesis_arguments/argument_quote", locals: {argument_quote: argument_quote}
+        = render partial: "/hypothesis_arguments/argument_quote_fields", locals: {argument_quote: argument_quote}
   .row.pt-4.mt-5
     .col
       .form-group
@@ -84,6 +84,8 @@
           %span.sr-only Loading...
       %em#quoteRequired.collapse.less-strong
         Arguments must include at least one block quote to submit (start line with >)
+    - @argument.citations_not_removed.each do |citation|
+      = render partial: "citation_fields", locals: {f: f, initially_show: true, skip_remove: true, initially_toggled: ParamsNormalizer.boolean(params[:initially_toggled])}
 
 %hr
 %h2.mt-4
