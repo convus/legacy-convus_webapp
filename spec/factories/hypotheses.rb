@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :hypothesis do
     creator { FactoryBot.create(:user) }
-    sequence(:title) { |n| "Citation Title #{n}" }
+    sequence(:title) { |n| "Hypothesis Title #{n}" }
 
     trait :approved do
       approved_at { Time.current - 2.hours }

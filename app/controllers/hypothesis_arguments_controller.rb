@@ -41,17 +41,19 @@ class HypothesisArgumentsController < ApplicationController
       @argument.reload # Because maybe things were deleted!
       # Manually trigger to ensure it happens after argument is updated
       if ParamsNormalizer.boolean(params.dig(:argument, :add_to_github))
-        @argument.update(add_to_github: true)
-      end
-      if @argument.submitted_to_github?
-        flash[:success] = "Argument submitted for review"
-        redirect_to hypothesis_path(@hypothesis, argument_id: @argument.ref_number)
+        if @argument.validate_can_add_to_github?
+          @argument.update(add_to_github: true)
+          flash[:success] = "Argument submitted for review"
+          redirect_to edit_hypothesis_argument_path(@hypothesis.ref_id, argument_id: @argument.ref_number)
+        else
+          render :edit
+        end
       else
-        flash[:success] = "Argument saved"
+        flash[:success] = "Argument saved" unless @argument.errors.full_messages.any?
         target_url_params = {hypothesis_id: @hypothesis.ref_id, id: @argument.id}
         # Don't include initially_toggled paramets unless it's passed because it's ugly
         target_url_params[:initially_toggled] = true if ParamsNormalizer.boolean(params[:initially_toggled])
-        redirect_to edit_hypothesis_argument_path(target_url_params)
+        redirect_to edit_hypothesis_argument_path(@hypothesis.ref_id, argument_id: @argument.ref_number)
       end
     else
       render :edit

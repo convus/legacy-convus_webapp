@@ -32,15 +32,15 @@ RSpec.describe "hypothesis_arguments", type: :request do
     }}
   end
 
-  def expect_argument_with_quotes_to_be_updated(argument)
+  def expect_argument_with_quotes_to_be_updated(argument, target_text: "This is a quote", target_url: "https://example.com/something-of-interest")
     expect(assigns(:argument)&.id).to eq argument.id
     argument.reload
     expect(argument.approved?).to be_falsey
     expect(argument.text).to eq argument_with_quote_params[:text]
     expect(argument.argument_quotes.count).to eq 1
     argument_quote = argument.argument_quotes.first
-    expect(argument_quote.text).to eq "This is a quote"
-    expect(argument_quote.url).to eq "https://example.com/something-of-interest"
+    expect(argument_quote.text).to eq target_text
+    expect(argument_quote.url).to eq target_url
     expect(argument_quote.ref_number).to eq 0
     expect(argument_quote.creator_id).to eq current_user.id
   end
@@ -250,7 +250,7 @@ RSpec.describe "hypothesis_arguments", type: :request do
             Sidekiq::Worker.clear_all
             patch "#{base_url}/#{subject.id}", params: {argument: argument_with_quote_params}
             expect(flash[:success]).to be_present
-            expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id, id: subject.id)
+            expect(response).to render_template("hypothesis_arguments/edit")
             expect(assigns(:argument)&.id).to eq subject.id
             expect(AddToGithubContentJob.jobs.count).to eq 0
             subject.reload
@@ -267,7 +267,7 @@ RSpec.describe "hypothesis_arguments", type: :request do
 
             argument_quote3 = subject.argument_quotes.where(ref_number: 0).first
             expect(argument_quote3.text).to eq "This is a quote"
-            expect(argument_quote3.url).to eq ""
+            expect(argument_quote3.url).to eq nil
             expect(argument_quote3.removed).to be_falsey
             expect(argument_quote3.creator_id).to eq current_user.id
 
@@ -366,12 +366,11 @@ RSpec.describe "hypothesis_arguments", type: :request do
           expect(subject.approved?).to be_falsey
         end
         context "blank URL" do
+          let(:hypothesis_creator) { current_user }
           let(:argument_params) do
             {
-              hypothesis_title: "Some new title",
-              hypothesis_tags_string: "some new tag, economy",
               add_to_github: "1",
-              text: text,
+              text: "\nThis is the text\n\n> This is a quote\n\nAnd some more text",
               argument_quotes_attributes: {
                 Time.current.to_i.to_s => {
                   url: " ",
@@ -387,11 +386,16 @@ RSpec.describe "hypothesis_arguments", type: :request do
             hypothesis.update(tags_string: "Economy")
             expect(hypothesis.reload.tags.pluck(:title)).to eq(["Economy"])
             expect(hypothesis.editable_by?(current_user)).to be_truthy
-            patch "#{base_url}/#{subject.id}", params: {argument: update_add_to_github_params}
-            expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id, id: subject.id)
-            expect_argument_with_quotes_to_be_updated(subject)
+            patch "#{base_url}/#{subject.id}", params: {
+              argument: argument_params,
+              hypothesis_title: "Some new title",
+              hypothesis_tags_string: "some new tag, economy"
+            }
+            expect(response).to render_template("hypothesis_arguments/edit")
+            expect_argument_with_quotes_to_be_updated(subject, target_url: nil)
             expect(subject.approved?).to be_falsey
-            expect(flash[:error]).to match(/url/)
+            expect(flash).to be_blank
+            expect(assigns(:argument).errors.full_messages.to_s).to match(/url/i)
             expect(AddToGithubContentJob.jobs.count).to eq 0
 
             expect(hypothesis.reload.title).to eq "Some new title"
