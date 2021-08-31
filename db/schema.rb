@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_27_224235) do
+ActiveRecord::Schema.define(version: 2021_08_31_201216) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -51,7 +51,6 @@ ActiveRecord::Schema.define(version: 2021_08_27_224235) do
     t.bigint "publication_id"
     t.text "title"
     t.text "slug"
-    t.json "authors"
     t.datetime "published_at"
     t.integer "kind"
     t.text "url"
@@ -69,6 +68,7 @@ ActiveRecord::Schema.define(version: 2021_08_27_224235) do
     t.integer "score"
     t.boolean "submitting_to_github", default: false
     t.text "doi"
+    t.jsonb "authors"
     t.index ["creator_id"], name: "index_citations_on_creator_id"
     t.index ["publication_id"], name: "index_citations_on_publication_id"
   end

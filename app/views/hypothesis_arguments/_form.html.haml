@@ -84,6 +84,8 @@
           %span.sr-only Loading...
       %em#quoteRequired.collapse.less-strong
         Arguments must include at least one block quote to submit (start line with >)
+
+    %h1 Citations
     - @argument.citations_not_removed.each do |citation|
       = render partial: "citation_fields", locals: {f: f, initially_show: true, skip_remove: true, initially_toggled: ParamsNormalizer.boolean(params[:initially_toggled])}
 
