@@ -246,7 +246,7 @@ RSpec.describe "hypothesis_arguments", type: :request do
             expect(subject.editable_by?(current_user)).to be_truthy
             expect(subject.text).to_not eq argument_with_citation_params[:text]
             expect(subject.argument_quotes.count).to eq 0
-            expect(citation.reload.editable_by?(current_user)).to be_falsey
+            expect(citation.reload.editable_by?(current_user)).to be_truthy
             Sidekiq::Worker.clear_all
             patch "#{base_url}/#{subject.id}", params: {argument: argument_with_citation_params}
             expect(flash[:success]).to be_present
