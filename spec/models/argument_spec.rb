@@ -318,22 +318,4 @@ RSpec.describe Argument, type: :model do
       end
     end
   end
-
-  describe "citations_not_removed" do
-    let(:argument) { FactoryBot.create(:argument) }
-    let(:argument_quote1) { FactoryBot.create(:argument_quote, argument: argument, ref_number: 2) }
-    let(:argument_quote2) { FactoryBot.create(:argument_quote, argument: argument, ref_number: 3, removed: true) }
-    let!(:argument_quote3) { FactoryBot.create(:argument_quote, argument: argument, ref_number: 4, url: argument_quote1.url) }
-    let(:argument_quote4) { FactoryBot.create(:argument_quote, argument: argument, ref_number: 1) }
-    let!(:citation1) { argument_quote1.citation }
-    let!(:citation2) { argument_quote2.citation }
-    let!(:citation3) { argument_quote4.citation }
-    let(:target_argument_quote_ids) { [argument_quote4.id, argument_quote1.id, argument_quote2.id, argument_quote3.id] }
-    it "only includes the not-removed" do
-      expect(argument.reload.argument_quotes.ref_ordered.pluck(:id)).to eq target_argument_quote_ids
-      # TODO: can't get the ordering to work. Ideally these associations would be ref_ordered, skipping for now
-      expect(argument.citations.pluck(:id)).to match_array([citation3.id, citation1.id, citation2.id])
-      expect(argument.citations_not_removed.pluck(:id)).to match_array([citation3.id, citation1.id])
-    end
-  end
 end
