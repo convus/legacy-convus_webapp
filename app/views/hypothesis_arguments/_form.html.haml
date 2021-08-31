@@ -32,7 +32,7 @@
   .row
     - if @argument.errors.any?
       .col-md-6.mb-4.mt-2
-        = render partial: "/shared/errors", locals: {name: "Argument", obj: @argument}
+        = render partial: "/shared/errors", locals: {name: "argument", obj: @argument}
 
   .row.mt-4
     .max-width-text-container.col

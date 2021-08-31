@@ -282,7 +282,7 @@ RSpec.describe Argument, type: :model do
 
   describe "validate_can_add_to_github?" do
     let(:argument) { FactoryBot.create(:argument, text: text) }
-    let(:text)  { "Some cool text" }
+    let(:text) { "Some cool text" }
 
     it "is not valid" do
       expect(argument).to be_valid
@@ -291,7 +291,7 @@ RSpec.describe Argument, type: :model do
       expect(argument.errors.full_messages.first).to match(/quote/i)
     end
     context "with blockquote" do
-      let(:text)  { "Some cool text\n\n> Some quote\n" }
+      let(:text) { "Some cool text\n\n> Some quote\n" }
       it "is not valid" do
         expect(argument).to be_valid
         expect(argument.argument_quotes.count).to eq 0

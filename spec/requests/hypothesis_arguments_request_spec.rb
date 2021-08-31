@@ -250,7 +250,7 @@ RSpec.describe "hypothesis_arguments", type: :request do
             Sidekiq::Worker.clear_all
             patch "#{base_url}/#{subject.id}", params: {argument: argument_with_quote_params}
             expect(flash[:success]).to be_present
-            expect(response).to render_template("hypothesis_arguments/edit")
+            expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id, id: subject.id)
             expect(assigns(:argument)&.id).to eq subject.id
             expect(AddToGithubContentJob.jobs.count).to eq 0
             subject.reload
@@ -358,7 +358,7 @@ RSpec.describe "hypothesis_arguments", type: :request do
           Sidekiq::Worker.clear_all
           patch "#{base_url}/#{subject.id}", params: {argument: update_add_to_github_params}
           expect(flash[:success]).to be_present
-          expect(response).to redirect_to hypothesis_path(hypothesis.to_param, argument_id: subject.ref_number)
+          expect(response).to redirect_to hypothesis_path(hypothesis.ref_id, argument_id: subject.ref_number)
           expect(assigns(:argument)&.id).to eq subject.id
           expect(AddToGithubContentJob.jobs.count).to eq 1
           expect(AddToGithubContentJob.jobs.map { |j| j["args"] }.last.flatten).to eq(["Argument", subject.id])
@@ -391,11 +391,10 @@ RSpec.describe "hypothesis_arguments", type: :request do
               hypothesis_title: "Some new title",
               hypothesis_tags_string: "some new tag, economy"
             }
-            expect(response).to render_template("hypothesis_arguments/edit")
+            expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id, id: subject.id)
             expect_argument_with_quotes_to_be_updated(subject, target_url: nil)
             expect(subject.approved?).to be_falsey
-            expect(flash).to be_blank
-            expect(assigns(:argument).errors.full_messages.to_s).to match(/url/i)
+            expect(flash[:error]).to match(/url/i)
             expect(AddToGithubContentJob.jobs.count).to eq 0
 
             expect(hypothesis.reload.title).to eq "Some new title"
