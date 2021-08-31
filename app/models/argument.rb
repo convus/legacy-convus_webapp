@@ -8,7 +8,6 @@ class Argument < ApplicationRecord
   belongs_to :hypothesis
 
   has_many :argument_quotes, dependent: :destroy
-  has_many :argument_quotes, dependent: :destroy
   has_many :citations, -> { distinct }, through: :argument_quotes
   has_many :argument_quotes_not_removed, -> { not_removed }, class_name: "ArgumentQuote"
   has_many :citations_not_removed, -> { distinct }, through: :argument_quotes_not_removed, source: :citation
