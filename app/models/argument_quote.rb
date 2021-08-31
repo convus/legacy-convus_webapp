@@ -29,7 +29,7 @@ class ArgumentQuote < ApplicationRecord
   def citation_ref_html
     return "" unless citation.present? || url.present?
     if citation.present?
-      "<span title=\"#{url}\"><span class=\"less-strong\">#{citation.publication.title}:</span> #{citation.title}</span>"
+      "<span title=\"#{url}\"><span class=\"source-pub\">#{citation.publication.title}:</span> <span class=\"source-title\">#{citation.title}</span></span>"
     else
       "<small title=\"#{url}\">#{url&.truncate(50)}</small>" || ""
     end

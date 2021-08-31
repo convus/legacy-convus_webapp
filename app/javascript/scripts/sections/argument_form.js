@@ -225,7 +225,7 @@ export default class ArgumentForm {
       <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][removed]" id="argument_argument_quotes_attributes_${quote.id}_removed" value="${quote.removed}">
       <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][text]" id="argument_argument_quotes_attributes_${quote.id}_text" value="${quote.text}">
       ${idInput}
-      <p class="quote-text">${quote.text}</p>
+      <blockquote class="quote-text">${quote.text}</blockquote>
       <div class="form-group">
         <input type="url" name="argument[argument_quotes_attributes][${quote.id}][url]" id="argument_argument_quotes_attributes_${quote.id}_url" value="${quote.url}" class="form-control url-field" placeholder="Quote URL source">
       </div>

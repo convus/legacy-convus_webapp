@@ -8,7 +8,7 @@
   <input type="hidden" name="argument[argument_quotes_attributes][<%= argument_quote.id %>][ref_number]" id="argument_argument_quotes_attributes_<%= argument_quote.id %>_ref_number" value="<%= argument_quote.ref_number %>">
   <input type="hidden" name="argument[argument_quotes_attributes][<%= argument_quote.id %>][removed]" id="argument_argument_quotes_attributes_<%= argument_quote.id %>_removed" value="<%= argument_quote.removed %>">
   <input type="hidden" name="argument[argument_quotes_attributes][<%= argument_quote.id %>][text]" id="argument_argument_quotes_attributes_<%= argument_quote.id %>_text" value="<%= argument_quote.text %>">
-  <p class="quote-text"><%= argument_quote.text %></p>
+  <blockquote class="quote-text"><%= argument_quote.text %></blockquote>
   <div class="form-group">
     <input type="url" name="argument[argument_quotes_attributes][<%= argument_quote.id %>][url]" id="argument_argument_quotes_attributes_<%= argument_quote.id %>_url" value="<%= argument_quote.url %>" class="form-control url-field" placeholder="Quote URL source">
   </div>

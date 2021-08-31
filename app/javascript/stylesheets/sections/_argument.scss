@@ -8,16 +8,32 @@ $argument-background: #f7f7f7;
     border-bottom: 1px solid rgba(102, 102, 102, 0.05);
   }
 }
+blockquote {
+  font-style: italic;
+  margin: 0.75em 0 0 0;
+  &:before {
+    content: ">";
+    opacity: 0.3;
+    font-size: 80%;
+    margin-left: -0.25em;
+    margin-right: 0.1rem;
+    display: inline-block;
+  }
+  p {
+    display: inline; // markdown wraps text inside of blockquotes in p tags
+    margin: 0;
+  }
+}
 
 .argument-show-block {
   // 60px is padding for the column and the argument-body
   flex: 0 0 $max-width-text + 60px;
   max-width: 100%;
-  @include media-breakpoint-down(sm) {
-    border-top: 1px solid $gray-300;
-  }
   p {
     margin: 0.5rem 0 0;
+  }
+  blockquote p {
+    margin: 0;
   }
   .argument-body {
     padding-top: 1rem;
@@ -42,27 +58,16 @@ $argument-background: #f7f7f7;
   }
   .argument-quote-block {
     margin: 0;
-    padding: 0.25rem 1rem 0.5rem;
-    position: relative;
-    color: $gray-600;
-    blockquote {
-      margin: 0;
-      &:before {
-        content: ">";
-        opacity: 0.3;
-        font-size: 80%;
-        margin-left: -0.25em;
-        display: block;
-        position: absolute;
-        top: 1rem;
-        left: 0.25rem;
-      }
-    }
+
     .source {
       display: block;
       width: 100%;
       text-align: right;
       font-size: 80%;
+      opacity: 0.65;
+    }
+    .source-pub {
+      font-style: italic;
     }
   }
 }
@@ -88,16 +93,7 @@ $argument-background: #f7f7f7;
     margin: 1rem 0 0;
     .quote-text {
       padding-left: 0.3rem;
-      margin: 0 0 0.1rem;
       line-height: 1.25;
-      opacity: 0.8;
-      &:before {
-        content: ">";
-        opacity: 0.3;
-        font-size: 80%;
-        margin-left: -0.25em;
-        display: inline-block;
-      }
     }
     .form-group {
       margin: 0;
@@ -117,6 +113,23 @@ $argument-background: #f7f7f7;
   }
 }
 
+.citation-quotes-block {
+  font-size: 90%;
+  padding: 0 0.5rem 0.25rem;
+  background: $gray-100;
+  border: 1px solid $gray-300;
+  border-bottom: none; // hack to fix table top double up
+  color: $gray-700;
+
+  @include media-breakpoint-down(sm) {
+    background: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    padding: 0.5rem 0 0.3rem;
+    color: $gray-600;
+  }
+}
 .citation-editable-fields {
   @include media-breakpoint-up(sm) {
     border: 1px solid $table-border-color;

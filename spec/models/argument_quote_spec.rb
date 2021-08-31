@@ -29,7 +29,7 @@ RSpec.describe ArgumentQuote, type: :model do
       it "is publication: title" do
         expect(citation.publication.title).to eq "something.com"
         expect(argument_quote.citation_ref_text).to eq "something.com - Something cool"
-        expect(argument_quote.citation_ref_html).to eq "<span title=\"#{url}\"><span class=\"less-strong\">something.com:</span> Something cool</span>"
+        expect(argument_quote.citation_ref_html).to eq "<span title=\"#{url}\"><span class=\"source-pub\">something.com:</span> <span class=\"source-title\">Something cool</span></span>"
       end
     end
     context "with citation" do
@@ -40,14 +40,14 @@ RSpec.describe ArgumentQuote, type: :model do
       it "is publication: title" do
         expect(citation.publication.title).to eq "something.com"
         expect(argument_quote.citation_ref_text).to eq "something.com - Something cool"
-        expect(argument_quote.citation_ref_html).to eq "<span title=\"#{url}\"><span class=\"less-strong\">something.com:</span> Something cool</span>"
+        expect(argument_quote.citation_ref_html).to eq "<span title=\"#{url}\"><span class=\"source-pub\">something.com:</span> <span class=\"source-title\">Something cool</span></span>"
       end
       context "with publication title" do
         it "uses publication title" do
           publication.update(title: "Cool Publication")
           citation.reload
           expect(argument_quote.citation_ref_text).to eq "Cool Publication - Something cool"
-          expect(argument_quote.citation_ref_html).to eq "<span title=\"#{url}\"><span class=\"less-strong\">Cool Publication:</span> Something cool</span>"
+          expect(argument_quote.citation_ref_html).to eq "<span title=\"#{url}\"><span class=\"source-pub\">Cool Publication:</span> <span class=\"source-title\">Something cool</span></span>"
         end
       end
     end

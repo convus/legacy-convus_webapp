@@ -85,8 +85,7 @@
       %em#quoteRequired.collapse.less-strong
         Arguments must include at least one block quote to submit (start line with >)
 
-    %hr
-    %h2.mt-4
+    %h2.mt-5
       - if @hypothesis_citations_shown.count == 0
         No existing citations
       - else
@@ -99,8 +98,8 @@
   .mt-5
 
   %h2
-    LEGACY
-    %em.text-warning remove once migrated
+    LEGACY Citations
+    %em.text-warning remove once all hypotheses are migrated
   .row
     - @hypothesis_citations_shown.each do |hypothesis_citation|
       = render partial: "/hypotheses/show_hypothesis_citation", locals: {hypothesis_citation: hypothesis_citation, skip_challenge: true}
