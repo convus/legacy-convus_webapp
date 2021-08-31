@@ -53,13 +53,13 @@ RSpec.describe "hypothesis_arguments", type: :request do
     expect(argument.approved?).to be_falsey
     expect(argument.text).to eq argument_with_quote_params[:text]
     expect(argument.argument_quotes.count).to eq 1
-    argument_quote = argument.argument_quotes.first
-    expect(argument_quote.text).to eq "This is a quote"
-    expect(argument_quote.url).to eq target_url
-    expect(argument_quote.ref_number).to eq 0
-    expect(argument_quote.creator_id).to eq current_user.id
-    expect(argument_quote.citation).to be_present if target_url.present?
-    argument_quote
+    new_argument_quote = argument.argument_quotes.first
+    expect(new_argument_quote.text).to eq "This is a quote"
+    expect(new_argument_quote.url).to eq target_url
+    expect(new_argument_quote.ref_number).to eq 0
+    expect(new_argument_quote.creator_id).to eq current_user.id
+    expect(new_argument_quote.citation).to be_present if target_url.present?
+    new_argument_quote
   end
 
   describe "new" do
@@ -205,17 +205,21 @@ RSpec.describe "hypothesis_arguments", type: :request do
         expect(AddToGithubContentJob.jobs.count).to eq 0
       end
       context "with citation params" do
+        let(:argument_quote) { FactoryBot.create(:argument_quote, argument: subject, creator: current_user, url: citation_params[:url]) }
         let(:argument_with_citation_params) do
           {
             text: text,
             argument_quotes_attributes: {
-              Time.current.to_i.to_s => {
+              argument_quote.id.to_s => {
                 url: citation_params[:url],
                 text: "This is a quote",
-                ref_number: 0
+                ref_number: 0,
+                id: argument_quote.id
               }
             },
-            citations_attributes: {Time.current.to_i.to_s => citation_params}
+            citations_attributes: {
+              Time.current.to_i.to_s => citation_params.merge(argument_quote_id: argument_quote.id)
+            }
           }
         end
         def expect_citation_to_be_updated(citation)
@@ -230,23 +234,26 @@ RSpec.describe "hypothesis_arguments", type: :request do
           subject.reload
           expect(subject.editable_by?(current_user)).to be_truthy
           expect(subject.text).to_not eq argument_with_citation_params[:text]
-          expect(subject.argument_quotes.count).to eq 0
-          expect(Citation.count).to eq 0
+          expect(subject.argument_quotes.count).to eq 1
+          expect(Citation.count).to eq 1
           Sidekiq::Worker.clear_all
           patch "#{base_url}/#{subject.id}", params: {argument: argument_with_citation_params}
           expect(flash[:success]).to be_present
           expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id, id: subject.id)
           argument_quote = expect_argument_with_quotes_to_be_updated(subject, target_url: citation_params[:url])
+          expect(Citation.count).to eq 1
           expect_citation_to_be_updated(argument_quote.citation)
         end
-        context "citation already exists, not editable_by current_user" do
-          let!(:citation) { Citation.create(url: citation_params[:url], creator: current_user) }
+        context "citation already exists, editable by user" do
+          let!(:citation) { Citation.create(url: citation_params[:url], creator: current_user, authors: ["someone"], title: "another thing") }
           it "updates" do
+            expect(argument_quote).to be_valid
             subject.reload
             expect(subject.editable_by?(current_user)).to be_truthy
             expect(subject.text).to_not eq argument_with_citation_params[:text]
-            expect(subject.argument_quotes.count).to eq 0
+            expect(subject.argument_quotes.count).to eq 1
             expect(citation.reload.editable_by?(current_user)).to be_truthy
+            expect(subject.argument_quotes.first.citation_id).to eq citation.id
             Sidekiq::Worker.clear_all
             patch "#{base_url}/#{subject.id}", params: {argument: argument_with_citation_params}
             expect(flash[:success]).to be_present
@@ -254,23 +261,26 @@ RSpec.describe "hypothesis_arguments", type: :request do
             expect_argument_with_quotes_to_be_updated(subject, target_url: citation_params[:url])
             expect(Citation.count).to eq 1
             citation.reload
+            expect(citation.editable_by?(current_user)).to be_truthy
             expect_citation_to_be_updated(citation)
           end
         end
         context "citation already exists, not editable_by current_user" do
           let!(:citation) { Citation.find_or_create_by_params(url: citation_params[:url]) }
           it "does not update" do
+            expect(argument_quote).to be_valid
             subject.reload
             expect(subject.editable_by?(current_user)).to be_truthy
             expect(subject.text).to_not eq argument_with_citation_params[:text]
-            expect(subject.argument_quotes.count).to eq 0
+            expect(subject.argument_quotes.count).to eq 1
             expect(citation.reload.editable_by?(current_user)).to be_falsey
+            expect(subject.argument_quotes.first.citation_id).to eq citation.id
             Sidekiq::Worker.clear_all
             patch "#{base_url}/#{subject.id}", params: {argument: argument_with_citation_params}
             expect(flash[:success]).to be_present
             expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id, id: subject.id)
-            argument_quote = expect_argument_with_quotes_to_be_updated(subject, target_url: citation_params[:url])
-            citation = argument_quote.citation
+            expect_argument_with_quotes_to_be_updated(subject, target_url: citation_params[:url])
+            # NOTE: because url changes, it creates a new citation
             expect(Citation.count).to eq 1
             expect(citation.editable_by?(current_user)).to be_falsey
             expect(citation.authors).to be_blank

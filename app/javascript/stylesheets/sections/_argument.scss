@@ -116,3 +116,10 @@ $argument-background: #f7f7f7;
     }
   }
 }
+
+.citation-editable-fields {
+  @include media-breakpoint-up(sm) {
+    border: 1px solid $table-border-color;
+    padding: 7px 15px 0; // form fields have a bottom margin
+  }
+}

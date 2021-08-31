@@ -100,9 +100,10 @@ class HypothesisArgumentsController < ApplicationController
   end
 
   def update_citations_if_permitted
-    (permitted_citations_params || []).each do |id, attrs|
-      citation = Citation.find_by_id(id) || Citation.find_or_create_by_params(attrs)
-      citation.update(attrs) if citation.editable_by?(current_user)
+    (permitted_citations_params || []).each do |_id, attrs|
+      argument_quote = @argument.argument_quotes.find_by_id(attrs[:argument_quote_id])
+      citation = argument_quote&.citation
+      citation.update(attrs.except(:argument_quote_id)) if citation&.editable_by?(current_user)
     end
   end
 
@@ -113,7 +114,8 @@ class HypothesisArgumentsController < ApplicationController
   end
 
   def permitted_citation_attrs
-    %i[title authors_str kind url url_is_direct_link_to_full_text published_date_str doi
-      url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial quotes_text]
+    %i[argument_quote_id title authors_str kind url url_is_direct_link_to_full_text
+      published_date_str doi url_is_not_publisher publication_title peer_reviewed
+      randomized_controlled_trial]
   end
 end

@@ -40,6 +40,23 @@ export default class ArgumentForm {
       'keydown keyup update blur',
       this.throttle(this.updateArgumentQuotes, this.throttleLimit)
     )
+
+    // Set researchKinds here
+    this.researchKinds = ($('#citationsBlock').attr('data-citeresearchkinds') || '').split(',')
+    $('#citationsBlock').on('change', '.citationKindSelect', (event) => {
+      this.updateCitationKind(
+        $(event.target).parents('.citationFields')
+      )
+    })
+  }
+
+  updateCitationKind ($fields) {
+    const citationKind = $fields.find('.citationKindSelect').val()
+    const isResearchKind = this.researchKinds.includes(citationKind)
+    // Toggle the kind
+    $fields
+      .find('.kindResearchField')
+      .collapse(isResearchKind ? 'show' : 'hide')
   }
 
   // NOTE: This is duplicated in Argument.parse_quotes, in ruby, for flat file importing
@@ -183,6 +200,12 @@ export default class ArgumentForm {
     if ($el.length && quote.prevIndex === index) {
       $el.find('.quote-text').text(text)
       $el.find(`#argument_argument_quotes_attributes_${quote.id}_text`).val(text)
+      // Also update the Citation
+      const $citationQuote = $(`#citationArgumentQuote-${quote.id}`)
+      if ($citationQuote.length) {
+        $citationQuote.text(text)
+        // Also should update the URL for this Citation, if the URL has changed
+      }
     } else {
       // Otherwise, we rerender the element.
       // TODO: improve handling - move things around if possible, instead of always rerendering
