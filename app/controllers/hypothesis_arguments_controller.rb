@@ -114,6 +114,6 @@ class HypothesisArgumentsController < ApplicationController
 
   def permitted_citation_attrs
     %i[title authors_str kind url url_is_direct_link_to_full_text published_date_str doi
-        url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial quotes_text]
+      url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial quotes_text]
   end
 end

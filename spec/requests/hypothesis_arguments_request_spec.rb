@@ -117,7 +117,7 @@ RSpec.describe "hypothesis_arguments", type: :request do
           Sidekiq::Worker.clear_all
           expect {
             post base_url, params: {argument: argument_with_quote_params,
-              hypothesis_title: "new title", hypothesis_tags_string: "animals, Something of Interest"}
+                                    hypothesis_title: "new title", hypothesis_tags_string: "animals, Something of Interest"}
           }.to change(Argument, :count).by 1
           hypothesis.reload
           expect(hypothesis.creator_id).to_not eq current_user.id
@@ -201,7 +201,7 @@ RSpec.describe "hypothesis_arguments", type: :request do
         patch "#{base_url}/#{subject.id}", params: {argument: argument_with_quote_params}
         expect(flash[:success]).to be_present
         expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id, id: subject.id)
-        argument_quote = expect_argument_with_quotes_to_be_updated(subject)
+        expect_argument_with_quotes_to_be_updated(subject)
         expect(AddToGithubContentJob.jobs.count).to eq 0
       end
       context "with citation params" do
