@@ -69,6 +69,9 @@ RSpec.describe UrlCleaner do
   end
 
   describe "without_utm" do
+    it "returns nil" do
+      expect(subject.without_utm("   \n")).to eq(nil)
+    end
     it "returns without UTM parameters" do
       target = "https://www.nationalreview.com/2020/09/bring-back-the-bison/?somethingimportant=33333utm"
       expect(subject.without_utm("https://www.nationalreview.com/2020/09/bring-back-the-bison/?utm_source=recirc-desktop&utm_medium=article&UTM_CAMPAIGN=river&somethingimportant=33333utm&utm_content=top-bar-latest&utm_term=second")).to eq target

@@ -279,4 +279,43 @@ RSpec.describe Argument, type: :model do
       end
     end
   end
+
+  describe "validate_can_add_to_github?" do
+    let(:argument) { FactoryBot.create(:argument, text: text) }
+    let(:text)  { "Some cool text" }
+
+    it "is not valid" do
+      expect(argument).to be_valid
+      expect(argument.validate_can_add_to_github?).to be_falsey
+      expect(argument.errors.full_messages.count).to eq 1
+      expect(argument.errors.full_messages.first).to match(/quote/i)
+    end
+    context "with blockquote" do
+      let(:text)  { "Some cool text\n\n> Some quote\n" }
+      it "is not valid" do
+        expect(argument).to be_valid
+        expect(argument.argument_quotes.count).to eq 0
+        expect(argument.validate_can_add_to_github?).to be_falsey
+        expect(argument.errors.full_messages.count).to eq 1
+        expect(argument.errors.full_messages.first).to match(/quote/i)
+        # And then validate with argument_quote without URL
+        argument.argument_quotes.create(text: "Some quote")
+        expect(argument.reload.argument_quotes.count).to eq 1
+        expect(argument).to be_valid
+        expect(argument.validate_can_add_to_github?).to be_falsey
+        expect(argument.errors.full_messages.count).to eq 1
+        expect(argument.errors.full_messages.first).to match(/url/i)
+      end
+      context "with argument_quote with url" do
+        let!(:argument_quote1) { argument.argument_quotes.create(text: "Some quote", url: "something.com") }
+        let!(:argument_quote2) { argument.argument_quotes.create(text: "another quote", removed: true) }
+        it "is valid" do
+          expect(argument).to be_valid
+          expect(argument.argument_quotes.count).to eq 2
+          expect(argument.validate_can_add_to_github?).to be_truthy
+          expect(argument.errors.full_messages.count).to eq 0
+        end
+      end
+    end
+  end
 end

@@ -2,7 +2,7 @@ module AdminHelper
   def admin_nav_select_links
     [
       {title: "Dashboard", path: admin_root_path, match_controller: true},
-      {title: "Content Commits", path: admin_content_commits_path, match_controller: true},
+      {title: "Content Commits", path: admin_content_commits_path, match_controller: true}
     ]
   end
 
