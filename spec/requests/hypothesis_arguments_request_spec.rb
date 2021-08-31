@@ -316,7 +316,6 @@ RSpec.describe "hypothesis_arguments", type: :request do
           expect(subject.text).to_not eq text
           expect(subject.argument_quotes.count).to eq 3
           expect(ArgumentQuote.pluck(:id)).to match_array([argument_quote0.id, argument_quote1.id, argument_quote2.id])
-
           Sidekiq::Worker.clear_all
           patch "#{base_url}/#{subject.id}", params: {argument: argument_with_quote_params}
           expect(flash[:success]).to be_present
@@ -327,10 +326,11 @@ RSpec.describe "hypothesis_arguments", type: :request do
           expect(subject.approved?).to be_falsey
           expect(subject.body_html).to be_present
           expect(subject.text).to eq argument_with_quote_params[:text]
+          expect(subject.argument_quotes.count).to eq 3
 
           argument_quote1.reload
-          expect(argument_quote1.text).to eq "And another quote"
           expect(argument_quote1.url).to eq "https://example.com/a-different-url"
+          expect(argument_quote1.text).to eq "And another quote"
           expect(argument_quote1.removed).to be_falsey
           expect(argument_quote1.ref_number).to eq 2
           expect(argument_quote1.creator_id).to eq current_user.id

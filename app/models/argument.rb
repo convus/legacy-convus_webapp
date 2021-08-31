@@ -18,7 +18,7 @@ class Argument < ApplicationRecord
   after_commit :run_associated_tasks
 
   accepts_nested_attributes_for :argument_quotes, allow_destroy: true, reject_if: :all_blank
-  accepts_nested_attributes_for :citations, reject_if: :all_blank
+  accepts_nested_attributes_for :citations
 
   scope :with_body_html, -> { where.not(body_html: nil) }
   scope :listing_ordered, -> { reorder(:listing_order) }
