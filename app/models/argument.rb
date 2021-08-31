@@ -8,13 +8,16 @@ class Argument < ApplicationRecord
   belongs_to :hypothesis
 
   has_many :argument_quotes, dependent: :destroy
-  has_many :citations, through: :argument_quotes
+  has_many :citations, -> { distinct }, through: :argument_quotes
+  has_many :argument_quotes_not_removed, -> { not_removed }, class_name: "ArgumentQuote"
+  has_many :citations_not_removed, -> { distinct }, through: :argument_quotes_not_removed, source: :citation
   has_many :user_scores
 
   before_validation :set_calculated_attributes
   after_commit :run_associated_tasks
 
   accepts_nested_attributes_for :argument_quotes, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :citations
 
   scope :with_body_html, -> { where.not(body_html: nil) }
   scope :listing_ordered, -> { reorder(:listing_order) }

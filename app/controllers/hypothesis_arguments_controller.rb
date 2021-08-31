@@ -39,6 +39,7 @@ class HypothesisArgumentsController < ApplicationController
       @argument.argument_quotes.where(id: previous_argument_quote_ids - updated_quote_ids).destroy_all
       @argument.update_body_html
       @argument.reload # Because maybe things were deleted!
+      update_citations_if_permitted
       # Manually trigger to ensure it happens after argument is updated
       if ParamsNormalizer.boolean(params.dig(:argument, :add_to_github)) && @argument.validate_can_add_to_github?
         @argument.update(add_to_github: true)
@@ -96,5 +97,25 @@ class HypothesisArgumentsController < ApplicationController
   def permitted_params
     params.require(:argument).permit(:text,
       argument_quotes_attributes: [:url, :text, :ref_number, :id, :removed])
+  end
+
+  def update_citations_if_permitted
+    (permitted_citations_params || []).each do |_id, attrs|
+      argument_quote = @argument.argument_quotes.find_by_id(attrs[:argument_quote_id])
+      citation = argument_quote&.citation
+      citation.update(attrs.except(:argument_quote_id)) if citation&.editable_by?(current_user)
+    end
+  end
+
+  # Get each set of permitted citation attributes. We're updating them individually
+  def permitted_citations_params
+    params.require(:argument).permit(citations_attributes: permitted_citation_attrs)
+      .dig(:citations_attributes)
+  end
+
+  def permitted_citation_attrs
+    %i[argument_quote_id title authors_str kind url url_is_direct_link_to_full_text
+      published_date_str doi url_is_not_publisher publication_title peer_reviewed
+      randomized_controlled_trial]
   end
 end
