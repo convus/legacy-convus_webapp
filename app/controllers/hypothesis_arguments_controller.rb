@@ -33,6 +33,7 @@ class HypothesisArgumentsController < ApplicationController
     update_successful = @argument.update(permitted_params)
     if update_successful
       update_hypothesis_if_permitted
+      update_citations_if_permitted
       @argument.remove_empty_quotes!
       # Remove argument_quotes that weren't included in the params (they were removed on the frontend)
       updated_quote_ids = permitted_params[:argument_quotes_attributes]&.keys || []
@@ -96,5 +97,23 @@ class HypothesisArgumentsController < ApplicationController
   def permitted_params
     params.require(:argument).permit(:text,
       argument_quotes_attributes: [:url, :text, :ref_number, :id, :removed])
+  end
+
+  def update_citations_if_permitted
+    (permitted_citations_params || []).each do |id, attrs|
+      citation = Citation.find_by_id(id) || Citation.find_or_create_by_params(attrs)
+      citation.update(attrs) if citation.editable_by?(current_user)
+    end
+  end
+
+  # Get each set of permitted citation attributes. We're updating them individually
+  def permitted_citations_params
+    params.require(:argument).permit(citations_attributes: permitted_citation_attrs)
+      .dig(:citations_attributes)
+  end
+
+  def permitted_citation_attrs
+    %i[title authors_str kind url url_is_direct_link_to_full_text published_date_str doi
+        url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial quotes_text]
   end
 end
