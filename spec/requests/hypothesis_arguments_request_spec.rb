@@ -32,15 +32,15 @@ RSpec.describe "hypothesis_arguments", type: :request do
     }}
   end
 
-  def expect_argument_with_quotes_to_be_updated(argument)
+  def expect_argument_with_quotes_to_be_updated(argument, target_text: "This is a quote", target_url: "https://example.com/something-of-interest")
     expect(assigns(:argument)&.id).to eq argument.id
     argument.reload
     expect(argument.approved?).to be_falsey
     expect(argument.text).to eq argument_with_quote_params[:text]
     expect(argument.argument_quotes.count).to eq 1
     argument_quote = argument.argument_quotes.first
-    expect(argument_quote.text).to eq "This is a quote"
-    expect(argument_quote.url).to eq "https://example.com/something-of-interest"
+    expect(argument_quote.text).to eq target_text
+    expect(argument_quote.url).to eq target_url
     expect(argument_quote.ref_number).to eq 0
     expect(argument_quote.creator_id).to eq current_user.id
   end
@@ -117,7 +117,7 @@ RSpec.describe "hypothesis_arguments", type: :request do
             Sidekiq::Worker.clear_all
             expect {
               post base_url, params: {argument: argument_with_quote_params,
-                hypothesis_title: "new title", hypothesis_tags_string: "animals, Something of Interest"}
+                                      hypothesis_title: "new title", hypothesis_tags_string: "animals, Something of Interest"}
             }.to change(Argument, :count).by 1
             hypothesis.reload
             argument = hypothesis.arguments.last
@@ -267,7 +267,7 @@ RSpec.describe "hypothesis_arguments", type: :request do
 
             argument_quote3 = subject.argument_quotes.where(ref_number: 0).first
             expect(argument_quote3.text).to eq "This is a quote"
-            expect(argument_quote3.url).to eq ""
+            expect(argument_quote3.url).to eq nil
             expect(argument_quote3.removed).to be_falsey
             expect(argument_quote3.creator_id).to eq current_user.id
 
@@ -316,8 +316,8 @@ RSpec.describe "hypothesis_arguments", type: :request do
           expect(hypothesis.reload.editable_by?(current_user)).to be_truthy
           Sidekiq::Worker.clear_all
           patch "#{base_url}/#{subject.id}", params: {argument: argument_with_quote_params,
-            hypothesis_title: "This seems like the truth",
-            hypothesis_tags_string: "economy\nparties"}
+                                                      hypothesis_title: "This seems like the truth",
+                                                      hypothesis_tags_string: "economy\nparties"}
           expect(flash[:success]).to be_present
           expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id, id: subject.id)
           expect(AddToGithubContentJob.jobs.count).to eq 0
@@ -338,8 +338,8 @@ RSpec.describe "hypothesis_arguments", type: :request do
             expect(hypothesis.reload.editable_by?(current_user)).to be_falsey
             Sidekiq::Worker.clear_all
             patch "#{base_url}/#{subject.id}", params: {argument: argument_with_quote_params,
-              hypothesis_title: "This seems like the truth",
-              hypothesis_tags_string: "economy\nparties"}
+                                                        hypothesis_title: "This seems like the truth",
+                                                        hypothesis_tags_string: "economy\nparties"}
             expect(flash[:success]).to be_present
             expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id, id: subject.id)
             expect(AddToGithubContentJob.jobs.count).to eq 0
@@ -358,12 +358,48 @@ RSpec.describe "hypothesis_arguments", type: :request do
           Sidekiq::Worker.clear_all
           patch "#{base_url}/#{subject.id}", params: {argument: update_add_to_github_params}
           expect(flash[:success]).to be_present
-          expect(response).to redirect_to hypothesis_path(hypothesis.to_param, argument_id: subject.ref_number)
+          expect(response).to redirect_to hypothesis_path(hypothesis.ref_id, argument_id: subject.ref_number)
           expect(assigns(:argument)&.id).to eq subject.id
           expect(AddToGithubContentJob.jobs.count).to eq 1
           expect(AddToGithubContentJob.jobs.map { |j| j["args"] }.last.flatten).to eq(["Argument", subject.id])
           expect_argument_with_quotes_to_be_updated(subject)
           expect(subject.approved?).to be_falsey
+        end
+        context "blank URL" do
+          let(:hypothesis_creator) { current_user }
+          let(:argument_params) do
+            {
+              add_to_github: "1",
+              text: "\nThis is the text\n\n> This is a quote\n\nAnd some more text",
+              argument_quotes_attributes: {
+                Time.current.to_i.to_s => {
+                  url: " ",
+                  text: "This is a quote",
+                  ref_number: 0
+                }
+              }
+            }
+          end
+          it "doesn't add_to_github" do
+            subject.reload
+            Sidekiq::Worker.clear_all
+            hypothesis.update(tags_string: "Economy")
+            expect(hypothesis.reload.tags.pluck(:title)).to eq(["Economy"])
+            expect(hypothesis.editable_by?(current_user)).to be_truthy
+            patch "#{base_url}/#{subject.id}", params: {
+              argument: argument_params,
+              hypothesis_title: "Some new title",
+              hypothesis_tags_string: "some new tag, economy"
+            }
+            expect(response).to redirect_to edit_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id, id: subject.id)
+            expect_argument_with_quotes_to_be_updated(subject, target_url: nil)
+            expect(subject.approved?).to be_falsey
+            expect(flash[:error]).to match(/url/i)
+            expect(AddToGithubContentJob.jobs.count).to eq 0
+
+            expect(hypothesis.reload.title).to eq "Some new title"
+            expect(hypothesis.reload.tags.pluck(:title)).to match_array(["some new tag", "Economy"])
+          end
         end
       end
     end

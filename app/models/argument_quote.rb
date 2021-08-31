@@ -8,6 +8,7 @@ class ArgumentQuote < ApplicationRecord
   scope :ref_ordered, -> { reorder(:ref_number) }
   scope :removed, -> { where(removed: true) }
   scope :not_removed, -> { where(removed: false) }
+  scope :no_url, -> { where(url: nil) } # UrlCleaner returns nil if empty
 
   def removed?
     removed

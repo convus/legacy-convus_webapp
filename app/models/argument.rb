@@ -62,6 +62,15 @@ class Argument < ApplicationRecord
     hypothesis&.approved?
   end
 
+  def validate_can_add_to_github?
+    if argument_quotes.count == 0
+      errors.add(:base, "must have at least one quote")
+    elsif argument_quotes.not_removed.no_url.any?
+      errors.add(:base, "All quotes need to have URLs")
+    end
+    errors.full_messages.none?
+  end
+
   # Actually serialized into hypothesis files, using a serializer to make it easier to manage
   def flat_file_serialized
     ArgumentSerializer.new(self, root: false).as_json
