@@ -1,4 +1,5 @@
-import TimeParser from '../../scripts/utils/time_parser'
+import log from '../../utils/log'
+import TimeParser from '../../utils/time_parser'
 
 window.localTimezone = 'America/Los_Angeles' // For consistency in testing
 const timeParser = new TimeParser()
@@ -48,7 +49,8 @@ test('time_parser formats time from years ago, preciseTime', () => {
 
 test('time_parser from today', () => {
   const timeStamp = timeParser.todayStart.unix() + 42240 // 11:44am
-  const dateString = new Date().toISOString().substring(0, 10)
+  const tzoffset = -28800000 // PST offset
+  const dateString = new Date(Date.now() + tzoffset).toISOString().substring(0, 10)
 
   expect(timeParser.localizedTimeHtml(timeStamp, {})).toBe(
     `<span title="${dateString} 11:44:00 am">11:44am</span>`
