@@ -96,13 +96,13 @@
         - argument_quotes = @argument.argument_quotes.where(url: citation.url)
         = render partial: "citation_fields", locals: {f: builder, initially_toggled: ParamsNormalizer.boolean(params[:initially_toggled]), citation: citation, argument_quotes: argument_quotes}
   .mt-5
-
-  %h2
-    LEGACY Citations
-    %em.text-warning remove once all hypotheses are migrated
-  .row
-    - @hypothesis_citations_shown.each do |hypothesis_citation|
-      = render partial: "/hypotheses/show_hypothesis_citation", locals: {hypothesis_citation: hypothesis_citation, skip_challenge: true}
+  - if @hypothesis.show_legacy_citations?
+    %h2
+      LEGACY Citations
+      %em.text-warning remove once all hypotheses are migrated
+    .row
+      - @hypothesis_citations_shown.each do |hypothesis_citation|
+        = render partial: "/hypotheses/show_hypothesis_citation", locals: {hypothesis_citation: hypothesis_citation, skip_challenge: true}
 
 .mt-big
 = render "/shared/content_license"

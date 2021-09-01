@@ -9,7 +9,7 @@ class Hypothesis < ApplicationRecord
 
   has_many :previous_titles
   has_many :hypothesis_citations, autosave: true, dependent: :destroy
-  has_many :citations, through: :hypothesis_citations
+  has_many :citations, through: :hypothesis_citations # TODO: join through arguments
   has_many :publications, through: :citations
   has_many :hypothesis_tags, dependent: :destroy
   has_many :tags, through: :hypothesis_tags
@@ -79,6 +79,12 @@ class Hypothesis < ApplicationRecord
       "Hypothesis citations hypothesis has already been taken"
     ]
     (messages + errors.full_messages).compact.uniq - ignored_messages
+  end
+
+  # TODO: remove once arguments are fully migrated in
+  def show_legacy_citations?
+    arguments.approved.none? &&
+      (created_at || Time.current) < Time.at(1629820618) # 2021-8-24
   end
 
   def tag_titles
