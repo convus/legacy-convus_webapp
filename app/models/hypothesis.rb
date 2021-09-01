@@ -81,6 +81,12 @@ class Hypothesis < ApplicationRecord
     (messages + errors.full_messages).compact.uniq - ignored_messages
   end
 
+  # TODO: remove once arguments are fully migrated in
+  def show_legacy_citations?
+    arguments.approved.none? &&
+      (created_at || Time.current) < Time.at(1629820618) # 2021-8-24
+  end
+
   def tag_titles
     tags.alphabetical.pluck(:title)
   end

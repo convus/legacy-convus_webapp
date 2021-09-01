@@ -29,9 +29,6 @@
           %td
             = link_to citation.url, citation.url
         %tr
-          %td Kind
-          %td= citation.kind_humanized
-        %tr
           %td Publication
           %td
             - if citation.publication.present?
@@ -56,6 +53,9 @@
                     %li
                       = author
         %tr
+          %td Kind
+          %td= citation.kind_humanized
+        %tr
           %td DOI
           %td= citation.doi
         %tr
@@ -69,11 +69,15 @@
                 - if citation.approved_at.present?
                   %span.convertTime.withPreposition
                     = l citation.approved_at, format: :convert_time
-          - else
-            %em.less-strong not approved
-    .row.small
-      .col-6
-        = link_to "view raw data", citation_path(citation), class: "gray-link"
+            - else
+              %em.less-strong not approved
+        - if display_dev_info?
+          %tr.only-dev-visible
+            %td Citation show
+            %td
+              = link_to citation_path(citation).to_s.truncate(75), citation_path(citation)
+
+
       -# HIDING challenge citation for now - until we have
       -# -# Have to have variable class margin-top or it moves after collapsing expand
       -# - unless skip_challenge

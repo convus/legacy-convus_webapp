@@ -38,7 +38,7 @@
             %small.less-strong
               #{hypothesis_citation.quotes.count}
               = "quote".pluralize(hypothesis_citation.quotes.count)
-            = link_to "edit", edit_hypothesis_citation_path(hypothesis_id: hypothesis.ref_id, id: hypothesis_citation.id), class: "internal-link"
+            = link_to "view", hypothesis_path(hypothesis_id: hypothesis.ref_id), class: "internal-link"
           %td.d-none.d-md-table-cell
             %span
               = hypothesis.title
