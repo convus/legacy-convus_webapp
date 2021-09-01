@@ -9,7 +9,7 @@ class Hypothesis < ApplicationRecord
 
   has_many :previous_titles
   has_many :hypothesis_citations, autosave: true, dependent: :destroy
-  has_many :citations, through: :hypothesis_citations
+  has_many :citations, through: :hypothesis_citations # TODO: join through arguments
   has_many :publications, through: :citations
   has_many :hypothesis_tags, dependent: :destroy
   has_many :tags, through: :hypothesis_tags

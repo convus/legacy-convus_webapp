@@ -53,6 +53,10 @@ class Argument < ApplicationRecord
     matching_lines.uniq.reject(&:blank?)
   end
 
+  def self.argument_quotes
+    ArgumentQuote.where(argument_id: pluck(:id))
+  end
+
   def shown?(user = nil)
     approved? || creator_id == user&.id
   end

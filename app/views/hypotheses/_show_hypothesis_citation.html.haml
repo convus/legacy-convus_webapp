@@ -2,9 +2,10 @@
 - skip_challenge ||= false
 - citation ||= hypothesis_citation.citation
 - rendering_challenge ||= false
+- quotes ||= hypothesis_citation.quotes.map(&:text)
 
 .col-xl-6.mt-2.mb-2
-  - if hypothesis_citation.quotes.none?
+  - if quotes.none?
     - if display_dev_info?
       .only-dev-visible
         No quotes for Hypothesis Citation ID:
@@ -14,9 +15,9 @@
     .hypothesis-quotes-block
       - if rendering_challenge
         %span.d-block.text-warning.mt-2 Challenged!
-      - hypothesis_citation.quotes.each do |quote|
+      - quotes.each do |quote_text|
         %blockquote
-          = quote.text
+          = quote_text
 
     %table.table-list.mb-0
       %tbody
