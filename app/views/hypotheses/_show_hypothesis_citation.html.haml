@@ -36,9 +36,10 @@
           %td
             - if citation.publication.present?
               = link_to citation.publication.title, publication_path(citation.publication)
-              - citation.publication.badges.keys.each do |badge|
-                %em.small.less-strong
-                  = CitationScorer.badge_humanized(badge)
+              -# Comment out citation badges until improved
+              -# - citation.publication.badges.keys.each do |badge|
+              -#   %em.small.less-strong
+              -#     = CitationScorer.badge_humanized(badge)
         - unless citation.skip_published_at_field?
           %tr
             %td Published date
@@ -57,6 +58,19 @@
         %tr
           %td DOI
           %td= citation.doi
+        %tr
+          %td Convus GitHub
+          %td
+            = link_to citation.file_path.truncate(75), citation.github_html_url, title: citation.file_path
+            - if citation.pull_request_number.present?
+              %em.small.less-strong.mt-2.d-block
+                Approved by
+                = link_to "PR##{citation.pull_request_number}", citation.pull_request_url
+                - if citation.approved_at.present?
+                  %span.convertTime.withPreposition
+                    = l citation.approved_at, format: :convert_time
+          - else
+            %em.less-strong not approved
     .row.small
       .col-6
         = link_to "view raw data", citation_path(citation), class: "gray-link"
