@@ -9,13 +9,6 @@ $argument-background: #f7f7f7;
   }
 }
 
-blockquote {
-  p {
-    display: inline; // markdown wraps text inside of blockquotes in p tags
-    margin: 0;
-  }
-}
-
 // These are places we display the quote with a leading >
 .hypothesis-quotes-block,
 .citation-quotes-block,
@@ -23,7 +16,7 @@ blockquote {
   blockquote {
     // font-style: italic;
     color: $gray-600;
-    margin: 0.75em 0 0 0;
+    margin: 0.75em 0 0.2em 0;
     &:before {
       content: ">";
       opacity: 0.3;
@@ -31,6 +24,10 @@ blockquote {
       margin-left: -0.25em;
       margin-right: 0.1rem;
       display: inline-block;
+    }
+    p {
+      display: inline; // markdown wraps text inside of blockquotes in p tags
+      margin: 0;
     }
   }
 }
@@ -140,7 +137,6 @@ blockquote {
   background: $gray-100;
   border: 1px solid $gray-300;
   border-bottom: none; // hack to fix table top double up
-  color: $gray-700;
 
   @include media-breakpoint-down(sm) {
     background: none;
@@ -148,9 +144,9 @@ blockquote {
     border-right: none;
     border-bottom: none;
     padding: 0.5rem 0 0.3rem;
-    color: $gray-600;
   }
 }
+
 .citation-editable-fields {
   @include media-breakpoint-up(sm) {
     border: 1px solid $table-border-color;
