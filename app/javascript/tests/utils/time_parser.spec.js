@@ -1,5 +1,4 @@
-import log from '../../utils/log'
-import TimeParser from '../../utils/time_parser'
+import TimeParser from '../../scripts/utils/time_parser'
 
 window.localTimezone = 'America/Los_Angeles' // For consistency in testing
 const timeParser = new TimeParser()
