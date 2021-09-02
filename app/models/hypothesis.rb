@@ -58,6 +58,11 @@ class Hypothesis < ApplicationRecord
     found || super || matching_previous_titles(str).last
   end
 
+  def self.clean_title(str)
+    return nil unless str.present?
+    str.strip.gsub(/(\.|\!)\z/, "")
+  end
+
   # We're saving hypothesis with a bunch of associations, make it easier to override the errors
   # So that association errors are clearer
   def errors_full_messages
@@ -150,7 +155,7 @@ class Hypothesis < ApplicationRecord
   end
 
   def set_calculated_attributes
-    self.title = title&.strip
+    self.title = self.class.clean_title(title)
     self.score = calculated_score
   end
 

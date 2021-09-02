@@ -490,7 +490,7 @@ RSpec.describe "/hypotheses", type: :request do
           expect(response.code).to render_template("hypotheses/edit")
           expect(flash).to be_blank
           rendered_hypothesis = assigns(:hypothesis)
-          expect(rendered_hypothesis.title).to eq ""
+          expect(rendered_hypothesis.title).to eq nil
           expect(rendered_hypothesis.tags_string).to eq "economy, parties"
           # There is a blank one in there, idk, it's ok
           expect(rendered_hypothesis.hypothesis_citations.map(&:url).count).to eq 3
