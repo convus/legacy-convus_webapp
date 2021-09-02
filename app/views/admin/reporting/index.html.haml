@@ -24,16 +24,6 @@
           %td Updated past week
           %td
             = admin_number_display(Hypothesis.where(updated_at: week_period).count)
-        -# TODO: remove once all arguments migrated
-        %tr
-          %td Without Arguments
-          %td
-            - no_argument = Hypothesis.no_argument
-            = admin_number_display(no_argument.count)
-            %ul.small
-              - no_argument.order(:created_at).limit(10).each do |hypothesis|
-                %li= link_to hypothesis.title, hypothesis_path(hypothesis)
-
 
   .col-md-6.mt-2
     %h2 Arguments
@@ -58,3 +48,18 @@
           %td Updated past week
           %td
             = admin_number_display(Argument.where(updated_at: week_period).count)
+
+-# TODO: remove once all arguments migrated
+%h4.mt-5
+  Hypotheses without arguments
+  - no_argument = Hypothesis.approved.order(:created_at).select { |h| h.arguments.approved.none? }
+  (#{admin_number_display(no_argument.count)})
+%table.table.table-sm.table-striped
+  %tbody
+    - no_argument.each do |hypothesis|
+      %tr
+        %td
+          %small.convertTime
+            = l hypothesis.created_at, format: :convert_time
+        %td
+          = link_to hypothesis.title, hypothesis_path(hypothesis)

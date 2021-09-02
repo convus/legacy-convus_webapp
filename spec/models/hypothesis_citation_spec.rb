@@ -41,7 +41,7 @@ RSpec.describe HypothesisCitation, type: :model do
         hypothesis_citation.reload
         expect(hypothesis_citation.challenges.pluck(:id)).to eq([challenge_citation_quotation.id])
         expect(hypothesis_citation.challenges_approved.pluck(:id)).to eq([])
-        expect(HypothesisCitation.no_approved_challenges.map(&:id)).to eq([hypothesis_citation.id, challenge_citation_quotation.id])
+        expect(HypothesisCitation.no_approved_challenges.map(&:id)).to match_array([hypothesis_citation.id, challenge_citation_quotation.id])
         expect(HypothesisCitation.approved_challenges.map(&:id)).to eq([])
         # And the challenge by another citation is valid
         expect(challenge_by_another_citation).to be_valid
