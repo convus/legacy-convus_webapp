@@ -10,7 +10,7 @@ module GithubSubmittable
     scope :submitted_to_github, -> { approved.or(not_removed.where.not(pull_request_number: nil)).or(not_removed.where(submitting_to_github: true)) }
     scope :not_submitted_to_github, -> { not_removed.where(approved_at: nil, pull_request_number: nil, submitting_to_github: false) }
 
-    # NOTE: newness_ordered duplicates scope in ApprovedAtable - update there
+    # NOTE: newness_ordered duplicates scope in ApprovedAtable - update there too if updating here
     scope :newness_ordered, -> { reorder("approved_at DESC NULLS FIRST", created_at: :desc) }
 
     attr_accessor :add_to_github
