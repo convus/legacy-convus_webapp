@@ -1,3 +1,6 @@
+# NOTE: Do NOT add this concern to models that have GithubSubmittable -
+# GithubSubmittable has all the methods from this concern but does different things because removed_pull_request_number
+
 module ApprovedAtable
   extend ActiveSupport::Concern
 

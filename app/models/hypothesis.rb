@@ -1,7 +1,6 @@
 class Hypothesis < ApplicationRecord
   include TitleSluggable
   include FlatFileSerializable
-  include ApprovedAtable
   include GithubSubmittable
   include PgSearch::Model
 

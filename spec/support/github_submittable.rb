@@ -55,7 +55,7 @@ RSpec.shared_examples "GithubSubmittable" do
         expect(instance.removed?).to be_truthy
         expect(instance.class.submitted_to_github.pluck(:id)).to eq([])
         expect(instance.class.removed.pluck(:id)).to eq([instance.id])
-        expect(instance.class.not_removed.pluck(:id)).to eq([instance.id])
+        expect(instance.class.not_removed.pluck(:id)).to eq([])
         expect(instance.approved?).to be_falsey
         expect(instance.unapproved?).to be_falsey
         expect(instance.class.approved.pluck(:id)).to eq([])

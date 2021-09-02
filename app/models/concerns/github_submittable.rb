@@ -1,4 +1,4 @@
-# Note: as of now, models with GithubSubmittable also require ApprovedAtable
+# Note: don't add ApprovedAtable to models with GithubSubmittable - this concern overrides all those methods
 module GithubSubmittable
   extend ActiveSupport::Concern
 
@@ -6,8 +6,12 @@ module GithubSubmittable
     scope :removed, -> { where.not(removed_pull_request_number: nil) }
     scope :not_removed, -> { where(removed_pull_request_number: nil) }
     scope :approved, -> { not_removed.where.not(approved_at: nil) }
+    scope :unapproved, -> { not_removed.where(approved_at: nil) }
     scope :submitted_to_github, -> { approved.or(not_removed.where.not(pull_request_number: nil)).or(not_removed.where(submitting_to_github: true)) }
     scope :not_submitted_to_github, -> { not_removed.where(approved_at: nil, pull_request_number: nil, submitting_to_github: false) }
+
+    # NOTE: newness_ordered duplicates scope in ApprovedAtable - update there
+    scope :newness_ordered, -> { reorder("approved_at DESC NULLS FIRST", created_at: :desc) }
 
     attr_accessor :add_to_github
   end
@@ -19,6 +23,11 @@ module GithubSubmittable
 
   def approved?
     approved_at.present? && !removed?
+  end
+
+  def unapproved?
+    return false if removed?
+    !approved?
   end
 
   def submitted_to_github?

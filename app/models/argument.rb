@@ -1,5 +1,4 @@
 class Argument < ApplicationRecord
-  include ApprovedAtable
   include FlatFileSerializable
   include GithubSubmittable
   include PgSearch::Model
