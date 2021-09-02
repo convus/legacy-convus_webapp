@@ -1,7 +1,6 @@
 class Citation < ApplicationRecord
   include FriendlyFindable
   include FlatFileSerializable
-  include ApprovedAtable
   include GithubSubmittable
   include PgSearch::Model
 

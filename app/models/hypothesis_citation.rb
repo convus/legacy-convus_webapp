@@ -1,5 +1,4 @@
 class HypothesisCitation < ApplicationRecord
-  include ApprovedAtable
   include GithubSubmittable
 
   KIND_ENUM = {
@@ -35,7 +34,7 @@ class HypothesisCitation < ApplicationRecord
   # TODO: make this actually order based on score, it's a stub right now
   scope :score_ordered, -> { reorder(created_at: :desc) }
 
-  attr_accessor :add_to_github, :skip_associated_tasks
+  attr_accessor :skip_associated_tasks
 
   def self.kinds
     KIND_ENUM.keys.map(&:to_s)

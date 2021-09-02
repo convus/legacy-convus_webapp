@@ -2,6 +2,15 @@ require "rails_helper"
 
 RSpec.describe Tag, type: :model do
   it_behaves_like "TitleSluggable"
+  describe "approved" do
+    let(:tag) { FactoryBot.create(:tag, approved_at: Time.current) }
+    it "is approved" do
+      expect(tag.approved?).to be_truthy
+      expect(tag.unapproved?).to be_falsey
+      expect(Tag.approved.pluck(:id)).to eq([tag.id])
+      expect(Tag.unapproved.pluck(:id)).to eq([])
+    end
+  end
 
   # This is definitely not wild, but... we do want to make sure
   it "destroys hypothesis tag" do
