@@ -58,6 +58,12 @@ $argument-background: #f7f7f7;
     @extend .less-strong;
     font-style: italic;
   }
+  .challenge {
+    display: block;
+    font-style: italic;
+    text-align: center;
+    padding: 0.25rem 0 0 1rem;
+  }
 }
 
 .argument-show-block {
