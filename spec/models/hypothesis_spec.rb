@@ -32,6 +32,14 @@ RSpec.describe Hypothesis, type: :model do
     end
   end
 
+  describe "clean_title" do
+    let(:hypothesis) { Hypothesis.create(title: " Statement about things. Because a cool party! \n") }
+    it "cleans" do
+      expect(hypothesis).to be_valid
+      expect(hypothesis.title).to eq "Statement about things. Because a cool party"
+    end
+  end
+
   describe "friendly_find" do
     let(:title1) { "Overall, the case for reduced meat consumption is strong" }
     let(:title2) { "The case for reduced meat consumption is strong" }
