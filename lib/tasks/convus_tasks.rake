@@ -63,6 +63,12 @@ task update_flat_file_database_without_import: :environment do
   raise output if ReconcileTaskOutputChecker.failed?(output)
 end
 
+# Useful if formatting changes for arguments!
+# All approved arguments are reprocessed when they are imported
+task regenerate_argument_bodies: :environment do
+  Argument.find_each { |a| a.update_body_html }
+end
+
 task dev_update_from_git: :environment do
   Dir.chdir FlatFileSerializer::FILES_PATH
   output = `git reset --hard origin/main 2>&1`
