@@ -41,6 +41,25 @@ RSpec.shared_examples "GithubSubmittable" do
         expect(instance.waiting_on_github?).to be_truthy
         expect(instance.not_submitted_to_github?).to be_falsey
         expect(instance.class.submitted_to_github.pluck(:id)).to eq([instance.id])
+        expect(instance.class.approved.pluck(:id)).to eq([])
+        expect(instance.class.removed.pluck(:id)).to eq([])
+        expect(instance.class.not_removed.pluck(:id)).to eq([instance.id])
+      end
+    end
+    describe "removed?" do
+      let(:instance) { FactoryBot.create(model_sym, pull_request_number: 133, removed_pull_request_number: 333) }
+      it "is falsey" do
+        expect(instance.submitted_to_github?).to be_falsey
+        expect(instance.waiting_on_github?).to be_falsey
+        expect(instance.not_submitted_to_github?).to be_falsey
+        expect(instance.removed?).to be_truthy
+        expect(instance.class.submitted_to_github.pluck(:id)).to eq([])
+        expect(instance.class.removed.pluck(:id)).to eq([instance.id])
+        expect(instance.class.not_removed.pluck(:id)).to eq([instance.id])
+        expect(instance.approved?).to be_falsey
+        expect(instance.unapproved?).to be_falsey
+        expect(instance.class.approved.pluck(:id)).to eq([])
+        expect(instance.class.unapproved.pluck(:id)).to eq([])
       end
     end
   end

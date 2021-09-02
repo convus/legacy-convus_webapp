@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_31_201216) do
+ActiveRecord::Schema.define(version: 2021_09_02_171716) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -43,6 +43,7 @@ ActiveRecord::Schema.define(version: 2021_08_31_201216) do
     t.boolean "submitting_to_github", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "removed_pull_request_number"
     t.index ["creator_id"], name: "index_arguments_on_creator_id"
     t.index ["hypothesis_id"], name: "index_arguments_on_hypothesis_id"
   end
@@ -69,6 +70,7 @@ ActiveRecord::Schema.define(version: 2021_08_31_201216) do
     t.boolean "submitting_to_github", default: false
     t.text "doi"
     t.jsonb "authors"
+    t.integer "removed_pull_request_number"
     t.index ["creator_id"], name: "index_citations_on_creator_id"
     t.index ["publication_id"], name: "index_citations_on_publication_id"
   end
@@ -94,6 +96,7 @@ ActiveRecord::Schema.define(version: 2021_08_31_201216) do
     t.boolean "submitting_to_github", default: false
     t.bigint "ref_number"
     t.string "ref_id"
+    t.integer "removed_pull_request_number"
     t.index ["creator_id"], name: "index_hypotheses_on_creator_id"
     t.index ["ref_id"], name: "index_hypotheses_on_ref_id", unique: true
   end
@@ -111,6 +114,7 @@ ActiveRecord::Schema.define(version: 2021_08_31_201216) do
     t.bigint "creator_id"
     t.integer "kind"
     t.bigint "challenged_hypothesis_citation_id"
+    t.integer "removed_pull_request_number"
     t.index ["challenged_hypothesis_citation_id"], name: "index_hypothesis_citations_on_challenged_hypothesis_citation_id"
     t.index ["citation_id"], name: "index_hypothesis_citations_on_citation_id"
     t.index ["creator_id"], name: "index_hypothesis_citations_on_creator_id"
