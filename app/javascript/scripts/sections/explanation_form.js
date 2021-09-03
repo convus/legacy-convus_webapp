@@ -294,7 +294,7 @@ export default class ExplanationForm {
     let lastRan
     return () => {
       const context = this
-      const args = explanations
+      const args = arguments
       if (!lastRan) {
         func.apply(context, args)
         lastRan = Date.now()
