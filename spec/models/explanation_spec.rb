@@ -53,7 +53,7 @@ RSpec.describe Explanation, type: :model do
     context "multiple quotes" do
       let(:target) { ["something", "something else"] }
       it "parses" do
-        expect(Explanation.parse_quotes("> something\n\n>something else")).to eq target
+        expect(Explanation.parse_quotes("> something\n\n> something else")).to eq target
         expect(Explanation.parse_quotes("  >  something  \n blahhh blah blah\n \nother stuff\n >   something else")).to eq target
       end
     end
@@ -165,6 +165,7 @@ RSpec.describe Explanation, type: :model do
     end
     context "with blockquote" do
       let(:url) { "http://example.com" }
+      let(:url2) { "https://convus.org/this-this-this" }
       let(:quote_text) { "I believe that this is the solution to discussions of various things on the internet" }
       let(:explanation_text) { "Something cool and stuff\n\n> #{quote_text}" }
       let(:explanation) { FactoryBot.create(:explanation, text: explanation_text) }
@@ -193,8 +194,40 @@ RSpec.describe Explanation, type: :model do
         explanation.reload
         expect(explanation.body_html).to eq target
       end
+      context "with multiple quotes and nothing in between" do
+        let(:explanation_text) { "Something cool and stuff\n\n> something\n\n> Something else\n" }
+        let(:explanation) { FactoryBot.create(:explanation, text: "something") }
+        let!(:explanation_quote) { FactoryBot.create(:explanation_quote, explanation: explanation, text: "something", url: url) }
+        let!(:explanation_quote2) { FactoryBot.create(:explanation_quote, explanation: explanation, text: "Something else", url: url2) }
+        let(:target) do
+          "<p>Something cool and stuff</p>\n\n" \
+            "<div class=\"explanation-quote-block\">" \
+            "<blockquote>\n<p>something</p>\n</blockquote>" \
+            "<span class=\"source\">#{explanation_quote.citation_ref_html}</span></div>\n" \
+            "<div class=\"explanation-quote-block\">" \
+            "<blockquote>\n<p>Something else</p>\n</blockquote>" \
+            "<span class=\"source\">#{explanation_quote2.citation_ref_html}</span></div>\n"
+        end
+        xit "creates" do
+          expect(explanation_quote.reload.ref_number).to eq 1
+          expect(explanation_quote.citation_ref_html).to be_present
+          expect(explanation_quote2.reload.ref_number).to eq 2
+          expect(explanation.reload.body_html).to be_blank
+          # OMFG testing this was a bear. There is definitely to be a better way, but whatever
+          real_lines = explanation.parse_text_with_blockquotes.split("\n").reject(&:blank?)
+          target_lines = target.split("\n").reject(&:blank?)
+          pp real_lines, target_lines
+          real_lines.count.times { |i| expect(real_lines[i]).to eq target_lines[i] }
+          expect(real_lines.count).to eq target_lines.count
+          expect(real_lines).to eq target_lines
+
+          expect(explanation.parse_text_with_blockquotes).to eq target_with_addition
+          explanation.update_body_html
+          explanation.reload
+          expect(explanation.body_html).to eq target_with_addition
+        end
+      end
       context "with a blockquote with markdown in it" do
-        let(:url2) { "https://convus.org/this-this-this" }
         let(:explanation_text) { "Something cool and stuff\n\n> #{quote_text}\n\n And another thing\n > This here **Rocks**\n" }
         let!(:explanation_quote2) { FactoryBot.create(:explanation_quote, explanation: explanation, text: "This here **Rocks**", url: url2) }
         let(:target_with_addition) do
