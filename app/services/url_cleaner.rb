@@ -33,7 +33,7 @@ class UrlCleaner
 
     def without_anchor(str)
       return nil unless str.present?
-      str.strip.gsub(/#.*\z/, "") # Remove anchor
+      str.strip.gsub(/#.*\z/, "")
     end
 
     def with_http(str)
