@@ -103,7 +103,7 @@ class HypothesisExplanationsController < ApplicationController
     (permitted_citations_params || []).each do |_id, attrs|
       explanation_quote = @explanation.explanation_quotes.find_by_id(attrs[:explanation_quote_id])
       citation = explanation_quote&.citation
-      citation.update(attrs.except(:explanation_quote_id)) if citation&.editable_by?(current_user)
+      citation.update!(attrs.except(:explanation_quote_id)) if citation&.editable_by?(current_user)
     end
   end
 
