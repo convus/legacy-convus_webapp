@@ -107,19 +107,19 @@ class GithubIntegration
     pull_request
   end
 
-  def create_argument_pull_request(argument)
-    hypothesis = argument.hypothesis
-    branch_name = "update-hypothesis-#{hypothesis.ref_id}-with-#{argument.ref_number}"
+  def create_explanation_pull_request(explanation)
+    hypothesis = explanation.hypothesis
+    branch_name = "update-hypothesis-#{hypothesis.ref_id}-with-#{explanation.ref_number}"
     @current_branch = create_branch(branch_name)
-    commit_message = "Add argument to hypothesis #{hypothesis.ref_id}: #{hypothesis.title}"
-    # put argument in the new_cited_url in the serializer (added as a new field to ward off merge conflicts)
-    hypothesis.additional_serialized_argument = argument
+    commit_message = "Add explanation to hypothesis #{hypothesis.ref_id}: #{hypothesis.title}"
+    # put explanation in the new_cited_url in the serializer (added as a new field to ward off merge conflicts)
+    hypothesis.additional_serialized_explanation = explanation
     upsert_file_on_current_branch(hypothesis.file_path, hypothesis.flat_file_content, commit_message)
 
-    pr_body = "Added argument to: [#{hypothesis.ref_id}: #{hypothesis.title}](https://convus.org/hypotheses/#{hypothesis.ref_id}?argument_id=#{argument.ref_number})"
+    pr_body = "Added explanation to: [#{hypothesis.ref_id}: #{hypothesis.title}](https://convus.org/hypotheses/#{hypothesis.ref_id}?explanation_id=#{explanation.ref_number})"
     pull_request = create_pull_request(commit_message, pr_body)
     number = pull_request.url.split("/pulls/").last
-    argument.update(pull_request_number: number)
+    explanation.update(pull_request_number: number)
     pull_request
   end
 

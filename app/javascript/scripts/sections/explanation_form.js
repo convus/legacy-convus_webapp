@@ -2,7 +2,7 @@ import log from '../utils/log'
 import _ from 'lodash' // TODO: only import the parts needed
 
 // TODO: make less dependent on jquery
-export default class ArgumentForm {
+export default class ExplanationForm {
   // Enable passing in, primarily for testing
   constructor ({ blockQuotes, existingQuotes, throttleLimit }) {
     this.processing = false
@@ -19,26 +19,26 @@ export default class ArgumentForm {
   // init is called when loaded on the page - and not in testing
   init () {
     // I THINK we always want to process the text to instantiate the variables
-    this.updateArgumentQuotes()
+    this.updateExplanationQuotes()
 
     // Setup preview after inital parse, so that it doesn't initially collapse
-    this.previewOpen = $('#argumentPreview').length > 0
+    this.previewOpen = $('#explanationPreview').length > 0
 
-    // For testing purposes, automatically select the argument field - but actually this is nice?
-    $('#argument_text').focus()
+    // For testing purposes, automatically select the explanation field - but actually this is nice?
+    $('#explanation_text').focus()
 
     $('#submitForApproval').on('click', (e) => {
       e.preventDefault()
       $('form .loadingSpinner').collapse('show')
       $('.submit-input').addClass('disabled')
       $('.addToGithubField').val('1')
-      $('#argumentForm').submit()
+      $('#explanationForm').submit()
     })
 
-    // Start updating quotes when argument changes
-    $('#argument_text').on(
+    // Start updating quotes when explanation changes
+    $('#explanation_text').on(
       'keydown keyup update blur',
-      this.throttle(this.updateArgumentQuotes, this.throttleLimit)
+      this.throttle(this.updateExplanationQuotes, this.throttleLimit)
     )
 
     // Set researchKinds here
@@ -59,8 +59,8 @@ export default class ArgumentForm {
       .collapse(isResearchKind ? 'show' : 'hide')
   }
 
-  // NOTE: This is duplicated in Argument.parse_quotes, in ruby, for flat file importing
-  parseArgumentQuotes (text) {
+  // NOTE: This is duplicated in Explanation.parse_quotes, in ruby, for flat file importing
+  parseExplanationQuotes (text) {
     // Regex for matching lines that are blockquotes
     const matchRegexp = /^\s*>/
     // regex for replacing the "> " from the quotes
@@ -110,28 +110,28 @@ export default class ArgumentForm {
     log.debug('updating preview')
     // If this hasn't run, collapse it (this should only run if the text has changed)
     this.previewOpen = false
-    $('#argumentPreview').collapse('hide')
+    $('#explanationPreview').collapse('hide')
   }
 
-  updateArgumentQuotes () {
+  updateExplanationQuotes () {
     // If currently processing, skip running
     if (this.processing) { return }
 
-    const newText = $('#argument_text').val()
+    const newText = $('#explanation_text').val()
     // Don't process if text is unchanged
     if (newText === this.existingText) { return }
     // update the preview if the text has changed
     if (this.previewOpen) { this.updatePreview() }
     this.existingText = newText
     // Previously was skipping processing if quotes hadn't changed, but that seemed to fail for cut and paste sometimes
-    // const newBlockQuotes = this.parseArgumentQuotes($('#argument_text').val())
+    // const newBlockQuotes = this.parseExplanationQuotes($('#explanation_text').val())
     // if (_.isEqual(this.blockQuotes, newBlockQuotes)) { return }
     // TODO: improve. We were re-processing before finishing rendering (and therefor existingQuotes was blank)
     // we may want to rerun later if we're still processing now (via setTimeout)
     // log.debug('processing')
 
     this.processing = true
-    this.blockQuotes = this.parseArgumentQuotes($('#argument_text').val())
+    this.blockQuotes = this.parseExplanationQuotes($('#explanation_text').val())
     this.existingQuotes = this.parseExistingQuotes()
     this.renderedQuoteIds = []
 
@@ -152,7 +152,7 @@ export default class ArgumentForm {
     $('#quoteFieldsWrapper .quote-field').each(function () {
       const id = this.id.replace('quoteId-', '')
       // Could do something better than get via window, but - good enough for now
-      if (!window.argumentForm.renderedQuoteIds.includes(id)) {
+      if (!window.explanationForm.renderedQuoteIds.includes(id)) {
         this.remove() // remove because it shouldn't be rendered anymore!
       }
     })
@@ -199,9 +199,9 @@ export default class ArgumentForm {
     // If the element exists and is in the same position and is still around, update the quote
     if ($el.length && quote.prevIndex === index) {
       $el.find('.quote-text').text(text)
-      $el.find(`#argument_argument_quotes_attributes_${quote.id}_text`).val(text)
+      $el.find(`#explanation_explanation_quotes_attributes_${quote.id}_text`).val(text)
       // Also update the Citation
-      const $citationQuote = $(`#citationArgumentQuote-${quote.id}`)
+      const $citationQuote = $(`#citationExplanationQuote-${quote.id}`)
       if ($citationQuote.length) {
         $citationQuote.text(text)
         // Also should update the URL for this Citation, if the URL has changed
@@ -216,18 +216,18 @@ export default class ArgumentForm {
     $(`${quote.removed ? '#quoteFields' : '#quoteFieldsRemoved'} #quoteId-${quote.id}`).remove()
   }
 
-  // NOTE: This is duplicated by _argument_quote.html.erb
+  // NOTE: This is duplicated by _explanation_quote.html.erb
   quoteHtml (index, quote) {
     // Only include the ID input if quote already exists
-    const idInput = quote.newQuote ? '' : `<input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][id]" id="argument_argument_quotes_attributes_${quote.id}_id" value="${quote.id}">`
+    const idInput = quote.newQuote ? '' : `<input type="hidden" name="explanation[explanation_quotes_attributes][${quote.id}][id]" id="explanation_explanation_quotes_attributes_${quote.id}_id" value="${quote.id}">`
     return `<div id="quoteId-${quote.id}" class="quote-field ${quote.removed ? 'removedQuote' : ''} ${quote.newQuote ? 'newQuote' : ''}">
-      <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][ref_number]" id="argument_argument_quotes_attributes_${quote.id}_ref_number" value="${index + 1}">
-      <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][removed]" id="argument_argument_quotes_attributes_${quote.id}_removed" value="${quote.removed}">
-      <input type="hidden" name="argument[argument_quotes_attributes][${quote.id}][text]" id="argument_argument_quotes_attributes_${quote.id}_text" value="${quote.text}">
+      <input type="hidden" name="explanation[explanation_quotes_attributes][${quote.id}][ref_number]" id="explanation_explanation_quotes_attributes_${quote.id}_ref_number" value="${index + 1}">
+      <input type="hidden" name="explanation[explanation_quotes_attributes][${quote.id}][removed]" id="explanation_explanation_quotes_attributes_${quote.id}_removed" value="${quote.removed}">
+      <input type="hidden" name="explanation[explanation_quotes_attributes][${quote.id}][text]" id="explanation_explanation_quotes_attributes_${quote.id}_text" value="${quote.text}">
       ${idInput}
       <blockquote class="quote-text">${quote.text}</blockquote>
       <div class="form-group">
-        <input type="url" name="argument[argument_quotes_attributes][${quote.id}][url]" id="argument_argument_quotes_attributes_${quote.id}_url" value="${quote.url}" class="form-control url-field" placeholder="Quote URL source">
+        <input type="url" name="explanation[explanation_quotes_attributes][${quote.id}][url]" id="explanation_explanation_quotes_attributes_${quote.id}_url" value="${quote.url}" class="form-control url-field" placeholder="Quote URL source">
       </div>
     </div>`
   }
@@ -294,7 +294,7 @@ export default class ArgumentForm {
     let lastRan
     return () => {
       const context = this
-      const args = arguments
+      const args = explanations
       if (!lastRan) {
         func.apply(context, args)
         lastRan = Date.now()

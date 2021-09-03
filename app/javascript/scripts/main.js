@@ -11,7 +11,7 @@ import Chartkick from 'chartkick'
 import Chart from 'chart.js'
 
 import HypothesisForm from '../scripts/sections/hypothesis_form.js'
-import ArgumentForm from '../scripts/sections/argument_form.js'
+import ExplanationForm from '../scripts/sections/explanation_form.js'
 import AdminBase from '../scripts/sections/admin_base.js'
 
 window.Chartkick = Chartkick
@@ -33,9 +33,9 @@ $(document).on('turbolinks:load', function () {
     window.hypothesisForm.init()
   }
 
-  if ($('#argumentForm').length) {
-    window.argumentForm = new ArgumentForm({})
-    window.argumentForm.init()
+  if ($('#explanationForm').length) {
+    window.explanationForm = new ExplanationForm({})
+    window.explanationForm.init()
   }
 
   if ($('#adminNavbar').length) {

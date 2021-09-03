@@ -5,7 +5,7 @@ class UserScore < ApplicationRecord
 
   belongs_to :user
   belongs_to :hypothesis
-  belongs_to :argument
+  belongs_to :explanation
 
   before_validation :set_calculated_attributes
   after_commit :expire_previous_scores, only: [:create]

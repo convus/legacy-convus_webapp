@@ -24,18 +24,18 @@ class HypothesesController < ApplicationController
         @unapproved_hypothesis_citation = hypothesis_citation
       end
     end
-    if params[:argument_id].present?
-      argument = @hypothesis.arguments.find_by_ref_number(params[:argument_id])
-      if argument.blank?
-        flash[:error] = "Unable to find that argument"
-      elsif argument.approved?
-        flash[:success] = "Argument has been approved and is included on this page"
+    if params[:explanation_id].present?
+      explanation = @hypothesis.explanations.find_by_ref_number(params[:explanation_id])
+      if explanation.blank?
+        flash[:error] = "Unable to find that explanation"
+      elsif explanation.approved?
+        flash[:success] = "Explanation has been approved and is included on this page"
       else
-        @unapproved_arguments = @hypothesis.arguments.where(ref_number: params[:argument_id])
+        @unapproved_explanations = @hypothesis.explanations.where(ref_number: params[:explanation_id])
       end
     end
-    @arguments = @hypothesis.arguments.approved
-    @unapproved_arguments ||= @hypothesis.arguments.unapproved.shown(current_user)
+    @explanations = @hypothesis.explanations.approved
+    @unapproved_explanations ||= @hypothesis.explanations.unapproved.shown(current_user)
       .order(updated_at: :desc)
   end
 
@@ -48,19 +48,19 @@ class HypothesesController < ApplicationController
     @hypothesis.creator_id = current_user.id
     if @hypothesis.save
       flash[:success] = "Hypothesis created!"
-      redirect_to new_hypothesis_argument_path(hypothesis_id: @hypothesis.ref_id)
+      redirect_to new_hypothesis_explanation_path(hypothesis_id: @hypothesis.ref_id)
     else
       render :new
     end
   end
 
-  # NOTE: As of PR#129 hypothesis edit is skipped - you go straight to argument new
+  # NOTE: As of PR#129 hypothesis edit is skipped - you go straight to explanation new
   # Leaving this around to avoid changing unnecessary things
   def edit
     @page_title = "Edit - #{@hypothesis.title}"
   end
 
-  # NOTE: As of PR#129 hypothesis edit is skipped - you go straight to argument new
+  # NOTE: As of PR#129 hypothesis edit is skipped - you go straight to explanation new
   # Leaving this around to avoid changing unnecessary things
   def update
     if @hypothesis.update(permitted_params)

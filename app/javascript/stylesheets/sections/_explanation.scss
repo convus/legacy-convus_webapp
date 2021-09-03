@@ -1,9 +1,9 @@
-$argument-border-color: rgba(102, 102, 102, 0.08);
-$argument-background: #f7f7f7;
+$explanation-border-color: rgba(102, 102, 102, 0.08);
+$explanation-background: #f7f7f7;
 
-.arguments-wrapper {
+.explanations-wrapper {
   @include media-breakpoint-up(sm) {
-    background: $argument-background;
+    background: $explanation-background;
     border-top: 1px solid rgba(102, 102, 102, 0.05);
     border-bottom: 1px solid rgba(102, 102, 102, 0.05);
   }
@@ -33,7 +33,7 @@ $argument-background: #f7f7f7;
 }
 
 // This is where we show quotes with a left border
-.argument-quote-block {
+.explanation-quote-block {
   margin: 1.5em 0;
   border-left: 4px solid #67bdfc;
   blockquote {
@@ -60,28 +60,28 @@ $argument-background: #f7f7f7;
   }
 }
 
-.argument-show-block {
-  // 60px is padding for the column and the argument-body
+.explanation-show-block {
+  // 60px is padding for the column and the explanation-body
   flex: 0 0 $max-width-text + 60px;
   max-width: 100%;
   p {
     margin: 0.5rem 0 0;
   }
-  .argument-body {
+  .explanation-body {
     padding-top: 1rem;
     padding-bottom: 1rem;
-    border-top: 1px solid $argument-border-color;
+    border-top: 1px solid $explanation-border-color;
   }
-  .argument-body,
-  .argument-show-header {
+  .explanation-body,
+  .explanation-show-header {
     @include media-breakpoint-up(sm) {
       background: #fff;
-      border: 1px solid $argument-border-color;
+      border: 1px solid $explanation-border-color;
       padding-left: 15px;
       padding-right: 15px;
     }
   }
-  .argument-show-header {
+  .explanation-show-header {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     @include media-breakpoint-up(sm) {
@@ -90,15 +90,15 @@ $argument-background: #f7f7f7;
   }
 }
 
-#argumentPreview {
+#explanationPreview {
   padding-bottom: 2em;
   .preview-text {
     margin-bottom: -1em;
   }
 }
 
-#argumentForm {
-  .argument-text-label {
+#explanationForm {
+  .explanation-text-label {
     font-family: $font-family-sans-serif;
     font-weight: 500;
     line-height: 1.2;

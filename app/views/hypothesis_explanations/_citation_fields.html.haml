@@ -3,15 +3,15 @@
 - initially_toggled ||= false
 - initially_toggled = false unless render_full_fields
 - citation ||= f.object
-- argument_quotes ||= []
+- explanation_quotes ||= []
 
 = f.hidden_field :id # necessary to do manually, or else it isn't included for new objects
-= f.hidden_field :argument_quote_id, value: argument_quotes.first&.id # Hidden because
+= f.hidden_field :explanation_quote_id, value: explanation_quotes.first&.id # Hidden because
 .col-md-6.mb-4.mt-2.collapse.citationFields.show
   .citation-quotes-block
-    - argument_quotes.each do |argument_quote|
-      %blockquote.mt-1{id: "citationArgumentQuote-#{argument_quote.id}"}
-        = argument_quote.text
+    - explanation_quotes.each do |explanation_quote|
+      %blockquote.mt-1{id: "citationExplanationQuote-#{explanation_quote.id}"}
+        = explanation_quote.text
   - if citation.editable_by?(current_user)
     .citation-editable-fields
       .form-group.mt-0

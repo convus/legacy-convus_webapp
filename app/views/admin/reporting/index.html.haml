@@ -26,37 +26,37 @@
             = admin_number_display(Hypothesis.where(updated_at: week_period).count)
 
   .col-md-6.mt-2
-    %h2 Arguments
+    %h2 Explanations
     %table.table-list.mt-4
       %tbody
         %tr
           %td Created
           %td
-            = admin_number_display(Argument.count)
+            = admin_number_display(Explanation.count)
         %tr
           %td Approved
           %td
-            = admin_number_display(Argument.approved.count)
+            = admin_number_display(Explanation.approved.count)
             %em.small.less-strong.ml-2
-              = admin_number_display(Argument.normal_user.count)
+              = admin_number_display(Explanation.normal_user.count)
               by normal users
         %tr
           %td Created past week
           %td
-            = admin_number_display(Argument.where(created_at: week_period).count)
+            = admin_number_display(Explanation.where(created_at: week_period).count)
         %tr
           %td Updated past week
           %td
-            = admin_number_display(Argument.where(updated_at: week_period).count)
+            = admin_number_display(Explanation.where(updated_at: week_period).count)
 
--# TODO: remove once all arguments migrated
+-# TODO: remove once all explanations migrated
 %h4.mt-5
-  Hypotheses without arguments
-  - no_argument = Hypothesis.approved.order(:created_at).select { |h| h.arguments.approved.none? }
-  (#{admin_number_display(no_argument.count)})
+  Hypotheses without explanations
+  - no_explanation = Hypothesis.approved.order(:created_at).select { |h| h.explanations.approved.none? }
+  (#{admin_number_display(no_explanation.count)})
 %table.table.table-sm.table-striped
   %tbody
-    - no_argument.each do |hypothesis|
+    - no_explanation.each do |hypothesis|
       %tr
         %td
           %small.convertTime

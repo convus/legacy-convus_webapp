@@ -1,0 +1,15 @@
+<%#
+  NOTE: This is copied in explanation_form.js - which is why this is in erb (closer to the JS template)
+  Differences: This always includes the ID input (and never has newQuote class)
+%>
+<div class="quote-field <%= explanation_quote.removed ? 'removedQuote' : '' %>" id="quoteId-<%= explanation_quote.id %>">
+  <%# NOTE: the ID field should only be filled in if the ID exists %>
+  <input type="hidden" name="explanation[explanation_quotes_attributes][<%= explanation_quote.id %>][id]" id="explanation_explanation_quotes_attributes_<%= explanation_quote.id %>_id" value="<%= explanation_quote.id %>">
+  <input type="hidden" name="explanation[explanation_quotes_attributes][<%= explanation_quote.id %>][ref_number]" id="explanation_explanation_quotes_attributes_<%= explanation_quote.id %>_ref_number" value="<%= explanation_quote.ref_number %>">
+  <input type="hidden" name="explanation[explanation_quotes_attributes][<%= explanation_quote.id %>][removed]" id="explanation_explanation_quotes_attributes_<%= explanation_quote.id %>_removed" value="<%= explanation_quote.removed %>">
+  <input type="hidden" name="explanation[explanation_quotes_attributes][<%= explanation_quote.id %>][text]" id="explanation_explanation_quotes_attributes_<%= explanation_quote.id %>_text" value="<%= explanation_quote.text %>">
+  <blockquote class="quote-text"><%= explanation_quote.text %></blockquote>
+  <div class="form-group">
+    <input type="url" name="explanation[explanation_quotes_attributes][<%= explanation_quote.id %>][url]" id="explanation_explanation_quotes_attributes_<%= explanation_quote.id %>_url" value="<%= explanation_quote.url %>" class="form-control url-field" placeholder="Quote URL source">
+  </div>
+</div>

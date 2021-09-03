@@ -1,5 +1,5 @@
-class ArgumentQuote < ApplicationRecord
-  belongs_to :argument
+class ExplanationQuote < ApplicationRecord
+  belongs_to :explanation
   belongs_to :citation
   belongs_to :creator, class_name: "User"
 
@@ -37,7 +37,7 @@ class ArgumentQuote < ApplicationRecord
 
   def set_calculated_attributes
     self.url = UrlCleaner.with_http(UrlCleaner.without_utm(url))
-    self.creator_id ||= argument.creator_id
+    self.creator_id ||= explanation.creator_id
     self.citation_id = Citation.find_or_create_by_params({url: url, creator_id: creator_id})&.id
     self.ref_number ||= calculated_ref_number
   end
@@ -45,7 +45,7 @@ class ArgumentQuote < ApplicationRecord
   private
 
   def calculated_ref_number
-    arg_quotes = ArgumentQuote.where(argument_id: argument_id)
+    arg_quotes = ExplanationQuote.where(explanation_id: explanation_id)
     arg_quotes = arg_quotes.where("id < ?", id) if id.present?
     self.ref_number = arg_quotes.count + 1
   end
