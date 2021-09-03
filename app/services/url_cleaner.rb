@@ -26,9 +26,14 @@ class UrlCleaner
 
     def without_utm(str)
       return nil unless str.present?
-      str.strip
+      without_anchor(str)
         .gsub(/&?utm_.+?(&|$)/i, "") # Remove UTM parameters
         .gsub(/\/?\??\z/, "") # Remove trailing slash and ?
+    end
+
+    def without_anchor(str)
+      return nil unless str.present?
+      str.strip.gsub(/#.*\z/, "")
     end
 
     def with_http(str)

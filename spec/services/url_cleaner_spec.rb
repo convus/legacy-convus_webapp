@@ -76,6 +76,10 @@ RSpec.describe UrlCleaner do
       target = "https://www.nationalreview.com/2020/09/bring-back-the-bison/?somethingimportant=33333utm"
       expect(subject.without_utm("https://www.nationalreview.com/2020/09/bring-back-the-bison/?utm_source=recirc-desktop&utm_medium=article&UTM_CAMPAIGN=river&somethingimportant=33333utm&utm_content=top-bar-latest&utm_term=second")).to eq target
     end
+    it "returns without anchor" do
+      target = "https://en.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true"
+      expect(subject.without_utm("https://en.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true#cite_note-10")).to eq target
+    end
   end
 
   describe "with_http" do
