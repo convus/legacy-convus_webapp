@@ -5,10 +5,10 @@ class AddToGithubContentJob < ApplicationJob
       hypothesis = Hypothesis.find id
       return true if hypothesis.approved? || hypothesis.pull_request_number.present?
       GithubIntegration.new.create_hypothesis_pull_request(hypothesis)
-    when "Argument"
-      argument = Argument.find id
-      return true if argument.approved? || argument.pull_request_number.present?
-      GithubIntegration.new.create_argument_pull_request(argument)
+    when "Explanation"
+      explanation = Explanation.find id
+      return true if explanation.approved? || explanation.pull_request_number.present?
+      GithubIntegration.new.create_explanation_pull_request(explanation)
     when "Citation"
       citation = Citation.find id
       return true if citation.approved? || citation.pull_request_number.present?

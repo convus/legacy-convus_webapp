@@ -35,26 +35,26 @@
   -#            %span.score-item{class: (active ? "active" : "")}= score
   -#          - else
   -#            = button_to score, user_scores_path, {action: "create", params: {score: score, hypothesis_id: @hypothesis.ref_id, kind: "controversy"}, class: "score-item btn btn-link #{active ? 'active' : ''}"}
-- if @arguments.any? || @unapproved_arguments
-  .arguments-wrapper.row.mt-4.pb-4
-    - @unapproved_arguments.each do |argument|
-      = render partial: "/hypothesis_arguments/show", locals: {argument: argument, unapproved_show: true, unapproved_show_linked: params[:argument_id].present?}
+- if @explanations.any? || @unapproved_explanations
+  .explanations-wrapper.row.mt-4.pb-4
+    - @unapproved_explanations.each do |explanation|
+      = render partial: "/hypothesis_explanations/show", locals: {explanation: explanation, unapproved_show: true, unapproved_show_linked: params[:explanation_id].present?}
 
-    - @arguments.each do |argument|
-      = render partial: "/hypothesis_arguments/show", locals: {argument: argument}
+    - @explanations.each do |explanation|
+      = render partial: "/hypothesis_explanations/show", locals: {explanation: explanation}
 
 .mt-5
 -# ^ extra spacing
 - if @hypothesis.approved?
-  = link_to new_hypothesis_argument_path(hypothesis_id: @hypothesis.ref_id), class: "btn btn-sm btn-outline-secondary" do
-    - if @hypothesis.arguments.shown(current_user).count > 0
-      Add another argument
+  = link_to new_hypothesis_explanation_path(hypothesis_id: @hypothesis.ref_id), class: "btn btn-sm btn-outline-secondary" do
+    - if @hypothesis.explanations.shown(current_user).count > 0
+      Add another explanation
     - else
-      Add argument
+      Add explanation
 .row.pt-2.mt-4
-  - if @arguments.any?
-    - @arguments.argument_quotes.not_removed.ref_ordered.group_by(&:citation_id).each do |_citation_id, argument_quotes|
-      = render partial: "/hypotheses/show_citation_argument_quotes", locals: {argument_quotes: argument_quotes}
+  - if @explanations.any?
+    - @explanations.explanation_quotes.not_removed.ref_ordered.group_by(&:citation_id).each do |_citation_id, explanation_quotes|
+      = render partial: "/hypotheses/show_citation_explanation_quotes", locals: {explanation_quotes: explanation_quotes}
   - else # Render the old school hypothesis citations
     - if @hypothesis_citations.no_approved_challenges.any?
       - @hypothesis_citations.no_approved_challenges.each do |hypothesis_citation|

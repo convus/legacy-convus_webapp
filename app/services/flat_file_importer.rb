@@ -49,11 +49,11 @@ class FlatFileImporter
       hypothesis.approved_at ||= Time.current # If it's in the flat files, it's approved
       hypothesis.update(title: hypothesis_attrs[:title])
 
-      # Handle transition, where not everything has an argument key
-      (hypothesis_attrs[:arguments] || {}).values.each do |argument_attrs|
-        argument = hypothesis.arguments.find_by(ref_number: argument_attrs[:id]) || hypothesis.arguments.build
-        argument.approved_at ||= Time.current
-        argument.update_from_text(argument_attrs[:text], quote_urls: argument_attrs[:quote_urls])
+      # Handle transition, where not everything has an explanation key
+      (hypothesis_attrs[:explanations] || {}).values.each do |explanation_attrs|
+        explanation = hypothesis.explanations.find_by(ref_number: explanation_attrs[:id]) || hypothesis.explanations.build
+        explanation.approved_at ||= Time.current
+        explanation.update_from_text(explanation_attrs[:text], quote_urls: explanation_attrs[:quote_urls])
       end
 
       hypothesis.update(tags_string: hypothesis_attrs[:topics])

@@ -8,12 +8,12 @@ class Hypothesis < ApplicationRecord
 
   has_many :previous_titles
   has_many :hypothesis_citations, autosave: true, dependent: :destroy
-  has_many :citations, through: :hypothesis_citations # TODO: join through arguments
+  has_many :citations, through: :hypothesis_citations # TODO: join through explanations
   has_many :publications, through: :citations
   has_many :hypothesis_tags, dependent: :destroy
   has_many :tags, through: :hypothesis_tags
   has_many :hypothesis_quotes, -> { score_ordered }
-  has_many :arguments
+  has_many :explanations
   has_many :quotes, through: :hypothesis_quotes
   has_many :user_scores
 
@@ -22,7 +22,7 @@ class Hypothesis < ApplicationRecord
   before_validation :set_calculated_attributes
   after_commit :run_associated_tasks
 
-  attr_accessor :skip_associated_tasks, :included_unapproved_hypothesis_citation, :additional_serialized_argument
+  attr_accessor :skip_associated_tasks, :included_unapproved_hypothesis_citation, :additional_serialized_explanation
 
   scope :normal_user, -> { left_joins(:creator).where(users: {role: "normal_user"}) }
 
@@ -84,9 +84,9 @@ class Hypothesis < ApplicationRecord
     (messages + errors.full_messages).compact.uniq - ignored_messages
   end
 
-  # TODO: remove once arguments are fully migrated in
+  # TODO: remove once explanations are fully migrated in
   def show_legacy_citations?
-    arguments.approved.none? &&
+    explanations.approved.none? &&
       (created_at || Time.current) < Time.at(1629820618) # 2021-8-24
   end
 

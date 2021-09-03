@@ -1,4 +1,4 @@
-class Argument < ApplicationRecord
+class Explanation < ApplicationRecord
   include FlatFileSerializable
   include GithubSubmittable
   include PgSearch::Model
@@ -6,16 +6,16 @@ class Argument < ApplicationRecord
   belongs_to :creator, class_name: "User"
   belongs_to :hypothesis
 
-  has_many :argument_quotes, dependent: :destroy
-  has_many :citations, -> { distinct }, through: :argument_quotes
-  has_many :argument_quotes_not_removed, -> { not_removed }, class_name: "ArgumentQuote"
-  has_many :citations_not_removed, -> { distinct }, through: :argument_quotes_not_removed, source: :citation
+  has_many :explanation_quotes, dependent: :destroy
+  has_many :citations, -> { distinct }, through: :explanation_quotes
+  has_many :explanation_quotes_not_removed, -> { not_removed }, class_name: "ExplanationQuote"
+  has_many :citations_not_removed, -> { distinct }, through: :explanation_quotes_not_removed, source: :citation
   has_many :user_scores
 
   before_validation :set_calculated_attributes
   after_commit :run_associated_tasks
 
-  accepts_nested_attributes_for :argument_quotes, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :explanation_quotes, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :citations
 
   scope :with_body_html, -> { where.not(body_html: nil) }
@@ -30,7 +30,7 @@ class Argument < ApplicationRecord
     approved.or(where(creator_id: user.id))
   end
 
-  # Duplicates parseArgumentQuotes in argument_form.js
+  # Duplicates parseExplanationQuotes in explanation_form.js
   def self.parse_quotes(text)
     matching_lines = []
     last_quote_line = nil
@@ -52,8 +52,8 @@ class Argument < ApplicationRecord
     matching_lines.uniq.reject(&:blank?)
   end
 
-  def self.argument_quotes
-    ArgumentQuote.where(argument_id: pluck(:id))
+  def self.explanation_quotes
+    ExplanationQuote.where(explanation_id: pluck(:id))
   end
 
   def shown?(user = nil)
@@ -61,7 +61,7 @@ class Argument < ApplicationRecord
   end
 
   def remove_empty_quotes!
-    argument_quotes.each { |aq| aq.destroy if aq.removed? && aq.url.blank? }
+    explanation_quotes.each { |aq| aq.destroy if aq.removed? && aq.url.blank? }
   end
 
   def hypothesis_approved
@@ -69,9 +69,9 @@ class Argument < ApplicationRecord
   end
 
   def validate_can_add_to_github?
-    if argument_quotes.count == 0
+    if explanation_quotes.count == 0
       errors.add(:base, "must have at least one quote")
-    elsif argument_quotes.not_removed.no_url.any?
+    elsif explanation_quotes.not_removed.no_url.any?
       errors.add(:base, "All quotes need to have URLs")
     end
     errors.full_messages.none?
@@ -79,7 +79,7 @@ class Argument < ApplicationRecord
 
   # Actually serialized into hypothesis files, using a serializer to make it easier to manage
   def flat_file_serialized
-    ArgumentSerializer.new(self, root: false).as_json
+    ExplanationSerializer.new(self, root: false).as_json
   end
 
   def run_associated_tasks
@@ -92,29 +92,29 @@ class Argument < ApplicationRecord
   def update_from_text(passed_text, quote_urls: [])
     update(text: passed_text)
     quotes_from_text = self.class.parse_quotes(text)
-    current_argument_quote_ids = []
+    current_explanation_quote_ids = []
     quotes_from_text.each_with_index do |quote, index|
       url = quote_urls[index]
       if url.present?
         # Make sure we don't grab the same quote multiple times
-        matches = argument_quotes.where.not(id: current_argument_quote_ids).where(url: url)
+        matches = explanation_quotes.where.not(id: current_explanation_quote_ids).where(url: url)
         # Try to grab the match by text
-        argument_quote = matches.where(text: quote).first
+        explanation_quote = matches.where(text: quote).first
         # Fallback to just whatever is there
-        argument_quote ||= matches.first
+        explanation_quote ||= matches.first
       end
-      argument_quote ||= argument_quotes.where.not(id: current_argument_quote_ids).find_by_text(quote)
-      argument_quote ||= argument_quotes.build
-      argument_quote.update!(text: quote, url: url, ref_number: index + 1)
-      current_argument_quote_ids << argument_quote.id
+      explanation_quote ||= explanation_quotes.where.not(id: current_explanation_quote_ids).find_by_text(quote)
+      explanation_quote ||= explanation_quotes.build
+      explanation_quote.update!(text: quote, url: url, ref_number: index + 1)
+      current_explanation_quote_ids << explanation_quote.id
     end
-    argument_quotes.where.not(id: current_argument_quote_ids).update_all(removed: true)
+    explanation_quotes.where.not(id: current_explanation_quote_ids).update_all(removed: true)
     remove_empty_quotes!
     reload
     update_body_html
   end
 
-  def argument_markdown
+  def explanation_markdown
     Redcarpet::Markdown.new(
       Redcarpet::Render::HTML.new(no_images: true, no_links: true, filter_html: true),
       {no_intra_emphasis: true, tables: true, fenced_code_blocks: true, strikethrough: true,
@@ -130,7 +130,7 @@ class Argument < ApplicationRecord
   # Only for internal use, really
   def parse_text
     return "" unless text.present?
-    argument_markdown.render(text.strip)
+    explanation_markdown.render(text.strip)
       .gsub(/(<\/?)h\d+/i, '\1p') # Remove header open brackets and close brackets
   end
 
@@ -138,8 +138,8 @@ class Argument < ApplicationRecord
   def parse_text_with_blockquotes
     html_output = ""
     # This is a dumb way of doing this, sorry, I'm tired (also, I don't think it handles nested blockquotes - but fuck them anyway)
-    quote_sources = argument_quotes.not_removed.order(:ref_number).map(&:citation_ref_html)
-    opening_tag = "<div class=\"argument-quote-block\"><blockquote>"
+    quote_sources = explanation_quotes.not_removed.order(:ref_number).map(&:citation_ref_html)
+    opening_tag = "<div class=\"explanation-quote-block\"><blockquote>"
     parse_text.gsub(/<blockquote>/i, "||QBLK||>>>>").split("||QBLK||").each do |quote_or_not|
       quote_or_not.gsub!(/>>>>/, opening_tag)
       # I think these are generally grouped with the quote? But not sure. So handling it this way
@@ -160,7 +160,7 @@ class Argument < ApplicationRecord
 
   # Eventually will have a separate process for specifying listing_order, but...
   def update_ref_number
-    new_ref_number = Argument.where(hypothesis_id: hypothesis_id).where("id < ?", id).count
+    new_ref_number = Explanation.where(hypothesis_id: hypothesis_id).where("id < ?", id).count
     # numbers start at 1, just to fuck with future you
     update_columns(ref_number: new_ref_number + 1, listing_order: new_ref_number)
   end

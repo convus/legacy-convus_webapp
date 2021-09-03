@@ -102,7 +102,7 @@ unless ENV["CIRCLECI"]
       {
         title: "Purple air sensors are less accurate than EPA sensors. By turning on the conversion \"AQandU\" the data will more closely align with EPA readings",
         id: "1MR",
-        arguments: {},
+        explanations: {},
         topics: ["environment ", "Air quality"],
         cited_urls: [
           {url: "https://www.kqed.org/science/1969271/making-sense-of-purple-air-vs-airnow-and-a-new-map-to-rule-them-all",
@@ -333,7 +333,7 @@ unless ENV["CIRCLECI"]
           end
         end
       end
-      context "argument" do
+      context "explanation" do
         let(:hypothesis_attrs) do
           {
             title: "The earth is roughly spherical",
@@ -341,7 +341,7 @@ unless ENV["CIRCLECI"]
             cited_urls: [],
             new_cited_url: nil,
             topics: [],
-            arguments: {1 =>
+            explanations: {1 =>
                 {id: 1,
                  text:
                   "There are many pieces of evidence to the roughly spherical shape of the earth - such as photos from space - but in terms of personally verifiable evidence, timezones demonstrate the rotation of the earth:\n\n" \
@@ -353,7 +353,7 @@ unless ENV["CIRCLECI"]
                     "https://en.wikipedia.org/wiki/Spherical_Earth"]}}
           }
         end
-        it "creates the argument" do
+        it "creates the explanation" do
           expect(Hypothesis.count).to eq 0
           expect(Citation.count).to eq 0
           expect(Tag.count).to eq 1
@@ -363,22 +363,22 @@ unless ENV["CIRCLECI"]
           expect(hypothesis.ref_id).to eq hypothesis_attrs[:id]
           expect(hypothesis.tags.approved.count).to eq 0
 
-          expect(hypothesis.arguments.count).to eq 1
-          argument = hypothesis.arguments.first
-          expect(argument.approved_at).to be_within(5).of Time.current
-          expect(argument.ref_number).to eq 1
-          expect(argument.text).to eq hypothesis_attrs.dig(:arguments, 1, :text)
-          expect(argument.body_html).to be_present
-          expect(argument.argument_quotes.not_removed.count).to eq 2
-          argument_quote1 = argument.argument_quotes.ref_ordered.first
-          expect(argument_quote1.ref_number).to eq 1
-          expect(argument_quote1.url).to eq "https://en.wikipedia.org/wiki/Spherical_Earth"
-          expect(argument_quote1.text).to eq "On a flat Earth, a Sun that shines in all directions would illuminate the entire surface at the same time, and all places would experience sunrise and sunset at the horizon at about the same time. With a spherical Earth, half the planet is in daylight at any given time and the other half experiences nighttime. When a given location on the spherical Earth is in sunlight, its antipode - the location exactly on the opposite side of the Earth - is in darkness."
+          expect(hypothesis.explanations.count).to eq 1
+          explanation = hypothesis.explanations.first
+          expect(explanation.approved_at).to be_within(5).of Time.current
+          expect(explanation.ref_number).to eq 1
+          expect(explanation.text).to eq hypothesis_attrs.dig(:explanations, 1, :text)
+          expect(explanation.body_html).to be_present
+          expect(explanation.explanation_quotes.not_removed.count).to eq 2
+          explanation_quote1 = explanation.explanation_quotes.ref_ordered.first
+          expect(explanation_quote1.ref_number).to eq 1
+          expect(explanation_quote1.url).to eq "https://en.wikipedia.org/wiki/Spherical_Earth"
+          expect(explanation_quote1.text).to eq "On a flat Earth, a Sun that shines in all directions would illuminate the entire surface at the same time, and all places would experience sunrise and sunset at the horizon at about the same time. With a spherical Earth, half the planet is in daylight at any given time and the other half experiences nighttime. When a given location on the spherical Earth is in sunlight, its antipode - the location exactly on the opposite side of the Earth - is in darkness."
 
-          argument_quote2 = argument.argument_quotes.ref_ordered.last
-          expect(argument_quote2.ref_number).to eq 2
-          expect(argument_quote2.url).to eq "https://en.wikipedia.org/wiki/Spherical_Earth"
-          expect(argument_quote2.text).to eq "The Earth is massive enough that the pull of gravity maintains its roughly spherical shape. Most of its deviation from spherical stems from the centrifugal force caused by rotation around its north-south axis. This force deforms the sphere into an oblate ellipsoid"
+          explanation_quote2 = explanation.explanation_quotes.ref_ordered.last
+          expect(explanation_quote2.ref_number).to eq 2
+          expect(explanation_quote2.url).to eq "https://en.wikipedia.org/wiki/Spherical_Earth"
+          expect(explanation_quote2.text).to eq "The Earth is massive enough that the pull of gravity maintains its roughly spherical shape. Most of its deviation from spherical stems from the centrifugal force caused by rotation around its north-south axis. This force deforms the sphere into an oblate ellipsoid"
 
           # Will need to add these!
           expect(hypothesis.citations.count).to eq 0

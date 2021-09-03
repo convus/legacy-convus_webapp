@@ -1,5 +1,5 @@
 - is_edit ||= false
-- render_preview = @argument.id.present? && @argument.body_html.present?
+- render_preview = @explanation.id.present? && @explanation.body_html.present?
 
 .small-page-header
   %h1
@@ -7,8 +7,8 @@
       Hypothesis:
 
 
-- form_submit_path = is_edit ? hypothesis_argument_path(hypothesis_id: @hypothesis, id: @argument.id) : hypothesis_arguments_path(hypothesis_id: @hypothesis)
-= form_for @argument, url: form_submit_path, method: (is_edit ? "PATCH" : "POST"), html: {class: "form", id: "argumentForm"} do |f|
+- form_submit_path = is_edit ? hypothesis_explanation_path(hypothesis_id: @hypothesis, id: @explanation.id) : hypothesis_explanations_path(hypothesis_id: @hypothesis)
+= form_for @explanation, url: form_submit_path, method: (is_edit ? "PATCH" : "POST"), html: {class: "form", id: "explanationForm"} do |f|
   = f.hidden_field :add_to_github, class: "addToGithubField"
   .row
     - if @hypothesis.editable_by?(current_user)
@@ -30,51 +30,51 @@
     - else
       = render partial: "/hypotheses/show_title", locals: {hypothesis: @hypothesis, render_show_link: true}
   .row
-    - if @argument.errors.any?
+    - if @explanation.errors.any?
       .col-md-6.mb-4.mt-2
-        = render partial: "/shared/errors", locals: {name: "argument", obj: @argument}
+        = render partial: "/shared/errors", locals: {name: "explanation", obj: @explanation}
 
   .row.mt-4
     .max-width-text-container.col
       .form-group.mb-0
         = f.label :text do
-          %span.argument-text-label{ title: "Renders with markdown, except no images, links or html" }
+          %span.explanation-text-label{ title: "Renders with markdown, except no images, links or html" }
             - if is_edit
-              Edit new argument:
+              Edit new explanation:
             - else
-              Create argument:
-        = f.text_area :text, rows: 10, placeholder: "Make your argument!", class: "form-control"
+              Create explanation:
+        = f.text_area :text, rows: 10, placeholder: "Make your explanation!", class: "form-control"
         .less-strong.text-right
           %a.gray-link{href: "#editingInfo", tabindex: -1, "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "show_raw", "data-queryvalue" => "true"}
             editing help
       #editingInfo.collapse
         %ul.mt-2
-          %li All arguments need at least one blockquote. Create one by starting a line with ">"
+          %li All explanations need at least one blockquote. Create one by starting a line with ">"
           %li Create italics by putting underscores <em>_around some text_</em>
           %li Make text bold by putting two asterisks <strong>**around text**</strong>
-          %li Save to see a preview of what the argument will look like
+          %li Save to see a preview of what the explanation will look like
 
   #quoteFieldsWrapper
     #quoteFields.row
-      - @argument.argument_quotes.not_removed.ref_ordered.each do |argument_quote|
-        = render partial: "/hypothesis_arguments/argument_quote_fields", locals: {argument_quote: argument_quote}
+      - @explanation.explanation_quotes.not_removed.ref_ordered.each do |explanation_quote|
+        = render partial: "/hypothesis_explanations/explanation_quote_fields", locals: {explanation_quote: explanation_quote}
 
-    #quoteFieldsRemoved.removed-quotes.row.collapse{class: (@argument.argument_quotes.removed.any? ? "show" : "")}
+    #quoteFieldsRemoved.removed-quotes.row.collapse{class: (@explanation.explanation_quotes.removed.any? ? "show" : "")}
       .col-12.text-warning
         %h4 Removed quotes
-      - @argument.argument_quotes.removed.ref_ordered.each do |argument_quote|
-        = render partial: "/hypothesis_arguments/argument_quote_fields", locals: {argument_quote: argument_quote}
+      - @explanation.explanation_quotes.removed.ref_ordered.each do |explanation_quote|
+        = render partial: "/hypothesis_explanations/explanation_quote_fields", locals: {explanation_quote: explanation_quote}
   .row.pt-4.mt-5
     .col
       .form-group
         = submit_tag "Save", class: "btn btn-primary"
 
   - if render_preview
-    #argumentPreview.row.arguments-wrapper.mt-4.mb-4.collapse{class: (render_preview ? "show" : "")}
+    #explanationPreview.row.explanations-wrapper.mt-4.mb-4.collapse{class: (render_preview ? "show" : "")}
       .max-width-text-container
         .col-12.preview-text.mt-3
-          %em.text-info Preview of argument:
-        = render partial: "/hypothesis_arguments/show", locals: {argument: @argument, preview: true, skip_edit: true}
+          %em.text-info Preview of explanation:
+        = render partial: "/hypothesis_explanations/show", locals: {explanation: @explanation, preview: true, skip_edit: true}
 
   - if is_edit
     .mt-4
@@ -83,7 +83,7 @@
         %span.loadingSpinner.spinner-border.spinner-border-sm.collapse.ml-2
           %span.sr-only Loading...
       %em#quoteRequired.collapse.less-strong
-        Arguments must include at least one block quote to submit (start line with >)
+        Explanations must include at least one block quote to submit (start line with >)
 
     %h2.mt-5
       - if @hypothesis_citations_shown.count == 0
@@ -93,8 +93,8 @@
     .row#citationsBlock{"data-citeresearchkinds" => Citation.kinds_research.join(",")}
       = f.fields_for :citations do |builder|
         - citation = builder.object
-        - argument_quotes = @argument.argument_quotes.where(url: citation.url)
-        = render partial: "citation_fields", locals: {f: builder, initially_toggled: ParamsNormalizer.boolean(params[:initially_toggled]), citation: citation, argument_quotes: argument_quotes}
+        - explanation_quotes = @explanation.explanation_quotes.where(url: citation.url)
+        = render partial: "citation_fields", locals: {f: builder, initially_toggled: ParamsNormalizer.boolean(params[:initially_toggled]), citation: citation, explanation_quotes: explanation_quotes}
   .mt-5
   - if @hypothesis.show_legacy_citations?
     %h2

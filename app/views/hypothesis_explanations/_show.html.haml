@@ -3,15 +3,15 @@
 - unapproved_show_linked ||= false
 - skip_edit ||= false
 -# Probably don't want to pass in show_editable?
-- show_edit ||= !skip_edit && argument.editable_by?(current_user)
+- show_edit ||= !skip_edit && explanation.editable_by?(current_user)
 
-.col.argument-show-block.mt-4
+.col.explanation-show-block.mt-4
   - if unapproved_show || show_edit
-    %header.argument-show-header.d-flex
+    %header.explanation-show-header.d-flex
       - if unapproved_show
         %span.less-strong.small
           %em
-            Argument shown because
+            Explanation shown because
             - if unapproved_show_linked
               you clicked a link to view it.
             - else
@@ -19,19 +19,19 @@
             It is
             %strong.text-warning not
             approved.
-      - if !argument.approved? && argument.submitted_to_github?
+      - if !explanation.approved? && explanation.submitted_to_github?
         %small.ml-auto
-          - if argument.pull_request_number.blank?
+          - if explanation.pull_request_number.blank?
             %span.less-strong
               waiting for PR,
               -# Hacky hack, sry
               %a{href: "javascript:void(0);", onclick: "location.reload();"}
                 reload
           - else
-            = link_to "PR##{argument.pull_request_number}", argument.pull_request_url
+            = link_to "PR##{explanation.pull_request_number}", explanation.pull_request_url
       - if show_edit
         %small.ml-auto
-          = link_to "edit", edit_hypothesis_argument_path(hypothesis_id: @hypothesis.id, id: argument.id)
+          = link_to "edit", edit_hypothesis_explanation_path(hypothesis_id: @hypothesis.id, id: explanation.id)
 
-  .argument-body
-    = argument.body_html&.html_safe
+  .explanation-body
+    = explanation.body_html&.html_safe

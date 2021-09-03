@@ -129,48 +129,48 @@ RSpec.describe "/hypotheses", type: :request do
         end
       end
 
-      context "with arguments" do
-        let!(:argument) { FactoryBot.create(:argument_approved, hypothesis: subject) }
+      context "with explanations" do
+        let!(:explanation) { FactoryBot.create(:explanation_approved, hypothesis: subject) }
         it "renders" do
           expect(subject.approved?).to be_truthy
-          expect(argument.approved?).to be_truthy
-          expect(subject.arguments.shown.pluck(:id)).to eq([argument.id])
+          expect(explanation.approved?).to be_truthy
+          expect(subject.explanations.shown.pluck(:id)).to eq([explanation.id])
           get "#{base_url}/#{subject.to_param}"
           expect(response.code).to eq "200"
           expect(response).to render_template("hypotheses/show")
-          expect(assigns(:arguments).pluck(:id)).to eq([argument.id])
-          expect(assigns(:unapproved_arguments).pluck(:id)).to eq([])
+          expect(assigns(:explanations).pluck(:id)).to eq([explanation.id])
+          expect(assigns(:unapproved_explanations).pluck(:id)).to eq([])
         end
-        context "unapproved argument_id" do
+        context "unapproved explanation_id" do
           let(:current_user) { FactoryBot.create(:user) }
-          let!(:argument2) { FactoryBot.create(:argument, hypothesis: subject, creator: current_user) }
-          let!(:argument3) { FactoryBot.create(:argument, hypothesis: subject) }
+          let!(:explanation2) { FactoryBot.create(:explanation, hypothesis: subject, creator: current_user) }
+          let!(:explanation3) { FactoryBot.create(:explanation, hypothesis: subject) }
           it "renders, includes unapproved_hypothesis_citation" do
             expect(subject.approved?).to be_truthy
-            expect(argument.approved?).to be_truthy
-            expect(argument2.creator_id).to eq current_user.id
-            expect(argument2.approved?).to be_falsey
-            expect(argument2.shown?(current_user)).to be_truthy
-            expect(argument3.shown?(current_user)).to be_falsey
-            # passing ID renders that argument
-            get "#{base_url}/#{subject.to_param}?argument_id=#{argument3.ref_number}"
+            expect(explanation.approved?).to be_truthy
+            expect(explanation2.creator_id).to eq current_user.id
+            expect(explanation2.approved?).to be_falsey
+            expect(explanation2.shown?(current_user)).to be_truthy
+            expect(explanation3.shown?(current_user)).to be_falsey
+            # passing ID renders that explanation
+            get "#{base_url}/#{subject.to_param}?explanation_id=#{explanation3.ref_number}"
             expect(response.code).to eq "200"
             expect(response).to render_template("hypotheses/show")
-            expect(assigns(:arguments).pluck(:id)).to eq([argument.id])
-            expect(assigns(:unapproved_arguments).pluck(:id)).to eq([argument3.id])
+            expect(assigns(:explanations).pluck(:id)).to eq([explanation.id])
+            expect(assigns(:unapproved_explanations).pluck(:id)).to eq([explanation3.id])
             # And with the user signed in!
             sign_in current_user
             get "#{base_url}/#{subject.to_param}"
             expect(response.code).to eq "200"
             expect(response).to render_template("hypotheses/show")
-            expect(assigns(:arguments).pluck(:id)).to eq([argument.id])
-            expect(assigns(:unapproved_arguments).pluck(:id)).to eq([argument2.id])
-            # passing ID renders that argument (even with user)
-            get "#{base_url}/#{subject.to_param}?argument_id=#{argument3.ref_number}"
+            expect(assigns(:explanations).pluck(:id)).to eq([explanation.id])
+            expect(assigns(:unapproved_explanations).pluck(:id)).to eq([explanation2.id])
+            # passing ID renders that explanation (even with user)
+            get "#{base_url}/#{subject.to_param}?explanation_id=#{explanation3.ref_number}"
             expect(response.code).to eq "200"
             expect(response).to render_template("hypotheses/show")
-            expect(assigns(:arguments).pluck(:id)).to eq([argument.id])
-            expect(assigns(:unapproved_arguments).pluck(:id)).to eq([argument3.id])
+            expect(assigns(:explanations).pluck(:id)).to eq([explanation.id])
+            expect(assigns(:unapproved_explanations).pluck(:id)).to eq([explanation3.id])
           end
         end
       end
@@ -284,7 +284,7 @@ RSpec.describe "/hypotheses", type: :request do
           post base_url, params: {hypothesis: simple_hypothesis_params.merge(approved_at: Time.current.to_s)}
         }.to change(Hypothesis, :count).by 1
         hypothesis = Hypothesis.last
-        expect(response).to redirect_to new_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id)
+        expect(response).to redirect_to new_hypothesis_explanation_path(hypothesis_id: hypothesis.ref_id)
         expect(AddToGithubContentJob.jobs.count).to eq 0
         expect(flash[:success]).to be_present
 
@@ -314,7 +314,7 @@ RSpec.describe "/hypotheses", type: :request do
         expect(hypothesis_quote2.citation_id).to eq citation.id
         expect(hypothesis_quote1.score).to be > hypothesis_quote2.score
       end
-      # NOTE: As of PR#129 hypothesis edit is skipped - you go straight to argument new
+      # NOTE: As of PR#129 hypothesis edit is skipped - you go straight to explanation new
       # This test started failing, but it's no longer relevant, so I commented it out
       # context "invalid params" do
       #   let(:invalid_hypothesis_params) { simple_hypothesis_params.merge(title: "", hypothesis_citations_attributes: {Time.current.to_i.to_s => {url: " ", quotes_text: "whooooo"}}) }
@@ -344,7 +344,7 @@ RSpec.describe "/hypotheses", type: :request do
             post base_url, params: {hypothesis: hypothesis_params}
           }.to change(Citation, :count).by 1
           hypothesis = Hypothesis.last
-          expect(response).to redirect_to new_hypothesis_argument_path(hypothesis_id: hypothesis.ref_id)
+          expect(response).to redirect_to new_hypothesis_explanation_path(hypothesis_id: hypothesis.ref_id)
           expect(flash[:success]).to be_present
 
           expect(hypothesis.title).to eq simple_hypothesis_params[:title]

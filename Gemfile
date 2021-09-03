@@ -27,7 +27,7 @@ gem "coderay" # For pretty printing JSON
 gem "chartkick" # Display charts
 gem "groupdate" # Required for charts
 
-gem "redcarpet" # markdown parser. Used for arguments
+gem "redcarpet" # markdown parser. Used for explanations
 
 # Redis stuff
 gem "hiredis"

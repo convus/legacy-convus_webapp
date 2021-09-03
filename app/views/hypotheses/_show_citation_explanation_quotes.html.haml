@@ -1,12 +1,12 @@
 -# Must pass in hypothesis citation
 - skip_challenge ||= false
-- citation ||= argument_quotes.first.citation
+- citation ||= explanation_quotes.first.citation
 
 .col-xl-6.mt-2.mb-2
   .hypothesis-quotes-block
-    - argument_quotes.each do |argument_quote|
+    - explanation_quotes.each do |explanation_quote|
       %blockquote
-        = argument_quote.text
+        = explanation_quote.text
 
   %table.table-list.mb-0
     %tbody
