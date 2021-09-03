@@ -60,7 +60,7 @@ class Hypothesis < ApplicationRecord
 
   def self.clean_title(str)
     return nil unless str.present?
-    str.strip.gsub(/(\.|\!)\z/, "")
+    str.strip.gsub(/(\.|!)\z/, "")
   end
 
   # We're saving hypothesis with a bunch of associations, make it easier to override the errors
