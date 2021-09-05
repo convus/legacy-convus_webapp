@@ -93,18 +93,6 @@ module ApplicationHelper
     end
   end
 
-  def hypothesis_score_class(score)
-    if score > 17
-      "score-very-high"
-    elsif score > 11
-      "score-high"
-    elsif score > 5
-      "score-medium"
-    else
-      "score-low"
-    end
-  end
-
   def link_to_add_fields(name, f, association, html_options = {}, obj_attrs: {}, filename: nil, &block)
     new_object = f.object.send(association).klass.new(obj_attrs)
     id = new_object.object_id
@@ -119,15 +107,6 @@ module ApplicationHelper
     html_options[:data].merge!(id: id, fields: fields.delete("\n"))
     # Use button, so that pressing spacebar when focused on it works
     content_tag(:button, name, html_options)
-  end
-
-  # This is required by both hypothesis#new and edit, so make it consistent
-  def citations_block_attributes
-    {:id => "citationsBlock",
-     "data-citekinds" => Citation.kinds.join(","),
-     "data-citeresearchkinds" => Citation.kinds_research.join(","),
-     "data-challengekinds" => HypothesisCitation.challenge_kinds.join(","),
-     "data-challengesamekinds" => HypothesisCitation.challenge_same_citation_kinds.join(",")}
   end
 
   def in_admin?

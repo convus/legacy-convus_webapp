@@ -10,7 +10,6 @@ import PeriodSelector from './utils/period_selector.js'
 import Chartkick from 'chartkick'
 import Chart from 'chart.js'
 
-import HypothesisForm from '../scripts/sections/hypothesis_form.js'
 import ExplanationForm from '../scripts/sections/explanation_form.js'
 import AdminBase from '../scripts/sections/admin_base.js'
 
@@ -26,11 +25,6 @@ $(document).on('turbolinks:load', function () {
   if ($('#timeSelectionBtnGroup').length) {
     const periodSelector = PeriodSelector()
     periodSelector.init()
-  }
-
-  if ($('#hypothesisForm').length) {
-    window.hypothesisForm = new HypothesisForm()
-    window.hypothesisForm.init()
   }
 
   if ($('#explanationForm').length) {

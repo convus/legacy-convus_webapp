@@ -1,6 +1,7 @@
 class ExplanationQuote < ApplicationRecord
   belongs_to :explanation
   belongs_to :citation
+  belongs_to :hypothesis # Added to make joins to hypothesis easier
   belongs_to :creator, class_name: "User"
 
   before_validation :set_calculated_attributes
@@ -8,6 +9,7 @@ class ExplanationQuote < ApplicationRecord
   scope :ref_ordered, -> { reorder(:ref_number) }
   scope :removed, -> { where(removed: true) }
   scope :not_removed, -> { where(removed: false) }
+  scope :approved, -> { not_removed.joins(:explanation).merge(Explanation.approved) }
   scope :no_url, -> { where(url: nil) } # UrlCleaner returns nil if empty
 
   def removed?
@@ -36,10 +38,11 @@ class ExplanationQuote < ApplicationRecord
   end
 
   def set_calculated_attributes
-    self.url = UrlCleaner.with_http(UrlCleaner.without_utm(url))
     self.creator_id ||= explanation.creator_id
-    self.citation_id = Citation.find_or_create_by_params({url: url, creator_id: creator_id})&.id
     self.ref_number ||= calculated_ref_number
+    self.hypothesis_id ||= explanation&.hypothesis_id
+    self.url = UrlCleaner.with_http(UrlCleaner.without_utm(url))
+    self.citation_id = Citation.find_or_create_by_params({url: url, creator_id: creator_id})&.id
   end
 
   private

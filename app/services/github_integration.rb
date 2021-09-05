@@ -90,9 +90,8 @@ class GithubIntegration
     pull_request = create_pull_request(commit_message, pr_body)
     number = pull_request.url.split("/pulls/").last
     hypothesis.update(pull_request_number: number)
-    citation_ids_added.each do |id|
-      hypothesis.citations.find(id).update(pull_request_number: number)
-    end
+    hypothesis.citations.unapproved.where(id: citation_ids_added, pull_request_number: nil)
+      .update_all(pull_request_number: number)
     pull_request
   end
 
@@ -120,6 +119,8 @@ class GithubIntegration
     pull_request = create_pull_request(commit_message, pr_body)
     number = pull_request.url.split("/pulls/").last
     explanation.update(pull_request_number: number)
+    explanation.citations_not_removed.unapproved.where(pull_request_number: nil)
+      .update_all(pull_request_number: number)
     pull_request
   end
 

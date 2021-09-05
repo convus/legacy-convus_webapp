@@ -17,7 +17,7 @@ class CitationSerializer < ApplicationSerializer
   end
 
   def quotes
-    object.quotes.map(&:text)
+    object.quotes_approved
   end
 
   def kind

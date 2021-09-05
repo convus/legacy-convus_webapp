@@ -24,12 +24,10 @@ class Citation < ApplicationRecord
   belongs_to :publication
   belongs_to :creator, class_name: "User"
 
-  has_many :hypothesis_citations, dependent: :destroy
-  has_many :hypotheses, through: :hypothesis_citations
-  has_many :quotes
-  has_many :hypothesis_quotes
-
-  accepts_nested_attributes_for :quotes
+  has_many :explanation_quotes
+  has_many :explanation_quotes_not_removed, -> { not_removed }, class_name: "ExplanationQuote"
+  has_many :explanation_quotes_approved, -> { approved }, class_name: "ExplanationQuote"
+  has_many :hypotheses, through: :explanation_quotes_not_removed
 
   validates_presence_of :url
   validates :slug, presence: true, uniqueness: {scope: [:publication_id]}
@@ -41,8 +39,6 @@ class Citation < ApplicationRecord
 
   scope :by_creation, -> { reorder(:created_at) }
 
-  attr_accessor :quotes_text
-
   pg_search_scope :text_search, against: %i[title slug] # TODO: Create tsvector indexes for performance (issues/92)
 
   def self.kinds
@@ -53,7 +49,6 @@ class Citation < ApplicationRecord
     %w[research_comment research_review research_meta_analysis research research_with_rct].freeze
   end
 
-  # This might fit better in CitationScorer
   def self.kinds_data
     {
       article: {humanized: "article"},
@@ -113,7 +108,6 @@ class Citation < ApplicationRecord
   def self.find_or_create_by_params(attrs)
     existing = friendly_find(attrs[:url]) if (attrs || {}).dig(:url).present?
     return create(attrs) if existing.blank?
-    existing.quotes_text = attrs[:quotes_text]
     existing
   end
 
@@ -171,26 +165,8 @@ class Citation < ApplicationRecord
     kind_humanized&.gsub(/\([^)]*\)/, "")
   end
 
-  def kind_score
-    kind_data[:score]
-  end
-
   def kind_selectable?
     true # Should be false if the URL is wikipedia, probably some other publishers too
-  end
-
-  def badges
-    CitationScorer.citation_badges(self)
-  end
-
-  def calculated_score
-    badges.values.sum
-  end
-
-  def score_percentage
-    score_f = score.to_f
-    score_f = 10 if score_f > 10
-    score_f * 10
   end
 
   # Required for FlatFileSerializable
@@ -207,6 +183,14 @@ class Citation < ApplicationRecord
     url.match?(title)
   end
 
+  def quotes
+    explanation_quotes_not_removed.ref_ordered.pluck(:text).uniq
+  end
+
+  def quotes_approved
+    explanation_quotes_approved.ref_ordered.pluck(:text).uniq
+  end
+
   def skip_author_field?
     publication&.wikipedia?
   end
@@ -217,12 +201,11 @@ class Citation < ApplicationRecord
 
   def set_calculated_attributes
     self.url = UrlCleaner.with_http(UrlCleaner.without_utm(url))
-    self.creator_id ||= hypotheses.first&.creator_id
+    self.creator_id ||= explanation_quotes.first&.creator_id
     self.publication ||= Publication.find_or_create_by_params(title: @publication_title, url: url, url_is_not_publisher: url_is_not_publisher)
     self.title = UrlCleaner.without_base_domain(url) unless title.present?
     self.slug = Slugifyer.filename_slugify(title)
     self.path_slug = [publication&.slug, slug].compact.join("-")
-    self.score = calculated_score
     self.kind ||= "article" # default to article for now
     self.authors ||= []
     if FETCH_WAYBACK_URL && url_is_direct_link_to_full_text

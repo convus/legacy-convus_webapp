@@ -1,5 +1,5 @@
 - render_waiting_for_approval ||= false
-- hypothesis_citation_id ||= nil
+- explanation_quote_id ||= nil
 
 .col-md-6
   - if render_waiting_for_approval && citation.waiting_on_github?
@@ -46,11 +46,11 @@
         %tr.only-dev-visible
           %td ID
           %td= citation.id
-        - if hypothesis_citation_id.present?
+        - if explanation_quote_id.present?
           %tr.only-dev-visible
             %td
-              %small Hypothesis Citation ID
-            %td= hypothesis_citation_id
+              %small Explanation Quote ID
+            %td= explanation_quote_id
       %tr
         %td URL direct link?
         %td= display_true_or_false(citation.url_is_direct_link_to_full_text)
@@ -65,9 +65,6 @@
         %td
           - if citation.publication.present?
             = link_to citation.publication.title, publication_path(citation.publication)
-            - citation.publication.badges.keys.each do |badge|
-              %em.small.less-strong
-                = CitationScorer.badge_humanized(badge)
       %tr
         %td Published date
         %td

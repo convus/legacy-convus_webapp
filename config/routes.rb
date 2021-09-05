@@ -16,7 +16,6 @@ Rails.application.routes.draw do
   resources :citations, :publications
 
   resources :hypotheses do
-    resources :citations, only: %i[new create edit update], controller: "hypothesis_citations"
     resources :explanations, only: %i[new create edit update], controller: "hypothesis_explanations"
   end
 

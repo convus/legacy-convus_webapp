@@ -172,21 +172,6 @@ RSpec.describe Citation, type: :model do
     end
   end
 
-  describe "score_percentage" do
-    let(:citation) { Citation.new }
-    it "returns score_percentage" do
-      allow(citation).to receive(:score) { 5 }
-      expect(citation.score).to eq 5
-      expect(citation.score_percentage).to eq 50
-    end
-    context "over 10 score" do
-      it "returns 10" do
-        allow(citation).to receive(:score) { 15 }
-        expect(citation.score_percentage).to eq 100
-      end
-    end
-  end
-
   describe "authors_str" do
     let(:citation) { Citation.new(authors_str: "george stanley") }
     it "does one" do
@@ -199,6 +184,26 @@ RSpec.describe Citation, type: :model do
         expect(citation.authors).to eq(["Stanley, George", "Frank, Bobby"])
         expect(citation.authors_str).to eq "Stanley, George; Frank, Bobby"
       end
+    end
+  end
+
+  describe "quotes" do
+    let(:url) { "https://online-research.org/stuff" }
+    let!(:explanation_quote1) { FactoryBot.create(:explanation_quote, text: "Bike Bike Bike", url: url) }
+    let(:explanation1) { explanation_quote1.explanation }
+    let(:explanation2) { FactoryBot.create(:explanation_approved) }
+    let!(:explanation_quote2) { FactoryBot.create(:explanation_quote, text: "Bike Bike Bike", url: url, explanation: explanation2) }
+    let!(:explanation_quote3) { FactoryBot.create(:explanation_quote, url: url, removed: true) }
+    let(:citation) { explanation_quote1.citation }
+    it "has quotes" do
+      expect(Explanation.pluck(:id)).to match_array([explanation1.id, explanation2.id, explanation_quote3.explanation_id])
+      expect(ExplanationQuote.approved.pluck(:id)).to eq([explanation_quote2.id])
+      expect(Hypothesis.pluck(:id)).to match_array([explanation_quote1.hypothesis_id, explanation_quote2.hypothesis_id, explanation_quote3.hypothesis_id])
+      expect(citation.reload.explanation_quotes.pluck(:id)).to match_array([explanation_quote1.id, explanation_quote2.id, explanation_quote3.id])
+      expect(citation.quotes).to eq(["Bike Bike Bike"])
+      expect(citation.quotes_approved).to eq(["Bike Bike Bike"])
+      expect(citation.hypotheses.pluck(:id)).to match_array([explanation_quote1.hypothesis_id, explanation_quote2.hypothesis_id])
+      expect(explanation_quote1.hypothesis.citations.pluck(:id)).to eq([citation.id])
     end
   end
 
@@ -229,22 +234,6 @@ RSpec.describe Citation, type: :model do
         expect {
           citation.save
         }.to change(AddToGithubContentJob.jobs, :count).by 1
-      end
-    end
-    context "via hypothesis creation" do
-      let!(:hypothesis_citation) { FactoryBot.build(:hypothesis_citation, url: "https://something.com") }
-      it "enqueues job" do
-        # This might not be how it should work, but it is how it works right now, so document it.
-        # ... via HypothesesController, it does not enqueue the citation job
-        Sidekiq::Worker.clear_all
-        expect(Citation.count).to eq 0
-        expect {
-          hypothesis_citation.save
-          hypothesis_citation.hypothesis.update(add_to_github: true)
-        }.to change(AddToGithubContentJob.jobs, :count).by 1
-        expect(AddToGithubContentJob.jobs.map { |j| j["args"] }.last.flatten).to eq(["Hypothesis", hypothesis_citation.hypothesis.id])
-        expect(Hypothesis.count).to eq 1
-        expect(Citation.count).to eq 1
       end
     end
     context "with skip_github_update" do

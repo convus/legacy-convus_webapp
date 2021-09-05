@@ -6,9 +6,7 @@ RSpec.describe "hypothesis_explanations", type: :request do
   let(:base_url) { "/hypotheses/#{hypothesis.ref_id}/explanations" }
   let(:current_user) { nil }
   let!(:hypothesis) { FactoryBot.create(:hypothesis, creator: hypothesis_creator, created_at: Time.current - 1.hour) }
-  let(:hypothesis_citation) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: citation_url, creator: current_user) }
   let(:hypothesis_creator) { FactoryBot.create(:user) }
-  let(:citation) { hypothesis_citation.citation }
   let(:quote) {}
   let(:subject) { FactoryBot.create(:explanation, hypothesis: hypothesis, creator: current_user) }
 
@@ -87,7 +85,7 @@ RSpec.describe "hypothesis_explanations", type: :request do
         expect(response.code).to eq "200"
         expect(response).to render_template("hypothesis_explanations/new")
         expect(assigns(:hypothesis)&.id).to eq hypothesis.id
-        expect(assigns(:argumennt)&.id).to be_blank
+        expect(assigns(:argument)&.id).to be_blank
       end
     end
 
@@ -167,7 +165,6 @@ RSpec.describe "hypothesis_explanations", type: :request do
         # Test that it sets the right title
         title_tag = response.body[/<title.*<\/title>/]
         expect(title_tag).to eq "<title>Edit Explanation: #{subject.hypothesis.title}</title>"
-        expect(assigns(:hypothesis_citations_shown)&.pluck(:id)).to eq([])
       end
       context "approved" do
         let(:subject) { FactoryBot.create(:explanation_approved, hypothesis: hypothesis, creator: current_user) }

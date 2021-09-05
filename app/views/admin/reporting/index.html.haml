@@ -48,18 +48,3 @@
           %td Updated past week
           %td
             = admin_number_display(Explanation.where(updated_at: week_period).count)
-
--# TODO: remove once all explanations migrated
-%h4.mt-5
-  Hypotheses without explanations
-  - no_explanation = Hypothesis.approved.order(:created_at).select { |h| h.explanations.approved.none? }
-  (#{admin_number_display(no_explanation.count)})
-%table.table.table-sm.table-striped
-  %tbody
-    - no_explanation.each do |hypothesis|
-      %tr
-        %td
-          %small.convertTime
-            = l hypothesis.created_at, format: :convert_time
-        %td
-          = link_to hypothesis.title, hypothesis_path(hypothesis)

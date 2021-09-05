@@ -14,16 +14,6 @@ class HypothesesController < ApplicationController
 
   def show
     @page_title = @hypothesis.title
-    if params[:hypothesis_citation_id].present?
-      hypothesis_citation = @hypothesis.hypothesis_citations.find_by_id(params[:hypothesis_citation_id])
-      if hypothesis_citation.blank?
-        flash[:error] = "Unable to find that citation"
-      elsif hypothesis_citation.approved?
-        flash[:success] = "Citation has been approved and is included on this page"
-      else
-        @unapproved_hypothesis_citation = hypothesis_citation
-      end
-    end
     if params[:explanation_id].present?
       explanation = @hypothesis.explanations.find_by_ref_number(params[:explanation_id])
       if explanation.blank?
@@ -54,45 +44,17 @@ class HypothesesController < ApplicationController
     end
   end
 
-  # NOTE: As of PR#129 hypothesis edit is skipped - you go straight to explanation new
-  # Leaving this around to avoid changing unnecessary things
-  def edit
-    @page_title = "Edit - #{@hypothesis.title}"
-  end
-
-  # NOTE: As of PR#129 hypothesis edit is skipped - you go straight to explanation new
-  # Leaving this around to avoid changing unnecessary things
-  def update
-    if @hypothesis.update(permitted_params)
-      @hypothesis.hypothesis_citations.each { |hc| update_citation(hc) }
-      if @hypothesis.submitted_to_github?
-        flash[:success] = "Hypothesis submitted for review"
-        redirect_to hypothesis_path(@hypothesis.ref_id)
-      else
-        flash[:success] = "Hypothesis saved"
-        target_url_params = {id: @hypothesis.ref_id}
-        # Don't include initially_toggled paramets unless it's passed because it's ugly
-        target_url_params[:initially_toggled] = true if ParamsNormalizer.boolean(params[:initially_toggled])
-        redirect_to edit_hypothesis_path(target_url_params)
-      end
-    else
-      render :edit
-    end
-  end
-
   helper_method :matching_hypotheses
 
   private
 
-  # To make it possible to use the file path from a citation directly
+  # To make it possible to use the file path from a hypothesis directly
   def set_permitted_format
     request.format = "html" unless request.format == "json"
   end
 
   def find_hypothesis
     @hypothesis = Hypothesis.friendly_find!(params[:id])
-    @hypothesis_citations = @hypothesis.hypothesis_citations.approved
-      .hypothesis_supporting.score_ordered
     @citations = @hypothesis.citations
   end
 
@@ -138,28 +100,6 @@ class HypothesesController < ApplicationController
 
   def permitted_params
     # Permit tags_string as a string or an array
-    params.require(:hypothesis).permit(:title, :add_to_github, :tags_string, tags_string: [],
-                                                                             hypothesis_citations_attributes: [:url, :quotes_text, :_destroy, :id])
-  end
-
-  def update_citation(hypothesis_citation)
-    return false unless hypothesis_citation.citation.editable_by?(current_user)
-    hypothesis_citations_params = permitted_citations_params.values.find { |params|
-      params.present? && params[:url] == hypothesis_citation.url
-    }
-    citation_params = hypothesis_citations_params&.dig(:citation_attributes)
-    hypothesis_citation.citation.update(citation_params) if citation_params.present?
-    hypothesis_citation.citation
-  end
-
-  # Get each set of permitted citation attributes. We're updating them individually
-  def permitted_citations_params
-    params.require(:hypothesis).permit(hypothesis_citations_attributes: [:url, {citation_attributes: permitted_citation_attrs}])
-      .dig(:hypothesis_citations_attributes)
-  end
-
-  def permitted_citation_attrs
-    %w[title authors_str kind url_is_direct_link_to_full_text published_date_str
-      url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial quotes_text]
+    params.require(:hypothesis).permit(:title, :add_to_github, :tags_string, tags_string: [])
   end
 end

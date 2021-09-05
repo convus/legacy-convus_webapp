@@ -71,7 +71,6 @@ class HypothesisExplanationsController < ApplicationController
   def find_hypothesis_explanation
     @hypothesis = Hypothesis.friendly_find!(params[:hypothesis_id])
     @explanation = Explanation.find_by_id(params[:id])
-    @hypothesis_citations_shown = @hypothesis.hypothesis_citations.shown(current_user)
   end
 
   def ensure_user_can_edit!

@@ -9,21 +9,23 @@ class HypothesisSerializer < ApplicationSerializer
     object.tag_titles
   end
 
+  # Commented out in PR#146
   def cited_urls
-    hypothesis_citations.map(&:flat_file_serialized)
+    # hypothesis_citations.map(&:flat_file_serialized)
   end
 
+  # Commented out in PR#146
   def new_cited_url
-    object.included_unapproved_hypothesis_citation&.flat_file_serialized
+    # object.included_unapproved_hypothesis_citation&.flat_file_serialized
   end
 
-  # If the hypothesis is approved, only include the approved hypothesis_citations
+  # Commented out in PR#146
   def hypothesis_citations
-    if object.approved?
-      object.hypothesis_citations.approved
-    else
-      object.hypothesis_citations
-    end
+    # if object.approved?
+    #   object.hypothesis_citations.approved
+    # else
+    #   object.hypothesis_citations
+    # end
   end
 
   # If the hypothesis is approved, only include the approved explanations

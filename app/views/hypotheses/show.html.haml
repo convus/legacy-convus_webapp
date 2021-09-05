@@ -55,36 +55,6 @@
   - if @explanations.any?
     - @explanations.explanation_quotes.not_removed.ref_ordered.group_by(&:citation_id).each do |_citation_id, explanation_quotes|
       = render partial: "/hypotheses/show_citation_explanation_quotes", locals: {explanation_quotes: explanation_quotes}
-  - else # Render the old school hypothesis citations
-    - if @hypothesis_citations.no_approved_challenges.any?
-      - @hypothesis_citations.no_approved_challenges.each do |hypothesis_citation|
-        = render partial: "/hypotheses/show_hypothesis_citation", locals: {hypothesis_citation: hypothesis_citation, rendering_challenge: false}
-
-  - if @hypothesis_citations.approved_challenges.any?
-    %h2.mt-4.text-warning Challenged citations
-    - @hypothesis_citations.approved_challenges.each do |hypothesis_citation|
-      - challenges = hypothesis_citation.challenges.approved
-      .row
-        = render partial: "/hypotheses/show_hypothesis_citation", locals: {hypothesis_citation: hypothesis_citation, rendering_challenge: true}
-        - challenges.each do |challenge|
-          = render partial: "/hypotheses/show_hypothesis_citation", locals: {hypothesis_citation: challenge}
-
-  - if @unapproved_hypothesis_citation.present?
-    - if @unapproved_hypothesis_citation.waiting_on_github?
-      .alert.alert-info.mt-4
-        - if @unapproved_hypothesis_citation.pull_request_number.present?
-          %h4
-            Citation waiting on approval,
-            = link_to "PR##{@unapproved_hypothesis_citation.pull_request_number}", @unapproved_hypothesis_citation.pull_request_url
-        - else
-          Waiting for pull request to be created, page will reload.
-          -# if hypothesis hasn't been updated recently, skip this (something broke?)
-          - if @unapproved_hypothesis_citation.updated_at > Time.current - 2.minutes
-            :javascript
-              window.setTimeout(() => {location.reload();}, 2000);
-    - else
-      %h3.text-warning
-        Citation error, this shouldn't show up
 
 .row.mt-big
   .col-md-6
@@ -110,19 +80,6 @@
           %tr.only-dev-visible
             %td slug
             %td= @hypothesis.to_param
-        -# %tr
-        -#   %td Score
-        -#   %td
-        -#     - if @hypothesis.approved?
-        -#       %strong.score-bubble{class: hypothesis_score_class(@hypothesis.score)}
-        -#         = @hypothesis.score
-        -#     - unapproved_score = @hypothesis.unapproved_score
-        -#     - if @hypothesis.unapproved? || @hypothesis.score < unapproved_score
-        -#       %em.less-strong
-        -#         when approved:
-        -#       %span.score-bubble.small.less-strong{class: hypothesis_score_class(unapproved_score)}
-        -#         = unapproved_score
-
         %tr
           %td GitHub
           %td
