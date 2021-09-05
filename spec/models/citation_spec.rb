@@ -172,21 +172,6 @@ RSpec.describe Citation, type: :model do
     end
   end
 
-  describe "score_percentage" do
-    let(:citation) { Citation.new }
-    it "returns score_percentage" do
-      allow(citation).to receive(:score) { 5 }
-      expect(citation.score).to eq 5
-      expect(citation.score_percentage).to eq 50
-    end
-    context "over 10 score" do
-      it "returns 10" do
-        allow(citation).to receive(:score) { 15 }
-        expect(citation.score_percentage).to eq 100
-      end
-    end
-  end
-
   describe "authors_str" do
     let(:citation) { Citation.new(authors_str: "george stanley") }
     it "does one" do
@@ -229,22 +214,6 @@ RSpec.describe Citation, type: :model do
         expect {
           citation.save
         }.to change(AddToGithubContentJob.jobs, :count).by 1
-      end
-    end
-    context "via hypothesis creation" do
-      let!(:hypothesis_citation) { FactoryBot.build(:hypothesis_citation, url: "https://something.com") }
-      it "enqueues job" do
-        # This might not be how it should work, but it is how it works right now, so document it.
-        # ... via HypothesesController, it does not enqueue the citation job
-        Sidekiq::Worker.clear_all
-        expect(Citation.count).to eq 0
-        expect {
-          hypothesis_citation.save
-          hypothesis_citation.hypothesis.update(add_to_github: true)
-        }.to change(AddToGithubContentJob.jobs, :count).by 1
-        expect(AddToGithubContentJob.jobs.map { |j| j["args"] }.last.flatten).to eq(["Hypothesis", hypothesis_citation.hypothesis.id])
-        expect(Hypothesis.count).to eq 1
-        expect(Citation.count).to eq 1
       end
     end
     context "with skip_github_update" do

@@ -33,7 +33,6 @@ ActiveRecord::Schema.define(version: 2021_09_05_174108) do
     t.boolean "url_is_not_publisher", default: false
     t.boolean "randomized_controlled_trial", default: false
     t.boolean "peer_reviewed", default: false
-    t.integer "score"
     t.boolean "submitting_to_github", default: false
     t.text "doi"
     t.jsonb "authors"
@@ -73,7 +72,6 @@ ActiveRecord::Schema.define(version: 2021_09_05_174108) do
     t.bigint "creator_id"
     t.text "text"
     t.text "body_html"
-    t.integer "score"
     t.integer "ref_number"
     t.integer "listing_order"
     t.datetime "approved_at"
@@ -94,7 +92,6 @@ ActiveRecord::Schema.define(version: 2021_09_05_174108) do
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "approved_at"
     t.integer "pull_request_number"
-    t.integer "score"
     t.boolean "submitting_to_github", default: false
     t.bigint "ref_number"
     t.string "ref_id"

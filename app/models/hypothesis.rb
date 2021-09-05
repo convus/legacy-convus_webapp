@@ -86,20 +86,8 @@ class Hypothesis < ApplicationRecord
     tags
   end
 
-  def citation_for_score
-    citations.approved.order(:score).last
-  end
-
   def citation_urls
     citations.pluck(:url)
-  end
-
-  def badges
-    CitationScorer.hypothesis_badges(self, citation_for_score)
-  end
-
-  def unapproved_badges
-    CitationScorer.hypothesis_badges(self, citations.order(:score).last)
   end
 
   # Required for FlatFileSerializable
@@ -125,15 +113,6 @@ class Hypothesis < ApplicationRecord
 
   def set_calculated_attributes
     self.title = self.class.clean_title(title)
-    self.score = calculated_score
-  end
-
-  def calculated_score
-    badges.values.sum
-  end
-
-  def unapproved_score
-    unapproved_badges.values.sum
   end
 
   private

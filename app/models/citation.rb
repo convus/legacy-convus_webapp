@@ -24,12 +24,8 @@ class Citation < ApplicationRecord
   belongs_to :publication
   belongs_to :creator, class_name: "User"
 
-  has_many :hypothesis_citations, dependent: :destroy
-  has_many :hypotheses, through: :hypothesis_citations
-  has_many :quotes
-  has_many :hypothesis_quotes
-
-  accepts_nested_attributes_for :quotes
+  has_many :explanation_quotes
+  has_many :hypotheses, through: :explanation_quotes
 
   validates_presence_of :url
   validates :slug, presence: true, uniqueness: {scope: [:publication_id]}
@@ -53,7 +49,6 @@ class Citation < ApplicationRecord
     %w[research_comment research_review research_meta_analysis research research_with_rct].freeze
   end
 
-  # This might fit better in CitationScorer
   def self.kinds_data
     {
       article: {humanized: "article"},
@@ -171,26 +166,8 @@ class Citation < ApplicationRecord
     kind_humanized&.gsub(/\([^)]*\)/, "")
   end
 
-  def kind_score
-    kind_data[:score]
-  end
-
   def kind_selectable?
     true # Should be false if the URL is wikipedia, probably some other publishers too
-  end
-
-  def badges
-    CitationScorer.citation_badges(self)
-  end
-
-  def calculated_score
-    badges.values.sum
-  end
-
-  def score_percentage
-    score_f = score.to_f
-    score_f = 10 if score_f > 10
-    score_f * 10
   end
 
   # Required for FlatFileSerializable
@@ -222,7 +199,6 @@ class Citation < ApplicationRecord
     self.title = UrlCleaner.without_base_domain(url) unless title.present?
     self.slug = Slugifyer.filename_slugify(title)
     self.path_slug = [publication&.slug, slug].compact.join("-")
-    self.score = calculated_score
     self.kind ||= "article" # default to article for now
     self.authors ||= []
     if FETCH_WAYBACK_URL && url_is_direct_link_to_full_text

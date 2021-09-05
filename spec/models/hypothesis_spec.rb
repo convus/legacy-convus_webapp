@@ -209,26 +209,4 @@ RSpec.describe Hypothesis, type: :model do
       end
     end
   end
-
-  describe "score" do
-    let(:hypothesis) { FactoryBot.create(:hypothesis_approved) }
-    it "sets the score" do
-      hypothesis.reload
-      expect(hypothesis.citations.count).to eq 0
-      expect(hypothesis.score).to eq 0
-    end
-    context "with quote, peer_reviewed" do
-      let(:citation) { FactoryBot.create(:citation_approved, peer_reviewed: true, url_is_direct_link_to_full_text: true) }
-      let(:hypothesis) { FactoryBot.create(:hypothesis) }
-      let!(:hypothesis_citation) { FactoryBot.create(:hypothesis_citation, hypothesis: hypothesis, url: citation.url, quotes_text: "this is a quote") }
-      it "sets the score" do
-        expect(hypothesis.citations.pluck(:id)).to eq([citation.id])
-        expect(hypothesis.score).to eq 0
-        expect(hypothesis.calculated_score).to eq 11
-        hypothesis.update(approved_at: Time.current)
-        hypothesis.reload
-        expect(hypothesis.score).to eq 11
-      end
-    end
-  end
 end

@@ -93,18 +93,6 @@ module ApplicationHelper
     end
   end
 
-  def hypothesis_score_class(score)
-    if score > 17
-      "score-very-high"
-    elsif score > 11
-      "score-high"
-    elsif score > 5
-      "score-medium"
-    else
-      "score-low"
-    end
-  end
-
   def link_to_add_fields(name, f, association, html_options = {}, obj_attrs: {}, filename: nil, &block)
     new_object = f.object.send(association).klass.new(obj_attrs)
     id = new_object.object_id

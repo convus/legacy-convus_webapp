@@ -57,14 +57,6 @@ class Publication < ApplicationRecord
     %i[title id meta_publication has_published_retractions has_peer_reviewed_articles impact_factor home_url].freeze
   end
 
-  def badges
-    CitationScorer.publication_badges(self)
-  end
-
-  def score
-    badges.values.sum
-  end
-
   def title_url?
     ((base_domains || []) + [home_url]).compact.any? { |url| url.match?(title) }
   end

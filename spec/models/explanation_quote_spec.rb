@@ -52,4 +52,15 @@ RSpec.describe ExplanationQuote, type: :model do
       end
     end
   end
+
+  describe "citation" do
+    let(:explanation_quote) { FactoryBot.create(:explanation_quote) }
+    let(:explanation) { explanation_quote.explanation }
+    it "associates" do
+      expect(explanation_quote.reload.hypothesis).to be_present
+      expect(explanation_quote.citation.hypotheses.pluck(:id)).to eq([explanation_quote.hypothesis_id])
+      expect(explanation_quote.citation_id).to be_present
+      expect(explanation_quote.hypothesis.citations.pluck(:id)).to eq([explanation_quote.citation_id])
+    end
+  end
 end
