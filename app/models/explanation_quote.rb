@@ -9,6 +9,7 @@ class ExplanationQuote < ApplicationRecord
   scope :ref_ordered, -> { reorder(:ref_number) }
   scope :removed, -> { where(removed: true) }
   scope :not_removed, -> { where(removed: false) }
+  scope :approved, -> { not_removed.joins(:explanation).merge(Explanation.approved) }
   scope :no_url, -> { where(url: nil) } # UrlCleaner returns nil if empty
 
   def removed?

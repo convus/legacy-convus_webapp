@@ -187,6 +187,26 @@ RSpec.describe Citation, type: :model do
     end
   end
 
+  describe "quotes" do
+    let(:url) { "https://online-research.org/stuff" }
+    let!(:explanation_quote1) { FactoryBot.create(:explanation_quote, text: "Bike Bike Bike", url: url) }
+    let(:explanation1) { explanation_quote1.explanation }
+    let(:explanation2) { FactoryBot.create(:explanation_approved) }
+    let!(:explanation_quote2) { FactoryBot.create(:explanation_quote, text: "Bike Bike Bike", url: url, explanation: explanation2) }
+    let!(:explanation_quote3) { FactoryBot.create(:explanation_quote, url: url, removed: true) }
+    let(:citation) { explanation_quote1.citation }
+    it "has quotes" do
+      expect(Explanation.pluck(:id)).to match_array([explanation1.id, explanation2.id, explanation_quote3.explanation_id])
+      expect(ExplanationQuote.approved.pluck(:id)).to eq([explanation_quote2.id])
+      expect(Hypothesis.pluck(:id)).to match_array([explanation_quote1.hypothesis_id, explanation_quote2.hypothesis_id, explanation_quote3.hypothesis_id])
+      expect(citation.reload.explanation_quotes.pluck(:id)).to match_array([explanation_quote1.id, explanation_quote2.id, explanation_quote3.id])
+      expect(citation.quotes).to eq(["Bike Bike Bike"])
+      expect(citation.quotes_approved).to eq(["Bike Bike Bike"])
+      expect(citation.hypotheses.pluck(:id)).to match_array([explanation_quote1.hypothesis_id, explanation_quote2.hypothesis_id])
+      expect(explanation_quote1.hypothesis.citations.pluck(:id)).to eq([citation.id])
+    end
+  end
+
   describe "add_to_github_content" do
     let(:citation) { FactoryBot.build(:citation) }
     it "enqueues only when add_to_github and not already added" do
