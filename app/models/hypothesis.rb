@@ -13,7 +13,7 @@ class Hypothesis < ApplicationRecord
   has_many :explanations
   has_many :explanation_quotes
   has_many :explanation_quotes_not_removed, -> { not_removed }, class_name: "ExplanationQuote"
-  has_many :citations, through: :explanation_quotes_not_removed
+  has_many :citations, -> { distinct }, through: :explanation_quotes_not_removed
   has_many :user_scores
 
   before_validation :set_calculated_attributes
