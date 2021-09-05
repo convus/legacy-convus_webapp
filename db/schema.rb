@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_03_165444) do
+ActiveRecord::Schema.define(version: 2021_09_05_174108) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -61,9 +61,11 @@ ActiveRecord::Schema.define(version: 2021_09_03_165444) do
     t.boolean "removed", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "hypothesis_id"
     t.index ["citation_id"], name: "index_explanation_quotes_on_citation_id"
     t.index ["creator_id"], name: "index_explanation_quotes_on_creator_id"
     t.index ["explanation_id"], name: "index_explanation_quotes_on_explanation_id"
+    t.index ["hypothesis_id"], name: "index_explanation_quotes_on_hypothesis_id"
   end
 
   create_table "explanations", force: :cascade do |t|
@@ -101,41 +103,6 @@ ActiveRecord::Schema.define(version: 2021_09_03_165444) do
     t.index ["ref_id"], name: "index_hypotheses_on_ref_id", unique: true
   end
 
-  create_table "hypothesis_citations", force: :cascade do |t|
-    t.bigint "hypothesis_id"
-    t.bigint "citation_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.text "quotes_text"
-    t.text "url"
-    t.integer "pull_request_number"
-    t.datetime "approved_at"
-    t.boolean "submitting_to_github", default: false
-    t.bigint "creator_id"
-    t.integer "kind"
-    t.bigint "challenged_hypothesis_citation_id"
-    t.integer "removed_pull_request_number"
-    t.index ["challenged_hypothesis_citation_id"], name: "index_hypothesis_citations_on_challenged_hypothesis_citation_id"
-    t.index ["citation_id"], name: "index_hypothesis_citations_on_citation_id"
-    t.index ["creator_id"], name: "index_hypothesis_citations_on_creator_id"
-    t.index ["hypothesis_id"], name: "index_hypothesis_citations_on_hypothesis_id"
-  end
-
-  create_table "hypothesis_quotes", force: :cascade do |t|
-    t.bigint "hypothesis_citation_id"
-    t.bigint "hypothesis_id"
-    t.bigint "quote_id"
-    t.bigint "citation_id"
-    t.integer "importance"
-    t.integer "score"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["citation_id"], name: "index_hypothesis_quotes_on_citation_id"
-    t.index ["hypothesis_citation_id"], name: "index_hypothesis_quotes_on_hypothesis_citation_id"
-    t.index ["hypothesis_id"], name: "index_hypothesis_quotes_on_hypothesis_id"
-    t.index ["quote_id"], name: "index_hypothesis_quotes_on_quote_id"
-  end
-
   create_table "hypothesis_tags", force: :cascade do |t|
     t.bigint "hypothesis_id"
     t.bigint "tag_id"
@@ -165,14 +132,6 @@ ActiveRecord::Schema.define(version: 2021_09_03_165444) do
     t.jsonb "base_domains"
     t.boolean "meta_publication", default: false
     t.float "impact_factor"
-  end
-
-  create_table "quotes", force: :cascade do |t|
-    t.bigint "citation_id"
-    t.text "text"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["citation_id"], name: "index_quotes_on_citation_id"
   end
 
   create_table "tags", force: :cascade do |t|

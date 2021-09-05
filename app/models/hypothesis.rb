@@ -7,22 +7,18 @@ class Hypothesis < ApplicationRecord
   belongs_to :creator, class_name: "User"
 
   has_many :previous_titles
-  has_many :hypothesis_citations, autosave: true, dependent: :destroy
-  has_many :citations, through: :hypothesis_citations # TODO: join through explanations
   has_many :publications, through: :citations
   has_many :hypothesis_tags, dependent: :destroy
   has_many :tags, through: :hypothesis_tags
-  has_many :hypothesis_quotes, -> { score_ordered }
   has_many :explanations
-  has_many :quotes, through: :hypothesis_quotes
+  has_many :explanation_quotes
+  has_many :citations, through: :explanation_quotes
   has_many :user_scores
-
-  accepts_nested_attributes_for :hypothesis_citations, allow_destroy: true, reject_if: :all_blank
 
   before_validation :set_calculated_attributes
   after_commit :run_associated_tasks
 
-  attr_accessor :skip_associated_tasks, :included_unapproved_hypothesis_citation, :additional_serialized_explanation
+  attr_accessor :skip_associated_tasks, :additional_serialized_explanation
 
   scope :normal_user, -> { left_joins(:creator).where(users: {role: "normal_user"}) }
 
@@ -61,33 +57,6 @@ class Hypothesis < ApplicationRecord
   def self.clean_title(str)
     return nil unless str.present?
     str.strip.gsub(/(\.|!)\z/, "")
-  end
-
-  # We're saving hypothesis with a bunch of associations, make it easier to override the errors
-  # So that association errors are clearer
-  def errors_full_messages
-    # autosave: true makes this slightly less annoying
-    messages = hypothesis_citations.map { |hc|
-      next ["Citation URL can't be blank"] if hc.errors&.full_messages&.include?("Url can't be blank")
-      next [] unless hc.errors.full_messages.any?
-      if hc.errors.full_messages.include?("Citation can't be blank")
-        ["Citation URL can't be blank"]
-      else
-        hc.errors.full_messages
-      end
-    }.flatten
-    ignored_messages = [
-      "Hypothesis citations url can't be blank",
-      "Hypothesis quotes is invalid",
-      "Hypothesis citations hypothesis has already been taken"
-    ]
-    (messages + errors.full_messages).compact.uniq - ignored_messages
-  end
-
-  # TODO: remove once explanations are fully migrated in
-  def show_legacy_citations?
-    explanations.approved.none? &&
-      (created_at || Time.current) < Time.at(1629820618) # 2021-8-24
   end
 
   def tag_titles
