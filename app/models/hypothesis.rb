@@ -108,7 +108,6 @@ class Hypothesis < ApplicationRecord
       StorePreviousHypothesisTitleJob.perform_async(id, title_previous_change.first)
     end
     return false if skip_associated_tasks
-    citations.pluck(:id).each { |i| UpdateCitationQuotesJob.perform_async(i) }
     add_to_github_content
   end
 

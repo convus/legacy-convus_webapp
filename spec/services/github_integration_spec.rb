@@ -134,6 +134,7 @@ RSpec.describe GithubIntegration do
       end
     end
 
+    # Commented out in PR#146
     # context "hypothesis file doesn't exist" do
     #   let(:approved_at) { nil }
     #   let(:approved_at) { approved_at }

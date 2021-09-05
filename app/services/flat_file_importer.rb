@@ -10,7 +10,6 @@ class FlatFileImporter
       import_publications
       import_citations
       import_hypotheses
-      UpdateHypothesisScoreJob.perform_async
     end
 
     def import_tags
@@ -58,19 +57,21 @@ class FlatFileImporter
 
       hypothesis.update(tags_string: hypothesis_attrs[:topics])
       hypothesis.tags.unapproved.update_all(approved_at: Time.current)
-      hypothesis_citation_ids = []
-      hypothesis_citations = hypothesis_attrs[:cited_urls] || []
-      # If there is a "new_cited_url", process that too
-      hypothesis_citations += [hypothesis_attrs[:new_cited_url]] if hypothesis_attrs[:new_cited_url].present?
-      hypothesis_citations.map do |hc_attrs|
-        hypothesis_citation = create_hypothesis_citation(hypothesis, hc_attrs)
-        hypothesis_citation_ids << hypothesis_citation.id
-      end
-      hypothesis.reload
-      # If we have new_cited_urls, we're ignoring the old cited_urls to avoid merge conflict issues
-      unless hypothesis_attrs.key?(:new_cited_urls)
-        hypothesis.hypothesis_citations.where.not(id: hypothesis_citation_ids).destroy_all
-      end
+
+      # Commented out in PR#146
+      # hypothesis_citation_ids = []
+      # hypothesis_citations = hypothesis_attrs[:cited_urls] || []
+      # # If there is a "new_cited_url", process that too
+      # hypothesis_citations += [hypothesis_attrs[:new_cited_url]] if hypothesis_attrs[:new_cited_url].present?
+      # hypothesis_citations.map do |hc_attrs|
+      #   hypothesis_citation = create_hypothesis_citation(hypothesis, hc_attrs)
+      #   hypothesis_citation_ids << hypothesis_citation.id
+      # end
+      # hypothesis.reload
+      # # If we have new_cited_urls, we're ignoring the old cited_urls to avoid merge conflict issues
+      # unless hypothesis_attrs.key?(:new_cited_urls)
+      #   hypothesis.hypothesis_citations.where.not(id: hypothesis_citation_ids).destroy_all
+      # end
       hypothesis
     end
 

@@ -165,25 +165,6 @@ RSpec.describe Publication, type: :model do
     end
   end
 
-  describe "score" do
-    it "returns 0 by default" do
-      expect(Publication.new.score).to eq 0
-    end
-    context "with retractions" do
-      let(:publication) { Publication.new(has_published_retractions: true) }
-      it "returns 1" do
-        expect(publication.badges).to eq({non_peer_reviewed_with_retractions: 1})
-        expect(publication.score).to eq 1
-      end
-      context "with impact_factor 5" do
-        let(:publication) { Publication.new(impact_factor: 5.333, has_published_retractions: true, has_peer_reviewed_articles: true) }
-        it "returns 5" do
-          expect(publication.badges).to eq(peer_reviewed_high_impact_factor: 10)
-        end
-      end
-    end
-  end
-
   describe "meta_publication update" do
     let!(:citation) { Citation.create(title: "some cool title", url: "https://jstor.org") }
     let(:publication) { citation.publication }

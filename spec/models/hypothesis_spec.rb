@@ -73,25 +73,6 @@ RSpec.describe Hypothesis, type: :model do
     end
   end
 
-  # Commenting out for now, because it's not relevant - but it may be soon
-  # describe "errors_full_messages" do
-  #   let(:hypothesis) { Hypothesis.new }
-  #   it "returns errors full_messages" do
-  #     expect(hypothesis.errors_full_messages).to be_blank
-  #     hypothesis.save
-  #     expect(hypothesis.errors_full_messages).to eq(["Title can't be blank"])
-  #   end
-  #   context "with hypothesis_citation" do
-  #     let(:hypothesis_citation) { hypothesis.hypothesis_citations.build(quotes_text: " ") }
-  #     it "returns hypothesis_citation errors as well" do
-  #       expect(hypothesis.errors_full_messages).to be_blank
-  #       expect(hypothesis_citation.errors.full_messages).to be_blank
-  #       hypothesis.save
-  #       expect(hypothesis.errors_full_messages).to eq(["Citation URL can't be blank", "Title can't be blank"])
-  #     end
-  #   end
-  # end
-
   describe "tags_string" do
     let(:hypothesis) { FactoryBot.create(:hypothesis) }
     it "assigns an array" do
