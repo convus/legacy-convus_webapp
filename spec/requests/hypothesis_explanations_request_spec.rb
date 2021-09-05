@@ -85,7 +85,7 @@ RSpec.describe "hypothesis_explanations", type: :request do
         expect(response.code).to eq "200"
         expect(response).to render_template("hypothesis_explanations/new")
         expect(assigns(:hypothesis)&.id).to eq hypothesis.id
-        expect(assigns(:argumennt)&.id).to be_blank
+        expect(assigns(:argument)&.id).to be_blank
       end
     end
 

@@ -43,7 +43,6 @@ class ExplanationQuote < ApplicationRecord
     self.hypothesis_id ||= explanation&.hypothesis_id
     self.url = UrlCleaner.with_http(UrlCleaner.without_utm(url))
     self.citation_id = Citation.find_or_create_by_params({url: url, creator_id: creator_id})&.id
-
   end
 
   private

@@ -27,6 +27,8 @@ unless ENV["CIRCLECI"]
       publication = FactoryBot.create(:publication, title: "The Hill")
       citation = FactoryBot.create(:citation_approved, title: "some citation", publication: publication, kind: "government_statistics")
       hypothesis = FactoryBot.create(:hypothesis_approved, title: "hypothesis-1", ref_number: 2115)
+      explanation = FactoryBot.create(:explanation, hypothesis: hypothesis)
+      FactoryBot.create(:explanation_quote, explanation: explanation, url: citation.url)
       FactoryBot.create(:tag, title: "Health & Wellness", taxonomy: "family_rank")
       FlatFileSerializer.write_all_files
     end

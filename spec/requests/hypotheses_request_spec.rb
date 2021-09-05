@@ -223,7 +223,7 @@ RSpec.describe "/hypotheses", type: :request do
       let(:hypothesis_params) do
         {
           title: "This seems like the truth",
-          tags_string: "economy\n",
+          tags_string: "economy\n"
         }
       end
       it "creates" do
