@@ -1,0 +1,2 @@
+class HypothesisRelationship < ApplicationRecord
+end
