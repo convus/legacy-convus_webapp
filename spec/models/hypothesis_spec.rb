@@ -32,11 +32,19 @@ RSpec.describe Hypothesis, type: :model do
     end
   end
 
-  describe "clean_title" do
-    let(:hypothesis) { Hypothesis.create(title: " Statement about things. Because a cool party! \n") }
-    it "cleans" do
+  describe "punctuate_title" do
+    let(:hypothesis) { Hypothesis.create(title: title) }
+    let(:title) { "\nSomething about things\n" }
+    it "punctuates" do
       expect(hypothesis).to be_valid
-      expect(hypothesis.title).to eq "Statement about things. Because a cool party"
+      expect(hypothesis.title).to eq "Statement about things."
+    end
+    context "with punctuation" do
+      let(:title) { " Statement about things. Because a cool party! \n" }
+      it "strips" do
+        expect(hypothesis).to be_valid
+        expect(hypothesis.title).to eq "Statement about things. Because a cool party!"
+      end
     end
   end
 
