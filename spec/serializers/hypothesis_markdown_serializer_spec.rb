@@ -2,9 +2,17 @@
 
 require "rails_helper"
 
-describe HypothesisSerializer, type: :lib do
-  let(:obj) { FactoryBot.create(:hypothesis_approved) }
-  let(:serializer) { described_class.new(obj, root: false) }
+describe HypothesisMarkdownSerializer, type: :lib do
+  let(:hypothesis) { FactoryBot.create(:hypothesis_approved, title: title) }
+  let(:title) { "Some cool title" }
+  let(:instance) { described_class.new(hypothesis: hypothesis) }
+
+  describe "to_flat_file" do
+
+    context "with explanation" do
+
+    end
+  end
 
   # Commented out in PR#146
   # describe "output" do

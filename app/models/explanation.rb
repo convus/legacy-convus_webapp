@@ -15,6 +15,8 @@ class Explanation < ApplicationRecord
   before_validation :set_calculated_attributes
   after_commit :run_associated_tasks
 
+  delegate :file_pathnames, to: :hypothesis, allow_nil: true
+
   accepts_nested_attributes_for :explanation_quotes, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :citations
 
@@ -77,11 +79,6 @@ class Explanation < ApplicationRecord
     errors.full_messages.none?
   end
 
-  # Actually serialized into hypothesis files, using a serializer to make it easier to manage
-  def flat_file_serialized
-    ExplanationSerializer.new(self, root: false).as_json
-  end
-
   def run_associated_tasks
     update_ref_number if ref_number.blank?
     return false if skip_associated_tasks
@@ -132,6 +129,10 @@ class Explanation < ApplicationRecord
     return "" unless text.present?
     explanation_markdown.render(text.strip)
       .gsub(/(<\/?)h\d+/i, '\1p') # Remove header open brackets and close brackets
+  end
+
+  def flat_file_serialized
+    {id: ref_number, text: text}
   end
 
   # This sucks and is brittle

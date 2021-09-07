@@ -369,4 +369,23 @@ RSpec.describe Explanation, type: :model do
       expect(explanation.citations_not_removed.pluck(:id)).to match_array([citation3.id, citation1.id])
     end
   end
+
+  describe "github_html_url" do
+    let(:hypothesis) { FactoryBot.create(:hypothesis, pull_request_number: 2) }
+    let(:explanation) { FactoryBot.build(:explanation, hypothesis: hypothesis, pull_request_number: 111)}
+    it "is pull_request if unapproved, file_path if approved" do
+      expect(hypothesis.github_html_url).to match(/pull\/2/)
+      expect(explanation.approved?).to be_falsey
+      expect(explanation.github_html_url).to match(/pull\/111/)
+      # I don't think explanation approved without hypothesis can or will happen
+      # but if it did = is what I expect to happen
+      explanation.approved_at = Time.current
+      expect(explanation.github_html_url).to match(/pull\/2/)
+      hypothesis.update(approved_at: Time.current)
+      expect(hypothesis.github_html_url).to match(hypothesis.file_path)
+      expect(explanation.github_html_url).to eq hypothesis.github_html_url
+      expect(explanation.pull_request_url).to match(/pull\/111/)
+      expect(explanation.flat_file_serialized).to be_blank # just make sure it doesn't error
+    end
+  end
 end

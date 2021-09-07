@@ -98,8 +98,12 @@ class Hypothesis < ApplicationRecord
   end
 
   # Required for FlatFileSerializable
-  def flat_file_serialized
-    HypothesisSerializer.new(self, root: false).as_json
+  def flat_file_serialized(passed_explanations: nil)
+    markdown_serializer(passed_explanations: passed_explanations).as_json
+  end
+
+  def flat_file_content(passed_explanations: nil)
+    markdown_serializer(passed_explanations: passed_explanations).to_markdown
   end
 
   def run_associated_tasks
@@ -122,5 +126,9 @@ class Hypothesis < ApplicationRecord
     # NOTE: eventually manage ref_number with Redis, to enable external creation
     new_ref_number = ref_number || id
     update_columns(ref_number: new_ref_number, ref_id: new_ref_number.to_s(36).upcase)
+  end
+
+  def markdown_serializer(passed_explanations: nil)
+    HypothesisMarkdownSerializer.new(hypothesis: self, explanations: passed_explanations)
   end
 end
