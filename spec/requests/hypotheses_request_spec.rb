@@ -8,7 +8,7 @@ RSpec.describe "/hypotheses", type: :request do
   let(:subject) { FactoryBot.create(:hypothesis, creator_id: current_user&.id) }
   let(:full_citation_params) do
     {
-      title: "Testing hypothesis creation is very important",
+      title: "Testing hypothesis creation is very important!",
       kind: "research_review",
       peer_reviewed: true,
       randomized_controlled_trial: true,
@@ -222,7 +222,7 @@ RSpec.describe "/hypotheses", type: :request do
     describe "create" do
       let(:hypothesis_params) do
         {
-          title: "This seems like the truth",
+          title: "This seems like the truth.",
           tags_string: "economy\n"
         }
       end

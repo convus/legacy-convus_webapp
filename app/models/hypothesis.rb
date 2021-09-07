@@ -55,9 +55,10 @@ class Hypothesis < ApplicationRecord
     found || super || matching_previous_titles(str).last
   end
 
-  def self.clean_title(str)
+  def self.punctuate_title(str)
     return nil unless str.present?
-    str.strip.gsub(/(\.|!)\z/, "")
+    str.strip!
+    str.match?(/(\.|!|\?)\z/) ? str : "#{str}."
   end
 
   def tag_titles
@@ -112,7 +113,7 @@ class Hypothesis < ApplicationRecord
   end
 
   def set_calculated_attributes
-    self.title = self.class.clean_title(title)
+    self.title = self.class.punctuate_title(title)
   end
 
   private

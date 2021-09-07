@@ -52,8 +52,8 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
     context "with hypothesis existing" do
-      let!(:hypothesis) { FactoryBot.create(:hypothesis, title: "this hypothesis is important") }
-      let(:target) { '<a data-thing="whatever" title="this hypothesis is important" href="/hypotheses/this-hypothesis-is-important">1</a>' }
+      let!(:hypothesis) { FactoryBot.create(:hypothesis, title: "this hypothesis is important!") }
+      let(:target) { '<a data-thing="whatever" title="this hypothesis is important!" href="/hypotheses/this-hypothesis-is-important">1</a>' }
       it "links with hypothesis title" do
         expect(hypothesis_link_to("1", "this-hypothesis-is-important", "data-thing" => "whatever")).to eq target
       end
