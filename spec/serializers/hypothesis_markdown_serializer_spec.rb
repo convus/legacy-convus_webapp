@@ -8,7 +8,6 @@ describe HypothesisMarkdownSerializer, type: :lib do
   let(:instance) { described_class.new(hypothesis: hypothesis) }
 
   describe "to_flat_file" do
-
     context "with explanation" do
 
     end

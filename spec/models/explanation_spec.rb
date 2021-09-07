@@ -22,50 +22,6 @@ RSpec.describe Explanation, type: :model do
     end
   end
 
-  describe "parse_quotes" do
-    context "empty" do
-      let(:target) { [] }
-      it "is empty" do
-        expect(Explanation.parse_quotes("   ")).to eq target
-        expect(Explanation.parse_quotes(" \n\nasdfasdf\n\nasdfasdf ")).to eq target
-
-        expect(Explanation.parse_quotes(">  \n")).to eq target
-        expect(Explanation.parse_quotes(">  \n\n > \n\n>")).to eq target
-      end
-    end
-    context "single quote" do
-      let(:target) { ["something"] }
-      it "parses" do
-        expect(Explanation.parse_quotes("> something")).to eq target
-        expect(Explanation.parse_quotes("  >  something  \n\nother stuff")).to eq target
-        expect(Explanation.parse_quotes("\n> something")).to eq target
-        expect(Explanation.parse_quotes("\nsomething else\nAnd MORE things\n\n\n  >    something \n\nother things")).to eq target
-      end
-    end
-    context "multi line block quotes" do
-      let(:target) { ["multi line message"] }
-      it "parses" do
-        expect(Explanation.parse_quotes("> multi line message ")).to eq target
-        expect(Explanation.parse_quotes("> multi\n> line   \n> message ")).to eq target
-        expect(Explanation.parse_quotes("Some stuff goes here\n > multi   \n >    line\n > message     \n\n\nAnd then more stuff")).to eq target
-      end
-    end
-    context "multiple quotes" do
-      let(:target) { ["something", "something else"] }
-      it "parses" do
-        expect(Explanation.parse_quotes("> something\n\n> something else")).to eq target
-        expect(Explanation.parse_quotes("  >  something  \n blahhh blah blah\n \nother stuff\n >   something else")).to eq target
-      end
-    end
-    context "multiple of the same quote" do
-      let(:target) { ["something"] }
-      it "parses" do
-        expect(Explanation.parse_quotes("> something\n\n>something")).to eq target
-        expect(Explanation.parse_quotes("  >  something  \n blahhh blah blah\n \nother stuff\n >   something")).to eq target
-      end
-    end
-  end
-
   describe "update_from_text" do
     let(:explanation) { FactoryBot.create(:explanation) }
     let(:url1) { "https://otherthings.com/812383123123" }

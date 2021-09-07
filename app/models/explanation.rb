@@ -79,6 +79,10 @@ class Explanation < ApplicationRecord
     errors.full_messages.none?
   end
 
+  def github_html_url
+    approved? ? GithubIntegration.content_html_url(file_path) : pull_request_url
+  end
+
   def run_associated_tasks
     update_ref_number if ref_number.blank?
     return false if skip_associated_tasks
@@ -111,12 +115,8 @@ class Explanation < ApplicationRecord
     update_body_html
   end
 
-  def explanation_markdown
-    Redcarpet::Markdown.new(
-      Redcarpet::Render::HTML.new(no_images: true, no_links: true, filter_html: true),
-      {no_intra_emphasis: true, tables: true, fenced_code_blocks: true, strikethrough: true,
-       superscript: true, lax_spacing: true}
-    )
+  def parser
+    @parser ||= ExplanationParser.new(explanation: self)
   end
 
   def update_body_html
@@ -127,7 +127,7 @@ class Explanation < ApplicationRecord
   # Only for internal use, really
   def parse_text
     return "" unless text.present?
-    explanation_markdown.render(text.strip)
+    ExplanationParser.markdown.render(text.strip)
       .gsub(/(<\/?)h\d+/i, '\1p') # Remove header open brackets and close brackets
   end
 
