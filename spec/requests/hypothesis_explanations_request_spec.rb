@@ -378,11 +378,11 @@ RSpec.describe "hypothesis_explanations", type: :request do
           expect_explanation_with_quotes_to_be_updated(subject)
           expect(subject.approved?).to be_falsey
 
-          expect(hypothesis.reload.title).to eq "This seems like the truth"
+          expect(hypothesis.reload.title).to eq "This seems like the truth."
           expect(hypothesis.tags.pluck(:title)).to eq(["Economy", "parties"])
         end
         context "hypothesis can't be updated" do
-          let(:hypothesis) { FactoryBot.create(:hypothesis_approved, creator: current_user, created_at: Time.current - 1.hour, title: "Original hypothesis title") }
+          let(:hypothesis) { FactoryBot.create(:hypothesis_approved, creator: current_user, created_at: Time.current - 1.hour, title: "Original hypothesis title.") }
           it "does not update" do
             subject.reload
             expect(subject.editable_by?(current_user)).to be_truthy
@@ -400,7 +400,7 @@ RSpec.describe "hypothesis_explanations", type: :request do
             expect_explanation_with_quotes_to_be_updated(subject)
             expect(subject.approved?).to be_falsey
 
-            expect(hypothesis.reload.title).to eq "Original hypothesis title"
+            expect(hypothesis.reload.title).to eq "Original hypothesis title."
             expect(hypothesis.tags.pluck(:title)).to eq(["Economy"])
           end
         end
@@ -464,7 +464,7 @@ RSpec.describe "hypothesis_explanations", type: :request do
             expect(hypothesis.editable_by?(current_user)).to be_truthy
             patch "#{base_url}/#{subject.id}", params: {
               explanation: explanation_params,
-              hypothesis_title: "Some new title",
+              hypothesis_title: "Some new title.",
               hypothesis_tags_string: "some new tag, economy"
             }
             expect(response).to redirect_to edit_hypothesis_explanation_path(hypothesis_id: hypothesis.ref_id, id: subject.id)
@@ -473,7 +473,7 @@ RSpec.describe "hypothesis_explanations", type: :request do
             expect(flash[:error]).to match(/url/i)
             expect(AddToGithubContentJob.jobs.count).to eq 0
 
-            expect(hypothesis.reload.title).to eq "Some new title"
+            expect(hypothesis.reload.title).to eq "Some new title."
             expect(hypothesis.reload.tags.pluck(:title)).to match_array(["some new tag", "Economy"])
           end
         end

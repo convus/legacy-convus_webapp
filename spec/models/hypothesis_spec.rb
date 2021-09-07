@@ -37,7 +37,7 @@ RSpec.describe Hypothesis, type: :model do
     let(:title) { "\nSomething about things\n" }
     it "punctuates" do
       expect(hypothesis).to be_valid
-      expect(hypothesis.title).to eq "Statement about things."
+      expect(hypothesis.title).to eq "Something about things."
     end
     context "with punctuation" do
       let(:title) { " Statement about things. Because a cool party! \n" }
