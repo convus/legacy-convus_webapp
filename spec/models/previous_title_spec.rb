@@ -85,7 +85,7 @@ RSpec.describe PreviousTitle, type: :model do
             expect(hypothesis2.previous_titles.pluck(:title)).to eq([hypothesis2_title])
             hypothesis.update(title: hypothesis_title2)
             StorePreviousHypothesisTitleJob.drain
-            expect(hypothesis.previous_titles.pluck(:title)).to eq([hypothesis_title])
+            expect(hypothesis.previous_titles.pluck(:title)).to eq(["#{hypothesis_title}."])
             expect(PreviousTitle.friendly_matching(hypothesis2_title).pluck(:hypothesis_id)).to eq([hypothesis2.id])
             expect(PreviousTitle.friendly_matching(hypothesis2_title.upcase).pluck(:hypothesis_id)).to eq([hypothesis2.id])
             expect(Hypothesis.friendly_find("#{hypothesis_title} and extra bit.")&.id).to eq hypothesis2.id
