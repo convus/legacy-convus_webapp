@@ -72,12 +72,12 @@ RSpec.describe PreviousTitle, type: :model do
           expect(hypothesis2.update(title: "a final title")).to be_falsey
           StorePreviousHypothesisTitleJob.drain
           hypothesis2.reload
-          expect(hypothesis2.title).to eq "another title"
+          expect(hypothesis2.title).to eq "another title."
           expect(hypothesis2.previous_titles.pluck(:title)).to match_array([hypothesis_title, hypothesis2_title])
         end
         context "very long title" do
           let(:hypothesis_title) { "some title that is very long, so long that it is longer than the filename character limit because we want to be able to test the filename_slugify truncation method, so that we can test whether it finds the right thing after truncation given that it is suffixed with different things" }
-          let(:hypothesis2_title) { "#{hypothesis_title} and extra bit" }
+          let(:hypothesis2_title) { "#{hypothesis_title} and extra bit." }
           it "finds the correct one" do
             hypothesis2.update(title: "whatever new title")
             StorePreviousHypothesisTitleJob.drain

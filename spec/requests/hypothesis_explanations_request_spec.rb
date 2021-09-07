@@ -147,7 +147,7 @@ RSpec.describe "hypothesis_explanations", type: :request do
             expect_explanation_with_quotes_to_be_updated(explanation)
 
             hypothesis.reload
-            expect(hypothesis.title).to eq "new title"
+            expect(hypothesis.title).to eq "new title."
             expect(hypothesis.tags.pluck(:title)).to eq(["animals", "Something of Interest"])
           end
         end
