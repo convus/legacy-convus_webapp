@@ -32,7 +32,40 @@ class ExplanationParser
     if lines.last.match?(/reference:[^\z]/i)
       url = lines.pop.gsub(/reference:/i, "").strip
     end
-    {text: lines.join(" "), url: url}
+    {quote: lines.join("\n"), url: url}
+  end
+
+  # Should closely match quotes, which matches parseExplanationQuotes
+  def self.text_nodes(text, urls: [])
+    nodes = []
+    quote_index = -1
+    last_quote_line = nil
+    text.split("\n").each_with_index do |line, index|
+      # match lines that are blockquotes
+      if line.match?(/\A\s*>/)
+        # remove the >, trim the string,
+        quote_text = line.gsub(/\A\s*>\s*/, "").strip
+        # We need to group consecutive lines, because that's how markdown parses
+        # So check if the last line was a quote and if so, update it
+        if last_quote_line == (index - 1)
+          quote_node = nodes.pop
+          quote_text = [quote_node[:quote], quote_text].join("\n ")
+        else
+          quote_index += 1
+        end
+        new_node = quote_split_url(quote_text, urls[quote_index])
+        last_quote_line = index
+      else
+        new_node = if nodes.last&.is_a?(String) # We're in a text block
+          [nodes.pop, line].join("\n")
+        else # start of a new text block
+          line
+        end
+        last_quote_line = nil
+      end
+      nodes.push(new_node)
+    end
+    nodes
   end
 
   def self.markdown
@@ -50,8 +83,9 @@ class ExplanationParser
 
   attr_reader :reparse_text_nodes, :text_nodes
 
-  def parse_text_nodes
-
+  def parse_text_nodes(urls: nil)
+    urls ||= @explanation.explanation_quotes.not_removed.order(:ref_number).pluck(:url)
+    self.class.text_nodes(@explanation.text, urls: urls)
   end
 
   def parse_quotes
