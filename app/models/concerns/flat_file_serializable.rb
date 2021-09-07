@@ -16,11 +16,6 @@ module FlatFileSerializable
     flat_file_serialized.deep_stringify_keys.to_yaml
   end
 
-  # Overridden except on explanations, which are serialized into hypotheses
-  def flat_file_serialized
-    ""
-  end
-
   def github_html_url
     approved? ? GithubIntegration.content_html_url(file_path) : pull_request_url
   end

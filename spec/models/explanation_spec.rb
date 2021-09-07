@@ -341,7 +341,6 @@ RSpec.describe Explanation, type: :model do
       expect(hypothesis.github_html_url).to match(hypothesis.file_path)
       expect(explanation.github_html_url).to eq hypothesis.github_html_url
       expect(explanation.pull_request_url).to match(/pull\/111/)
-      expect(explanation.flat_file_serialized).to be_blank # just make sure it doesn't error
     end
   end
 end

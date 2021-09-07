@@ -80,7 +80,7 @@ class Explanation < ApplicationRecord
   end
 
   def github_html_url
-    approved? ? GithubIntegration.content_html_url(file_path) : pull_request_url
+    approved? ? hypothesis&.github_html_url : pull_request_url
   end
 
   def run_associated_tasks
@@ -119,6 +119,10 @@ class Explanation < ApplicationRecord
     @parser ||= ExplanationParser.new(explanation: self)
   end
 
+  def text_with_references
+    parser.text_with_references
+  end
+
   def update_body_html
     update(body_html: parse_text_with_blockquotes)
     self
@@ -132,7 +136,7 @@ class Explanation < ApplicationRecord
   end
 
   def flat_file_serialized
-    {id: ref_number, text: text}
+    {id: ref_number, text: text_with_references}
   end
 
   # This sucks and is brittle
