@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_05_174108) do
+ActiveRecord::Schema.define(version: 2021_09_06_204022) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -98,6 +98,26 @@ ActiveRecord::Schema.define(version: 2021_09_05_174108) do
     t.integer "removed_pull_request_number"
     t.index ["creator_id"], name: "index_hypotheses_on_creator_id"
     t.index ["ref_id"], name: "index_hypotheses_on_ref_id", unique: true
+  end
+
+  create_table "hypothesis_challenges", force: :cascade do |t|
+    t.bigint "creator_id"
+    t.bigint "hypothesis_id"
+    t.bigint "challenged_hypothesis_id"
+    t.bigint "challenged_citation_id"
+    t.bigint "challenged_explanation_quote_id"
+    t.integer "kind"
+    t.datetime "approved_at"
+    t.integer "pull_request_number"
+    t.integer "removed_pull_request_number"
+    t.boolean "submitting_to_github", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["challenged_citation_id"], name: "index_hypothesis_challenges_on_challenged_citation_id"
+    t.index ["challenged_explanation_quote_id"], name: "index_hypothesis_challenges_on_challenged_explanation_quote_id"
+    t.index ["challenged_hypothesis_id"], name: "index_hypothesis_challenges_on_challenged_hypothesis_id"
+    t.index ["creator_id"], name: "index_hypothesis_challenges_on_creator_id"
+    t.index ["hypothesis_id"], name: "index_hypothesis_challenges_on_hypothesis_id"
   end
 
   create_table "hypothesis_tags", force: :cascade do |t|
