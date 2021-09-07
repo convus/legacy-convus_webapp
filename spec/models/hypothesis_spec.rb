@@ -32,17 +32,25 @@ RSpec.describe Hypothesis, type: :model do
     end
   end
 
-  describe "clean_title" do
-    let(:hypothesis) { Hypothesis.create(title: " Statement about things. Because a cool party! \n") }
-    it "cleans" do
+  describe "punctuate_title" do
+    let(:hypothesis) { Hypothesis.create(title: title) }
+    let(:title) { "\nSomething about things\n" }
+    it "punctuates" do
       expect(hypothesis).to be_valid
-      expect(hypothesis.title).to eq "Statement about things. Because a cool party"
+      expect(hypothesis.title).to eq "Something about things."
+    end
+    context "with punctuation" do
+      let(:title) { " Statement about things. Because a cool party! \n" }
+      it "strips" do
+        expect(hypothesis).to be_valid
+        expect(hypothesis.title).to eq "Statement about things. Because a cool party!"
+      end
     end
   end
 
   describe "friendly_find" do
-    let(:title1) { "Overall, the case for reduced meat consumption is strong" }
-    let(:title2) { "The case for reduced meat consumption is strong" }
+    let(:title1) { "Overall, the case for reduced meat consumption is strong." }
+    let(:title2) { "The case for reduced meat consumption is strong." }
     let(:title1_slug) { "overall-the-case-for-reduced-meat-consumption-is-strong" }
     let(:hypothesis) { FactoryBot.create(:hypothesis_approved, title: title1, ref_number: 3213) }
     it "finds by various things" do
@@ -126,10 +134,10 @@ RSpec.describe Hypothesis, type: :model do
   end
 
   describe "text_search" do
-    let!(:hypothesis1) { FactoryBot.create(:hypothesis, title: "bears are neat") }
-    let!(:hypothesis2) { FactoryBot.create(:hypothesis, title: "dragons are neat ") }
+    let!(:hypothesis1) { FactoryBot.create(:hypothesis, title: "bears are neat.") }
+    let!(:hypothesis2) { FactoryBot.create(:hypothesis, title: "dragons are neat! ") }
     it "finds" do
-      expect(hypothesis2.title).to eq "dragons are neat"
+      expect(hypothesis2.title).to eq "dragons are neat!"
       expect(Hypothesis.text_search("are neat").pluck(:id)).to match_array([hypothesis1.id, hypothesis2.id])
       expect(Hypothesis.text_search("are NEAT").pluck(:id)).to match_array([hypothesis1.id, hypothesis2.id])
       expect(Hypothesis.text_search("Bears").pluck(:id)).to match_array([hypothesis1.id])
