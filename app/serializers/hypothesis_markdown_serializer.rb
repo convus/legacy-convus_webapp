@@ -9,7 +9,7 @@ class HypothesisMarkdownSerializer
       title: @hypothesis.title,
       id: @hypothesis.ref_id,
       topics: @hypothesis.tag_titles,
-      explanations: @explanations.map(&:flat_file_serialized)
+      explanations: @explanations.map(&:flat_file_serialized),
       citations: citations
     }
   end

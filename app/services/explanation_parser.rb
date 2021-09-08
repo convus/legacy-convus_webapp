@@ -1,5 +1,6 @@
 class ExplanationParser
   # Duplicates parseExplanationQuotes in explanation_form.js
+  # MIGHT no longer be necessary, because we're pretty much only using text_nodes
   def self.quotes(text)
     matching_lines = []
     last_quote_line = nil
@@ -41,6 +42,7 @@ class ExplanationParser
     quote_index = -1
     last_quote_line = nil
     text.split("\n").each_with_index do |line, index|
+      line.strip!
       # match lines that are blockquotes
       if line.match?(/\A\s*>/)
         # remove the >, trim the string,
@@ -76,9 +78,8 @@ class ExplanationParser
     )
   end
 
-  def initialize(explanation: nil, text_nodes: nil)
+  def initialize(explanation: nil)
     @explanation = explanation
-    @text_nodes = text_nodes
   end
 
   attr_reader :reparse_text_nodes, :text_nodes
@@ -88,16 +89,16 @@ class ExplanationParser
     self.class.text_nodes(@explanation.text, urls: urls)
   end
 
-  def parse_quotes
-
-  end
-
-  def to_nodes
-
+  def text_nodes
+    @text_nodes ||= parse_text_nodes
   end
 
   def text_with_references
-    @explanation.text
+    text_nodes.map do |node|
+      next node if node.is_a?(String)
+      str = node[:quote].split("\n").map { |l| "> #{l}" }.join("\n")
+      "#{str}\n> reference: #{node[:url]}"
+    end.join("\n\n").gsub("\n\n\n", "\n\n") # Probably can do better than this gsub...
   end
 
   # This is what is stored in the database, in explanation#text

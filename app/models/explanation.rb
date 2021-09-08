@@ -32,28 +32,6 @@ class Explanation < ApplicationRecord
     approved.or(where(creator_id: user.id))
   end
 
-  # Duplicates parseExplanationQuotes in explanation_form.js
-  def self.parse_quotes(text)
-    matching_lines = []
-    last_quote_line = nil
-    text.split("\n").each_with_index do |line, index|
-      # match lines that are blockquotes
-      if line.match?(/\A\s*>/)
-        # remove the >, trim the string,
-        quote_text = line.gsub(/\A\s*>\s*/, "").strip
-        # We need to group consecutive lines, because that's how markdown parses
-        # So check if the last line was a quote and if so, update it
-        if last_quote_line == (index - 1)
-          quote_text = [matching_lines.pop, quote_text].join(" ")
-        end
-        matching_lines.push(quote_text)
-        last_quote_line = index
-      end
-    end
-    # - remove duplicates & ignore any empty quotes
-    matching_lines.uniq.reject(&:blank?)
-  end
-
   def self.explanation_quotes
     ExplanationQuote.where(explanation_id: pluck(:id))
   end
@@ -90,23 +68,22 @@ class Explanation < ApplicationRecord
   end
 
   # Method to building from flat file content
-  def update_from_text(passed_text, quote_urls: [])
-    update(text: passed_text)
-    quotes_from_text = self.class.parse_quotes(text)
+  def update_from_text(passed_text, quote_urls: nil)
+    self.text = passed_text
+    @text_nodes = parser(true).parse_text_nodes(urls: quote_urls)
     current_explanation_quote_ids = []
-    quotes_from_text.each_with_index do |quote, index|
-      url = quote_urls[index]
-      if url.present?
+    quote_nodes.each_with_index do |q_node, index|
+      if q_node[:url].present?
         # Make sure we don't grab the same quote multiple times
-        matches = explanation_quotes.where.not(id: current_explanation_quote_ids).where(url: url)
+        matches = explanation_quotes.where.not(id: current_explanation_quote_ids).where(url: q_node[:url])
         # Try to grab the match by text
-        explanation_quote = matches.where(text: quote).first
+        explanation_quote = matches.where(text: q_node[:quote]).first
         # Fallback to just whatever is there
         explanation_quote ||= matches.first
       end
-      explanation_quote ||= explanation_quotes.where.not(id: current_explanation_quote_ids).find_by_text(quote)
+      explanation_quote ||= explanation_quotes.where.not(id: current_explanation_quote_ids).find_by_text(q_node[:quote])
       explanation_quote ||= explanation_quotes.build
-      explanation_quote.update!(text: quote, url: url, ref_number: index + 1)
+      explanation_quote.update!(text: q_node[:quote], url: q_node[:url], ref_number: index + 1)
       current_explanation_quote_ids << explanation_quote.id
     end
     explanation_quotes.where.not(id: current_explanation_quote_ids).update_all(removed: true)
@@ -115,8 +92,17 @@ class Explanation < ApplicationRecord
     update_body_html
   end
 
-  def parser
-    @parser ||= ExplanationParser.new(explanation: self)
+  def parser(reinitialize = false)
+    return @parser unless reinitialize || @parser.blank?
+    @parser = ExplanationParser.new(explanation: self)
+  end
+
+  def text_nodes
+    @text_nodes ||= parser.parse_text_nodes
+  end
+
+  def quote_nodes
+    text_nodes.reject { |t| t.is_a?(String) }
   end
 
   def text_with_references

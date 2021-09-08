@@ -87,22 +87,26 @@ RSpec.describe ExplanationParser do
     end
   end
 
-  describe "parse_text_nodes" do
+  describe "parse_text_nodes, text_with_references" do
     let(:explanation) { FactoryBot.create(:explanation, text: text) }
     let(:url1) { nil }
     let(:text) { "New explanation, where I prove things\n\n>I'm quoting stuff\n\nfinale" }
+    let(:text_with_references) { "New explanation, where I prove things\n\n> I'm quoting stuff\n> reference: #{url1}\n\nfinale" }
     let(:target) { ["New explanation, where I prove things\n", {quote: "I'm quoting stuff", url: url1}, "\nfinale"] }
     it "returns" do
       expect(instance.parse_text_nodes).to eq target
+      expect(instance.text_with_references).to eq text_with_references
     end
     context "text with url" do
       let(:url1) { "https://otherthings.com/812383123123" }
-      let(:text) { "New explanation, where I prove things\n\n>I'm quoting stuff\n> reference: #{url1}\n\nfinale" }
+      let(:text) { text_with_references }
       it "returns" do
         expect(instance.parse_text_nodes).to eq target
+        expect(instance.text_with_references).to eq text_with_references
       end
     end
     context "with explanation_quotes" do
+      let(:url1) { "https://example.com/something?quote=true" }
       let(:url2) { "https://url.com/stufffff" }
       let!(:explanation_quote1) { FactoryBot.create(:explanation_quote, explanation: explanation, url: url2, removed: true) }
       let!(:explanation_quote2) { FactoryBot.create(:explanation_quote, explanation: explanation, url: url1) }
@@ -114,7 +118,12 @@ RSpec.describe ExplanationParser do
         # With passing in a URL
         target_different_url = [target[0], target[1].merge(url: url2), target[2]]
         expect(instance.parse_text_nodes(urls: [url2])).to eq target_different_url
+        expect(instance.text_with_references).to eq text_with_references
       end
     end
+  end
+
+  describe "text_with_references" do
+
   end
 end

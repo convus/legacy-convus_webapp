@@ -22,50 +22,6 @@ RSpec.describe Explanation, type: :model do
     end
   end
 
-  describe "update_from_text" do
-    let(:explanation) { FactoryBot.create(:explanation) }
-    let(:url1) { "https://otherthings.com/812383123123" }
-    let(:text) { "New explanation, where I prove things\n\n>I'm quoting stuff\n\nfinale" }
-    it "creates" do
-      expect(explanation.explanation_quotes.count).to eq 0
-      expect(explanation.body_html).to be_blank
-      explanation.update_from_text(text)
-      explanation.reload
-      expect(explanation.explanation_quotes.count).to eq 1
-      expect(explanation.body_html).to be_present
-      explanation_quote = explanation.explanation_quotes.first
-      expect(explanation_quote.url).to be_blank
-      expect(explanation_quote.text).to eq "I'm quoting stuff"
-      expect(explanation_quote.ref_number).to eq 1
-      # It finds by text, if the text is the same
-      explanation.update_from_text(text, quote_urls: [url1])
-      explanation_quote.reload
-      expect(explanation.body_html).to be_present
-      expect(explanation_quote.url).to eq url1
-      expect(explanation_quote.text).to eq "I'm quoting stuff"
-      expect(explanation_quote.ref_number).to eq 1
-    end
-    context "with explanation_quotes" do
-      let!(:explanation_quote1) { FactoryBot.create(:explanation_quote, explanation: explanation, url: "https://url.com/stufffff") }
-      let!(:explanation_quote2) { FactoryBot.create(:explanation_quote, explanation: explanation, url: url1) }
-      let!(:explanation_quote3) { FactoryBot.create(:explanation_quote, explanation: explanation, text: nil, url: nil) }
-      it "updates the matching quote, deletes the other" do
-        expect(explanation_quote2.reload.ref_number).to eq 2
-        expect(explanation.reload.explanation_quotes.count).to eq 3
-        expect(explanation.body_html).to be_blank
-        explanation.update_from_text(text, quote_urls: [url1])
-        explanation.reload
-        expect(explanation.body_html).to be_present
-        expect(explanation.explanation_quotes.not_removed.count).to eq 1
-        expect(explanation.explanation_quotes.removed.count).to eq 1
-        explanation_quote2.reload
-        expect(explanation_quote2.url).to eq url1
-        expect(explanation_quote2.text).to eq "I'm quoting stuff"
-        expect(explanation_quote2.ref_number).to eq 1
-      end
-    end
-  end
-
   describe "parse_text" do
     let(:explanation) { Explanation.new(text: text) }
     it "returns empty" do
