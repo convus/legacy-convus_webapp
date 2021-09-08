@@ -94,7 +94,7 @@ class Hypothesis < ApplicationRecord
 
   # Required for FlatFileSerializable
   def file_pathnames
-    ["hypotheses", "#{ref_id}_#{slug}.yml"]
+    ["hypotheses", "#{ref_id}_#{slug}.md"]
   end
 
   # Required for FlatFileSerializable
