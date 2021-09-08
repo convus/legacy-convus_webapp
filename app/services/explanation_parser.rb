@@ -83,8 +83,6 @@ class ExplanationParser
     @explanation = explanation
   end
 
-  attr_reader :reparse_text_nodes, :text_nodes
-
   def parse_text_nodes(urls: nil)
     urls ||= @explanation.explanation_quotes.not_removed.order(:ref_number).pluck(:url)
     self.class.text_nodes(@explanation.text, urls: urls)
@@ -104,10 +102,8 @@ class ExplanationParser
 
   # This is what is stored in the database, in explanation#text
   def to_markdown_no_references
-
   end
 
   def to_body_html
-
   end
 end

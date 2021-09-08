@@ -284,7 +284,7 @@ RSpec.describe Explanation, type: :model do
 
   describe "github_html_url" do
     let(:hypothesis) { FactoryBot.create(:hypothesis, pull_request_number: 2) }
-    let(:explanation) { FactoryBot.build(:explanation, hypothesis: hypothesis, pull_request_number: 111)}
+    let(:explanation) { FactoryBot.build(:explanation, hypothesis: hypothesis, pull_request_number: 111) }
     it "is pull_request if unapproved, file_path if approved" do
       expect(hypothesis.github_html_url).to match(/pull\/2/)
       expect(explanation.approved?).to be_falsey
