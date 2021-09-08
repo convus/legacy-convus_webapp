@@ -30,8 +30,9 @@ class ExplanationParser
 
   def self.quote_split_url(str, url = nil)
     lines = str.split("\n").map(&:strip)
-    if lines.last.match?(/reference:[^\z]/i)
-      url = lines.pop.gsub(/reference:/i, "").strip
+    # parse out URLs started with ref: or reference:
+    if lines.last.match?(/ref(erence)?:[^\z]/i)
+      url = lines.pop.gsub(/ref(erence)?:/i, "").strip
     end
     {quote: lines.join("\n"), url: url}
   end
@@ -97,7 +98,7 @@ class ExplanationParser
     text_nodes.map do |node|
       next node if node.is_a?(String)
       str = node[:quote].split("\n").map { |l| "> #{l}" }.join("\n")
-      "#{str}\n> reference: #{node[:url]}"
+      "#{str}\n> ref:#{node[:url]}" # no whitespace in between to avoid line breaks on GitHub display
     end.join("\n\n").gsub("\n\n\n", "\n\n") # Probably can do better than this gsub...
   end
 
