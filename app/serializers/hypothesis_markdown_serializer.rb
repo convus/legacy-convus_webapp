@@ -1,16 +1,18 @@
 class HypothesisMarkdownSerializer
   def initialize(hypothesis:, explanations: nil)
     @hypothesis = hypothesis
-    @explanations = explanations || @hypothesis.explanations.approved
+    @explanations = (explanations || @hypothesis.explanations.approved)
+      .sort_by { |e| e.ref_number }
   end
+
+  attr_reader :explanations
 
   def serialized_attrs
     {
-      title: @hypothesis.title,
       id: @hypothesis.ref_id,
+      hypothesis: @hypothesis.title,
       topics: @hypothesis.tag_titles,
-      explanations: @explanations.map(&:flat_file_serialized),
-      citations: citations
+      citations: citations_hash.present? ? citations_hash : nil
     }
   end
 
@@ -19,16 +21,26 @@ class HypothesisMarkdownSerializer
   end
 
   def to_markdown
-    # Make this happen...
+    "#{front_matter}---\n#{explanations_markdown}"
   end
 
   def front_matter
     # Serialize to yaml - stringify keys so the keys don't start with :, to make things easier to read
+    serialized_attrs.except(:explanations).deep_stringify_keys.to_yaml(FlatFileSerializer.yaml_opts)
   end
 
-  def citations
-    @explanations.map(&:citations).uniq.each do |citation|
-      [citation.url, {title: citation.title, publication_title: citation.publication_title}]
-    end.to_h
+  def explanations_markdown
+    @explanations.map do |explanation|
+      "## Explanation #{explanation.ref_number}\n\n#{explanation.text_with_references}"
+    end.join("\n\n")
+  end
+
+  def citations_hash
+    @explanations.map(&:citations).flatten.uniq.reject(&:blank?).map do |citation|
+      [citation.url,
+       {title: citation.title,
+        published_date: citation.published_date_str,
+        publication_title: citation.publication_title}]
+    end.compact.to_h
   end
 end

@@ -5,6 +5,11 @@ class FlatFileSerializer
   require "csv"
 
   class << self
+    # For now, don't wrapping lines. It makes editing easier, only elder programmers expect it
+    def yaml_opts
+      {options: {line_width: -1}}
+    end
+
     def write_all_files
       Hypothesis.approved.find_each { |hypothesis| write_hypothesis(hypothesis) }
       Citation.approved.find_each { |citation| write_citation(citation) }

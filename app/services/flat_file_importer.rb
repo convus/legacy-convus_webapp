@@ -52,7 +52,7 @@ class FlatFileImporter
       (hypothesis_attrs[:explanations] || {}).values.each do |explanation_attrs|
         explanation = hypothesis.explanations.find_by(ref_number: explanation_attrs[:id]) || hypothesis.explanations.build
         explanation.approved_at ||= Time.current
-        explanation.update_from_text(explanation_attrs[:text], quote_urls: explanation_attrs[:quote_urls])
+        explanation.update_from_text(explanation_attrs[:text])
       end
 
       hypothesis.update(tags_string: hypothesis_attrs[:topics])

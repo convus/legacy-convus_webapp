@@ -68,9 +68,9 @@ class Explanation < ApplicationRecord
   end
 
   # Method to building from flat file content
-  def update_from_text(passed_text, quote_urls: nil)
+  def update_from_text(passed_text)
     self.text = passed_text
-    @text_nodes = parser(true).parse_text_nodes(urls: quote_urls)
+    @text_nodes = parser(true).parse_text_nodes
     current_explanation_quote_ids = []
     quote_nodes.each_with_index do |q_node, index|
       if q_node[:url].present?
