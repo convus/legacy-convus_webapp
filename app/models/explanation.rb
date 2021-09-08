@@ -88,7 +88,7 @@ class Explanation < ApplicationRecord
     end
     explanation_quotes.where.not(id: current_explanation_quote_ids).update_all(removed: true)
     remove_empty_quotes!
-    self.text = parser.to_markdown_no_references # Remove references from the text
+    self.text = parser.text_no_references # Remove references from the text
     update_body_html
   end
 
