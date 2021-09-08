@@ -88,7 +88,7 @@ class Explanation < ApplicationRecord
     end
     explanation_quotes.where.not(id: current_explanation_quote_ids).update_all(removed: true)
     remove_empty_quotes!
-    reload
+    self.text = parser.to_markdown_no_references # Remove references from the text
     update_body_html
   end
 
@@ -110,35 +110,29 @@ class Explanation < ApplicationRecord
   end
 
   def update_body_html
-    update(body_html: parse_text_with_blockquotes)
+    update(body_html: calculated_body_html)
     self
-  end
-
-  # Only for internal use, really
-  def parse_text
-    return "" unless text.present?
-    ExplanationParser.markdown.render(text.strip)
-      .gsub(/(<\/?)h\d+/i, '\1p') # Remove header open brackets and close brackets
   end
 
   def flat_file_serialized
     {id: ref_number, text: text_with_references}
   end
 
-  # This sucks and is brittle
-  def parse_text_with_blockquotes
+  # This isn't optimal and I don't think it handles nested blockquotes - but fuck them anyway
+  def calculated_body_html
     html_output = ""
-    # This is a dumb way of doing this, sorry, I'm tired (also, I don't think it handles nested blockquotes - but fuck them anyway)
     quote_sources = explanation_quotes.not_removed.order(:ref_number).map(&:citation_ref_html)
-    opening_tag = "<div class=\"explanation-quote-block\"><blockquote>"
-    parse_text.gsub(/<blockquote>/i, "||QBLK||>>>>").split("||QBLK||").each do |quote_or_not|
-      quote_or_not.gsub!(/>>>>/, opening_tag)
-      # I think these are generally grouped with the quote? But not sure. So handling it this way
-      if quote_or_not.match?(/<\/blockquote>/i)
-        closing_tag = "</blockquote><span class=\"source\">#{quote_sources.shift}</span></div>"
-        quote_or_not.gsub!(/<\/blockquote>/i, closing_tag)
+    text_nodes.each do |node|
+      html_output += if node.is_a?(String)
+         ExplanationParser.text_to_html(node)
+      else
+        source = quote_sources.shift
+        source = "<span class=\"source\">#{source}</span>" if source.present?
+        # Open and closing tags, separated by a newline to make test parsing easier
+        "\n<div class=\"explanation-quote-block\"><blockquote>\n" +
+          ExplanationParser.text_to_html(node[:quote]) +
+          "\n</blockquote>#{source}</div>\n"
       end
-      html_output += quote_or_not
     end
     html_output
   end
