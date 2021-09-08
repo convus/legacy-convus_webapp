@@ -15,7 +15,7 @@ describe HypothesisMarkdownSerializer, type: :lib do
         hypothesis.update(tags_string: "A Topic")
         expect(hypothesis.tag_titles).to eq(["A Topic"])
         expect_hashes_to_match(instance.as_json, target_json)
-        expect(instance.to_markdown).to eq target
+        expect(instance.to_markdown.gsub(/ \n/, "\n")).to eq target
       end
     end
 
@@ -40,12 +40,12 @@ describe HypothesisMarkdownSerializer, type: :lib do
         expect(citation.published_date_str).to eq published_date_str
         expect_hashes_to_match(instance.as_json, target_json)
         # Not passing in explanation, because it isn't approved
-        expect(instance.to_markdown).to eq "---\nid: #{hypothesis.ref_id}\nhypothesis: #{title}\ntopics: []\ncitations:\n---\n"
+        expect(instance.to_markdown.gsub(/ \n/, "\n")).to eq "---\nid: #{hypothesis.ref_id}\nhypothesis: #{title}\ntopics: []\ncitations:\n---\n"
         # Passing it in (we regularly serialize unapproved explanations)
-        expect(described_class.new(hypothesis: hypothesis, explanations: [explanation]).to_markdown).to eq target
+        expect(described_class.new(hypothesis: hypothesis, explanations: [explanation]).to_markdown.gsub(/ \n/, "\n")).to eq target
         # And if the explanation is approved, it renders too
         explanation.update(approved_at: Time.current - 1)
-        expect(described_class.new(hypothesis: hypothesis).to_markdown).to eq target
+        expect(described_class.new(hypothesis: hypothesis).to_markdown.gsub(/ \n/, "\n")).to eq target
       end
     end
   end
