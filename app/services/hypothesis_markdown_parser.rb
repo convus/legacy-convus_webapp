@@ -5,12 +5,34 @@ class HypothesisMarkdownParser
 
   attr_reader :file_content
 
+  def split_content
+    return @split_content if defined?(@split_content)
+    content = @file_content.split(/^---\s*\n/)
+    front = content.shift
+    front = content.shift if front.blank? # First block will be blank if formatted correctly
+    @split_content = [front, content.join("\n---\n")] # add back in horizontal lines, if they were in there
+  end
 
   def front_matter
-    matter = @file_content.split("\n---\s*\n")
+    @front_matter ||= YAML.load(split_content.first).with_indifferent_access
+  end
 
-    f_matter = matter.first.present? ? matter.first : matter.second
-    YAML.load(f_matter)
+  def explanations
+    return @explanations if defined?(@explanations)
+    argument_numbers = []
+    @explanations = split_content.last.split(/^\s*#+ explanation /i).reject(&:blank?)
+      .each_with_index.map do |exp, index|
+        num = exp[/\A\s*\d+/]
+        num = if num.present?
+          exp.gsub!(/\A\s*\d+/, "")
+          num.to_i
+        else
+          index + 1
+        end
+        num = argument_numbers.max + 1 if argument_numbers.include?(num)
+        argument_numbers << num
+        [num.to_s, exp.strip]
+      end.to_h
   end
 
   # import_hypothesis(File.load_file(file).with_indifferent_access)

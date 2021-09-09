@@ -25,15 +25,51 @@ RSpec.describe HypothesisMarkdownParser do
       "citations:\n  #{url1}:\n    title: A Special Title\n    published_date: "\
       "'#{published_date_str}'\n    publication_title: Convus\n---\n## Explanation 1\n\n#{explanation_text}"
     end
+
     describe "front_matter" do
       it "gets the front_matter" do
+        expect(instance.split_content.count).to eq 2
         expect_hashes_to_match(instance.front_matter, target_front_matter)
       end
       context "missing leading ---" do
-        # Seems like an easy thing for someone to do
+        # Seems like an easy thing for someone to do, so handle it
         let(:instance) { subject.new(file_content: file_content.gsub(/\A---\n/, "")) }
         it "gets the front_matter" do
           expect_hashes_to_match(instance.front_matter, target_front_matter)
+        end
+      end
+    end
+
+    describe "explanations" do
+      it "gets the explanation" do
+        expect(instance.explanations.count).to eq 1
+        expect(instance.explanations.keys.first).to eq "1"
+        explanation = instance.explanations.values.first
+        expect(explanation).to eq explanation_text
+      end
+      context "missing leading ## Explanation" do
+        # Seems like an easy thing for someone to do, so handle it
+        let(:instance) { subject.new(file_content: file_content.gsub(/## Explanation [^\n]*/, "")) }
+        it "gets the explanation" do
+          expect(instance.explanations.count).to eq 1
+          expect(instance.explanations.keys.first).to eq "1"
+          explanation = instance.explanations.values.first
+          expect(explanation).to eq explanation_text
+        end
+      end
+      context "second Explanation" do
+        let(:explanation_text2) { "Something Cool and whatever\netc"}
+        let(:explanation2_number) { 222 }
+        # Seems like an easy thing for someone to do, so handle it
+        let(:instance) { subject.new(file_content: "#{file_content}\n\n## Explanation #{explanation2_number}\n\n#{explanation_text2}") }
+        it "gets the explanation" do
+          expect(instance.explanations.count).to eq 2
+          expect(instance.explanations.keys.first).to eq "1"
+          explanation = instance.explanations.values.first
+          expect(explanation).to eq explanation_text
+          expect(instance.explanations.keys.last).to eq "222"
+          explanation2 = instance.explanations.values.last
+          expect(explanation2).to eq explanation_text2
         end
       end
     end
