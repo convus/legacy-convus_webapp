@@ -19,10 +19,10 @@ class GitContentRepo
     !output_success?(output)
   end
 
-  def initialize(repo_path: nil)
+  def initialize(repo_path: nil, branch: nil)
     @repo_path = repo_path || FlatFileSerializer::FILES_PATH
     @output = ""
-    @branch = "main"
+    @branch = branch || "main"
   end
 
   attr_reader :repo_path, :output, :branch

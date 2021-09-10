@@ -32,8 +32,7 @@ task update_flat_file_database_without_import: :environment do
   git_content_repo.enter_repository
   git_content_repo.reset_main
 
-  branch_name = "override-#{Time.current.to_i}"
-  git_content_repo.checkout_branch(branch_name)
+  git_content_repo.checkout_branch("override-#{Time.current.to_i}")
 
   FileUtils.rm_rf("hypotheses")
   FileUtils.rm_rf("citations")
