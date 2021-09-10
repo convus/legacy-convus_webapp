@@ -56,7 +56,7 @@ RSpec.describe Hypothesis, type: :model do
     it "finds by various things" do
       expect(hypothesis.ref_id).to eq "2H9"
       expect(hypothesis.slug).to eq title1_slug
-      expect(hypothesis.file_path).to eq "hypotheses/2H9_#{title1_slug}.yml"
+      expect(hypothesis.file_path).to eq "hypotheses/2H9_#{title1_slug}.md"
       expect(Slugifyer.filename_slugify(hypothesis.file_path)).to eq title1_slug
       expect(hypothesis.file_path.match?(/\A(hypotheses\/)?[0-z]+_/i)).to be_truthy
       Sidekiq::Worker.clear_all

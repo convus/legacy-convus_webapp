@@ -54,7 +54,7 @@ unless ENV["CIRCLECI"]
       let(:target_filenames) do
         [
           "citations/the-hill/some-citation.yml",
-          "hypotheses/1MR_hypothesis-1.yml",
+          "hypotheses/1MR_hypothesis-1.md",
           "publications.csv",
           "tags.csv"
         ]

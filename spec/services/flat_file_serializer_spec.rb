@@ -31,7 +31,7 @@ unless ENV["CIRCLECI"]
       let(:target_filenames) do
         [
           "citations/the-hill-etc/some-citation.yml",
-          "hypotheses/A_hypothesis-1.yml",
+          "hypotheses/A_hypothesis-1.md",
           "publications.csv",
           "tags.csv"
         ]
@@ -47,7 +47,7 @@ unless ENV["CIRCLECI"]
       let(:hypothesis) { FactoryBot.create(:hypothesis_approved, title: "US waiting for updated COVID-19 relief package", tags_string: "some tag", ref_number: 112) }
       let(:explanation) { FactoryBot.create(:explanation, hypothesis: hypothesis) }
       let!(:explanation_quote) { FactoryBot.create(:explanation_quote, explanation: explanation, url: citation.url) }
-      let(:target_filename) { "hypotheses/34_us-waiting-for-updated-covid-19-relief-package.yml" }
+      let(:target_filename) { "hypotheses/34_us-waiting-for-updated-covid-19-relief-package.md" }
       it "writes the files" do
         hypothesis.reload
         expect(hypothesis.ref_id).to eq "34"
