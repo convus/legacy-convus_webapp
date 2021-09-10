@@ -1,11 +1,14 @@
-class ReconcileTaskOutputChecker
+# TODO: make this less shitty, probably using octokit
+# Specifically: this is mission critical and needs to be tested
+
+class GitContentRepo
   NON_ERROR_STRINGS = [
     "Already up to date",
     "Everything up-to-date",
     "Your branch is up to date with 'origin/main'"
   ]
 
-  def self.success?(output)
+  def self.output_success?(output)
     return true if output.blank?
     return true if NON_ERROR_STRINGS.any? { |string| output.match?(/#{string}/i) }
     last_line = output.split("\n").last
@@ -13,7 +16,7 @@ class ReconcileTaskOutputChecker
     last_line.match?(/main -> main/)
   end
 
-  def self.failed?(output)
-    !success?(output)
+  def self.output_failed?(output)
+    !output_success?(output)
   end
 end
