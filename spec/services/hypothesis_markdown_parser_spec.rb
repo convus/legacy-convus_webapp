@@ -113,7 +113,53 @@ RSpec.describe HypothesisMarkdownParser do
         expect(explanation_quote.citation.approved?).to be_truthy
       end
       context "overflown citation attributes" do
-        it "imports all the acceptable attributes"
+        let(:citations_attributes) do
+          {
+            url1 => {
+              id: "party",
+              explanation_quote_id: 11112,
+              title: "Really cool Title",
+              published_date: published_date_str,
+              publication_title: "Convus",
+              authors_str: "George; Scott",
+              kind: "research with randomized controlled trial",
+              url_is_direct_link_to_full_text: true,
+              doi: "https://doi.org/10.1038/s41467-020-17316-z",
+              url_is_not_publisher: true,
+              peer_reviewed: true,
+              randomized_controlled_trial: true
+            },
+            "https://example2.com/something" => {title: "Other Title", published_date: "2021-2-1"}
+          }
+        end
+        it "imports all the acceptable attributes, skips unknown citation" do
+          expect(Hypothesis.count).to eq 0
+          expect(Explanation.count).to eq 0
+          allow_any_instance_of(described_class).to receive(:front_matter) { target_front_matter.merge(citations: citations_attributes) }
+          instance.import
+          expect(Hypothesis.count).to eq 1
+          expect(Explanation.count).to eq 1
+
+          hypothesis = Hypothesis.last
+          expect(hypothesis.title).to eq title
+          expect(hypothesis.tags_string).to eq "A Topic"
+          expect(hypothesis.approved?).to be_truthy
+
+          expect(hypothesis.explanations.count).to eq 1
+          explanation = Explanation.first
+          expect(explanation.text).to eq explanation_text.gsub(/\n> ref:.*/, "")
+          expect(explanation.approved?).to be_truthy
+
+          expect(explanation.explanation_quotes.count).to eq 1
+          explanation_quote = explanation.explanation_quotes.first
+          expect(explanation_quote.text).to eq "With a quote"
+          expect(explanation_quote.url).to eq url1
+          citation = explanation_quote.citation
+          expect_attrs_to_match_hash(citation, citations_attributes[url1].except(:id, :explanation_quote_id, :kind))
+          expect(citation.authors.count).to eq 2
+          expect(citation.kind).to eq "research_with_rct"
+          expect(citation.id).to_not eq "party"
+        end
       end
     end
   end

@@ -108,7 +108,8 @@ class HypothesisExplanationsController < ApplicationController
 
   # Get each set of permitted citation attributes. We're updating them individually
   def permitted_citations_params
-    params.require(:explanation).permit(citations_attributes: Citation.permitted_attrs)
+    params.require(:explanation)
+      .permit(citations_attributes: Citation.permitted_attrs + [:explanation_quote_id])
       .dig(:citations_attributes)
   end
 end
