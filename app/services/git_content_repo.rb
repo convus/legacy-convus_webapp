@@ -23,9 +23,10 @@ class GitContentRepo
   def initialize(repo_path: nil)
     @repo_path = repo_path || FlatFileSerializer::FILES_PATH
     @output = ""
+    @branch = "main"
   end
 
-  attr_reader :repo_path, :output
+  attr_reader :repo_path, :output, :branch
 
   def enter_repository
     Dir.chdir repo_path
@@ -33,9 +34,13 @@ class GitContentRepo
     @output += `git config user.name convus-admin-bot`
   end
 
+  def checkout_main
+    @output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git checkout main 2>&1`
+  end
+
   def reset_main
     # Make sure we're up to date on the main branch
-    @output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git checkout main 2>&1`
+    checkout_main
     @output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git reset --hard origin/main 2>&1`
     @output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git fetch origin 2>&1`
     @output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git merge origin 2>&1`
@@ -56,10 +61,23 @@ class GitContentRepo
 
   def commit(message)
     @output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git commit -m"#{message}" 2>&1`
-    @output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git push origin main 2>&1`
+  end
+
+  def push
+    @output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git push origin #{@branch} 2>&1`
   end
 
   def output_failed?
-    self.class.output_failed?(output)
+    self.class.output_failed?(@output)
+  end
+
+  def checkout_branch(new_branch)
+    @branch = new_branch
+    @output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git checkout -b #{@branch} 2>&1`
+  end
+
+  def delete_branch
+    raise "Can't delete main branch" if @branch == "main"
+    @output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git branch -D #{@branch} 2>&1`
   end
 end

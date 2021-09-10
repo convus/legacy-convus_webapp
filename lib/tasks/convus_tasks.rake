@@ -20,7 +20,6 @@ task reconcile_flat_file_database: :environment do
   git_content_repo.push
 
   puts "(Output start) " + git_content_repo.output + " (output end)\n\n"
-
   raise git_content_repo.output if git_content_repo.output_failed?
 end
 
@@ -28,44 +27,39 @@ end
 # It pushes a branch up named "override-#{timestamp}", which needs to be manually merged
 # This CAN OVERWRITE THINGS IN THE CONTENT REPOSITORY. It's for fixing broken stuff, YMMV
 task update_flat_file_database_without_import: :environment do
-  Dir.chdir FlatFileSerializer::FILES_PATH
-  output = ""
-  output += `git config user.email admin-bot@convus.org`
-  output += `git config user.name convus-admin-bot`
-  # In case something fucked up, checkout the main branch
-  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git checkout main 2>&1`
-  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git reset --hard origin/main 2>&1`
+  # Move into the repository directory
+  git_content_repo = GitContentRepo.new
+  git_content_repo.enter_repository
+  git_content_repo.reset_main
+
   branch_name = "override-#{Time.current.to_i}"
-  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git checkout -b #{branch_name} 2>&1`
+  git_content_repo.checkout_branch(branch_name)
+
   FileUtils.rm_rf("hypotheses")
   FileUtils.rm_rf("citations")
   FlatFileSerializer.write_all_files
-  output += `git add -A`
-  commit_message = "Reconciliation: #{Time.now.utc.to_date.iso8601}"
-  # Get the number of commit_messages with that title, add number to the back of the commit_message
-  reconciliation_count = `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git --no-pager log --grep="#{commit_message}" --format=oneline 2>&1`
-  commit_message += "_#{reconciliation_count.scan(/\n/).size + 1}"
-  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git commit -m"#{commit_message}" 2>&1`
-  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git push origin #{branch_name} 2>&1`
-  # Get back on main so future commands don't error
-  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git checkout main 2>&1`
+  git_content_repo.add_all
+  git_content_repo.commit(git_content_repo.new_reconciliation_message)
+  git_content_repo.push
+  # Get back on main to prevent possible future errors
+  git_content_repo.checkout_main
+  # cleanup branch
+  git_content_repo.delete_branch
 
-  puts "(Output start) " + output + " (output end)"
+  puts "(Output start) " + git_content_repo.output + " (output end)\n\n"
+  raise git_content_repo.output if git_content_repo.output_failed?
+end
 
-  raise output if ReconcileTaskOutputChecker.failed?(output)
+task dev_update_from_git: :environment do
+  git_content_repo = GitContentRepo.new
+  git_content_repo.enter_repository
+  git_content_repo.reset_main
+  FlatFileImporter.import_all_files # Import the files from the git branch
+  puts "(Output start) " + git_content_repo.output + " (output end)\n\n"
 end
 
 # Useful if formatting changes for explanations!
 # All approved explanations are reprocessed when they are imported
 task regenerate_explanation_bodies: :environment do
   Explanation.find_each { |a| a.update_body_html }
-end
-
-task dev_update_from_git: :environment do
-  Dir.chdir FlatFileSerializer::FILES_PATH
-  output = `git reset --hard origin/main 2>&1`
-  output += `git fetch origin 2>&1`
-  output += `git merge origin 2>&1`
-  pp "Output:", output
-  FlatFileImporter.import_all_files # Import the files from the git branch
 end
