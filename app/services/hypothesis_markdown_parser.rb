@@ -5,6 +5,40 @@ class HypothesisMarkdownParser
 
   attr_reader :file_content
 
+  def import
+    hypothesis = matching_hypothesis
+    hypothesis.approved_at ||= Time.current # If it's in the flat files, it's approved
+    hypothesis.update(title: front_matter[:hypothesis])
+    explanations.each do |ref_number, text|
+      explanation = hypothesis.explanations.find_by_ref_number(ref_number)
+      explanation ||= hypothesis.explanations.build(ref_number: ref_number)
+      explanation.approved_at ||= Time.current
+      explanation.update_from_text(text)
+    end
+    hypothesis.update(tags_string: front_matter[:topics])
+    # TODO: should only be the ones that were passed in here :(
+    hypothesis.tags.unapproved.update_all(approved_at: Time.current)
+
+    # Because explanations were added, reload
+    hypothesis.reload
+    front_matter[:citations].each do |url, citation_attrs|
+      citation = hypothesis.citations.friendly_find_slug(url)
+      # Can't update citations for other records here
+      next unless citation.present?
+      citation.approved_at ||= Time.current
+      # Rename this attr
+      citation_attrs[:published_date_str] = citation_attrs.delete(:published_date)
+      citation.update(citation_attrs.slice(*Citation.permitted_attrs))
+    end
+    hypothesis
+  end
+
+  def matching_hypothesis
+    Hypothesis.find_ref_id(front_matter[:id]) ||
+      Hypothesis.friendly_find(front_matter[:hypothesis]) ||
+      Hypothesis.new(ref_id: front_matter[:id], ref_number: front_matter[:id].to_i(36))
+  end
+
   def split_content
     return @split_content if defined?(@split_content)
     content = @file_content.split(/^---\s*\n/)
@@ -34,37 +68,4 @@ class HypothesisMarkdownParser
         [num.to_s, exp.strip]
       end.to_h
   end
-
-  # import_hypothesis(File.load_file(file).with_indifferent_access)
-
-  # hypothesis = Hypothesis.find_ref_id(hypothesis_attrs[:id]) ||
-  #       Hypothesis.new(ref_id: hypothesis_attrs[:id], ref_number: hypothesis_attrs[:id].to_i(36))
-  #     hypothesis.approved_at ||= Time.current # If it's in the flat files, it's approved
-  #     hypothesis.update(title: hypothesis_attrs[:title])
-
-  #     # Handle transition, where not everything has an explanation key
-  #     (hypothesis_attrs[:explanations] || {}).values.each do |explanation_attrs|
-  #       explanation = hypothesis.explanations.find_by(ref_number: explanation_attrs[:id]) || hypothesis.explanations.build
-  #       explanation.approved_at ||= Time.current
-  #       explanation.update_from_text(explanation_attrs[:text])
-  #     end
-
-  #     hypothesis.update(tags_string: hypothesis_attrs[:topics])
-  #     hypothesis.tags.unapproved.update_all(approved_at: Time.current)
-
-  #     # Commented out in PR#146
-  #     # hypothesis_citation_ids = []
-  #     # hypothesis_citations = hypothesis_attrs[:cited_urls] || []
-  #     # # If there is a "new_cited_url", process that too
-  #     # hypothesis_citations += [hypothesis_attrs[:new_cited_url]] if hypothesis_attrs[:new_cited_url].present?
-  #     # hypothesis_citations.map do |hc_attrs|
-  #     #   hypothesis_citation = create_hypothesis_citation(hypothesis, hc_attrs)
-  #     #   hypothesis_citation_ids << hypothesis_citation.id
-  #     # end
-  #     # hypothesis.reload
-  #     # # If we have new_cited_urls, we're ignoring the old cited_urls to avoid merge conflict issues
-  #     # unless hypothesis_attrs.key?(:new_cited_urls)
-  #     #   hypothesis.hypothesis_citations.where.not(id: hypothesis_citation_ids).destroy_all
-  #     # end
-  #     hypothesis
 end

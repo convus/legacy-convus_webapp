@@ -71,16 +71,49 @@ RSpec.describe HypothesisMarkdownParser do
           explanation2 = instance.explanations.values.last
           expect(explanation2).to eq explanation_text2
         end
+        context "duplicate number" do
+          let(:explanation2_number) { 1 }
+          it "sets a good number" do
+            expect(instance.explanations.count).to eq 2
+            expect(instance.explanations.keys.first).to eq "1"
+            explanation = instance.explanations.values.first
+            expect(explanation).to eq explanation_text
+            expect(instance.explanations.keys.last).to eq "2"
+            explanation2 = instance.explanations.values.last
+            expect(explanation2).to eq explanation_text2
+          end
+        end
       end
     end
 
     describe "import" do
-      xit "imports" do
+      it "imports" do
         expect(Hypothesis.count).to eq 0
         expect(Explanation.count).to eq 0
         instance.import
         expect(Hypothesis.count).to eq 1
         expect(Explanation.count).to eq 1
+
+        hypothesis = Hypothesis.last
+        expect(hypothesis.title).to eq title
+        expect(hypothesis.tags_string).to eq "A Topic"
+        expect(hypothesis.approved?).to be_truthy
+
+        expect(hypothesis.explanations.count).to eq 1
+        explanation = Explanation.first
+        expect(explanation.text).to eq explanation_text.gsub(/\n> ref:.*/, "")
+        expect(explanation.approved?).to be_truthy
+
+        expect(explanation.explanation_quotes.count).to eq 1
+        explanation_quote = explanation.explanation_quotes.first
+        expect(explanation_quote.text).to eq "With a quote"
+        expect(explanation_quote.url).to eq url1
+        expect(explanation_quote.citation.published_date_str).to eq published_date_str
+        expect(explanation_quote.citation.publication_title).to eq "Convus"
+        expect(explanation_quote.citation.approved?).to be_truthy
+      end
+      context "overflown citation attributes" do
+        it "imports all the acceptable attributes"
       end
     end
   end

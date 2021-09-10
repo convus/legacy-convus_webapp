@@ -108,13 +108,7 @@ class HypothesisExplanationsController < ApplicationController
 
   # Get each set of permitted citation attributes. We're updating them individually
   def permitted_citations_params
-    params.require(:explanation).permit(citations_attributes: permitted_citation_attrs)
+    params.require(:explanation).permit(citations_attributes: Citation.permitted_attrs)
       .dig(:citations_attributes)
-  end
-
-  def permitted_citation_attrs
-    %i[explanation_quote_id title authors_str kind url url_is_direct_link_to_full_text
-      published_date_str doi url_is_not_publisher publication_title peer_reviewed
-      randomized_controlled_trial]
   end
 end
