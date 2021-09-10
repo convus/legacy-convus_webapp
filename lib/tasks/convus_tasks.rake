@@ -1,35 +1,27 @@
-# TODO: This is an embarrassing solution, and needs to be improved, probably using octokit
-# Ideally this would be in a service. This is mission critical and needs to be tested
+# TODO: This is an embarrassing solution, and needs to be improved
 # ....
 # HOWEVER - one of the advantages of this solution is that it is blocking - only one job runs at a time
 # - the idea of managing multiple imports simultaneously is additional complexity that is nice to avoid
 task reconcile_flat_file_database: :environment do
-  Dir.chdir FlatFileSerializer::FILES_PATH
-  output = ""
-  output += `git config user.email admin-bot@convus.org`
-  output += `git config user.name convus-admin-bot`
-  # Make sure we're up to date on the main branch
-  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git checkout main 2>&1`
-  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git reset --hard origin/main 2>&1`
-  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git fetch origin 2>&1`
-  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git merge origin 2>&1`
+  # Move into the repository directory
+  git_content_repo = GitContentRepo.new
+  git_content_repo.enter_repository
+  git_content_repo.reset_main
+
   FlatFileImporter.import_all_files # Import the files from the git branch
   # Remove the existing hypotheses and citations, and then re-write them
   # Important because of title/slug renaming
   FileUtils.rm_rf("hypotheses")
   FileUtils.rm_rf("citations")
   FlatFileSerializer.write_all_files
-  output += `git add -A`
-  commit_message = "Reconciliation: #{Time.now.utc.to_date.iso8601}"
-  # Get the number of commit_messages with that title, add number to the back of the commit_message
-  reconciliation_count = `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git --no-pager log --grep="#{commit_message}" --format=oneline 2>&1`
-  commit_message += "_#{reconciliation_count.scan(/\n/).size + 1}"
-  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git commit -m"#{commit_message}" 2>&1`
-  output += `GIT_SSH_COMMAND="ssh -i ~/.ssh/admin_bot_id_rsa" git push origin main 2>&1`
 
-  puts "(Output start) " + output + " (output end)\n\n"
+  git_content_repo.add_all
+  git_content_repo.commit(git_content_repo.new_reconciliation_message)
+  git_content_repo.push
 
-  raise output if ReconcileTaskOutputChecker.failed?(output)
+  puts "(Output start) " + git_content_repo.output + " (output end)\n\n"
+
+  raise git_content_repo.output if git_content_repo.output_failed?
 end
 
 # This generally should NOT be used. It does not import the updates from git before pushing up the current data
