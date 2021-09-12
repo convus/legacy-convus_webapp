@@ -61,6 +61,15 @@ class Hypothesis < ApplicationRecord
     str.match?(/(\.|!|\?)\z/) ? str : "#{str}."
   end
 
+  def hypothesis_relations
+    HypothesisRelation.where(hypothesis_earlier_id: id)
+      .or(HypothesisRelation.where(hypothesis_later_id: id))
+  end
+
+  def conflicting_hypotheses
+    Hypothesis.where(id: hypothesis_relations.hypothesis_ids - [id])
+  end
+
   def tag_titles
     tags.alphabetical.pluck(:title)
   end
