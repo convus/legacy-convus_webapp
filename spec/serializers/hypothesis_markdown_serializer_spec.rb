@@ -3,7 +3,8 @@
 require "rails_helper"
 
 describe HypothesisMarkdownSerializer, type: :lib do
-  let(:hypothesis) { FactoryBot.create(:hypothesis_approved, title: title) }
+  # Set ref number to make sure it isn't just integers, which get wrapped in quotes
+  let(:hypothesis) { FactoryBot.create(:hypothesis_approved, title: title, ref_number: 122) }
   let(:title) { "Some cool title." }
   let(:instance) { described_class.new(hypothesis: hypothesis) }
 
