@@ -111,10 +111,8 @@ class GithubIntegration
     branch_name = "update-hypothesis-#{hypothesis.ref_id}-with-#{explanation.ref_number}"
     @current_branch = create_branch(branch_name)
     commit_message = "Add explanation to hypothesis #{hypothesis.ref_id}: #{hypothesis.title}"
-    # put explanation in the new_cited_url in the serializer (added as a new field to ward off merge conflicts)
-    hypothesis.additional_serialized_explanation = explanation
-    upsert_file_on_current_branch(hypothesis.file_path, hypothesis.flat_file_content, commit_message)
-
+    file_content = hypothesis.flat_file_content(passed_explanations: hypothesis.explanations.approved + [explanation])
+    upsert_file_on_current_branch(hypothesis.file_path, file_content, commit_message)
     pr_body = "Added explanation to: [#{hypothesis.ref_id}: #{hypothesis.title}](https://convus.org/hypotheses/#{hypothesis.ref_id}?explanation_id=#{explanation.ref_number})"
     pull_request = create_pull_request(commit_message, pr_body)
     number = pull_request.url.split("/pulls/").last

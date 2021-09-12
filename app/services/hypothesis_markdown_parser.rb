@@ -5,7 +5,6 @@ class HypothesisMarkdownParser
   # Duplicated in the content repo
   def initialize(file_content:)
     @file_content = file_content
-
   end
 
   attr_reader :file_content, :hypothesis
