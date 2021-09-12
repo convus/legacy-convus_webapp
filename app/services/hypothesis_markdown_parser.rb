@@ -26,7 +26,7 @@ class HypothesisMarkdownParser
 
     # Because explanations were added, reload
     @hypothesis.reload
-    front_matter[:citations].each { |url, c_attrs| import_citation(url, c_attrs) }
+    (front_matter[:citations] || []).each { |url, c_attrs| import_citation(url, c_attrs) }
     @hypothesis
   end
 

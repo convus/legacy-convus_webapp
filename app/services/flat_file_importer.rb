@@ -37,9 +37,11 @@ class FlatFileImporter
     end
 
     def import_hypotheses
-      Dir.glob("#{FILES_PATH}/hypotheses/*.md").each do |file|
-        HypothesisMarkdownParser.new(file_content: File.read(file)).import
-      end
+      Dir.glob("#{FILES_PATH}/hypotheses/*.md").each { |f| import_hypothesis(File.read(f)) }
+    end
+
+    def import_hypothesis(file_content)
+      HypothesisMarkdownParser.new(file_content: file_content).import
     end
 
     def import_citations

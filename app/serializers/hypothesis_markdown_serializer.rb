@@ -36,11 +36,12 @@ class HypothesisMarkdownSerializer
   end
 
   def citations_hash
-    @explanations.map(&:citations).flatten.uniq.reject(&:blank?).map do |citation|
-      [citation.url,
-        {title: citation.title,
-         published_date: citation.published_date_str,
-         publication_title: citation.publication_title}]
-    end.compact.to_h
+    @explanations.map(&:citations).flatten.uniq.reject(&:blank?).sort_by { |c| c.url }
+      .map do |citation|
+        [citation.url,
+          {title: citation.title,
+           published_date: citation.published_date_str,
+           publication_title: citation.publication_title}]
+      end.compact.to_h
   end
 end

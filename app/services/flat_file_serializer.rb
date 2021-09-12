@@ -19,7 +19,7 @@ class FlatFileSerializer
 
     def write_hypothesis(hypothesis)
       dirname = File.dirname(hypothesis.flat_file_name(FILES_PATH))
-      # Create the intermidiary directories
+      # Create the intermediary directories
       FileUtils.mkdir_p(dirname) unless File.directory?(dirname)
       File.open(hypothesis.flat_file_name(FILES_PATH), "w") do |f|
         f.puts(hypothesis.flat_file_content)

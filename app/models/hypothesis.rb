@@ -97,7 +97,7 @@ class Hypothesis < ApplicationRecord
     ["hypotheses", "#{ref_id}_#{slug}.md"]
   end
 
-  # Required for FlatFileSerializable
+  # used in testing
   def flat_file_serialized(passed_explanations: nil)
     markdown_serializer(passed_explanations: passed_explanations).as_json
   end
@@ -108,6 +108,7 @@ class Hypothesis < ApplicationRecord
 
   def run_associated_tasks
     update_ref_number if ref_id.blank?
+    self.ref_number ||= ref_id.to_i(36) # In case this was created via external things
     # Always try to create previous titles - even if skip_associated_tasks
     if approved? && title_previous_change.present?
       StorePreviousHypothesisTitleJob.perform_async(id, title_previous_change.first)
