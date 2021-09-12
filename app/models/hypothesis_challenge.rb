@@ -13,8 +13,9 @@ class HypothesisChallenge < ApplicationRecord
   belongs_to :challenged_explanation_quote, class_name: "ExplanationQuote"
   belongs_to :challenged_citation, class_name: "Citation"
 
-  before_validation :set_calculated_attributes
+  enum kind: KIND_ENUM
 
+  before_validation :set_calculated_attributes
 
   def set_calculated_attributes
     self.kind = if challenged_citation_id.present?
