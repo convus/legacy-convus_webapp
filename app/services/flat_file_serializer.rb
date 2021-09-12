@@ -5,6 +5,11 @@ class FlatFileSerializer
   require "csv"
 
   class << self
+    # For now, don't wrap lines. It makes editing easier, only elder programmers expect it
+    def yaml_opts
+      {options: {line_width: -1}}
+    end
+
     def write_all_files
       Hypothesis.approved.find_each { |hypothesis| write_hypothesis(hypothesis) }
       Citation.approved.find_each { |citation| write_citation(citation) }
@@ -14,7 +19,7 @@ class FlatFileSerializer
 
     def write_hypothesis(hypothesis)
       dirname = File.dirname(hypothesis.flat_file_name(FILES_PATH))
-      # Create the intermidiary directories
+      # Create the intermediary directories
       FileUtils.mkdir_p(dirname) unless File.directory?(dirname)
       File.open(hypothesis.flat_file_name(FILES_PATH), "w") do |f|
         f.puts(hypothesis.flat_file_content)

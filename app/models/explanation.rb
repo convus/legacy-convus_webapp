@@ -15,6 +15,8 @@ class Explanation < ApplicationRecord
   before_validation :set_calculated_attributes
   after_commit :run_associated_tasks
 
+  delegate :file_pathnames, to: :hypothesis, allow_nil: true
+
   accepts_nested_attributes_for :explanation_quotes, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :citations
 
@@ -28,28 +30,6 @@ class Explanation < ApplicationRecord
   def self.shown(user = nil)
     return approved unless user.present?
     approved.or(where(creator_id: user.id))
-  end
-
-  # Duplicates parseExplanationQuotes in explanation_form.js
-  def self.parse_quotes(text)
-    matching_lines = []
-    last_quote_line = nil
-    text.split("\n").each_with_index do |line, index|
-      # match lines that are blockquotes
-      if line.match?(/\A\s*>/)
-        # remove the >, trim the string,
-        quote_text = line.gsub(/\A\s*>\s*/, "").strip
-        # We need to group consecutive lines, because that's how markdown parses
-        # So check if the last line was a quote and if so, update it
-        if last_quote_line == (index - 1)
-          quote_text = [matching_lines.pop, quote_text].join(" ")
-        end
-        matching_lines.push(quote_text)
-        last_quote_line = index
-      end
-    end
-    # - remove duplicates & ignore any empty quotes
-    matching_lines.uniq.reject(&:blank?)
   end
 
   def self.explanation_quotes
@@ -77,9 +57,8 @@ class Explanation < ApplicationRecord
     errors.full_messages.none?
   end
 
-  # Actually serialized into hypothesis files, using a serializer to make it easier to manage
-  def flat_file_serialized
-    ExplanationSerializer.new(self, root: false).as_json
+  def github_html_url
+    approved? ? hypothesis&.github_html_url : pull_request_url
   end
 
   def run_associated_tasks
@@ -89,65 +68,71 @@ class Explanation < ApplicationRecord
   end
 
   # Method to building from flat file content
-  def update_from_text(passed_text, quote_urls: [])
-    update(text: passed_text)
-    quotes_from_text = self.class.parse_quotes(text)
+  def update_from_text(passed_text)
+    self.text = passed_text
+    @text_nodes = parser(true).parse_text_nodes
     current_explanation_quote_ids = []
-    quotes_from_text.each_with_index do |quote, index|
-      url = quote_urls[index]
-      if url.present?
+    quote_nodes.each_with_index do |q_node, index|
+      if q_node[:url].present?
         # Make sure we don't grab the same quote multiple times
-        matches = explanation_quotes.where.not(id: current_explanation_quote_ids).where(url: url)
+        matches = explanation_quotes.where.not(id: current_explanation_quote_ids).where(url: q_node[:url])
         # Try to grab the match by text
-        explanation_quote = matches.where(text: quote).first
+        explanation_quote = matches.where(text: q_node[:quote]).first
         # Fallback to just whatever is there
         explanation_quote ||= matches.first
       end
-      explanation_quote ||= explanation_quotes.where.not(id: current_explanation_quote_ids).find_by_text(quote)
+      explanation_quote ||= explanation_quotes.where.not(id: current_explanation_quote_ids).find_by_text(q_node[:quote])
       explanation_quote ||= explanation_quotes.build
-      explanation_quote.update!(text: quote, url: url, ref_number: index + 1)
+      explanation_quote.update!(text: q_node[:quote], url: q_node[:url], ref_number: index + 1)
       current_explanation_quote_ids << explanation_quote.id
     end
     explanation_quotes.where.not(id: current_explanation_quote_ids).update_all(removed: true)
     remove_empty_quotes!
-    reload
+    self.text = parser.text_no_references # Remove references from the text
     update_body_html
   end
 
-  def explanation_markdown
-    Redcarpet::Markdown.new(
-      Redcarpet::Render::HTML.new(no_images: true, no_links: true, filter_html: true),
-      {no_intra_emphasis: true, tables: true, fenced_code_blocks: true, strikethrough: true,
-       superscript: true, lax_spacing: true}
-    )
+  def parser(reinitialize = false)
+    return @parser unless reinitialize || @parser.blank?
+    @parser = ExplanationParser.new(explanation: self)
+  end
+
+  def text_nodes
+    @text_nodes ||= parser.parse_text_nodes
+  end
+
+  def quote_nodes
+    text_nodes.reject { |t| t.is_a?(String) }
+  end
+
+  def text_with_references
+    parser.text_with_references
   end
 
   def update_body_html
-    update(body_html: parse_text_with_blockquotes)
+    update(body_html: calculated_body_html)
     self
   end
 
-  # Only for internal use, really
-  def parse_text
-    return "" unless text.present?
-    explanation_markdown.render(text.strip)
-      .gsub(/(<\/?)h\d+/i, '\1p') # Remove header open brackets and close brackets
+  def flat_file_serialized
+    {id: ref_number, text: text_with_references}
   end
 
-  # This sucks and is brittle
-  def parse_text_with_blockquotes
+  # This isn't optimal and I don't think it handles nested blockquotes - but fuck them anyway
+  def calculated_body_html
     html_output = ""
-    # This is a dumb way of doing this, sorry, I'm tired (also, I don't think it handles nested blockquotes - but fuck them anyway)
     quote_sources = explanation_quotes.not_removed.order(:ref_number).map(&:citation_ref_html)
-    opening_tag = "<div class=\"explanation-quote-block\"><blockquote>"
-    parse_text.gsub(/<blockquote>/i, "||QBLK||>>>>").split("||QBLK||").each do |quote_or_not|
-      quote_or_not.gsub!(/>>>>/, opening_tag)
-      # I think these are generally grouped with the quote? But not sure. So handling it this way
-      if quote_or_not.match?(/<\/blockquote>/i)
-        closing_tag = "</blockquote><span class=\"source\">#{quote_sources.shift}</span></div>"
-        quote_or_not.gsub!(/<\/blockquote>/i, closing_tag)
+    text_nodes.each do |node|
+      html_output += if node.is_a?(String)
+        ExplanationParser.text_to_html(node)
+      else
+        source = quote_sources.shift
+        source = "<span class=\"source\">#{source}</span>" if source.present?
+        # Open and closing tags, separated by a newline to make test parsing easier
+        "\n<div class=\"explanation-quote-block\"><blockquote>\n" +
+          ExplanationParser.text_to_html(node[:quote]) +
+          "\n</blockquote>#{source}</div>\n"
       end
-      html_output += quote_or_not
     end
     html_output
   end

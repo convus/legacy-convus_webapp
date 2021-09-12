@@ -94,16 +94,21 @@ class Hypothesis < ApplicationRecord
 
   # Required for FlatFileSerializable
   def file_pathnames
-    ["hypotheses", "#{ref_id}_#{slug}.yml"]
+    ["hypotheses", "#{ref_id}_#{slug}.md"]
   end
 
-  # Required for FlatFileSerializable
-  def flat_file_serialized
-    HypothesisSerializer.new(self, root: false).as_json
+  # used in testing
+  def flat_file_serialized(passed_explanations: nil)
+    markdown_serializer(passed_explanations: passed_explanations).as_json
+  end
+
+  def flat_file_content(passed_explanations: nil)
+    markdown_serializer(passed_explanations: passed_explanations).to_markdown
   end
 
   def run_associated_tasks
     update_ref_number if ref_id.blank?
+    self.ref_number ||= ref_id.to_i(36) # In case this was created via external things
     # Always try to create previous titles - even if skip_associated_tasks
     if approved? && title_previous_change.present?
       StorePreviousHypothesisTitleJob.perform_async(id, title_previous_change.first)
@@ -122,5 +127,9 @@ class Hypothesis < ApplicationRecord
     # NOTE: eventually manage ref_number with Redis, to enable external creation
     new_ref_number = ref_number || id
     update_columns(ref_number: new_ref_number, ref_id: new_ref_number.to_s(36).upcase)
+  end
+
+  def markdown_serializer(passed_explanations: nil)
+    HypothesisMarkdownSerializer.new(hypothesis: self, explanations: passed_explanations)
   end
 end

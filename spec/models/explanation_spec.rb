@@ -22,144 +22,59 @@ RSpec.describe Explanation, type: :model do
     end
   end
 
-  describe "parse_quotes" do
-    context "empty" do
-      let(:target) { [] }
-      it "is empty" do
-        expect(Explanation.parse_quotes("   ")).to eq target
-        expect(Explanation.parse_quotes(" \n\nasdfasdf\n\nasdfasdf ")).to eq target
-
-        expect(Explanation.parse_quotes(">  \n")).to eq target
-        expect(Explanation.parse_quotes(">  \n\n > \n\n>")).to eq target
-      end
-    end
-    context "single quote" do
-      let(:target) { ["something"] }
-      it "parses" do
-        expect(Explanation.parse_quotes("> something")).to eq target
-        expect(Explanation.parse_quotes("  >  something  \n\nother stuff")).to eq target
-        expect(Explanation.parse_quotes("\n> something")).to eq target
-        expect(Explanation.parse_quotes("\nsomething else\nAnd MORE things\n\n\n  >    something \n\nother things")).to eq target
-      end
-    end
-    context "multi line block quotes" do
-      let(:target) { ["multi line message"] }
-      it "parses" do
-        expect(Explanation.parse_quotes("> multi line message ")).to eq target
-        expect(Explanation.parse_quotes("> multi\n> line   \n> message ")).to eq target
-        expect(Explanation.parse_quotes("Some stuff goes here\n > multi   \n >    line\n > message     \n\n\nAnd then more stuff")).to eq target
-      end
-    end
-    context "multiple quotes" do
-      let(:target) { ["something", "something else"] }
-      it "parses" do
-        expect(Explanation.parse_quotes("> something\n\n> something else")).to eq target
-        expect(Explanation.parse_quotes("  >  something  \n blahhh blah blah\n \nother stuff\n >   something else")).to eq target
-      end
-    end
-    context "multiple of the same quote" do
-      let(:target) { ["something"] }
-      it "parses" do
-        expect(Explanation.parse_quotes("> something\n\n>something")).to eq target
-        expect(Explanation.parse_quotes("  >  something  \n blahhh blah blah\n \nother stuff\n >   something")).to eq target
-      end
-    end
-  end
-
-  describe "update_from_text" do
-    let(:explanation) { FactoryBot.create(:explanation) }
-    let(:url1) { "https://otherthings.com/812383123123" }
-    let(:text) { "New explanation, where I prove things\n\n>I'm quoting stuff\n\nfinale" }
-    it "creates" do
-      expect(explanation.explanation_quotes.count).to eq 0
-      expect(explanation.body_html).to be_blank
-      explanation.update_from_text(text)
-      explanation.reload
-      expect(explanation.explanation_quotes.count).to eq 1
-      expect(explanation.body_html).to be_present
-      explanation_quote = explanation.explanation_quotes.first
-      expect(explanation_quote.url).to be_blank
-      expect(explanation_quote.text).to eq "I'm quoting stuff"
-      expect(explanation_quote.ref_number).to eq 1
-      # It finds by text, if the text is the same
-      explanation.update_from_text(text, quote_urls: [url1])
-      explanation_quote.reload
-      expect(explanation.body_html).to be_present
-      expect(explanation_quote.url).to eq url1
-      expect(explanation_quote.text).to eq "I'm quoting stuff"
-      expect(explanation_quote.ref_number).to eq 1
-    end
-    context "with explanation_quotes" do
-      let!(:explanation_quote1) { FactoryBot.create(:explanation_quote, explanation: explanation, url: "https://url.com/stufffff") }
-      let!(:explanation_quote2) { FactoryBot.create(:explanation_quote, explanation: explanation, url: url1) }
-      let!(:explanation_quote3) { FactoryBot.create(:explanation_quote, explanation: explanation, text: nil, url: nil) }
-      it "updates the matching quote, deletes the other" do
-        expect(explanation_quote2.reload.ref_number).to eq 2
-        expect(explanation.reload.explanation_quotes.count).to eq 3
-        expect(explanation.body_html).to be_blank
-        explanation.update_from_text(text, quote_urls: [url1])
-        explanation.reload
-        expect(explanation.body_html).to be_present
-        expect(explanation.explanation_quotes.not_removed.count).to eq 1
-        expect(explanation.explanation_quotes.removed.count).to eq 1
-        explanation_quote2.reload
-        expect(explanation_quote2.url).to eq url1
-        expect(explanation_quote2.text).to eq "I'm quoting stuff"
-        expect(explanation_quote2.ref_number).to eq 1
-      end
-    end
-  end
-
-  describe "parse_text" do
+  describe "calculated_body_html" do
     let(:explanation) { Explanation.new(text: text) }
     it "returns empty" do
-      expect(Explanation.new.parse_text).to eq ""
-      expect(Explanation.new(text: "\n").parse_text).to eq ""
+      expect(Explanation.new.calculated_body_html).to eq ""
+      expect(Explanation.new(text: "\n").calculated_body_html).to eq ""
     end
     describe "markdown parsing stuff" do
       context "with some whitespace in between things" do
         let(:text) { "   something\n\n\nanother Thing\n\n\n > Blockquote here\n > more quote" }
+        let(:target) do
+          "<p>something</p> <p>another Thing</p> <div class=\"explanation-quote-block\"><blockquote> " \
+          "<p>Blockquote here more quote</p> </blockquote></div> "
+        end
         it "returns the expected content" do
-          # NOTE: might want to replace new lines with
-          expect(explanation.parse_text).to eq "<p>something</p>\n\n<p>another Thing</p>\n\n<blockquote>\n<p>Blockquote here\nmore quote</p>\n</blockquote>\n"
-          expect(explanation.parse_text).to eq "<p>something</p>\n\n<p>another Thing</p>\n\n<blockquote>\n<p>Blockquote here\nmore quote</p>\n</blockquote>\n"
+          # Strip multiple spaces to make matching easier
+          expect(explanation.calculated_body_html.gsub(/\s+/, " ")).to eq target
         end
       end
       context "with an image" do
         let(:text) { "I want to include an image ![image](https://creativecommons.org/images/deed/cc_icon_white_x2.png)" }
         it "returns the expected content" do
-          expect(explanation.parse_text).to eq "<p>#{text}</p>\n"
+          expect(explanation.calculated_body_html).to eq "<p>#{text}</p>\n"
         end
         context "with an inline image" do
           let(:text) { "I want to include an <a href=\"https://creativecommons.org/images/deed/cc_icon_white_x2.png\">image</a>" }
           it "returns the expected content" do
-            expect(explanation.parse_text).to eq "<p>I want to include an image</p>\n"
+            expect(explanation.calculated_body_html).to eq "<p>I want to include an image</p>\n"
           end
         end
       end
       context "with some headers" do
         let(:text) { "## Some Text\n\n#### More text" }
         it "returns without headers" do
-          expect(explanation.parse_text).to eq("<p>Some Text</p>\n\n<p>More text</p>\n")
+          expect(explanation.calculated_body_html).to eq("<p>Some Text</p>\n\n<p>More text</p>\n")
         end
       end
       context "with a link" do
         let(:text) { "Something with [no link](https://link.com) <a href=\"http://link.com\">no link</a>" }
         it "returns the expected content" do
-          expect(explanation.parse_text).to eq "<p>Something with [no link](https://link.com) no link</p>\n"
+          expect(explanation.calculated_body_html).to eq "<p>Something with [no link](https://link.com) no link</p>\n"
         end
       end
       context "with a script tag" do
         let(:text) { "I want to <script>alert('hi')</script>" }
         it "returns the expected content" do
-          expect(explanation.parse_text).to eq "<p>I want to alert(&#39;hi&#39;)</p>\n"
+          expect(explanation.calculated_body_html).to eq "<p>I want to alert(&#39;hi&#39;)</p>\n"
         end
       end
       context "with a table" do
         let(:text) { " | t1 | t2 |\n| -- | -- |\n| tb1 | tb2 |" }
         let(:target) { "<table><thead>\n<tr>\n<th>t1</th>\n<th>t2</th>\n</tr>\n</thead><tbody>\n<tr>\n<td>tb1</td>\n<td>tb2</td>\n</tr>\n</tbody></table>\n" }
         it "renders" do
-          expect(explanation.parse_text).to eq target
+          expect(explanation.calculated_body_html).to eq target
         end
       end
     end
@@ -183,20 +98,19 @@ RSpec.describe Explanation, type: :model do
         expect(explanation.ref_number).to eq 1
         expect(explanation.listing_order).to eq 0
         # OMFG testing this was a bear. There is definitely to be a better way, but whatever
-        real_lines = explanation.parse_text_with_blockquotes.split("\n").reject(&:blank?)
+        real_lines = explanation.calculated_body_html.split("\n").reject(&:blank?)
         target_lines = target.split("\n").reject(&:blank?)
         real_lines.count.times { |i| expect(real_lines[i]).to eq target_lines[i] }
         expect(real_lines.count).to eq target_lines.count
         expect(real_lines).to eq target_lines
-
-        expect(explanation.parse_text_with_blockquotes).to eq target
+        # Strip multiple spaces to make matching easier
+        expect(explanation.calculated_body_html.gsub(/\s+/, " ")).to eq target.gsub(/\s+/, " ")
         explanation.update_body_html
         explanation.reload
-        expect(explanation.body_html).to eq target
+        expect(explanation.body_html.gsub(/\s+/, " ")).to eq target.gsub(/\s+/, " ")
       end
       context "with multiple quotes and nothing in between" do
         let(:explanation_text) { "Something cool and stuff\n\n> something\n\n> Something else\n" }
-        let(:explanation) { FactoryBot.create(:explanation, text: "something") }
         let!(:explanation_quote) { FactoryBot.create(:explanation_quote, explanation: explanation, text: "something", url: url) }
         let!(:explanation_quote2) { FactoryBot.create(:explanation_quote, explanation: explanation, text: "Something else", url: url2) }
         let(:target) do
@@ -208,23 +122,22 @@ RSpec.describe Explanation, type: :model do
             "<blockquote>\n<p>Something else</p>\n</blockquote>" \
             "<span class=\"source\">#{explanation_quote2.citation_ref_html}</span></div>\n"
         end
-        xit "creates" do
+        it "creates" do
           expect(explanation_quote.reload.ref_number).to eq 1
           expect(explanation_quote.citation_ref_html).to be_present
           expect(explanation_quote2.reload.ref_number).to eq 2
           expect(explanation.reload.body_html).to be_blank
           # OMFG testing this was a bear. There is definitely to be a better way, but whatever
-          real_lines = explanation.parse_text_with_blockquotes.split("\n").reject(&:blank?)
+          real_lines = explanation.calculated_body_html.split("\n").reject(&:blank?)
           target_lines = target.split("\n").reject(&:blank?)
-          pp real_lines, target_lines
           real_lines.count.times { |i| expect(real_lines[i]).to eq target_lines[i] }
           expect(real_lines.count).to eq target_lines.count
           expect(real_lines).to eq target_lines
-
-          expect(explanation.parse_text_with_blockquotes).to eq target_with_addition
+          # Strip multiple spaces to make matching easier
+          expect(explanation.calculated_body_html.gsub(/\s+/, " ")).to eq target.gsub(/\s+/, " ")
           explanation.update_body_html
           explanation.reload
-          expect(explanation.body_html).to eq target_with_addition
+          expect(explanation.body_html.gsub(/\s+/, " ")).to eq target.gsub(/\s+/, " ")
         end
       end
       context "with a blockquote with markdown in it" do
@@ -243,16 +156,16 @@ RSpec.describe Explanation, type: :model do
           expect(explanation_quote2.reload.ref_number).to eq 2
           expect(explanation.reload.body_html).to be_blank
           # OMFG testing this was a bear. There is definitely to be a better way, but whatever
-          real_lines = explanation.parse_text_with_blockquotes.split("\n").reject(&:blank?)
+          real_lines = explanation.calculated_body_html.split("\n").reject(&:blank?)
           target_lines = target_with_addition.split("\n").reject(&:blank?)
           real_lines.count.times { |i| expect(real_lines[i]).to eq target_lines[i] }
           expect(real_lines.count).to eq target_lines.count
           expect(real_lines).to eq target_lines
-
-          expect(explanation.parse_text_with_blockquotes).to eq target_with_addition
+          # Strip multiple spaces to make matching easier
+          expect(explanation.calculated_body_html.gsub(/\s+/, " ")).to eq target_with_addition.gsub(/\s+/, " ")
           explanation.update_body_html
           explanation.reload
-          expect(explanation.body_html).to eq target_with_addition
+          expect(explanation.body_html.gsub(/\s+/, " ")).to eq target_with_addition.gsub(/\s+/, " ")
         end
       end
     end
@@ -367,6 +280,24 @@ RSpec.describe Explanation, type: :model do
       # TODO: can't get the ordering to work. Ideally these associations would be ref_ordered, skipping for now
       expect(explanation.citations.pluck(:id)).to match_array([citation3.id, citation1.id, citation2.id])
       expect(explanation.citations_not_removed.pluck(:id)).to match_array([citation3.id, citation1.id])
+    end
+  end
+
+  describe "github_html_url" do
+    let(:hypothesis) { FactoryBot.create(:hypothesis, pull_request_number: 2) }
+    let(:explanation) { FactoryBot.build(:explanation, hypothesis: hypothesis, pull_request_number: 111) }
+    it "is pull_request if unapproved, file_path if approved" do
+      expect(hypothesis.github_html_url).to match(/pull\/2/)
+      expect(explanation.approved?).to be_falsey
+      expect(explanation.github_html_url).to match(/pull\/111/)
+      # I don't think explanation approved without hypothesis can or will happen
+      # but if it did = is what I expect to happen
+      explanation.approved_at = Time.current
+      expect(explanation.github_html_url).to match(/pull\/2/)
+      hypothesis.update(approved_at: Time.current)
+      expect(hypothesis.github_html_url).to match(hypothesis.file_path)
+      expect(explanation.github_html_url).to eq hypothesis.github_html_url
+      expect(explanation.pull_request_url).to match(/pull\/111/)
     end
   end
 end

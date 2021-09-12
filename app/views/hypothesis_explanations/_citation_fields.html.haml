@@ -30,11 +30,13 @@
             = f.check_box :peer_reviewed, class: "form-check-input"
             Citation was peer reviewed before publication
 
-      .form-group.mt-0
-        .form-check
-          %label.form-check-label
-            = f.check_box :url_is_direct_link_to_full_text, class: "form-check-input"
-            URL is a direct link to the full text of the citation
+      - unless citation.skip_url_is_direct_link_to_full_text_field?
+        .form-group.mt-0
+          .form-check
+            %label.form-check-label
+              = f.check_box :url_is_direct_link_to_full_text, class: "form-check-input"
+              URL is a direct link to the full text of the citation
+
       -#.form-group.mt-0
       -#  .form-check
       -#    %label.form-check-label

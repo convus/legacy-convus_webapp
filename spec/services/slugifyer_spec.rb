@@ -54,5 +54,16 @@ RSpec.describe Slugifyer do
       string = "Overall, the case for reduced meat consumption is strong. Vegetarianism is cheaper, better for your health (if you can afford a diverse diet and are not an infant), and is less impactful for the environment. It also has a significant moral cost in terms of animal suffering."
       expect(subject.filename_slugify(string)).to_not match(/-\z/)
     end
+    context "file extendsions" do
+      it "removes .md" do
+        expect(subject.filename_slugify("some-hypothesis-goes-here.md")).to eq "some-hypothesis-goes-here"
+      end
+      it "removes .yml" do
+        expect(subject.filename_slugify("some-citation-goes-here.yml")).to eq "some-citation-goes-here"
+      end
+      it "doesn't remove ymmv" do
+        expect(subject.filename_slugify("some-citation-goes-here.ymmv")).to eq "some-citation-goes-here-ymmv"
+      end
+    end
   end
 end
