@@ -32,7 +32,7 @@ describe HypothesisMarkdownSerializer, type: :lib do
          hypothesis: title,
          topics: [],
          citations: {
-            url1 => {title: "A Special Title", published_date: published_date_str, publication_title: "Convus"}
+           url1 => {title: "A Special Title", published_date: published_date_str, publication_title: "Convus"}
          }}
       end
       let(:target) do

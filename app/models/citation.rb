@@ -68,7 +68,7 @@ class Citation < ApplicationRecord
   # Used in flat file import and in controller, so define here
   def self.permitted_attrs
     %i[title authors_str kind url url_is_direct_link_to_full_text published_date_str doi
-       url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial]
+      url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial]
   end
 
   def self.kind_humanized(kind)

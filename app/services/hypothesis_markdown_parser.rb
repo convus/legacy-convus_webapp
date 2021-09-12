@@ -46,7 +46,7 @@ class HypothesisMarkdownParser
 
   # Duplicated in the content repo
   def front_matter
-    @front_matter ||= YAML.load(split_content.first).with_indifferent_access
+    @front_matter ||= YAML.safe_load(split_content.first).with_indifferent_access
   end
 
   # Duplicated in the content repo

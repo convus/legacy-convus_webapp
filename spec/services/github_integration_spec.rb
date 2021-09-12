@@ -136,7 +136,7 @@ RSpec.describe GithubIntegration do
 
     context "hypothesis file doesn't exist" do
       let(:approved_at) { nil }
-      xit "creates the hypothesis" do
+      it "creates the hypothesis" do
         expect(hypothesis.reload.pull_request_number).to be_blank
         expect(hypothesis.approved?).to be_falsey
         expect(hypothesis.ref_id).to eq "J"
@@ -145,7 +145,7 @@ RSpec.describe GithubIntegration do
 
         # Make sure that the above hypothesis_title is actually a title that is used in the content_repository
         # Or this isn't testing updating the file contents
-        VCR.use_cassette("github_integration-existing_file-create_explanation_pull_request", match_requests_on: [:method], record: :new_episodes) do
+        VCR.use_cassette("github_integration-existing_file-create_explanation_pull_request_new", match_requests_on: [:method], record: :new_episodes) do
           hypothesis.reload
           expect(hypothesis.pull_request_number).to be_blank
           expect(hypothesis.explanations.submitted_to_github.count).to eq 0

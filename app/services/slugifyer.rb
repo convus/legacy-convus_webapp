@@ -22,8 +22,7 @@ class Slugifyer
     string = string.to_s.strip.downcase
       .gsub(/\A(hypotheses\/)?[0-z]+_/, "") # Remove leading hypotheses/{ref_id}_
       .gsub(/\Acitations\//, "") # Remove citations folder
-      .gsub(/\.yml\z/, "") # Remove trailing .yml
-      .gsub(/\.md\z/, "") # Remove trailing .md
+      .gsub(/\.(yml|md)\z/, "") # Remove trailing .yml and .md
     slugify(string)&.truncate(240, omission: "")
       &.delete_suffix("-") # Remove trailing -
   end

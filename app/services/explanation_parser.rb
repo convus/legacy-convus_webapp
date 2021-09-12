@@ -79,7 +79,6 @@ class ExplanationParser
   end
 
   # This is what is stored in the database, in explanation#text
-  # should be done after
   def text_no_references
     text_nodes.map do |node|
       if node.is_a?(String)

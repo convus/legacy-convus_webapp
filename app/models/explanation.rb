@@ -124,7 +124,7 @@ class Explanation < ApplicationRecord
     quote_sources = explanation_quotes.not_removed.order(:ref_number).map(&:citation_ref_html)
     text_nodes.each do |node|
       html_output += if node.is_a?(String)
-         ExplanationParser.text_to_html(node)
+        ExplanationParser.text_to_html(node)
       else
         source = quote_sources.shift
         source = "<span class=\"source\">#{source}</span>" if source.present?

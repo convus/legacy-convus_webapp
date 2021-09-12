@@ -5,7 +5,7 @@ class FlatFileSerializer
   require "csv"
 
   class << self
-    # For now, don't wrapping lines. It makes editing easier, only elder programmers expect it
+    # For now, don't wrap lines. It makes editing easier, only elder programmers expect it
     def yaml_opts
       {options: {line_width: -1}}
     end

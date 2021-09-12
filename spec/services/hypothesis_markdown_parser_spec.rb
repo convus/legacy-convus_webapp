@@ -16,7 +16,7 @@ RSpec.describe HypothesisMarkdownParser do
        hypothesis: title,
        topics: ["A Topic"],
        citations: {
-          url1 => {title: "A Special Title", published_date: published_date_str, publication_title: "Convus"}
+         url1 => {title: "A Special Title", published_date: published_date_str, publication_title: "Convus"}
        }}
     end
     let(:explanation_text) { "Let's talk about some stuff here\n\n> With a quote\n> ref:#{url1}" }
@@ -58,7 +58,7 @@ RSpec.describe HypothesisMarkdownParser do
         end
       end
       context "second Explanation" do
-        let(:explanation_text2) { "Something Cool and whatever\netc"}
+        let(:explanation_text2) { "Something Cool and whatever\netc" }
         let(:explanation2_number) { 222 }
         # Seems like an easy thing for someone to do, so handle it
         let(:instance) { subject.new(file_content: "#{file_content}\n\n## Explanation #{explanation2_number}\n\n#{explanation_text2}") }
