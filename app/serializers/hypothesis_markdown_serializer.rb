@@ -12,8 +12,8 @@ class HypothesisMarkdownSerializer
       id: @hypothesis.ref_id,
       hypothesis: @hypothesis.title,
       topics: @hypothesis.tag_titles,
-      supporting: supporting_hypotheses_titles,
-      conflicting: conflicting_hypotheses_titles,
+      supporting: related_hypotheses(:supporting).map(&:title_with_ref_id),
+      conflicting: related_hypotheses(:conflicting).map(&:title_with_ref_id),
       citations: citations_hash.present? ? citations_hash : nil
     }
   end
@@ -43,14 +43,6 @@ class HypothesisMarkdownSerializer
 
   def related_hypotheses(scope)
     hypothesis_relations.send(scope).hypotheses(@hypothesis.id).approved
-  end
-
-  def supporting_hypotheses_titles
-    related_hypotheses(:supporting).map(&:title_with_ref_id)
-  end
-
-  def conflicting_hypotheses_titles
-    related_hypotheses(:conflicting).map(&:title_with_ref_id)
   end
 
   def citations_hash
