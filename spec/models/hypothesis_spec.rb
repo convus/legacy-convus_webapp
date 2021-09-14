@@ -91,6 +91,7 @@ RSpec.describe Hypothesis, type: :model do
       hypothesis.save
       hypothesis.reload
       expect(hypothesis.tags_string).to eq("Space")
+      expect(hypothesis.title_with_tags).to eq("#{hypothesis.title} #space")
       expect(Hypothesis.with_tags("Space").pluck(:id)).to eq([hypothesis.id])
       expect(Hypothesis.with_tags(["space "]).pluck(:id)).to eq([hypothesis.id])
       expect(Hypothesis.with_tags("Spacer").pluck(:id)).to eq([])

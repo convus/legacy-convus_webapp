@@ -23,7 +23,7 @@
           - unless relation_initially_toggled
             .less-strong.text-right
               %a.gray-link.small{href: "#hypothesisRelationField", tabindex: -1, "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "show_raw", "data-queryvalue" => "true"}
-                add hypothesis relation
+                add hypothesis relationship
 
       = render partial: "/hypotheses/relation_field", locals: {relation_kind: hypothesis_relation&.kind, related_id: hypothesis_relation&.hypothesis_not(@hypothesis)&.id}
 

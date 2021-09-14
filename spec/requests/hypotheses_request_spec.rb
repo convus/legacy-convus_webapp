@@ -240,8 +240,8 @@ RSpec.describe "/hypotheses", type: :request do
           Sidekiq::Worker.clear_all
           expect {
             post base_url, params: {hypothesis: hypothesis_params,
-              hypothesis_relation_kind: "hypothesis_support",
-              hypothesis_relation_id: hypothesis_related.id}
+                                    hypothesis_relation_kind: "hypothesis_support",
+                                    hypothesis_relation_id: hypothesis_related.id}
           }.to change(Hypothesis, :count).by 1
           hypothesis = Hypothesis.last
           expect(response).to redirect_to new_hypothesis_explanation_path(hypothesis_id: hypothesis.ref_id)

@@ -1,11 +1,11 @@
 - relation_initially_toggled = @hypothesis_related.present?
 .small-page-header
-  %h1
+  %h1.mb-3
     New Hypothesis
     - unless relation_initially_toggled
       %small
         %a.gray-link.small{href: "#hypothesisRelationField", tabindex: -1, "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "show_raw", "data-queryvalue" => "true"}
-          add related hypothesis
+          add hypothesis relationship
 
 = form_for @hypothesis, url: hypotheses_path, method: "POST", html: { class: "form", id: "hypothesisForm" } do |f|
   .row.mb-4

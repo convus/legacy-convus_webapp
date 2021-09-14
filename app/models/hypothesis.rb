@@ -97,6 +97,10 @@ class Hypothesis < ApplicationRecord
     citations.pluck(:url)
   end
 
+  def title_with_tags
+    [title, tags.alphabetical.pluck(:slug).map { |t| "##{t}" }].join(" ")
+  end
+
   def title_with_ref_id
     "#{ref_id}: #{title}"
   end
