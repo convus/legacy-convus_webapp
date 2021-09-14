@@ -1,11 +1,20 @@
+- relation_initially_toggled = @hypothesis_related.present?
 .small-page-header
-  %h1 New Hypothesis
+  %h1
+    New Hypothesis
+    - unless relation_initially_toggled
+      %small
+        %a.gray-link.small{href: "#hypothesisRelationField", tabindex: -1, "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "show_raw", "data-queryvalue" => "true"}
+          add related hypothesis
 
 = form_for @hypothesis, url: hypotheses_path, method: "POST", html: { class: "form", id: "hypothesisForm" } do |f|
   .row.mb-4
-    .col-md-8.col-xl-6
-      - if @hypothesis.errors.any?
+    - if @hypothesis.errors.any?
+      .col-md-8.col-xl-6
         = render partial: "/shared/errors", locals: { name: "Hypothesis", obj: @hypothesis }
+
+    = render partial: "/hypotheses/relation_field", locals: {relation_kind: @hypothesis_related_kind, related_id: @hypothesis_related&.id}
+
     .max-width-text-container.col
       .form-group
         = f.label :title do
@@ -13,16 +22,6 @@
           %span.small.less-strong
             must be falsifiable
         = f.text_area :title, required: true, class: "form-control"
-    -# Duplicated in hypothesis new
-    .max-width-text-container.col
-      - relations_kinds = [["conflicting", "hypothesis_conflict"], ["supporting", "hypothesis_support"]]
-      = label_tag :hypothesis_relation_id do
-        Related
-        = select_tag :hypothesis_relation_kind, options_for_select(relations_kinds, @hypothesis_related_kind), class: "ml-1 mr-1"
-        hypothesis
-      .form-group.fancy-select.unfancy
-        - relatable_hypotheses = Hypothesis.shown(current_user).map { |h| [h.title, h.id] }
-        = select_tag :hypothesis_relation_id, options_for_select(relatable_hypotheses, @hypothesis_related&.id), { class: "form-control", required: false, multiple: false, prompt: "Select hypothesis"}
   .row
     .col
       .form-group

@@ -118,7 +118,7 @@ class HypothesisExplanationsController < ApplicationController
       .dig(:citations_attributes)
   end
 
-  # At some point, will allow multiple relations to be updated
+  # Duplicated in HypothesesController
   def update_hypothesis_relation(kind, id)
     other_hypothesis = Hypothesis.find_by_id(id)
     return nil unless other_hypothesis.present? && HypothesisRelation.kinds.include?(kind)

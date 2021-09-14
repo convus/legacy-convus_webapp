@@ -25,6 +25,7 @@ class HypothesesController < ApplicationController
       end
     end
     @explanations = @hypothesis.explanations.approved
+    @hypotheses_relations = @hypothesis.relations.shown(current_user)
     @unapproved_explanations ||= @hypothesis.explanations.unapproved.shown(current_user)
       .order(updated_at: :desc)
   end

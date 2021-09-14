@@ -66,6 +66,10 @@ class HypothesisRelation < ApplicationRecord
     str.gsub("hypothesis_", "")
   end
 
+  def hypothesis_not(hypothesis)
+    hypothesis.id == hypothesis_later_id ? hypothesis_earlier : hypothesis_later
+  end
+
   def kind_humanized
     self.class.kind_humanized(kind)
   end
