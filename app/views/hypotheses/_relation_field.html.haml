@@ -1,0 +1,13 @@
+- relation_kind ||= nil
+- related_id ||= nil
+- initially_toggled ||= related_id.present?
+
+.max-width-text-container.col.collapse#hypothesisRelationField{class: (initially_toggled ? "show" : "")}
+  - relations_kinds = [["conflicting", "hypothesis_conflict"], ["supporting", "hypothesis_support"]]
+  = label_tag :hypothesis_relation_id do
+    Related
+    = select_tag :hypothesis_relation_kind, options_for_select(relations_kinds, relation_kind), class: "ml-1 mr-1"
+    hypothesis
+  .form-group.fancy-select.unfancy
+    - relatable_hypotheses = Hypothesis.shown(current_user).map { |h| [h.title_with_tags, h.id] }
+    = select_tag :hypothesis_relation_id, options_for_select(relatable_hypotheses, related_id), {class: "form-control", required: false, multiple: false, prompt: "Select hypothesis"}

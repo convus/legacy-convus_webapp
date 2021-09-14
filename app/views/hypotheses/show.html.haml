@@ -4,6 +4,7 @@
       Hypothesis:
 .row
   = render partial: "/hypotheses/show_title", locals: {hypothesis: @hypothesis}
+
   -# Hide scoring! Keep it around as reference for now though
   -# - if @hypothesis.approved?
   -#   -# TODO: this is hacked to make sure it doesn't split into multiple lines. It would be great to handle that better
@@ -43,6 +44,45 @@
     - @explanations.each do |explanation|
       = render partial: "/hypothesis_explanations/show", locals: {explanation: explanation}
 
+- if @hypotheses_relations.any?
+  .row.mt-4
+    - if @hypotheses_relations.conflicting.any?
+      .col-sm-6
+        %h5
+          Hypotheses that
+          %strong conflict
+          with this
+        %ul
+          - @hypotheses_relations.conflicting.each do |hypothesis_relation|
+            - other_hypothesis = hypothesis_relation.hypothesis_not(@hypothesis)
+            %li
+              = other_hypothesis.title
+              = link_to internal_link_text, hypothesis_path(other_hypothesis.to_param), class: "internal-link"
+              - unless hypothesis_relation.approved?
+                %span.less-strong.small.ml-1
+                  %em
+                    shown because you created it. It is
+                    %strong.text-warning not
+                    approved.
+    - if @hypotheses_relations.supporting.any?
+      .col-sm-6
+        %h5
+          %strong Supporting
+          Hypotheses
+        %ul
+          - @hypotheses_relations.supporting.each do |hypothesis_relation|
+            - other_hypothesis = hypothesis_relation.hypothesis_not(@hypothesis)
+            %li
+              = other_hypothesis.title
+              = link_to internal_link_text, hypothesis_path(other_hypothesis.to_param), class: "internal-link"
+              - unless hypothesis_relation.approved?
+                %span.less-strong.small.ml-1
+                  %em
+                    shown because you created it. It is
+                    %strong.text-warning not
+                    approved.
+
+
 .mt-5
 -# ^ extra spacing
 - if @hypothesis.approved?
@@ -51,6 +91,9 @@
       Add another explanation
     - else
       Add explanation
+
+  = link_to "Add a conflicting hypothesis", new_hypothesis_path(related_hypothesis_id: @hypothesis.ref_id, related_kind: "hypothesis_conflict"), class: "btn btn-sm btn-outline-warning ml-4"
+
 .row.pt-2.mt-4
   - if @explanations.any?
     - @explanations.explanation_quotes.not_removed.ref_ordered.group_by(&:citation_id).each do |_citation_id, explanation_quotes|

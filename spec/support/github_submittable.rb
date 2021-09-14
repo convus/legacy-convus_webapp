@@ -64,22 +64,34 @@ RSpec.shared_examples "GithubSubmittable" do
     end
   end
 
-  describe "editable_by?" do
+  describe "editable_by? and shown" do
     let(:user) { FactoryBot.create(:user) }
-    let(:instance) { FactoryBot.build model_sym }
+    let(:instance) { FactoryBot.create model_sym }
     it "is false" do
       expect(instance.editable_by?).to be_falsey
       expect(instance.editable_by?(user)).to be_falsey
+      expect(instance.shown?).to be_falsey
+      expect(instance.shown?(user)).to be_falsey
+      expect(subject.class.shown.pluck(:id)).to eq([])
+      expect(subject.class.shown(user).pluck(:id)).to eq([])
     end
     context "user creator" do
-      let(:instance) { FactoryBot.build(model_sym, creator: user) }
+      let(:instance) { FactoryBot.create(model_sym, creator: user) }
       it "is truthy" do
         expect(instance.editable_by?(user)).to be_truthy
+        expect(instance.shown?).to be_falsey
+        expect(instance.shown?(user)).to be_truthy
+        expect(subject.class.shown.pluck(:id)).to eq([])
+        expect(subject.class.shown(user).pluck(:id)).to eq([instance.id])
       end
       context "submitting_to_github" do
-        let(:instance) { FactoryBot.build(model_sym, creator: user, submitting_to_github: true) }
+        let(:instance) { FactoryBot.create(model_sym, creator: user, submitting_to_github: true) }
         it "is falsey" do
           expect(instance.editable_by?(user)).to be_falsey
+          expect(instance.shown?).to be_falsey
+          expect(instance.shown?(user)).to be_truthy
+          expect(subject.class.shown.pluck(:id)).to eq([])
+          expect(subject.class.shown(user).pluck(:id)).to eq([instance.id])
         end
       end
     end

@@ -12,6 +12,8 @@ class HypothesisMarkdownSerializer
       id: @hypothesis.ref_id,
       hypothesis: @hypothesis.title,
       topics: @hypothesis.tag_titles,
+      supporting: related_hypotheses(:supporting).map(&:title_with_ref_id),
+      conflicting: related_hypotheses(:conflicting).map(&:title_with_ref_id),
       citations: citations_hash.present? ? citations_hash : nil
     }
   end
@@ -33,6 +35,14 @@ class HypothesisMarkdownSerializer
     @explanations.map do |explanation|
       "## Explanation #{explanation.ref_number}\n\n#{explanation.text_with_references}"
     end.join("\n\n")
+  end
+
+  def hypothesis_relations
+    @hypothesis.approved? ? @hypothesis.relations.approved : @hypothesis.relations
+  end
+
+  def related_hypotheses(scope)
+    hypothesis_relations.send(scope).hypotheses(@hypothesis.id).approved
   end
 
   def citations_hash

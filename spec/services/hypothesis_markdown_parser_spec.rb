@@ -112,6 +112,35 @@ RSpec.describe HypothesisMarkdownParser do
         expect(explanation_quote.citation.publication_title).to eq "Convus"
         expect(explanation_quote.citation.approved?).to be_truthy
       end
+      context "hypothesis relations" do
+        let!(:hypothesis_conflicting) { FactoryBot.create(:hypothesis_approved) }
+        let!(:hypothesis_supporting) { FactoryBot.create(:hypothesis_approved) }
+        let(:relations_attributes) { {conflicting: [hypothesis_conflicting.title_with_ref_id], supporting: [hypothesis_supporting.ref_id]} }
+        it "imports all the acceptable attributes, skips unknown citation" do
+          expect(Hypothesis.count).to eq 2
+          expect(HypothesisRelation.count).to eq 0
+          expect(Explanation.count).to eq 0
+          allow_any_instance_of(described_class).to receive(:front_matter) { target_front_matter.merge(relations_attributes) }
+          instance.import
+          expect(Hypothesis.count).to eq 3
+          expect(Explanation.count).to eq 1
+
+          hypothesis = Hypothesis.last
+          expect(hypothesis.title).to eq title
+          expect(hypothesis.tags_string).to eq "A Topic"
+          expect(hypothesis.approved?).to be_truthy
+          expect(hypothesis.relations.supporting.hypotheses.pluck(:id)).to match_array([hypothesis.id, hypothesis_supporting.id])
+          expect(hypothesis.relations.supporting.hypotheses(hypothesis.id).pluck(:id)).to eq([hypothesis_supporting.id])
+          expect(hypothesis.relations.supporting.approved.hypotheses(hypothesis.id).pluck(:id)).to eq([hypothesis_supporting.id])
+          expect(hypothesis.relations.conflicting.hypotheses(hypothesis.id).pluck(:id)).to eq([hypothesis_conflicting.id])
+          expect(hypothesis.relations.conflicting.approved.hypotheses(hypothesis.id).pluck(:id)).to eq([hypothesis_conflicting.id])
+
+          expect(hypothesis.explanations.count).to eq 1
+          explanation = Explanation.first
+          expect(explanation.text).to eq explanation_text.gsub(/\n> ref:.*/, "")
+          expect(explanation.approved?).to be_truthy
+        end
+      end
       context "overflown citation attributes" do
         let(:citations_attributes) do
           {

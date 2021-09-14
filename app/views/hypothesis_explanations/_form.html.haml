@@ -1,11 +1,12 @@
 - is_edit ||= false
 - render_preview = @explanation.id.present? && @explanation.body_html.present?
+- hypothesis_relation = @hypothesis.relations.where(hypothesis_later_id: @hypothesis.id).first
+- relation_initially_toggled = hypothesis_relation.present?
 
 .small-page-header
   %h1
     %span.d-none.d-md-block
       Hypothesis:
-
 
 - form_submit_path = is_edit ? hypothesis_explanation_path(hypothesis_id: @hypothesis, id: @explanation.id) : hypothesis_explanations_path(hypothesis_id: @hypothesis)
 = form_for @explanation, url: form_submit_path, method: (is_edit ? "PATCH" : "POST"), html: {class: "form", id: "explanationForm"} do |f|
@@ -19,6 +20,13 @@
             %span.small.less-strong
               must be falsifiable
           = text_area_tag :hypothesis_title, @hypothesis.title, class: "form-control"
+          - unless relation_initially_toggled
+            .less-strong.text-right
+              %a.gray-link.small{href: "#hypothesisRelationField", tabindex: -1, "role" => "button", "aria-expanded" => "false", "data-toggle" => "collapse", "data-querykey" => "show_raw", "data-queryvalue" => "true"}
+                add hypothesis relationship
+
+      = render partial: "/hypotheses/relation_field", locals: {relation_kind: hypothesis_relation&.kind, related_id: hypothesis_relation&.hypothesis_not(@hypothesis)&.id}
+
       .max-width-text-container.col
         .form-group.fancy-select.unfancy.create-options-add
           = label_tag :hypothesis_tags_string do
@@ -27,6 +35,7 @@
               at least 2
           - tags_string = (@hypothesis.tag_titles + tag_titles).uniq # include unapproved tags from this hypothesis in search items
           = select_tag :hypothesis_tags_string, options_for_select(tags_string, @hypothesis.tag_titles), { class: "form-control", required: true, multiple: true}
+
     - else
       = render partial: "/hypotheses/show_title", locals: {hypothesis: @hypothesis, render_show_link: true}
   .row

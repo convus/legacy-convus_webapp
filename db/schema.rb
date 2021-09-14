@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_05_174108) do
+ActiveRecord::Schema.define(version: 2021_09_12_183059) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -98,6 +98,26 @@ ActiveRecord::Schema.define(version: 2021_09_05_174108) do
     t.integer "removed_pull_request_number"
     t.index ["creator_id"], name: "index_hypotheses_on_creator_id"
     t.index ["ref_id"], name: "index_hypotheses_on_ref_id", unique: true
+  end
+
+  create_table "hypothesis_relations", force: :cascade do |t|
+    t.bigint "creator_id"
+    t.bigint "hypothesis_earlier_id"
+    t.bigint "hypothesis_later_id"
+    t.bigint "citation_id"
+    t.bigint "explanation_quote_id"
+    t.integer "kind"
+    t.datetime "approved_at"
+    t.integer "pull_request_number"
+    t.integer "removed_pull_request_number"
+    t.boolean "submitting_to_github", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["citation_id"], name: "index_hypothesis_relations_on_citation_id"
+    t.index ["creator_id"], name: "index_hypothesis_relations_on_creator_id"
+    t.index ["explanation_quote_id"], name: "index_hypothesis_relations_on_explanation_quote_id"
+    t.index ["hypothesis_earlier_id"], name: "index_hypothesis_relations_on_hypothesis_earlier_id"
+    t.index ["hypothesis_later_id"], name: "index_hypothesis_relations_on_hypothesis_later_id"
   end
 
   create_table "hypothesis_tags", force: :cascade do |t|

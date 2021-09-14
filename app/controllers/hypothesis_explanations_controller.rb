@@ -91,6 +91,11 @@ class HypothesisExplanationsController < ApplicationController
     @hypothesis.title = params[:hypothesis_title] if params[:hypothesis_title].present?
     @hypothesis.tags_string = params[:hypothesis_tags_string] if params[:hypothesis_tags_string]
     @hypothesis.save
+    hypothesis_relation = update_hypothesis_relation(params[:hypothesis_relation_kind], params[:hypothesis_relation_id])
+    # Remove any hypothesis relations that are no longer relevant
+    @hypothesis.reload.relations.unapproved.where.not(id: hypothesis_relation&.id)
+      .where(hypothesis_later_id: @hypothesis.id)
+      .destroy_all
   end
 
   def permitted_params
@@ -111,5 +116,14 @@ class HypothesisExplanationsController < ApplicationController
     params.require(:explanation)
       .permit(citations_attributes: Citation.permitted_attrs + [:explanation_quote_id])
       .dig(:citations_attributes)
+  end
+
+  # Duplicated in HypothesesController
+  def update_hypothesis_relation(kind, id)
+    other_hypothesis = Hypothesis.find_by_id(id)
+    return nil unless other_hypothesis.present? && HypothesisRelation.kinds.include?(kind)
+    HypothesisRelation.find_or_create_for(kind: kind,
+      hypotheses: [@hypothesis, other_hypothesis],
+      creator: current_user)
   end
 end

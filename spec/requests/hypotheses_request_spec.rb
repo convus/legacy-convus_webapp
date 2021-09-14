@@ -6,18 +6,6 @@ RSpec.describe "/hypotheses", type: :request do
   let(:base_url) { "/hypotheses" }
   let(:current_user) { nil }
   let(:subject) { FactoryBot.create(:hypothesis, creator_id: current_user&.id) }
-  let(:full_citation_params) do
-    {
-      title: "Testing hypothesis creation is very important!",
-      kind: "research_review",
-      peer_reviewed: true,
-      randomized_controlled_trial: true,
-      url_is_direct_link_to_full_text: "1",
-      authors_str: "\nZack\n George\n",
-      published_date_str: "1990-12-2",
-      url_is_not_publisher: false
-    }
-  end
   let(:citation_url) { "https://example.com/something-of-interest" }
 
   describe "index" do
@@ -243,6 +231,38 @@ RSpec.describe "/hypotheses", type: :request do
         expect(hypothesis.approved_at).to be_blank
         expect(hypothesis.tags.count).to eq 1
         expect(hypothesis.tags.pluck(:title)).to eq(["economy"])
+      end
+      context "with relation parameters" do
+        let!(:hypothesis_related) { FactoryBot.create(:hypothesis_approved) }
+        it "creates" do
+          expect(Hypothesis.count).to eq 1
+          expect(HypothesisRelation.count).to eq 0
+          Sidekiq::Worker.clear_all
+          expect {
+            post base_url, params: {hypothesis: hypothesis_params,
+                                    hypothesis_relation_kind: "hypothesis_support",
+                                    hypothesis_relation_id: hypothesis_related.id}
+          }.to change(Hypothesis, :count).by 1
+          hypothesis = Hypothesis.last
+          expect(response).to redirect_to new_hypothesis_explanation_path(hypothesis_id: hypothesis.ref_id)
+          expect(AddToGithubContentJob.jobs.count).to eq 0
+          expect(flash[:success]).to be_present
+
+          expect(hypothesis.title).to eq hypothesis_params[:title]
+          expect(hypothesis.creator).to eq current_user
+          expect(hypothesis.pull_request_number).to be_blank
+          expect(hypothesis.approved_at).to be_blank
+          expect(hypothesis.tags.count).to eq 1
+          expect(hypothesis.tags.pluck(:title)).to eq(["economy"])
+
+          expect(HypothesisRelation.count).to eq 1
+          hypothesis_relation = HypothesisRelation.last
+          expect(hypothesis_relation.hypothesis_later_id).to eq hypothesis.id
+          expect(hypothesis_relation.hypothesis_earlier_id).to eq hypothesis_related.id
+          expect(hypothesis_relation.kind).to eq "hypothesis_support"
+          expect(hypothesis_relation.approved?).to be_falsey
+          expect(hypothesis_relation.creator_id).to eq current_user.id
+        end
       end
     end
   end

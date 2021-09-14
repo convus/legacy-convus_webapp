@@ -27,17 +27,8 @@ class Explanation < ApplicationRecord
 
   attr_accessor :skip_associated_tasks
 
-  def self.shown(user = nil)
-    return approved unless user.present?
-    approved.or(where(creator_id: user.id))
-  end
-
   def self.explanation_quotes
     ExplanationQuote.where(explanation_id: pluck(:id))
-  end
-
-  def shown?(user = nil)
-    approved? || creator_id == user&.id
   end
 
   def remove_empty_quotes!
