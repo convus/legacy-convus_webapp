@@ -12,6 +12,8 @@ class HypothesisMarkdownSerializer
       id: @hypothesis.ref_id,
       hypothesis: @hypothesis.title,
       topics: @hypothesis.tag_titles,
+      supporting: supporting_hypotheses_titles,
+      conflicting: conflicting_hypotheses_titles,
       citations: citations_hash.present? ? citations_hash : nil
     }
   end
@@ -33,6 +35,16 @@ class HypothesisMarkdownSerializer
     @explanations.map do |explanation|
       "## Explanation #{explanation.ref_number}\n\n#{explanation.text_with_references}"
     end.join("\n\n")
+  end
+
+  def supporting_hypotheses_titles
+    titles = @hypothesis.supporting_hypotheses.map(&:title_with_ref_id)
+    titles.any? ? titles : nil
+  end
+
+  def conflicting_hypotheses_titles
+    titles = @hypothesis.conflicting_hypotheses.map(&:title_with_ref_id)
+    titles.any? ? titles : nil
   end
 
   def citations_hash

@@ -27,20 +27,20 @@ RSpec.describe HypothesisRelation, type: :model do
         expect(hypothesis_later.conflicting_hypotheses.pluck(:id)).to match_array([hypothesis_earlier.id, hypothesis_later_later.id])
       end
     end
-    # context "citation_conflict" do
-    #   let(:hypothesis_relation) { FactoryBot.create(:hypothesis_relation_citation_conflict) }
-    #   it "is valid" do
-    #     expect(hypothesis_relation.earlier_hypothesis).to be_present
-    #     expect(hypothesis_relation.later_hypothesis).to be_present
-    #     expect(hypothesis_relation.explanation_quote).to be_present
-    #     expect(hypothesis_relation.kind).to eq "challenge"
-    #     expect(hypothesis_relation).to be_valid
-    #     earlier_hypothesis = hypothesis_relation.earlier_hypothesis
-    #     later_hypothesis = hypothesis_relation.later_hypothesis
-    #     expect(hypothesis.pluck(:id)).to eq([hypothesis_relation.challenged_hypothesis_id])
-    #     expect(challenged_hypothesis.challenges.pluck(:id)).to eq([hypothesis_relation.hypothesis_id])
-    #     (challenged_hypothesis.explanation_quotes.first.hypothesis_relations.pluck(:id)).to eq([hypothesis_relation.id])
-    #   end
-    # end
+    context "citation_conflict" do
+      # I don't know how this will actually work yet, so I'm skipping it until I've built things
+    end
+  end
+
+  describe "create_for" do
+    let!(:hypothesis1) { FactoryBot.create(:hypothesis) }
+    let!(:hypothesis2) { FactoryBot.create(:hypothesis) }
+    it "creates" do
+      hypothesis_relation = HypothesisRelation.create_for(kind: "hypothesis_conflict", hypotheses: [hypothesis1, hypothesis2])
+      expect(hypothesis_relation.hypothesis_earlier_id).to eq hypothesis1.id
+      expect(hypothesis_relation.hypothesis_later_id).to eq hypothesis2.id
+      expect(hypothesis_relation.kind).to eq "hypothesis_conflict"
+      expect(hypothesis1.reload.conflicting_hypotheses.pluck(:id)).to eq([hypothesis2.id])
+    end
   end
 end

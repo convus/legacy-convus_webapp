@@ -70,6 +70,10 @@ class Hypothesis < ApplicationRecord
     Hypothesis.where(id: hypothesis_relations.conflicting.hypothesis_ids - [id])
   end
 
+  def supporting_hypotheses
+    Hypothesis.where(id: hypothesis_relations.supporting.hypothesis_ids - [id])
+  end
+
   def tag_titles
     tags.alphabetical.pluck(:title)
   end
@@ -99,6 +103,10 @@ class Hypothesis < ApplicationRecord
 
   def citation_urls
     citations.pluck(:url)
+  end
+
+  def title_with_ref_id
+    "#{ref_id}: #{title}"
   end
 
   # Required for FlatFileSerializable
