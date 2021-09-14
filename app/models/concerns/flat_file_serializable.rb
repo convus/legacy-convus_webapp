@@ -12,8 +12,8 @@ module FlatFileSerializable
   end
 
   def flat_file_content
-    # Serialize to yaml - stringify keys so the keys don't start with :, to make things easier to read
-    flat_file_serialized.deep_stringify_keys.to_yaml
+    # Serialize to yaml - stringify keys so keys don't start with :, to make serialized file easier to read
+    flat_file_serialized.deep_stringify_keys.to_yaml(FlatFileSerializer.yaml_opts)
   end
 
   def github_html_url

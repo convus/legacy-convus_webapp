@@ -65,6 +65,12 @@ class Citation < ApplicationRecord
     }.freeze
   end
 
+  # Used in flat file import and in controller, so define here
+  def self.permitted_attrs
+    %i[title authors_str kind url url_is_direct_link_to_full_text published_date_str doi
+      url_is_not_publisher publication_title peer_reviewed randomized_controlled_trial]
+  end
+
   def self.kind_humanized(kind)
     kinds_data.dig(kind&.to_sym, :humanized)
   end
@@ -93,9 +99,9 @@ class Citation < ApplicationRecord
     if UrlCleaner.looks_like_url?(str)
       matched = where(url: UrlCleaner.without_utm(str)).first
       return matched if matched.present?
-      matched = where("lower(url) ILIKE ?", str.to_s.downcase.strip).first
+      matched = where("lower(citations.url) ILIKE ?", str.to_s.downcase.strip).first
       # If the beginning of the URL is missing (eg no http) try to make that work
-      matched ||= where("lower(url) ILIKE ?", "%#{str.to_s.downcase.strip}").first
+      matched ||= where("lower(citations.url) ILIKE ?", "%#{str.to_s.downcase.strip}").first
       # TODO: remove https://www if still no match, as more fallback
       return matched if matched.present?
     end
@@ -119,6 +125,10 @@ class Citation < ApplicationRecord
     !url_is_not_publisher
   end
 
+  def wikipedia?
+    publication&.wikipedia?
+  end
+
   def authors_str
     (authors || []).join("; ")
   end
@@ -132,7 +142,7 @@ class Citation < ApplicationRecord
   end
 
   def authors_str=(val)
-    self.authors = val.split("\n").map(&:strip).reject(&:blank?)
+    self.authors = val.split(/\n|;/).map(&:strip).reject(&:blank?)
   end
 
   def publication_title=(val)
@@ -192,11 +202,15 @@ class Citation < ApplicationRecord
   end
 
   def skip_author_field?
-    publication&.wikipedia?
+    wikipedia?
   end
 
   def skip_published_at_field?
-    publication&.wikipedia?
+    wikipedia?
+  end
+
+  def skip_url_is_direct_link_to_full_text_field?
+    wikipedia?
   end
 
   def set_calculated_attributes
@@ -208,6 +222,7 @@ class Citation < ApplicationRecord
     self.path_slug = [publication&.slug, slug].compact.join("-")
     self.kind ||= "article" # default to article for now
     self.authors ||= []
+    self.url_is_direct_link_to_full_text = true if wikipedia?
     if FETCH_WAYBACK_URL && url_is_direct_link_to_full_text
       self.wayback_machine_url ||= WaybackMachineIntegration.fetch_current_url(url)
     end
