@@ -171,6 +171,7 @@ RSpec.describe Explanation, type: :model do
     end
   end
 
+  # shown is now in GithubSubmittable (and tested there), including these tests because might as well
   describe "shown" do
     let(:user) { FactoryBot.create(:user) }
     let!(:explanation1) { FactoryBot.create(:explanation) }

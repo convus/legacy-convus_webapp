@@ -61,17 +61,8 @@ class Hypothesis < ApplicationRecord
     str.match?(/(\.|!|\?)\z/) ? str : "#{str}."
   end
 
-  def hypothesis_relations
-    HypothesisRelation.where(hypothesis_earlier_id: id)
-      .or(HypothesisRelation.where(hypothesis_later_id: id))
-  end
-
-  def conflicting_hypotheses
-    Hypothesis.where(id: hypothesis_relations.conflicting.hypothesis_ids - [id])
-  end
-
-  def supporting_hypotheses
-    Hypothesis.where(id: hypothesis_relations.supporting.hypothesis_ids - [id])
+  def relations
+    HypothesisRelation.matching_hypothesis(id)
   end
 
   def tag_titles

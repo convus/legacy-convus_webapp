@@ -16,6 +16,13 @@ module GithubSubmittable
     attr_accessor :add_to_github
   end
 
+  module ClassMethods
+    def shown(user = nil)
+      return approved unless user.present?
+      approved.or(where(creator_id: user.id))
+    end
+  end
+
   # NOTE: Removed, for now, is a manual update via the console
   def removed?
     removed_pull_request_number.present?
@@ -28,6 +35,10 @@ module GithubSubmittable
   def unapproved?
     return false if removed?
     !approved?
+  end
+
+  def shown?(user = nil)
+    approved? || creator_id == user&.id
   end
 
   def submitted_to_github?

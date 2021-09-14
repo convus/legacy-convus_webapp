@@ -129,8 +129,11 @@ RSpec.describe HypothesisMarkdownParser do
           expect(hypothesis.title).to eq title
           expect(hypothesis.tags_string).to eq "A Topic"
           expect(hypothesis.approved?).to be_truthy
-          expect(hypothesis.supporting_hypotheses.pluck(:id)).to eq([hypothesis_supporting.id])
-          expect(hypothesis.conflicting_hypotheses.pluck(:id)).to eq([hypothesis_conflicting.id])
+          expect(hypothesis.relations.supporting.hypotheses.pluck(:id)).to match_array([hypothesis.id, hypothesis_supporting.id])
+          expect(hypothesis.relations.supporting.hypotheses(hypothesis.id).pluck(:id)).to eq([hypothesis_supporting.id])
+          expect(hypothesis.relations.supporting.approved.hypotheses(hypothesis.id).pluck(:id)).to eq([hypothesis_supporting.id])
+          expect(hypothesis.relations.conflicting.hypotheses(hypothesis.id).pluck(:id)).to eq([hypothesis_conflicting.id])
+          expect(hypothesis.relations.conflicting.approved.hypotheses(hypothesis.id).pluck(:id)).to eq([hypothesis_conflicting.id])
 
           expect(hypothesis.explanations.count).to eq 1
           explanation = Explanation.first

@@ -93,8 +93,9 @@ class HypothesisMarkdownParser
     hypotheses.each do |str|
       related_hypothesis = Hypothesis.friendly_find(str)
       next if related_hypothesis.blank?
-      HypothesisRelation.find_or_create_for(kind: kind,
+      hypothesis_relation = HypothesisRelation.find_or_create_for(kind: kind,
         hypotheses: [@hypothesis, related_hypothesis])
+      hypothesis_relation.update(approved_at: Time.current) if hypothesis_relation.unapproved?
     end
   end
 end

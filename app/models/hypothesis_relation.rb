@@ -33,12 +33,25 @@ class HypothesisRelation < ApplicationRecord
     %w[hypothesis_support].freeze
   end
 
+  def self.matching_hypothesis(hypothesis_or_id)
+    hypothesis_id = hypothesis_or_id.is_a?(Integer) ? hypothesis_or_id : hypothesis_or_id.id
+    HypothesisRelation.where(hypothesis_earlier_id: hypothesis_id)
+      .or(HypothesisRelation.where(hypothesis_later_id: hypothesis_id))
+  end
+
   # Method here because I hope there is a better way to do this?
   def self.hypothesis_ids
     distinct.pluck(:hypothesis_earlier_id, :hypothesis_later_id).flatten.uniq
   end
 
-  # Might let creating multiple at once, if that's useful
+  # ... Probably is a better way to do this too
+  def self.hypotheses(skip_id_or_hypothesis = nil)
+    skip_id = if skip_id_or_hypothesis.present?
+      skip_id_or_hypothesis.is_a?(Hypothesis) ? skip_id_or_hypothesis.id : skip_id_or_hypothesis
+    end
+    Hypothesis.where(id: hypothesis_ids - [skip_id])
+  end
+
   def self.find_or_create_for(kind:, hypotheses:)
     hypotheses_ordered = hypotheses.sort_by { |h| h.ref_number }
     find_or_create_by(kind: kind, hypothesis_earlier: hypotheses_ordered.first, hypothesis_later: hypotheses_ordered.last)
@@ -50,5 +63,6 @@ class HypothesisRelation < ApplicationRecord
     else
       "hypothesis_conflict"
     end
+    self.creator_id ||= hypothesis_later&.creator_id
   end
 end
