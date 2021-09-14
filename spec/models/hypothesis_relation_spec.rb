@@ -37,6 +37,7 @@ RSpec.describe HypothesisRelation, type: :model do
   describe "find_or_create_for" do
     let!(:hypothesis1) { FactoryBot.create(:hypothesis) }
     let!(:hypothesis2) { FactoryBot.create(:hypothesis) }
+    let(:user) { FactoryBot.create(:user) }
     it "creates" do
       hypothesis_relation = HypothesisRelation.find_or_create_for(kind: "hypothesis_conflict", hypotheses: [hypothesis1, hypothesis2])
       expect(hypothesis_relation.hypothesis_earlier_id).to eq hypothesis1.id
@@ -49,9 +50,19 @@ RSpec.describe HypothesisRelation, type: :model do
 
       # And doing it again doesn't create more
       expect(HypothesisRelation.find_or_create_for(kind: "hypothesis_conflict", hypotheses: [hypothesis1, hypothesis2])&.id).to eq hypothesis_relation.id
-      expect(HypothesisRelation.find_or_create_for(kind: "hypothesis_conflict", hypotheses: [hypothesis2, hypothesis1])&.id).to eq hypothesis_relation.id
+      HypothesisRelation.find_or_create_for(kind: "hypothesis_conflict",
+        creator: user, hypotheses: [hypothesis2, hypothesis1])
       # Sanity ;)
       expect(hypothesis_relation.reload.creator_id).to eq hypothesis2.creator_id
+    end
+    context "passing creator" do
+      it "creates with creator" do
+        hypothesis_relation = HypothesisRelation.find_or_create_for(kind: "hypothesis_conflict",
+          hypotheses: [hypothesis1, hypothesis2],
+          creator: user)
+        expect(hypothesis_relation.reload.creator_id).to eq user.id
+        expect(user.id).to_not eq hypothesis2.creator_id
+      end
     end
   end
 end

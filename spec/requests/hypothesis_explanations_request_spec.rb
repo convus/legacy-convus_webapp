@@ -150,6 +150,45 @@ RSpec.describe "hypothesis_explanations", type: :request do
             expect(hypothesis.title).to eq "new title."
             expect(hypothesis.tags.pluck(:title)).to eq(["animals", "Something of Interest"])
           end
+          context "with hypothesis relation params" do
+            let(:hypothesis_related) { FactoryBot.create(:hypothesis_approved) }
+            let(:passed_parameters) do
+              {explanation: explanation_with_quote_params,
+               hypothesis_title: "new title",
+               hypothesis_tags_string: "animals, Something of Interest",
+               hypothesis_relation_kind: "hypothesis_conflict",
+               hypothesis_relation_id: hypothesis_related.id}
+            end
+            it "updates hypothesis" do
+              expect(HypothesisRelation.count).to eq 0
+              expect(hypothesis.reload.editable_by?(current_user)).to be_truthy
+              expect(hypothesis.explanations.count).to eq 0
+              expect(hypothesis_related.ref_number).to be > hypothesis.ref_number
+              Sidekiq::Worker.clear_all
+              expect {
+                post base_url, params: passed_parameters
+              }.to change(Explanation, :count).by 1
+              hypothesis.reload
+              explanation = hypothesis.explanations.last
+              expect(response).to redirect_to edit_hypothesis_explanation_path(hypothesis_id: hypothesis.ref_id, id: explanation.id)
+              expect(AddToGithubContentJob.jobs.count).to eq 0
+              expect(flash[:success]).to be_present
+              expect(explanation.creator_id).to eq current_user.id
+              expect_explanation_with_quotes_to_be_updated(explanation)
+
+              hypothesis.reload
+              expect(hypothesis.title).to eq "new title."
+              expect(hypothesis.tags.pluck(:title)).to eq(["animals", "Something of Interest"])
+
+              expect(HypothesisRelation.count).to eq 1
+              hypothesis_relation = hypothesis.relations.last
+              expect(hypothesis_relation.creator_id).to eq current_user.id
+              expect(hypothesis_relation.approved?).to be_falsey
+              expect(hypothesis_relation.hypothesis_earleir_id).to eq hypothesis.id
+              expect(hypothesis_relation.hypothesis_later_id).to eq hypothesis_related.id
+              expect(hypothesis_relation.kind).to eq "hypothesis_conflict"
+            end
+          end
         end
       end
     end

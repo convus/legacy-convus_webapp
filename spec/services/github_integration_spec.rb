@@ -126,7 +126,7 @@ RSpec.describe GithubIntegration do
           hypothesis.reload
           expect(hypothesis.pull_request_number).to be_blank
           expect(hypothesis.explanations.submitted_to_github.count).to eq 0
-          pull_request = subject.create_explanation_pull_request(explanation)
+          subject.create_explanation_pull_request(explanation)
           explanation.reload
           expect(explanation.pull_request_number).to be_present
 
@@ -158,7 +158,7 @@ RSpec.describe GithubIntegration do
             hypothesis.reload
             expect(hypothesis.pull_request_number).to be_blank
             expect(hypothesis.explanations.submitted_to_github.count).to eq 0
-            pull_request = subject.create_explanation_pull_request(explanation)
+            subject.create_explanation_pull_request(explanation)
             explanation.reload
             expect(explanation.pull_request_number).to be_present
 

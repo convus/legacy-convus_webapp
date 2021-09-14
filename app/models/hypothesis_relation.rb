@@ -33,9 +33,13 @@ class HypothesisRelation < ApplicationRecord
     %w[hypothesis_support].freeze
   end
 
-  def self.find_or_create_for(kind:, hypotheses:)
+  def self.find_or_create_for(kind:, hypotheses:, creator: nil)
     hypotheses_ordered = hypotheses.sort_by { |h| h.ref_number }
-    find_or_create_by(kind: kind, hypothesis_earlier: hypotheses_ordered.first, hypothesis_later: hypotheses_ordered.last)
+    find_by(kind: kind, hypothesis_earlier_id: hypotheses_ordered.first.id,
+      hypothesis_later_id: hypotheses_ordered.last.id) ||
+      create(kind: kind, creator: creator,
+        hypothesis_earlier_id: hypotheses_ordered.first.id,
+        hypothesis_later_id: hypotheses_ordered.last.id)
   end
 
   def self.matching_hypothesis(hypothesis_or_id)
@@ -57,8 +61,9 @@ class HypothesisRelation < ApplicationRecord
     Hypothesis.where(id: hypothesis_ids - [skip_id])
   end
 
-  def kind_humanized
-    gsub("hypothesis_", "")
+  def self.kind_humanized(str = nil)
+    return nil if str.blank?
+    str.gsub("hypothesis_", "")
   end
 
   def kind_humanized
