@@ -27,6 +27,17 @@
               at least 2
           - tags_string = (@hypothesis.tag_titles + tag_titles).uniq # include unapproved tags from this hypothesis in search items
           = select_tag :hypothesis_tags_string, options_for_select(tags_string, @hypothesis.tag_titles), { class: "form-control", required: true, multiple: true}
+      -# Duplicated in hypothesis new
+      .max-width-text-container.col
+        - hypothesis_relation = @hypothesis.relations.where(hypothesis_later_id: @hypothesis.id).first
+        - relations_kinds = [["conflicting", "hypothesis_conflict"], ["supporting", "hypothesis_support"]]
+        = label_tag :hypothesis_relation_id do
+          Related
+          = select_tag :hypothesis_relation_kind, options_for_select(relations_kinds, hypothesis_relation&.kind), class: "ml-1 mr-1"
+          hypothesis
+        .form-group.fancy-select.unfancy
+          - relatable_hypotheses = Hypothesis.shown(current_user).map { |h| [h.title, h.id] }
+          = select_tag :hypothesis_relation_id, options_for_select(relatable_hypotheses, hypothesis_relation&.hypothesis_earlier_id), { class: "form-control", required: false, multiple: false, prompt: "Select hypothesis"}
     - else
       = render partial: "/hypotheses/show_title", locals: {hypothesis: @hypothesis, render_show_link: true}
   .row

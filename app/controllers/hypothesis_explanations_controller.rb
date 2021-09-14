@@ -94,6 +94,7 @@ class HypothesisExplanationsController < ApplicationController
     hypothesis_relation = update_hypothesis_relation(params[:hypothesis_relation_kind], params[:hypothesis_relation_id])
     # Remove any hypothesis relations that are no longer relevant
     @hypothesis.reload.relations.unapproved.where.not(id: hypothesis_relation&.id)
+      .where(hypothesis_later_id: @hypothesis.id)
       .destroy_all
   end
 

@@ -31,12 +31,17 @@ class HypothesesController < ApplicationController
 
   def new
     @hypothesis ||= Hypothesis.new
+    if params[:related_hypothesis_id].present?
+      @hypothesis_related = Hypothesis.friendly_find(params[:related_hypothesis_id])
+      @hypothesis_related_kind = params[:related_kind] if HypothesisRelation.kinds.include?(params[:related_kind])
+    end
   end
 
   def create
     @hypothesis = Hypothesis.new(permitted_params)
     @hypothesis.creator_id = current_user.id
     if @hypothesis.save
+      update_hypothesis_relation(params[:hypothesis_relation_kind], params[:hypothesis_relation_id])
       flash[:success] = "Hypothesis created!"
       redirect_to new_hypothesis_explanation_path(hypothesis_id: @hypothesis.ref_id)
     else
@@ -101,5 +106,15 @@ class HypothesesController < ApplicationController
   def permitted_params
     # Permit tags_string as a string or an array
     params.require(:hypothesis).permit(:title, :add_to_github, :tags_string, tags_string: [])
+  end
+
+  # Duplicated in HypothesesExplanationController
+  def update_hypothesis_relation(kind, id)
+    other_hypothesis = Hypothesis.find_by_id(id)
+    return nil unless other_hypothesis.present? && HypothesisRelation.kinds.include?(kind)
+    HypothesisRelation.find_or_create_for(kind: kind,
+      hypotheses: [@hypothesis, other_hypothesis],
+      creator: current_user)
+    @hypothesis.reload # Make sure the hypothesis comes along too
   end
 end
