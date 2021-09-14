@@ -33,6 +33,11 @@ class HypothesisRelation < ApplicationRecord
     %w[hypothesis_support].freeze
   end
 
+  def self.find_or_create_for(kind:, hypotheses:)
+    hypotheses_ordered = hypotheses.sort_by { |h| h.ref_number }
+    find_or_create_by(kind: kind, hypothesis_earlier: hypotheses_ordered.first, hypothesis_later: hypotheses_ordered.last)
+  end
+
   def self.matching_hypothesis(hypothesis_or_id)
     hypothesis_id = hypothesis_or_id.is_a?(Integer) ? hypothesis_or_id : hypothesis_or_id.id
     HypothesisRelation.where(hypothesis_earlier_id: hypothesis_id)
@@ -52,9 +57,12 @@ class HypothesisRelation < ApplicationRecord
     Hypothesis.where(id: hypothesis_ids - [skip_id])
   end
 
-  def self.find_or_create_for(kind:, hypotheses:)
-    hypotheses_ordered = hypotheses.sort_by { |h| h.ref_number }
-    find_or_create_by(kind: kind, hypothesis_earlier: hypotheses_ordered.first, hypothesis_later: hypotheses_ordered.last)
+  def kind_humanized
+    gsub("hypothesis_", "")
+  end
+
+  def kind_humanized
+    self.class.kind_humanized(kind)
   end
 
   def set_calculated_attributes

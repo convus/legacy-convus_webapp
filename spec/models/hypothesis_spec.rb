@@ -17,15 +17,18 @@ RSpec.describe Hypothesis, type: :model do
   describe "slugify" do
     # Issue with trailing - (dash) in filename_slug
     let(:title) { "Overall, the case for reduced meat consumption is strong. Vegetarianism is cheaper, better for your health (if you can afford a diverse diet and are not an infant), and is less impactful for the environment. It also has a significant moral cost in terms of animal suffering." }
+    let(:slug) { "overall-the-case-for-reduced-meat-consumption-is-strong-vegetarianism-is-cheaper-better-for-your-health-if-you-can-afford-a-diverse-diet-and-are-not-an-infant-and-is-less-impactful-for-the-environment-it-also-has-a-significant-moral-cost-in" }
     let(:hypothesis) { FactoryBot.create(:hypothesis, title: title) }
     it "makes a valid slug" do
       expect(hypothesis).to be_valid
-      slug = hypothesis.slug
+      expect(hypothesis.slug).to eq slug
       expect(hypothesis.file_path.gsub("hypotheses/", "").length).to be < 255
       expect(Slugifyer.filename_slugify(slug)).to eq slug
       expect(Slugifyer.filename_slugify(hypothesis.file_path)).to eq slug
       expect(Hypothesis.friendly_find(hypothesis.file_path)&.id).to eq hypothesis.id
       expect(Hypothesis.friendly_find("  #{hypothesis.file_path} ")&.id).to eq hypothesis.id
+      expect(Hypothesis.friendly_find("  #{hypothesis.title_with_ref_id}   ")&.id).to eq hypothesis.id
+      expect(Hypothesis.friendly_find("#{hypothesis.ref_id}_#{slug}")&.id).to eq hypothesis.id
       expect(Hypothesis.friendly_find(slug)&.id).to eq hypothesis.id
       expect(Hypothesis.friendly_find(title)&.id).to eq hypothesis.id
       expect(Hypothesis.friendly_find("#{hypothesis.ref_id.downcase} ")&.id).to eq hypothesis.id

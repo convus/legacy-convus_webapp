@@ -74,27 +74,6 @@ class GithubIntegration
     client.create_contents(CONTENT_REPO, file_path, message, file_content, branch: current_branch_name)
   end
 
-  def create_hypothesis_pull_request(hypothesis)
-    branch_name = "proposed-hypothesis-#{hypothesis.ref_id}"
-    @current_branch = create_branch(branch_name)
-    commit_message = "Hypothesis #{hypothesis.ref_id}: #{hypothesis.title}"
-    upsert_file_on_current_branch(hypothesis.file_path, hypothesis.flat_file_content, commit_message)
-    # If there is a citation that hasn't been added to github yet, add it to this PR
-    citation_ids_added = []
-    hypothesis.citations.unapproved.each do |citation|
-      next unless citation.present? && citation.unapproved?
-      citation_ids_added << citation.id
-      upsert_file_on_current_branch(citation.file_path, citation.flat_file_content, "Citation: #{citation.title}")
-    end
-    pr_body = "View [hypothesis #{hypothesis.ref_id} on Convus](https://convus.org/hypotheses/#{hypothesis.ref_id})"
-    pull_request = create_pull_request(commit_message, pr_body)
-    number = pull_request.url.split("/pulls/").last
-    hypothesis.update(pull_request_number: number)
-    hypothesis.citations.unapproved.where(id: citation_ids_added, pull_request_number: nil)
-      .update_all(pull_request_number: number)
-    pull_request
-  end
-
   def create_citation_pull_request(citation)
     branch_name = "proposed-citation-#{citation.id}"
     @current_branch = create_branch(branch_name)
@@ -111,38 +90,23 @@ class GithubIntegration
     branch_name = "update-hypothesis-#{hypothesis.ref_id}-with-#{explanation.ref_number}"
     @current_branch = create_branch(branch_name)
     commit_message = "Add explanation to hypothesis #{hypothesis.ref_id}: #{hypothesis.title}"
-    file_content = hypothesis.flat_file_content(passed_explanations: hypothesis.explanations.approved + [explanation])
-    upsert_file_on_current_branch(hypothesis.file_path, file_content, commit_message)
+    # Add explanation
+    serializer = HypothesisMarkdownSerializer.new(hypothesis: hypothesis,
+      explanations: hypothesis.explanations.approved + [explanation])
+    upsert_file_on_current_branch(hypothesis.file_path, serializer.to_markdown, commit_message)
+    # Add citations
+    citation_ids_added = []
+    explanation.citations_not_removed.unapproved.where(pull_request_number: nil).each do |citation|
+      citation_ids_added << citation.id
+      upsert_file_on_current_branch(citation.file_path, citation.flat_file_content, "Citation: #{citation.title}")
+    end
     pr_body = "Added explanation to: [#{hypothesis.ref_id}: #{hypothesis.title}](https://convus.org/hypotheses/#{hypothesis.ref_id}?explanation_id=#{explanation.ref_number})"
     pull_request = create_pull_request(commit_message, pr_body)
     number = pull_request.url.split("/pulls/").last
     explanation.update(pull_request_number: number)
-    explanation.citations_not_removed.unapproved.where(pull_request_number: nil)
+    explanation.citations.where(id: citation_ids_added).update_all(pull_request_number: number)
+    serializer.hypothesis_relations.unapproved.where(pull_request_number: nil)
       .update_all(pull_request_number: number)
-    pull_request
-  end
-
-  # AKA add a new citation to an existing hypothesis
-  def create_hypothesis_citation_pull_request(hypothesis_citation)
-    hypothesis = hypothesis_citation.hypothesis
-    branch_name = "update-hypothesis-#{hypothesis.ref_id}-with-#{hypothesis_citation.id}"
-    @current_branch = create_branch(branch_name)
-    commit_message = "Add citation to hypothesis #{hypothesis.ref_id}: #{hypothesis.title}"
-    # put hypothesis_citation in the new_cited_url in the serializer (added as a new field to ward off merge conflicts)
-    hypothesis.included_unapproved_hypothesis_citation = hypothesis_citation
-    upsert_file_on_current_branch(hypothesis.file_path, hypothesis.flat_file_content, commit_message)
-
-    # If there is a citation that hasn't been added to github yet, add it to this PR
-    citation = hypothesis_citation.citation
-    if citation.unapproved?
-      upsert_file_on_current_branch(citation.file_path, citation.flat_file_content, "Citation: #{citation.title}")
-    end
-    pr_body = "Added citation #{hypothesis_citation.challenge? ? "challenging" : "to"}: "
-    pr_body += "[#{hypothesis.ref_id}: #{hypothesis.title}](https://convus.org/hypotheses/#{hypothesis.ref_id}?hypothesis_citation_id=#{hypothesis_citation.id})"
-    pull_request = create_pull_request(commit_message, pr_body)
-    number = pull_request.url.split("/pulls/").last
-    hypothesis_citation.update(pull_request_number: number)
-    citation.update(pull_request_number: number) if citation.unapproved?
     pull_request
   end
 end

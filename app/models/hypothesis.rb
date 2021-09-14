@@ -46,9 +46,10 @@ class Hypothesis < ApplicationRecord
     found = find_ref_id(str)
     # Preference ref_id lookup (in filepath or in id:)
     if found.blank? && str.is_a?(String)
+      str = str.strip
       found = if str.match?(/\A(hypotheses\/)?[0-z]+_/i)
         find_ref_id(str.gsub("hypotheses/", "").split("_").first)
-      elsif str.match?(/\A[0-z]+:/) # Looks like a base36 ID string!
+      elsif str.match?(/\A[0-z]+:|_/) # Looks like a base36 ID string!
         find_ref_id(str.split(":").first)
       end
     end

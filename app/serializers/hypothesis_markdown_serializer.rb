@@ -37,19 +37,20 @@ class HypothesisMarkdownSerializer
     end.join("\n\n")
   end
 
-  def hypothesis_relations(scope)
-    relations = @hypothesis.approved? ? @hypothesis.relations.approved : @hypothesis.relations
-    relations.send(scope).hypotheses(@hypothesis.id).approved
+  def hypothesis_relations
+    @hypothesis.approved? ? @hypothesis.relations.approved : @hypothesis.relations
+  end
+
+  def related_hypotheses(scope)
+    hypothesis_relations.send(scope).hypotheses(@hypothesis.id).approved
   end
 
   def supporting_hypotheses_titles
-    titles = hypothesis_relations(:supporting).map(&:title_with_ref_id)
-    titles.any? ? titles : nil
+    related_hypotheses(:supporting).map(&:title_with_ref_id)
   end
 
   def conflicting_hypotheses_titles
-    titles = hypothesis_relations(:conflicting).map(&:title_with_ref_id)
-    titles.any? ? titles : nil
+    related_hypotheses(:conflicting).map(&:title_with_ref_id)
   end
 
   def citations_hash

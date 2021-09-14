@@ -31,33 +31,6 @@ RSpec.describe GithubIntegration do
     end
   end
 
-  describe "create_hypothesis_pull_request" do
-    let(:hypothesis) { Hypothesis.create(title: "Testing GitHub integration", ref_number: 42) }
-
-    it "creates the pull request" do
-      expect(hypothesis.pull_request_number).to be_blank
-      expect(hypothesis.ref_id).to eq "16"
-      # When changing this - you have to remove any existing refs for branches named the same.
-      # Delete it either by closing the PR: https://github.com/convus/convus_content/pulls
-      # Or deleting the branch manually (if PR wasn't created): https://github.com/convus/convus_content/branches
-      VCR.use_cassette("github_integration-create_hypothesis_pull_request", match_requests_on: [:method]) do
-        branches(subject.client).count
-        open_pull_requests(subject.client)
-        pull_request = subject.create_hypothesis_pull_request(hypothesis)
-        # This isn't testing correctly, even though the pull request is being created correctly
-        # ... so ignore for now. To re-enable, will require assigning results above to variables
-        # expect(branches(subject.client).count).to be > initial_branch_count
-        # prs = open_pull_requests(subject.client)
-        # expect(prs.count).to be > initial_pull_requests.count
-        hypothesis.reload
-        expect(hypothesis.pull_request_number).to be_present
-
-        # Can't do this via octokit.rb right now. BUT OH GOD THIS IS SOMETHING WE WANT - to make this truthy
-        expect(pull_request.maintainer_can_modify).to be_falsey
-      end
-    end
-  end
-
   describe "create_citation_pull_request" do
     let(:citation) do
       ci = Citation.create(url: "https://www.example.com/testing")
@@ -101,6 +74,8 @@ RSpec.describe GithubIntegration do
     let(:citation) { explanation_quote1.citation }
 
     it "creates the pull request" do
+      # Make sure the citation finds the existing citation file, so it updates rather that creates
+      citation.update(title: "Spherical Earth", publication_title: "Wikipedia")
       expect(hypothesis.reload.approved?).to be_truthy
       expect(hypothesis.ref_id).to eq "J"
       expect(explanation.reload.explanation_quotes.pluck(:ref_number)).to eq([1, 2])
@@ -135,17 +110,19 @@ RSpec.describe GithubIntegration do
     end
 
     context "hypothesis file doesn't exist" do
-      let(:approved_at) { nil }
+      let(:hypothesis_title) { "Something else about earth sphericalness" }
+      let(:hypothesis) { Hypothesis.create(title: hypothesis_title, created_at: Time.current - 1.hour, ref_number: 11) }
+
       it "creates the hypothesis" do
         expect(hypothesis.reload.pull_request_number).to be_blank
         expect(hypothesis.approved?).to be_falsey
-        expect(hypothesis.ref_id).to eq "J"
+        expect(hypothesis.ref_id).to eq "B"
         expect(explanation.reload.explanation_quotes.pluck(:ref_number)).to eq([1, 2])
         expect(explanation.pull_request_number).to be_blank
 
         # Make sure that the above hypothesis_title is actually a title that is used in the content_repository
         # Or this isn't testing updating the file contents
-        VCR.use_cassette("github_integration-existing_file-create_explanation_pull_request_new", match_requests_on: [:method], record: :new_episodes) do
+        VCR.use_cassette("github_integration-create_explanation_pull_request_new", match_requests_on: [:method], record: :new_episodes) do
           hypothesis.reload
           expect(hypothesis.pull_request_number).to be_blank
           expect(hypothesis.explanations.submitted_to_github.count).to eq 0
@@ -157,9 +134,41 @@ RSpec.describe GithubIntegration do
           hypothesis.reload
           expect(hypothesis.pull_request_number).to be_blank
           expect(hypothesis.explanations.submitted_to_github.count).to eq 1
+        end
+      end
+      context "with relations" do
+        let(:earlier_approval) { Time.current - 20.days }
+        let(:hypothesis_earlier) { Hypothesis.create(title: "The earth is roughly spherical", ref_number: 19, approved_at: earlier_approval, created_at: earlier_approval) }
+        let!(:hypothesis_relation) { HypothesisRelation.find_or_create_for(kind: "hypothesis_support", hypotheses: [hypothesis, hypothesis_earlier]) }
+        it "creates the pull request" do
+          expect(hypothesis_earlier.reload.approved?).to be_truthy
+          expect(hypothesis_earlier.ref_id).to eq "J"
 
-          # Can't do this via octokit.rb right now. BUT OH GOD THIS IS SOMETHING WE WANT - to make this truthy
-          expect(pull_request.maintainer_can_modify).to be_falsey
+          expect(hypothesis.reload.pull_request_number).to be_blank
+          expect(hypothesis.approved?).to be_falsey
+          expect(hypothesis.ref_id).to eq "B"
+          expect(explanation.reload.explanation_quotes.pluck(:ref_number)).to eq([1, 2])
+          expect(explanation.pull_request_number).to be_blank
+          expect(hypothesis_relation.reload.approved?).to be_falsey
+          expect(hypothesis_relation.pull_request_number).to be_blank
+
+          # Make sure that the above hypothesis_title is actually a title that is used in the content_repository
+          # Or this isn't testing updating the file contents
+          VCR.use_cassette("github_integration-create_explanation_pull_request_relations", match_requests_on: [:method], record: :new_episodes) do
+            hypothesis.reload
+            expect(hypothesis.pull_request_number).to be_blank
+            expect(hypothesis.explanations.submitted_to_github.count).to eq 0
+            pull_request = subject.create_explanation_pull_request(explanation)
+            explanation.reload
+            expect(explanation.pull_request_number).to be_present
+
+            # And check the hypothesis
+            hypothesis.reload
+            expect(hypothesis.pull_request_number).to be_blank
+            expect(hypothesis.explanations.submitted_to_github.count).to eq 1
+            expect(hypothesis_relation.reload.approved?).to be_falsey
+            expect(hypothesis_relation.pull_request_number).to be_present
+          end
         end
       end
     end

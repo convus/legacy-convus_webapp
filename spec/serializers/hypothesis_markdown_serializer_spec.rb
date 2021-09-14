@@ -18,8 +18,8 @@ describe HypothesisMarkdownSerializer, type: :lib do
 
   describe "to_flat_file" do
     context "no explanation, with topics" do
-      let(:target_json) { {id: hypothesis.ref_id, hypothesis: title, topics: ["A Topic"], supporting: nil, conflicting: nil, citations: nil} }
-      let(:target) { "---\nid: #{hypothesis.ref_id}\nhypothesis: #{title}\ntopics:\n- A Topic\nsupporting:\nconflicting:\ncitations:\n---\n" }
+      let(:target_json) { {id: hypothesis.ref_id, hypothesis: title, topics: ["A Topic"], supporting: [], conflicting: [], citations: nil} }
+      let(:target) { "---\nid: #{hypothesis.ref_id}\nhypothesis: #{title}\ntopics:\n- A Topic\nsupporting: []\nconflicting: []\ncitations:\n---\n" }
       it "returns" do
         hypothesis.update(tags_string: "A Topic")
         expect(hypothesis.tag_titles).to eq(["A Topic"])
@@ -39,13 +39,13 @@ describe HypothesisMarkdownSerializer, type: :lib do
         {id: hypothesis.ref_id,
          hypothesis: title,
          topics: [],
-         supporting: nil,
-         conflicting: nil,
+         supporting: [],
+         conflicting: [],
          citations: {
            url1 => {title: "A Special Title", published_date: published_date_str, publication_title: "Convus"}
          }}
       end
-      let(:conflicting_supporting_text) { "supporting:\nconflicting:\n" }
+      let(:conflicting_supporting_text) { "supporting: []\nconflicting: []\n" }
       let(:pre_relations) { "---\nid: #{hypothesis.ref_id}\nhypothesis: #{title}\ntopics: []\n" }
       let(:post_relations) do
         "citations:\n  #{url1}:\n    title: A Special Title\n    published_date: "\
@@ -84,9 +84,9 @@ describe HypothesisMarkdownSerializer, type: :lib do
           expect(hypothesis_relation_supporting.reload.approved?).to be_falsey
           expect_hashes_to_match(instance.as_json, target_json.merge(citations: nil))
           # Not passing in explanation
-          expect(normalized_markdown_for(instance)).to eq "#{pre_relations}supporting:\nconflicting:\ncitations:\n---\n"
+          expect(normalized_markdown_for(instance)).to eq "#{pre_relations}supporting: []\nconflicting: []\ncitations:\n---\n"
           # Passing it in (we regularly serialize unapproved explanations)
-          expect(normalized_markdown_for(hypothesis, [explanation])).to eq "#{pre_relations}supporting:\nconflicting:\n#{post_relations}"
+          expect(normalized_markdown_for(hypothesis, [explanation])).to eq "#{pre_relations}supporting: []\nconflicting: []\n#{post_relations}"
           # Approve everything
           [hypothesis, explanation, hypothesis_relation_conflicting, hypothesis_relation_supporting].each { |obj| obj.update(approved_at: Time.current - 1) }
           # And if the explanation is approved, it renders too
