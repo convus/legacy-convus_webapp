@@ -4,6 +4,7 @@ class HypothesisRelation < ApplicationRecord
   KIND_ENUM = {
     hypothesis_conflict: 0,
     citation_conflict: 1,
+    hypothesis_supporting: 5
     # explanation_quote_conflict: 2
   }.freeze
 
@@ -16,6 +17,16 @@ class HypothesisRelation < ApplicationRecord
   enum kind: KIND_ENUM
 
   before_validation :set_calculated_attributes
+
+  scope :conflicting, -> { where(kind: conflicting_kinds) }
+
+  def self.kinds
+    KIND_ENUM.keys.map(&:to_s)
+  end
+
+  def self.conflicting_kinds
+    %w[hypothesis_conflict citation_conflict].freeze
+  end
 
   # Method here because I hope there is a better way to do this?
   def self.hypothesis_ids

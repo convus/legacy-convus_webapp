@@ -67,7 +67,7 @@ class Hypothesis < ApplicationRecord
   end
 
   def conflicting_hypotheses
-    Hypothesis.where(id: hypothesis_relations.hypothesis_ids - [id])
+    Hypothesis.where(id: hypothesis_relations.conflicting.hypothesis_ids - [id])
   end
 
   def tag_titles
