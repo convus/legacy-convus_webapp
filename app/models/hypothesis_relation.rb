@@ -39,9 +39,9 @@ class HypothesisRelation < ApplicationRecord
   end
 
   # Might let creating multiple at once, if that's useful
-  def self.create_for(kind:, hypotheses:)
+  def self.find_or_create_for(kind:, hypotheses:)
     hypotheses_ordered = hypotheses.sort_by { |h| h.ref_number }
-    create(kind: kind, hypothesis_earlier: hypotheses_ordered.first, hypothesis_later: hypotheses_ordered.last)
+    find_or_create_by(kind: kind, hypothesis_earlier: hypotheses_ordered.first, hypothesis_later: hypotheses_ordered.last)
   end
 
   def set_calculated_attributes

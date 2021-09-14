@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe HypothesisRelation, type: :model do
   describe "factory" do
@@ -32,15 +32,18 @@ RSpec.describe HypothesisRelation, type: :model do
     end
   end
 
-  describe "create_for" do
+  describe "find_or_create_for" do
     let!(:hypothesis1) { FactoryBot.create(:hypothesis) }
     let!(:hypothesis2) { FactoryBot.create(:hypothesis) }
     it "creates" do
-      hypothesis_relation = HypothesisRelation.create_for(kind: "hypothesis_conflict", hypotheses: [hypothesis1, hypothesis2])
+      hypothesis_relation = HypothesisRelation.find_or_create_for(kind: "hypothesis_conflict", hypotheses: [hypothesis1, hypothesis2])
       expect(hypothesis_relation.hypothesis_earlier_id).to eq hypothesis1.id
       expect(hypothesis_relation.hypothesis_later_id).to eq hypothesis2.id
       expect(hypothesis_relation.kind).to eq "hypothesis_conflict"
       expect(hypothesis1.reload.conflicting_hypotheses.pluck(:id)).to eq([hypothesis2.id])
+      # And doing it again doesn't create more
+      expect(HypothesisRelation.find_or_create_for(kind: "hypothesis_conflict", hypotheses: [hypothesis1, hypothesis2])&.id).to eq hypothesis_relation.id
+      expect(HypothesisRelation.find_or_create_for(kind: "hypothesis_conflict", hypotheses: [hypothesis2, hypothesis1])&.id).to eq hypothesis_relation.id
     end
   end
 end

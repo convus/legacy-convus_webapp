@@ -64,8 +64,8 @@ describe HypothesisMarkdownSerializer, type: :lib do
       context "with relations" do
         let(:hypothesis_conflicting) { FactoryBot.create(:hypothesis_approved) }
         let(:hypothesis_supporting) { FactoryBot.create(:hypothesis_approved) }
-        let!(:hypothesis_relation_conflicting) { HypothesisRelation.create_for(kind: "hypothesis_conflict", hypotheses: [hypothesis_conflicting, hypothesis])}
-        let!(:hypothesis_relation_supporting) { HypothesisRelation.create_for(kind: "hypothesis_support", hypotheses: [hypothesis_supporting, hypothesis])}
+        let!(:hypothesis_relation_conflicting) { HypothesisRelation.find_or_create_for(kind: "hypothesis_conflict", hypotheses: [hypothesis_conflicting, hypothesis]) }
+        let!(:hypothesis_relation_supporting) { HypothesisRelation.find_or_create_for(kind: "hypothesis_support", hypotheses: [hypothesis_supporting, hypothesis]) }
         let(:relations_json) { target_json.merge(conflicting: [hypothesis_conflicting.title_with_ref_id], supporting: [hypothesis_supporting.title_with_ref_id]) }
         let(:conflicting_supporting_text) { "supporting:\n- '#{hypothesis_supporting.title_with_ref_id}'\nconflicting:\n- '#{hypothesis_conflicting.title_with_ref_id}'\n" }
         it "serializes" do

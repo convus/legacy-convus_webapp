@@ -20,6 +20,12 @@ class HypothesisMarkdownParser
       explanation.update_from_text(text)
     end
     @hypothesis.update(tags_string: front_matter[:topics])
+
+    # Import the relations
+    front_matter.slice(:supporting, :conflicting).each do |kind_abbr, hypotheses|
+      find_or_create_relations(kind_abbr, hypotheses)
+    end
+
     # TODO: should only be the ones that were passed in here :(
     @hypothesis.tags.unapproved.update_all(approved_at: Time.current)
 
@@ -80,5 +86,15 @@ class HypothesisMarkdownParser
       citation_attrs[:kind] = Citation.friendly_find_kind(citation_attrs[:kind])
     end
     citation.update(citation_attrs.slice(*Citation.permitted_attrs))
+  end
+
+  def find_or_create_relations(kind_abbr, hypotheses)
+    kind = "hypothesis_#{kind_abbr.to_s.gsub("ing", "")}"
+    hypotheses.each do |str|
+      related_hypothesis = Hypothesis.friendly_find(str)
+      next if related_hypothesis.blank?
+      HypothesisRelation.find_or_create_for(kind: kind,
+        hypotheses: [@hypothesis, related_hypothesis])
+    end
   end
 end
