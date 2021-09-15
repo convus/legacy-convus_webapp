@@ -3,6 +3,7 @@ $explanation-background: #f7f7f7;
 
 .explanations-wrapper {
   @include media-breakpoint-up(sm) {
+    margin-top: 1.5rem;
     background: $explanation-background;
     border-top: 1px solid rgba(102, 102, 102, 0.05);
     border-bottom: 1px solid rgba(102, 102, 102, 0.05);
@@ -71,6 +72,7 @@ $explanation-background: #f7f7f7;
     padding-top: 1rem;
     padding-bottom: 1rem;
     border-top: 1px solid $explanation-border-color;
+    border-bottom: 1px solid $explanation-border-color;
   }
   .explanation-body,
   .explanation-show-header {
@@ -84,7 +86,10 @@ $explanation-background: #f7f7f7;
   .explanation-show-header {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
-    @include media-breakpoint-up(sm) {
+  }
+  @include media-breakpoint-up(sm) {
+    // margin-top: 1.5rem;
+    .explanation-show-header {
       border-bottom: none;
     }
   }

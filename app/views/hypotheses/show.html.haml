@@ -37,7 +37,7 @@
   -#          - else
   -#            = button_to score, user_scores_path, {action: "create", params: {score: score, hypothesis_id: @hypothesis.ref_id, kind: "controversy"}, class: "score-item btn btn-link #{active ? 'active' : ''}"}
 - if @explanations.any? || @unapproved_explanations
-  .explanations-wrapper.row.mt-4.pb-4
+  .explanations-wrapper.row.pb-4
     - @unapproved_explanations.each do |explanation|
       = render partial: "/hypothesis_explanations/show", locals: {explanation: explanation, unapproved_show: true, unapproved_show_linked: params[:explanation_id].present?}
 
@@ -46,7 +46,7 @@
 
 - if @hypotheses_relations.any?
   - relation_col_class = @hypotheses_relations.conflicting.any? && @hypotheses_relations.supporting.any? ? "col-lg-6" : "col-12"
-  .row.mt-4
+  .row.mt-sm-4
     - if @hypotheses_relations.conflicting.any?
       %div{class: relation_col_class}
         %h5
@@ -85,16 +85,16 @@
 
 
 - if @hypothesis.approved?
-  .row.mt-4
+  .row
     .max-width-text-container.col.d-flex.justify-content-between
-      = link_to new_hypothesis_explanation_path(hypothesis_id: @hypothesis.ref_id), class: "btn btn-sm btn-outline-secondary" do
+      = link_to new_hypothesis_explanation_path(hypothesis_id: @hypothesis.ref_id), class: "btn btn-sm btn-outline-secondary mt-4" do
         - if @hypothesis.explanations.shown(current_user).count > 0
           Add
           %span.d-none.d-sm-inline another
           explanation
         - else
           Add explanation
-      = link_to "Add conflicting hypothesis", new_hypothesis_path(related_hypothesis_id: @hypothesis.ref_id, related_kind: "hypothesis_conflict"), class: "btn btn-sm btn-outline-danger"
+      = link_to "Add conflicting hypothesis", new_hypothesis_path(related_hypothesis_id: @hypothesis.ref_id, related_kind: "hypothesis_conflict"), class: "btn btn-sm btn-outline-danger mt-4 ml-1"
 
 .row.pt-2.mt-5
   - if @explanations.any?
