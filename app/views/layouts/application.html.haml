@@ -51,12 +51,7 @@
             - else
               %li.navbar-text.ml-2
                 %small.less-strong
-                  = link_to account_path, class: "gray-link #{current_page_active?(account_path) ? 'active' : ''}" do
-                    / %span.d-none.d-sm-inline
-                    /   = current_user.username
-                    %span.d-inline
-                      Account
-
+                  = link_to "account", account_path, class: "gray-link #{current_page_active?(account_path) ? 'active' : ''}"
                   -# TODO: add a link to this or whatever, if !current_user.github?
                   -#   = link_to current_user.username, edit_user_registration_path
 
