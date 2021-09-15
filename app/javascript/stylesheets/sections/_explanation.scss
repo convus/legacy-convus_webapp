@@ -86,10 +86,7 @@ $explanation-background: #f7f7f7;
   .explanation-show-header {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
-  }
-  @include media-breakpoint-up(sm) {
-    // margin-top: 1.5rem;
-    .explanation-show-header {
+    @include media-breakpoint-up(sm) {
       border-bottom: none;
     }
   }
