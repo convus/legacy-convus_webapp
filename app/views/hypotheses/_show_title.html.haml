@@ -7,7 +7,7 @@
       = hypothesis.title
       - if render_show_link
         = link_to internal_link_text, hypothesis_path(hypothesis.to_param), class: "internal-link small", data: { confirm: "Are you sure? You will lose unsaved changes!" }
-  %p.mt-4
+  %p.mt-4.mb-0
     -# Time hidden for now because it isn't that important
     -# %small.less-strong.convertTime.d-inline-block
     -#   = l hypothesis.created_at, format: :convert_time

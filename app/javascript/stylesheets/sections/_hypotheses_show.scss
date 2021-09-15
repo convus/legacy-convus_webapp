@@ -4,17 +4,6 @@
   background: $gray-100;
   border: 1px solid $gray-300;
   border-bottom: none; // hack to fix table top double up
-  blockquote {
-    margin: 0.75em 0 0 0;
-    &:before {
-      content: ">";
-      opacity: 0.3;
-      font-size: 80%;
-      margin-left: -0.25em;
-      display: inline-block;
-    }
-  }
-
   @include media-breakpoint-down(sm) {
     background: none;
     border-left: none;
